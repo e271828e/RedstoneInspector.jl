@@ -42,7 +42,14 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator("details.signature")).toHaveCount(0);
     await expect(pane(page).locator(".parameters tr")).toHaveCount(14);
     await expect(pane(page).locator(".locations li")).toHaveCount(3);
-    await expect(pane(page).locator("pre.docstring")).toHaveCount(1);
+    const docstring = pane(page).locator("details.docstring");
+    await expect(docstring).toHaveCount(1);
+    await expect(docstring).not.toHaveAttribute("open");
+    // raw textContent: the summary is the first non-empty line without its leading spaces
+    const doc = (await docstring.locator("pre.docstring").textContent())!;
+    const summary = (await docstring.locator("summary").textContent())!;
+    expect(summary).toMatch(/^Longitudinal\(/);
+    expect(summary).toBe(doc.split("\n").find((l) => l.trim())!.trimStart());
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["δe", "δt"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["V", "γ", "θ", "q", "h", "α"]);
     await expect(pane(page).locator("table.faces tr[data-port] .face-type")).toHaveText(Array(8).fill("Float64"));
@@ -58,6 +65,9 @@ test.describe("closed_loop", () => {
     await expect(faceRow(page, "plant|out|h").locator('a.consumer[data-path="lqr_controller/state_pack"][data-port="in5"]')).toHaveCount(1);
     await expect(faceRow(page, "plant|out|α").locator("a.consumer")).toHaveCount(0);
     await shot(page, "closed_loop", "", "detail-leaf");
+    await docstring.locator("summary").click();
+    await expect(docstring).toHaveAttribute("open");
+    await expect(docstring.locator("pre.docstring")).toBeVisible();
   });
 
   test("a consumer link selects that port on its level", async ({ page }) => {

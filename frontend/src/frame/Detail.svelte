@@ -31,6 +31,7 @@
   const pick = (f: Face) => onselect(faceSelection(model.tree!, f));
   const faceText = (f: Face) => (f.path === "" ? `${f.port} (root ${f.side === "in" ? "input" : "output"})` : `${f.path}/${f.port}`);
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
+  const firstLine = (doc: string) => doc.split("\n").find((l) => l.trim())!.trimStart();
   const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   /** The facts line: class, tier, timing, child count, membership. */
   const nodeLine = (f: NodeFacts) => [
@@ -110,7 +111,9 @@
       <p class="type" title="the qualified type"><code>{facts.type}</code></p>
       {#if facts.signature !== facts.type}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/if}
       {#if facts.kind === "assembly"}<p><button class="open-level" onclick={() => onopen(facts.path)}>Open {facts.segment}</button></p>{/if}
-      {#if facts.docstring}<pre class="docstring">{facts.docstring}</pre>{/if}
+      {#if facts.docstring}
+        {#key facts.path}<details class="docstring"><summary>{firstLine(facts.docstring)}</summary><pre class="docstring">{facts.docstring}</pre></details>{/key}
+      {/if}
       {#if facts.locations.length}
         <h3>Locations</h3>
         <ul class="locations">
@@ -177,6 +180,8 @@
   code, pre, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   .signature summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
   .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
+  details.docstring { margin: 8px 0; }
+  details.docstring summary { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; cursor: pointer; overflow-wrap: anywhere; }
   pre.docstring { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 8px 0; border-radius: 3px; }
   ul { margin: 0; padding-left: 16px; }
   .locations { list-style: none; padding: 0; }

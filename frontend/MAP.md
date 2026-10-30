@@ -279,8 +279,10 @@ inspector` with a model and `Redstone inspector` without.
   level's own pin. The signature disclosure shows only when the signature
   differs from the qualified type, which it would repeat; counts read in the
   singular for one, as the status bar's. The copy button writes the path; a
-  location click writes `file:line`. The docstring is its Markdown source, preformatted, until
-  increment 8.
+  location click writes `file:line`. The docstring is a disclosure, collapsed on
+  every selection, its summary the first non-empty line without leading spaces
+  (a library block's call form), its body the Markdown source, preformatted,
+  until increment 8.
 - **The drawer.** Four tabs; a click opens on that tab or closes the open one;
   a body is one sentence until increments 7 and 8; its height is the prefs'
   splitter while open, its strip alone while closed.
@@ -304,7 +306,8 @@ inspector` with a model and `Redstone inspector` without.
   element's id otherwise, holding `h2 .segment`, `h2 .name`, `.path`,
   `button.copy`, `.facts`, `.alias`, `.type`, `details.signature` (only when
   the signature differs from the type),
-  `pre.docstring`, `.locations li`, `.parameters tr`, `.scopes li` on a level,
+  `details.docstring` holding its `summary` and `pre.docstring`,
+  `.locations li`, `.parameters tr`, `.scopes li` on a level,
   `table.faces tr[data-port]` (the face's own port id) with `in` or `out` and
   the cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage` on a
   leaf; `a.producer` and `a.consumer` with `data-path` and `data-port`;
@@ -380,7 +383,9 @@ handler, then waits for `svg.canvas[data-ready]` or the outcome text.
   a click on the `b150` block scrolling the tree pane so its row lies inside it.
 - `detail.spec.ts`: on `closed_loop` the level layout at load; `plant`'s header,
   facts line, type, no alias, no signature (it equals the type), 14 parameter rows, 3
-  location rows, the docstring, 2 input and 6 output rows, every type `Float64`
+  location rows, the docstring collapsed, its summary the first line trimmed
+  and starting `Longitudinal(`, a click opening it to a visible
+  `pre.docstring`, 2 input and 6 output rows, every type `Float64`
   and kind `float`, every stage 1, the producer links of `δe` and `δt`, the two
   consumer links of `h`, none on `α`; the `sensing/altimeter` consumer link
   moving the canvas to `sensing` with `sensing/altimeter|in|in1` alone
