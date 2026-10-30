@@ -224,11 +224,12 @@ export function portFacts(model: Model, level: string, id: string): FaceElementF
   return { ...faceFacts(model, face), kind: "port", level, id, rootInput: rootInputRow(model, face) };
 }
 
-/** The facts the pane shows: the selection's, or the open level's when nothing is selected. */
+/** The facts the pane shows: the selection's, or the open level's when nothing is selected or the open level's node is. */
 export function detailOf(model: Model, level: string, sel: Selection | undefined): Facts | undefined {
   const tree = model.tree!;
   if (!sel) return levelFacts(model, level);
   const { kind, id } = sel.target;
+  if (kind === "block" && id === level) return levelFacts(model, level);
   if (kind === "folder") return folderFacts(model, id);
   if (kind === "wire") return wireFacts(model, sel.level, id);
   if (kind === "port") return portFacts(model, sel.level, id);

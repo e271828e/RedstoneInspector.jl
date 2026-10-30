@@ -115,7 +115,8 @@ for increment 9's frontend piece.
   path; the selection `{level, target}`; the expansion set of node and folder
   paths; the drawer's open state and tab. `load` resets them all: the root open,
   the root and its folders expanded, nothing selected, the drawer open on
-  `diagnostics` only when the body carries a diagnostic or warning. `open`
+  `diagnostics` only when the body carries a diagnostic (`opensDrawer`); a
+  warning alone leaves it closed, though the tab's count includes warnings. `open`
   clears the selection and expands the row and its ancestors; `climb` is `open`
   of the parent; `select` sets the level to the selection's for every kind and,
   for a node or folder, expands its ancestors. Raw state throughout: each change
@@ -190,9 +191,12 @@ Each file sits beside its module, loads fixtures by name through
   producers, consumers and stages, `sensing/altimeter`'s alias against its type,
   `sensing` closed, the root wire into `sensing|in|h` with its terminal producer
   and consumer, a wire into a leaf, the pin and port `h_ref` with two consumers
-  and its `root_inputs` row, a leaf input port's producer; `detailOf`'s dispatch;
-  `faceSelection`; `containers`' folders and memberships; `rates`' level `fast`
+  and its `root_inputs` row, a leaf input port's producer; `detailOf`'s dispatch,
+  the open level's node giving the level layout; `faceSelection`; `containers`' folders and memberships; `rates`' level `fast`
   with its one scope; a primitive root's level as its leaf, labelled.
+- `src/state/session.test.ts`: `load` keeps the drawer closed on a build whose
+  body carries one warning and no diagnostic, the count 1, and opens it on
+  `diagnostics` for `failure_cycle`'s one diagnostic.
 - `src/state/prefs.test.ts`: `parsePrefs` gives the defaults on `null`, garbage,
   another version and a missing version; reads a stored object back; keeps the
   defaults for mistyped fields; clamps an out-of-range size.
@@ -261,7 +265,8 @@ inspector` with a model and `Redstone inspector` without.
   (turned when expanded), a dot in the tier's stroke color or the assembly gray,
   a folder glyph instead on a folder, the segment, the display name lighter; the
   root row the label alone. A click selects (a node on its parent's level, the
-  root on the open level, a folder on its parent's); a double-click on an
+  root on the open level, a folder on its parent's); the open level's own node
+  selected shows the level layout in the pane; a double-click on an
   assembly row opens it; the chevron toggles and stops both. A selection made
   elsewhere scrolls its row into view after the DOM updates.
 - **The breadcrumb.** The open control, a button over a hidden file input, then
@@ -271,8 +276,10 @@ inspector` with a model and `Redstone inspector` without.
   pane renders one layout per kind. Face rows and producer and consumer links
   select through `faceSelection`: a root face's pin at the root, else the port
   on the level that draws its node; on the level layout a face row selects the
-  level's own pin. The copy button writes the path; a location click writes
-  `file:line`. The docstring is its Markdown source, preformatted, until
+  level's own pin. The signature disclosure shows only when the signature
+  differs from the qualified type, which it would repeat; counts read in the
+  singular for one, as the status bar's. The copy button writes the path; a
+  location click writes `file:line`. The docstring is its Markdown source, preformatted, until
   increment 8.
 - **The drawer.** Four tabs; a click opens on that tab or closes the open one;
   a body is one sentence until increments 7 and 8; its height is the prefs'
@@ -295,7 +302,8 @@ inspector` with a model and `Redstone inspector` without.
 - `aside.detail[data-kind="level" | "leaf" | "assembly" | "folder" | "wire" |
   "pin" | "port"][data-id]`, the id a path for a level, node or folder and the
   element's id otherwise, holding `h2 .segment`, `h2 .name`, `.path`,
-  `button.copy`, `.facts`, `.alias`, `.type`, `details.signature`,
+  `button.copy`, `.facts`, `.alias`, `.type`, `details.signature` (only when
+  the signature differs from the type),
   `pre.docstring`, `.locations li`, `.parameters tr`, `.scopes li` on a level,
   `table.faces tr[data-port]` (the face's own port id) with `in` or `out` and
   the cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage` on a
@@ -355,36 +363,50 @@ handler, then waits for `svg.canvas[data-ready]` or the outcome text.
   label alone, `pre.outcome` with "no structure to draw", the drawer open on
   `diagnostics` with count 2, the status bar `failure`, the pane's label.
 - `tree.spec.ts`: on `closed_loop` 7 rows at load, the root `open` reading
-  `closed_loop`, none `selected`; `sensing`'s chevron expanding to 9 rows with
+  `closed_loop`, none `selected`; the root row clicked `selected` with the level
+  still the root, the pane `level` and no `button.open-level`; `sensing`'s chevron expanding to 9 rows with
   the level unchanged; a click on `sensing` selecting it without opening, the
   pane `assembly`; a click on `sensing/noise` showing level `sensing` with the
   block `selected`, the pane `leaf`; Backspace and a click on `plant` selecting
-  its row; a double-click on `actuators` opening it, its row the one `open`; the
+  its row; a double-click on `actuators` opening it, its row the one `open` and
+  `expanded`; the
   chevron collapsing `sensing` by its two rows. On `containers` 9 rows in walk
   order, the folders at depth 1 and their members at depth 2, a folder click
   giving the folder layout with nothing selected on the canvas. On `rates`
   `fast/outer` opened by double-clicks and `hold` clicked: `fast` and
-  `fast/outer` expanded, `hold` selected at depth 3, `fast/outer` open.
-  `primitive` one row, `aircraft`'s root row, `large`'s 151 rows.
+  `fast/outer` expanded, `hold` selected at depth 3, `fast/outer` open; again with `fast` collapsed by
+  its chevron before the click, `fast` and `fast/outer` expanded anew and `hold`
+  selected. `primitive` one row, `aircraft`'s root row; `large`'s 151 rows, and
+  a click on the `b150` block scrolling the tree pane so its row lies inside it.
 - `detail.spec.ts`: on `closed_loop` the level layout at load; `plant`'s header,
-  facts line, type, no alias, the collapsed signature, 14 parameter rows, 3
+  facts line, type, no alias, no signature (it equals the type), 14 parameter rows, 3
   location rows, the docstring, 2 input and 6 output rows, every type `Float64`
   and kind `float`, every stage 1, the producer links of `δe` and `δt`, the two
   consumer links of `h`, none on `α`; the `sensing/altimeter` consumer link
   moving the canvas to `sensing` with `sensing/altimeter|in|in1` alone
-  `selected`, the pane `port`; `sensing/altimeter`'s alias and type; `sensing`'s
+  `selected`, the pane `port`; from `sensing/altimeter` the producer link `plant`
+  `h` moving it back to the root with `plant|out|h` alone `selected`, the pane
+  `port`; `sensing/altimeter`'s alias and type, its signature collapsed and
+  reading `Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}`; `sensing`'s
   assembly layout without stages and its open button opening it; the root wire
   into `sensing|in|h` with its endpoints, producer `plant/h`, one consumer
   `sensing/altimeter/in1`, `Float64 float`, level `/`; the pin `h_ref` with two
-  consumers; a face row selecting `plant|out|V` on the canvas; the copy button
-  writing `plant` to the clipboard. On `rates` level `fast`'s one scope line; on
+  consumers; a face row selecting `plant|out|V` on the canvas, its facts line
+  `port · stage 1 · not pinned`; the copy button writing `plant` to the
+  clipboard; `plant`'s first location writing its file label, ending `:<line>`;
+  `lqr_controller/tracker`'s pane with no sideways scroll (`scrollWidth` equal
+  to `clientWidth` on the detail pane's body). On `rates` level `fast`'s one scope line; on
   `containers` the folder's keys `a` and `b`, `a` selecting `gains/a` in the
-  pane, the tree and the canvas.
+  pane, the tree and the canvas, its pane without a signature. The level facts
+  in the singular: `aircraft` `open level · 1 child · 2 wires`, `kinds` `open
+  level · 9 children · 1 wire`.
 - `frame.spec.ts`: on `closed_loop` the status bar `build` with 24 leaves, 6
   assemblies, 94 wires and no note; the drawer closed with counts 3 on root
   inputs, 24 on order, 0 on diagnostics and none on timing, a tab opening it and
   a second click closing it; the tree splitter dragged 100 px widening the tree
-  by 100 within 2 px, kept across a reload and a new drop; the detail pane
+  by 100 within 2 px, kept across a reload and a new drop; the drawer opened and
+  its splitter dragged 150 px up, its height grown by 150 within 2 px and kept
+  across a reload, the drawer opened again; the detail pane
   collapsed by its button, kept across a reload, expanded by the button.
   `closed_loop_deployment` reads `deployment`; `failure_cycle` reads `failure`
   with the drawer open on `diagnostics`, count 1, and no order count; a
@@ -503,7 +525,10 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
   row can be a consumer link; the check clicks the `.face-name` cell.
 - **Word breaking in the pane.** `overflow-wrap: anywhere` lets a table cell's
   min-content shrink to one character, which squashed `Float64`; the pane uses
-  `break-word` and the faces table's cells `nowrap` but the links.
+  `break-word` and the faces table's cells `nowrap` but the links and the type.
+  The type cell breaks anywhere above a `min-width` of `8ch`, so
+  `lqr_controller/tracker`'s `StaticArraysCore.SVector{5, Float64}` wraps and
+  `Float64` does not.
 
 ## Open items
 

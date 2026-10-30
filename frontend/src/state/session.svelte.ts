@@ -24,11 +24,21 @@ export const session = {
   get drawer() { return drawer; },
 };
 
-/** The diagnostics and warnings the body carries. */
-export function diagnosticCount(m: Model): number {
+const bodyOf = (m: Model) => {
   const d = m.descriptor;
-  const body = d.kind === "build" ? d.build : d.kind === "deployment" ? d.deployment.build : d.failure;
+  return d.kind === "build" ? d.build : d.kind === "deployment" ? d.deployment.build : d.failure;
+};
+
+/** The diagnostics and warnings the body carries: the diagnostics tab's count. */
+export function diagnosticCount(m: Model): number {
+  const body = bodyOf(m);
   return ("diagnostics" in body ? body.diagnostics.length : 0) + body.warnings.length;
+}
+
+/** Whether the drawer opens on load: a diagnostic exists, a warning alone does not. */
+function opensDrawer(m: Model): boolean {
+  const body = bodyOf(m);
+  return "diagnostics" in body && body.diagnostics.length > 0;
 }
 
 /** A new model, or none after a refusal: the root open, its row expanded one level, nothing selected, the drawer open on diagnostics only when one exists. */
@@ -37,7 +47,7 @@ export function load(m: Model | undefined) {
   level = "";
   selection = undefined;
   expanded = m?.tree ? defaultExpansion(m.tree) : new Set();
-  drawer = { open: !!m && diagnosticCount(m) > 0, tab: "diagnostics" };
+  drawer = { open: !!m && opensDrawer(m), tab: "diagnostics" };
 }
 
 function expand(paths: string[]) {

@@ -51,6 +51,26 @@ test("closed_loop: the tree splitter's drag is kept across a reload and a new dr
   expect(Math.abs((await treePane(page).boundingBox())!.width - after)).toBeLessThanOrEqual(1);
 });
 
+test("closed_loop: the drawer splitter's drag is kept across a reload", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await tab(page, "order").click();
+  const drawerPane = page.locator('.pane[data-pane="drawer"]');
+  const before = (await drawerPane.boundingBox())!.height;
+  const s = (await page.locator('.splitter[data-pane="drawer"]').boundingBox())!;
+  const x = s.x + s.width / 2, y = s.y + s.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y - 75, { steps: 4 });
+  await page.mouse.move(x, y - 150, { steps: 4 });
+  await page.mouse.up();
+  const after = (await drawerPane.boundingBox())!.height;
+  expect(Math.abs(after - before - 150)).toBeLessThanOrEqual(2);
+  await page.reload();
+  await drop(page, "closed_loop");
+  await tab(page, "order").click();
+  expect(Math.abs((await drawerPane.boundingBox())!.height - after)).toBeLessThanOrEqual(2);
+});
+
 test("closed_loop: the detail pane collapses to its strip, kept across a reload, and expands", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(detailPane(page)).not.toHaveClass(/\bcollapsed\b/);

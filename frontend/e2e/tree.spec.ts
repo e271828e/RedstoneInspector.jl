@@ -16,6 +16,13 @@ test("closed_loop: rows, selection and opening", async ({ page }) => {
   await expect(row(page, "").locator(".name")).toHaveCount(0);
   await expect(page.locator("nav.tree .row.selected")).toHaveCount(0);
 
+  // the root row clicked while the root is open: the level layout, no open button
+  await row(page, "").click();
+  await expect(row(page, "")).toHaveClass(/\bselected\b/);
+  await expect(levelPath(page)).toHaveAttribute("data-level-path", "");
+  await expect(pane(page)).toHaveAttribute("data-kind", "level");
+  await expect(pane(page).locator("button.open-level")).toHaveCount(0);
+
   // the chevron expands and leaves the level alone
   await row(page, "sensing").locator("button.chevron").click();
   await expect(row(page, "sensing")).toHaveClass(/\bexpanded\b/);
@@ -47,6 +54,7 @@ test("closed_loop: rows, selection and opening", async ({ page }) => {
   await row(page, "actuators").dblclick();
   await page.locator(readyLevel("actuators")).waitFor();
   await expect(row(page, "actuators")).toHaveClass(/\bopen\b/);
+  await expect(row(page, "actuators")).toHaveClass(/\bexpanded\b/);
   await expect(row(page, "")).not.toHaveClass(/\bopen\b/);
   await expect(page.locator("nav.tree .row.open")).toHaveCount(1);
 
@@ -92,6 +100,17 @@ test("rates: opening and selecting on the canvas expands, selects and marks the 
   await expect(row(page, "fast/outer/hold")).toHaveAttribute("data-depth", "3");
 });
 
+test("rates: a block click re-expands the collapsed ancestors of its row", async ({ page }) => {
+  await drop(page, "rates");
+  await openPath(page, "fast/outer");
+  await row(page, "fast").locator("button.chevron").click();
+  await expect(row(page, "fast/outer")).toHaveCount(0);
+  await page.locator('g.block[data-id="fast/outer/hold"]').click();
+  await expect(row(page, "fast")).toHaveClass(/\bexpanded\b/);
+  await expect(row(page, "fast/outer")).toHaveClass(/\bexpanded\b/);
+  await expect(row(page, "fast/outer/hold")).toHaveClass(/\bselected\b/);
+});
+
 test("the root row reads the label: primitive alone, aircraft by its file name", async ({ page }) => {
   await drop(page, "primitive");
   await expect(rows(page)).toHaveCount(1);
@@ -101,7 +120,15 @@ test("the root row reads the label: primitive alone, aircraft by its file name",
   await expect(row(page, "").locator(".segment")).toHaveText("aircraft");
 });
 
-test("large: 151 rows at load", async ({ page }) => {
+test("large: 151 rows at load, and a block click scrolls its row into view", async ({ page }) => {
   await drop(page, "large");
   await expect(rows(page)).toHaveCount(151);
+  const body = page.locator('.pane[data-pane="tree"] .body');
+  expect(await body.evaluate((e) => e.scrollTop)).toBe(0);
+  await page.locator('g.block[data-id="b150"]').click();
+  await expect(row(page, "b150")).toHaveClass(/\bselected\b/);
+  await expect.poll(() => body.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
+  const [b, r] = [(await body.boundingBox())!, (await row(page, "b150").boundingBox())!];
+  expect(r.y).toBeGreaterThanOrEqual(b.y);
+  expect(r.y + r.height).toBeLessThanOrEqual(b.y + b.height);
 });

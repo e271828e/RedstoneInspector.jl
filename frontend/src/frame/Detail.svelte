@@ -31,9 +31,10 @@
   const pick = (f: Face) => onselect(faceSelection(model.tree!, f));
   const faceText = (f: Face) => (f.path === "" ? `${f.port} (root ${f.side === "in" ? "input" : "output"})` : `${f.path}/${f.port}`);
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
+  const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   /** The facts line: class, tier, timing, child count, membership. */
   const nodeLine = (f: NodeFacts) => [
-    f.kind, f.tier, f.timing, f.children === undefined ? undefined : `${f.children} children`,
+    f.kind, f.tier, f.timing, f.children === undefined ? undefined : count(f.children, "child", "children"),
     f.membership && `${f.membership.how ?? "member"} in field ${f.membership.field}, key ${f.membership.key}`,
   ].filter((x) => x !== undefined).join(" · ");
   /** A face row selects its port, or on the level's layout the level's pin. */
@@ -96,7 +97,7 @@
   <aside class="detail" data-kind={facts.kind} data-id={dataId}>
     {#if facts.kind === "level"}
       {@render header(facts.label ?? model.tree!.segment.get(facts.path)!, facts.displayName, facts.path)}
-      <p class="facts">open level · {facts.children} children · {facts.wires} wires</p>
+      <p class="facts">open level · {count(facts.children, "child", "children")} · {count(facts.wires, "wire", "wires")}</p>
       {#if facts.scopes.length}
         <h3>Rate scopes</h3>
         <ul class="scopes">{#each facts.scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>
@@ -107,7 +108,7 @@
       <p class="facts">{nodeLine(facts)}</p>
       {#if facts.alias}<p class="alias" title="the alias"><code>{facts.alias}</code></p>{/if}
       <p class="type" title="the qualified type"><code>{facts.type}</code></p>
-      <details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>
+      {#if facts.signature !== facts.type}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/if}
       {#if facts.kind === "assembly"}<p><button class="open-level" onclick={() => onopen(facts.path)}>Open {facts.segment}</button></p>{/if}
       {#if facts.docstring}<pre class="docstring">{facts.docstring}</pre>{/if}
       {#if facts.locations.length}
@@ -130,7 +131,7 @@
       {@render faces(facts.inputs, facts.outputs, facts.kind === "leaf", true)}
     {:else if facts.kind === "folder"}
       {@render header(facts.field, "folder", facts.path)}
-      <p class="facts">folder of <code>{facts.parent || model.label}</code> · field <code>{facts.field}</code> · {facts.keys.length} keys</p>
+      <p class="facts">folder of <code>{facts.parent || model.label}</code> · field <code>{facts.field}</code> · {count(facts.keys.length, "key", "keys")}</p>
       <ul class="keys">
         {#each facts.keys as k (k.path)}
           <li><a href={"#"} data-path={k.path} title={`Select ${k.path}`} onclick={(e) => { e.preventDefault(); onselect({ level: facts.parent, target: { kind: "block", id: k.path } }); }}>{k.key}</a></li>
@@ -146,9 +147,8 @@
       <h3>Terminal consumers</h3>
       <ul class="consumers">{#each facts.consumers as c, i (i)}<li>{@render faceLink("consumer", c)}</li>{:else}<li>none</li>{/each}</ul>
     {:else}
-      {@const pinned = facts.pinned ? " · pinned" : " · not pinned"}
       {@render header(facts.name, facts.kind === "pin" ? `${facts.face.side === "in" ? "input" : "output"} pin of ${facts.level || model.label}` : `${facts.face.side === "in" ? "input" : "output"} of ${facts.face.path || model.label}`, facts.face.path)}
-      <p class="facts">{facts.kind}{#if facts.stage} · stage {facts.stage}{/if}{pinned}</p>
+      <p class="facts">{[facts.kind, facts.stage && `stage ${facts.stage}`, facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}</p>
       <p class="type"><code>{facts.type ?? "?"}</code> <span class="face-kind">{facts.phrase ?? ""}</span></p>
       {#if facts.rootInput}
         <p class="root-input">root input: <code>{facts.rootInput.name}</code> <code>{facts.rootInput.type}</code>{facts.rootInput.pinned ? " · pinned" : " · not pinned"}</p>
@@ -190,11 +190,11 @@
   .parameters td:first-child { white-space: nowrap; }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }
-  .faces td:not(.links) { white-space: nowrap; }
+  .faces td:not(.links, .face-type) { white-space: nowrap; }
   .faces .links { overflow-wrap: anywhere; }
   .faces .side { color: var(--text-light); font-size: 11px; }
   .faces .face-name { font-weight: 600; }
-  .faces .face-type { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .faces .face-type { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; min-width: 8ch; }
   .face-kind { color: var(--text-light); }
   a { color: var(--highlight); text-decoration: none; }
   a:hover { text-decoration: underline; }

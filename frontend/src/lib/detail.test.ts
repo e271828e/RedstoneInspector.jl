@@ -129,6 +129,11 @@ describe("closed_loop's elements", () => {
     expect(detailOf(cl, "", { level: "", target: { kind: "port", id: "plant|out|V" } })?.kind).toBe("port");
   });
 
+  it("the open level's node selected shows the level layout", () => {
+    expect(detailOf(cl, "", { level: "", target: { kind: "block", id: "" } })?.kind).toBe("level");
+    expect(detailOf(cl, "sensing", { level: "", target: { kind: "block", id: "sensing" } })).toMatchObject({ kind: "level", path: "sensing" });
+  });
+
   it("a face is selected as its port on its node's level, a root face as its pin", () => {
     expect(faceSelection(cl.tree!, face("sensing/altimeter", "in", "in1")))
       .toEqual({ level: "sensing", target: { kind: "port", id: "sensing/altimeter|in|in1" } });

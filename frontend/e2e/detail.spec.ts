@@ -39,7 +39,7 @@ test.describe("closed_loop", () => {
     }
     await expect(pane(page).locator(".alias")).toHaveCount(0);
     await expect(pane(page).locator(".type")).toHaveText("RedstoneExamples.Longitudinal");
-    await expect(pane(page).locator("details.signature")).not.toHaveAttribute("open");
+    await expect(pane(page).locator("details.signature")).toHaveCount(0);
     await expect(pane(page).locator(".parameters tr")).toHaveCount(14);
     await expect(pane(page).locator(".locations li")).toHaveCount(3);
     await expect(pane(page).locator("pre.docstring")).toHaveCount(1);
@@ -70,12 +70,25 @@ test.describe("closed_loop", () => {
     await expect(link(page, "producer", "plant", "h")).toHaveCount(1);
   });
 
+  test("a producer link selects that port on its level", async ({ page }) => {
+    await openPath(page, "sensing");
+    await page.locator('g.block[data-id="sensing/altimeter"]').click();
+    await link(page, "producer", "plant", "h").click();
+    await page.locator(readyLevel("")).waitFor();
+    await expect(page.locator('rect.port.selected[data-port="plant|out|h"]')).toHaveCount(1);
+    await expect(page.locator("svg.canvas .selected")).toHaveCount(1);
+    await expect(pane(page)).toHaveAttribute("data-kind", "port");
+  });
+
   test("sensing/altimeter: the alias against the type", async ({ page }) => {
     await openPath(page, "sensing");
     await page.locator('g.block[data-id="sensing/altimeter"]').click();
     await expect(pane(page).locator("h2 .name")).toHaveText("SumJunction");
     await expect(pane(page).locator(".alias")).toHaveText("Redstone.Blocks.SumJunction");
     await expect(pane(page).locator(".type")).toHaveText("Redstone.Blocks.Junction");
+    const signature = pane(page).locator("details.signature");
+    await expect(signature).not.toHaveAttribute("open");
+    await expect(signature.locator("code")).toHaveText("Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}");
     await expect(faceRow(page, "sensing/altimeter|in|in1").locator('a.producer[data-path="plant"][data-port="h"]')).toHaveCount(1);
   });
 
@@ -131,6 +144,7 @@ test.describe("closed_loop", () => {
     await expect(page.locator('rect.port.selected[data-port="plant|out|V"]')).toHaveCount(1);
     await expect(page.locator("svg.canvas .selected")).toHaveCount(1);
     await expect(pane(page)).toHaveAttribute("data-kind", "port");
+    await expect(pane(page).locator(".facts")).toHaveText("port · stage 1 · not pinned");
   });
 
   test("the copy button writes the path to the clipboard", async ({ page, context }) => {
@@ -139,6 +153,27 @@ test.describe("closed_loop", () => {
     await pane(page).locator("button.copy").click();
     await expect(pane(page).locator("button.copy")).toHaveText("Copied");
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("plant");
+  });
+
+  test("a location click writes its file label to the clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.locator('g.block[data-id="plant"]').click();
+    const first = pane(page).locator(".locations li").first();
+    const label = (await first.locator(".file").textContent())!;
+    await first.locator("button.location").click();
+    await expect(first.locator(".copied")).toHaveCount(1);
+    const text = await page.evaluate(() => navigator.clipboard.readText());
+    expect(text).toMatch(/:\d+$/);
+    expect(text).toContain(label);
+  });
+
+  test("lqr_controller/tracker: the long face types wrap, the pane does not scroll sideways", async ({ page }) => {
+    await openPath(page, "lqr_controller");
+    await page.locator('g.block[data-id="lqr_controller/tracker"]').click();
+    await expect(pane(page)).toHaveAttribute("data-id", "lqr_controller/tracker");
+    const body = page.locator('.pane[data-pane="detail"] .body');
+    const { scroll, client } = await body.evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth }));
+    expect(scroll).toBe(client);
   });
 });
 
@@ -158,6 +193,14 @@ test("containers: the folder's keys select their nodes", async ({ page }) => {
   await pane(page).locator('.keys a[data-path="gains/a"]').click();
   await expect(pane(page)).toHaveAttribute("data-kind", "leaf");
   await expect(pane(page)).toHaveAttribute("data-id", "gains/a");
+  await expect(pane(page).locator("details.signature")).toHaveCount(0);
   await expect(page.locator('nav.tree .row.selected[data-path="gains/a"]')).toHaveCount(1);
   await expect(page.locator('g.block.selected[data-id="gains/a"]')).toHaveCount(1);
+});
+
+test("the level facts count in the singular: aircraft's one child, kinds' one wire", async ({ page }) => {
+  await drop(page, "aircraft");
+  await expect(pane(page).locator(".facts")).toHaveText("open level · 1 child · 2 wires");
+  await drop(page, "kinds");
+  await expect(pane(page).locator(".facts")).toHaveText("open level · 9 children · 1 wire");
 });
