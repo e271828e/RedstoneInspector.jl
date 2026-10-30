@@ -1,7 +1,7 @@
 // Opening and climbing (workspace.md answer 3): double-click or Enter opens a
 // closed assembly, Backspace goes to the parent, a leaf does not open.
 import { test } from "@playwright/test";
-import { drop, expect, readyLevel, shot } from "./fixtures";
+import { drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
 const levelLine = (page: import("@playwright/test").Page) => page.locator("[data-level-path]");
 
@@ -32,6 +32,36 @@ test("closed_loop: a double-click on a leaf leaves the level as it is", async ({
   await expect(page.locator(readyLevel(""))).toHaveCount(1);
   await expect(levelLine(page)).toHaveAttribute("data-level-path", "");
   await expect(page.locator("g.block")).toHaveCount(9);
+});
+
+test("closed_loop: Enter on a selected leaf leaves the level as it is", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await page.locator('g.block[data-id="plant"]').click();
+  await expect(page.locator('g.block.selected[data-id="plant"]')).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(300);
+  await expect(levelLine(page)).toHaveAttribute("data-level-path", "");
+  await expect(page.locator(readyLevel(""))).toHaveCount(1);
+});
+
+test("closed_loop: actuators draws its pins and its two chains in declared order", async ({ page }) => {
+  type Node = { path: string; type: string; inputs: { name: string }[]; outputs: { name: string }[] };
+  const nodes: Node[] = JSON.parse(fixtureText("closed_loop")).build.structure.nodes;
+  const node = nodes.find((n) => n.path === "actuators")!;
+  const children = nodes.filter((n) => n.path.startsWith("actuators/") && !n.path.slice(10).includes("/"));
+  await drop(page, "closed_loop");
+  await openPath(page, "actuators");
+  const at = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.block")]
+    .map((g) => { const m = g.transform.baseVal.consolidate()!.matrix; return [g.dataset.id!, { x: m.e, y: m.f }]; })));
+  const topDown = (ids: string[]) => [...ids].sort((a, b) => at[a].y - at[b].y);
+  const ins = node.inputs.map((f) => `⟨in⟩${f.name}`), outs = node.outputs.map((f) => `⟨out⟩${f.name}`);
+  expect(topDown(ins)).toEqual(ins);
+  expect(topDown(outs)).toEqual(outs);
+  // the two chains' children of one type, the limiters and the lags, top to bottom in declaration order
+  const byType = new Map<string, string[]>();
+  for (const n of children) byType.set(n.type, [...(byType.get(n.type) ?? []), n.path]);
+  expect([...byType.values()].map((ids) => ids.length)).toEqual([2, 2]);
+  for (const ids of byType.values()) expect(topDown(ids)).toEqual(ids);
 });
 
 test("rates: two deep and two Backspaces back", async ({ page }) => {

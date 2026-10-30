@@ -157,8 +157,11 @@ describe("elkGraph", () => {
     expect(g.edges!.map((e) => e.id)).toEqual(l.wires.map((w) => w.id));
   });
 
-  it("keeps the spike's root options", () => {
-    expect(g.layoutOptions).toMatchObject({ "elk.algorithm": "layered", "elk.direction": "RIGHT", "elk.edgeRouting": "ORTHOGONAL" });
+  it("keeps the spike's root options and packs components in model order", () => {
+    expect(g.layoutOptions).toMatchObject({
+      "elk.algorithm": "layered", "elk.direction": "RIGHT", "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.considerModelOrder.components": "MODEL_ORDER",
+    });
   });
 
   it("containers: pins its input pin first and its output pin last, every port on its side", () => {

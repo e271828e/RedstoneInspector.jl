@@ -165,7 +165,7 @@
   const portClass = (id: string) => ({
     selected: same(selected, "port", id),
     hover: same(hovered, "port", id) && !same(selected, "port", id),
-    marked: markedPorts.has(id),
+    marked: markedPorts.get(id) === "selected",
     "marked-hover": markedPorts.get(id) === "hover",
   });
 </script>
@@ -208,7 +208,11 @@
         {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
           {#if route}
-            <path class="wire" class:selected={same(selected, "wire", w.id)} data-wire={w.id} d={pathD(route)} marker-end="url(#arrow)" />
+            <path
+              class="wire" class:selected={same(selected, "wire", w.id)}
+              class:hover={same(hovered, "wire", w.id) && !same(selected, "wire", w.id)}
+              data-wire={w.id} d={pathD(route)} marker-end="url(#arrow)"
+            />
             <path
               class="wire-hit" data-hit={w.id} d={pathD(route)} role="none"
               onclick={() => select({ kind: "wire", id: w.id })}
@@ -255,7 +259,7 @@
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
               onpointerleave={() => (hovered = undefined)}
             >
-              <title>{b.path || "/"}&#10;{qualified(b.path)}</title>
+              <title>{`${b.path || "/"}\n${qualified(b.path)}`}</title>
               <rect class="halo" x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx="7" />
               <rect class="shape" width={box.width} height={box.height} rx="4" fill={c.fill} stroke={c.stroke} />
               {#if b.role === "assembly"}
@@ -320,6 +324,7 @@
   .port { fill: var(--port); stroke: var(--port); stroke-width: 1; cursor: pointer; }
   .port.stage1 { fill: var(--bg); }
   .port.selected, .port.marked { stroke: var(--highlight); }
+  .port.marked-hover { stroke: color-mix(in srgb, var(--highlight) 50%, var(--port)); }
   .port-halo { fill: var(--highlight); opacity: 0; pointer-events: none; }
   .port-halo.half { opacity: 0.25; }
   .port-halo.on { opacity: 0.5; }

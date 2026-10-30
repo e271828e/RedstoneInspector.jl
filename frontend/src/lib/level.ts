@@ -107,6 +107,7 @@ const ROOT_OPTIONS = {
   "elk.direction": "RIGHT",
   "elk.edgeRouting": "ORTHOGONAL",
   "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+  "elk.layered.considerModelOrder.components": "MODEL_ORDER",
   "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
   "elk.spacing.nodeNode": "24",
   "elk.layered.spacing.nodeNodeBetweenLayers": "40",

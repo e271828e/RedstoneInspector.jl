@@ -1,7 +1,7 @@
 // Pan, zoom and fit (workspace.md answer 3) on closed_loop's root, read through
 // the SVG's own coordinate transform.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, shot } from "./fixtures";
+import { drop, expect, openPath, shot } from "./fixtures";
 
 const viewBox = (page: Page) => page.evaluate(() => {
   const v = document.querySelector<SVGSVGElement>("svg.canvas")!.viewBox.baseVal;
@@ -20,22 +20,29 @@ const toClient = (page: Page, x: number, y: number) => page.evaluate(([x, y]) =>
   return { x: p.x, y: p.y };
 }, [x, y]);
 
+/** Every block's box in world units. */
+const blockBoxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block")].map((g) => {
+  const b = g.getBBox(), m = g.transform.baseVal.consolidate()!.matrix;
+  return { id: g.dataset.id, x: b.x + m.e, y: b.y + m.f, width: b.width, height: b.height };
+}));
+type Box = { x: number; y: number; width: number; height: number };
+const expectContains = (outer: Box, boxes: (Box & { id?: string })[]) => {
+  for (const b of boxes) {
+    expect(b.x, b.id).toBeGreaterThanOrEqual(outer.x);
+    expect(b.y, b.id).toBeGreaterThanOrEqual(outer.y);
+    expect(b.x + b.width, b.id).toBeLessThanOrEqual(outer.x + outer.width);
+    expect(b.y + b.height, b.id).toBeLessThanOrEqual(outer.y + outer.height);
+  }
+};
+
 test("closed_loop: fit contains every block, the wheel zooms about the pointer, a drag pans, the button fits", async ({ page }) => {
   await drop(page, "closed_loop");
   const fitted = await viewBox(page);
 
   // every block's box, in world units, inside the fitted viewBox
-  const boxes = await page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block")].map((g) => {
-    const b = g.getBBox(), m = g.transform.baseVal.consolidate()!.matrix;
-    return { id: g.dataset.id, x: b.x + m.e, y: b.y + m.f, width: b.width, height: b.height };
-  }));
+  const boxes = await blockBoxes(page);
   expect(boxes).toHaveLength(9);
-  for (const b of boxes) {
-    expect(b.x, b.id).toBeGreaterThanOrEqual(fitted.x);
-    expect(b.y, b.id).toBeGreaterThanOrEqual(fitted.y);
-    expect(b.x + b.width, b.id).toBeLessThanOrEqual(fitted.x + fitted.width);
-    expect(b.y + b.height, b.id).toBeLessThanOrEqual(fitted.y + fitted.height);
-  }
+  expectContains(fitted, boxes);
 
   // the wheel: the world point under the pointer stays within 1 px of the pointer
   const svgBox = (await page.locator("svg.canvas").boundingBox())!;
@@ -66,4 +73,18 @@ test("closed_loop: fit contains every block, the wheel zooms about the pointer, 
   await page.locator("button.fit").click();
   const refit = await viewBox(page);
   for (const k of ["x", "y", "width", "height"] as const) expect(Math.abs(refit[k] - fitted[k]), k).toBeLessThan(1);
+});
+
+test("closed_loop: opening lqr_controller fits it", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const root = await viewBox(page);
+  await openPath(page, "lqr_controller");
+  const fitted = await viewBox(page);
+  const boxes = await blockBoxes(page);
+  expect(boxes).toHaveLength(21);
+  expectContains(fitted, boxes);
+  // the level is larger than the view, so its fit is a scale below 1 and not the root's
+  const svgBox = (await page.locator("svg.canvas").boundingBox())!;
+  expect(svgBox.width / fitted.width).toBeLessThan(1);
+  expect(fitted).not.toEqual(root);
 });

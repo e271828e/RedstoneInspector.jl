@@ -3,8 +3,8 @@
 import { test, type Page } from "@playwright/test";
 import { drop, expect, selected, shot } from "./fixtures";
 
-/** Clicks a wire at a point of its line where the wire's own hit path is on top. */
-async function clickWire(page: Page, id: string): Promise<void> {
+/** A client point of a wire's line where the wire's own hit path is on top. */
+async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {
   const at = await page.evaluate((id) => {
     const hit = document.querySelector<SVGPathElement>(`path.wire-hit[data-hit="${CSS.escape(id)}"]`)!;
     const m = hit.getScreenCTM()!, length = hit.getTotalLength();
@@ -15,7 +15,12 @@ async function clickWire(page: Page, id: string): Promise<void> {
     return undefined;
   }, id);
   expect(at, `a clickable point on ${id}`).toBeDefined();
-  await page.mouse.click(at!.x, at!.y);
+  return at!;
+}
+
+async function clickWire(page: Page, id: string): Promise<void> {
+  const at = await wirePoint(page, id);
+  await page.mouse.click(at.x, at.y);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -72,4 +77,20 @@ test("hovering a block marks it", async ({ page }) => {
   await page.locator('g.block[data-id="sensing"]').hover();
   await expect(page.locator('g.block.hover[data-id="sensing"]')).toHaveCount(1);
   await expect(page.locator("svg.canvas .hover")).toHaveCount(1);
+});
+
+test("hovering a wire marks it and its two port squares at half strength", async ({ page }) => {
+  const at = await wirePoint(page, "sensing|in|h");
+  await page.mouse.move(at.x, at.y);
+  await expect(page.locator('path.wire.hover[data-wire="sensing|in|h"]')).toHaveCount(1);
+  await expect(page.locator("path.wire.hover")).toHaveCount(1);
+  await expect(page.locator("rect.port.marked-hover")).toHaveCount(2);
+  await expect(page.locator('rect.port.marked-hover[data-port="plant|out|h"]')).toHaveCount(1);
+  await expect(page.locator('rect.port.marked-hover[data-port="sensing|in|h"]')).toHaveCount(1);
+  await expect(page.locator("rect.port.marked")).toHaveCount(0);
+});
+
+test("a child block's hover title is its path and qualified name on two lines", async ({ page }) => {
+  // the qualified name is plant's `type`, as its `types` row names it
+  expect(await page.locator('g.block[data-id="plant"] > title').textContent()).toBe("plant\nRedstoneExamples.Longitudinal");
 });
