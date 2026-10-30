@@ -2,4 +2,7 @@ Manifest.toml
 frontend/dist/
 frontend/node_modules/
 frontend/src/lib/descriptor.d.ts
+frontend/e2e/screenshots/
+frontend/test-results/
+frontend/playwright-report/
 .DS_Store
