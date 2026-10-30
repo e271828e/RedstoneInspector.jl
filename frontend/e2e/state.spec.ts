@@ -1,7 +1,8 @@
 // The second and third lifetimes (workspace.md answers 3 and 9): the open level
 // in the URL's hash with back and forward, each visited level's view kept for the
 // session and its layout not run again, a selection pushing no history entry, the
-// hash winning on load, and a drop over a loaded model rekeying by path.
+// hash winning on load, and a drop over a loaded model rekeying by path, the query
+// surviving it.
 import { test, type Page } from "@playwright/test";
 import { drop, dropOver, expect, fixtureText, hash, press, readyLevel, rows, shot, status, viewBox } from "./fixtures";
 
@@ -98,6 +99,9 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   const zoomed = await wheelZoom(page);
   await page.locator('nav.tree .row[data-path="actuators"] button.chevron').click();
   await expect(page.locator('nav.tree .row.expanded[data-path="actuators"]')).toHaveCount(1);
+  await press(page, "/");
+  await page.locator("input.query").fill("h");
+  await page.locator(".viewport").focus();
 
   await dropOver(page, "closed_loop_deployment");
   await page.locator(readyLevel("sensing")).waitFor();
@@ -106,6 +110,7 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expectView(page, zoomed);
   await expect(page.locator('nav.tree .row.expanded[data-path="actuators"]')).toHaveCount(1);
   await expect(status(page)).toHaveAttribute("data-kind", "deployment");
+  await expect(page.locator("input.query")).toHaveValue("h");
   await expect(page.locator("footer.status .fallback")).toHaveCount(0);
 
   await dropOver(page, "rates");
@@ -115,6 +120,7 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expect(fallback).toContainText("sensing");
   await expect(fallback).toContainText("the root");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  await expect(page.locator("input.query")).toHaveValue("h");
   expect(await hash(page)).toBe("");
   await shot(page, "rates", "", "fallback");
 

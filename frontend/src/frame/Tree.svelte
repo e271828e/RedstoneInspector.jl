@@ -1,19 +1,29 @@
 <script lang="ts">
-  // The model tree (workspace.md answer 2): the outline's rows, selection shared
-  // with the canvas, the chevron expanding and the double-click opening.
-  import { tick } from "svelte";
+  // The model tree (workspace.md answers 2 and 5): the outline's rows, selection
+  // shared with the canvas, the chevron expanding and the double-click opening;
+  // the search field on top, its results in the outline's place while listing,
+  // the hits' dashed markers on the rows otherwise. The tree never filters.
+  import { tick, type Snippet } from "svelte";
   import { palette } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
   import type { Model } from "../lib/model";
-  import { outlineRows, type Row } from "../lib/outline";
+  import { folderOf, outlineRows, type Row } from "../lib/outline";
 
-  let { model, level, selection, expanded, focused = false, onselect, onopen, ontoggle }: {
+  let { model, level, selection, expanded, focused = false, search, listing = false, marks, counts, onselect, onopen, ontoggle }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
     expanded: ReadonlySet<string>;
     /** The keyboard's focus is in the tree region. */
     focused?: boolean;
+    /** The search field, drawn at the top of the region. */
+    search?: Snippet;
+    /** The search results stand in the outline's place. */
+    listing?: boolean;
+    /** The node paths a standing query marks. */
+    marks?: ReadonlySet<string>;
+    /** Each assembly's count of marked nodes beneath it. */
+    counts?: ReadonlyMap<string, number>;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
     ontoggle: (path: string) => void;
@@ -43,6 +53,12 @@
     if (r.kind === "folder") onselect({ level: r.parent!, target: { kind: "folder", id: r.path } });
     else onselect({ level: r.parent === undefined ? level : model.tree!.parent.get(r.path)!, target: { kind: "block", id: r.path } });
   }
+  /** A collapsed row's count of marked nodes beneath it; a folder's sums its members. */
+  function hitsBeneath(r: Row): number {
+    if (!marks || !counts || !r.expandable || expanded.has(r.path)) return 0;
+    if (r.kind === "node") return counts.get(r.path) ?? 0;
+    return (folderOf(model.tree!, r.path)?.members ?? []).reduce((n, m) => n + (marks.has(m) ? 1 : 0) + (counts.get(m) ?? 0), 0);
+  }
   const dot = (r: Row) => {
     const n = model.tree!.byPath.get(r.path)!;
     return n.class === "assembly" ? palette.assembly : n.tier === "discrete" ? palette.discrete : palette.continuous;
@@ -51,10 +67,15 @@
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <nav class="tree" class:focused bind:this={nav} aria-label="the model tree" tabindex="0">
-  {#each rows as r (r.path)}
+  {@render search?.()}
+  {#each listing ? [] : rows as r (r.path)}
+    {@const under = hitsBeneath(r)}
     <!-- svelte-ignore a11y_click_events_have_key_events (the keyboard table is increment 5's) -->
     <div
-      class={["row", r.kind, r.class, { expanded: r.expandable && expanded.has(r.path), selected: r.path === selectedRow, open: r.kind === "node" && r.path === level }]}
+      class={["row", r.kind, r.class, {
+        expanded: r.expandable && expanded.has(r.path), selected: r.path === selectedRow, open: r.kind === "node" && r.path === level,
+        hit: r.kind === "node" && !!marks?.has(r.path),
+      }]}
       data-path={r.path} data-depth={r.depth} style:padding-left="{4 + 14 * r.depth}px"
       title={r.kind === "folder" ? `${r.path} (folder)` : r.path || "/"} role="treeitem" aria-selected={r.path === selectedRow} tabindex="-1"
       onclick={() => click(r)} ondblclick={() => r.class === "assembly" && onopen(r.path)}
@@ -76,6 +97,7 @@
         <span class="segment">{r.label}</span>
         {#if r.parent !== undefined}<span class="name">{r.displayName}</span>{/if}
       {/if}
+      {#if under > 0}<span class="hits" title={`${under} marked beneath`}>{under}</span>{/if}
     </div>
   {/each}
 </nav>
@@ -98,4 +120,9 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .glyph { width: 10px; font-size: 11px; color: var(--text-light); flex: none; text-align: center; }
   .name { color: var(--text-light); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+  .row.hit .dot { outline: 1.5px dashed var(--highlight); outline-offset: 1.5px; }
+  .hits {
+    margin-left: auto; flex: none; padding: 0 5px; font-size: 11px; line-height: 14px; color: var(--highlight);
+    border: 1px dashed var(--highlight); border-radius: 7px;
+  }
 </style>

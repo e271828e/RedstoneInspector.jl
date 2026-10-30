@@ -10,20 +10,25 @@
   import Drawer from "./frame/Drawer.svelte";
   import Frame from "./frame/Frame.svelte";
   import Landing from "./frame/Landing.svelte";
+  import Search from "./frame/Search.svelte";
   import StatusBar from "./frame/StatusBar.svelte";
   import Tree from "./frame/Tree.svelte";
   import { parsePortId } from "./lib/level";
   import { fromFile } from "./lib/loader";
   import { loadModel } from "./lib/model";
   import { nearest, type Direction } from "./lib/navigate";
+  import { beneath, levelHits, marked, parseQuery, searchModel } from "./lib/search";
   import {
-    climb, escape, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setView, toggleDrawer,
-    toggleExpanded, type Region,
+    climb, escape, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery, setView,
+    toggleDrawer, toggleExpanded, type Region,
   } from "./state/session.svelte";
+  import { prefs, toggleCollapsed } from "./state/prefs.svelte";
+  import { tick } from "svelte";
 
   let refusal = $state<string | undefined>();
   let dragging = $state(false);
   let canvasView = $state<ReturnType<typeof Canvas>>();
+  let listing = $state(false);
 
   /** Screen pixels a panning key moves the view by. */
   const PAN_STEP = 48;
@@ -40,6 +45,15 @@
     const s = session.selection;
     return s && s.level === session.level && s.target.kind !== "folder" ? (s.target as Target) : undefined;
   });
+
+  // The standing query's hits over the whole model, the marks on the tree and the hits on the drawn level.
+  const found = $derived.by(() => {
+    const terms = parseQuery(session.query);
+    return model?.tree && terms.length ? searchModel(model, terms) : undefined;
+  });
+  const marks = $derived(found && marked(found));
+  const counts = $derived(model?.tree && marks ? beneath(model.tree, marks) : undefined);
+  const hits = $derived(model?.tree && found ? levelHits(model.tree, session.level, found) : undefined);
 
   $effect(() => {
     document.title = model ? `${model.label} – Redstone inspector` : "Redstone inspector";
@@ -71,6 +85,18 @@
     return true;
   }
 
+  /** `/` and Cmd-K: the search field focused with its text selected, the tree pane expanded first if collapsed. */
+  async function focusSearch() {
+    if (prefs.collapsed.tree) {
+      toggleCollapsed("tree");
+      await tick();
+    }
+    const input = document.querySelector<HTMLInputElement>("input.query");
+    input?.focus();
+    input?.select();
+  }
+  const focusCanvas = () => document.querySelector<HTMLElement>(".viewport")?.focus();
+
   /** The block a direction key starts from: the selected block or pin, a port's block, a wire's consumer. */
   function origin(): string | undefined {
     const t = drawn;
@@ -95,7 +121,13 @@
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
     }
-    if (!session.model || typing(e.target) || e.ctrlKey || e.metaKey) return;
+    if (!session.model || typing(e.target)) return;
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      focusSearch();
+      return;
+    }
+    if (e.ctrlKey || e.metaKey) return;
     const s = session.selection;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const arrows: Record<string, [number, number]> = {
@@ -114,6 +146,7 @@
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
     else if (key === "d" && !e.shiftKey) toggleDrawer(session.drawer.tab);
+    else if (e.key === "/") focusSearch();
     else handled = RESERVED.has(e.key); // swallowed until their increments
     if (handled) e.preventDefault();
   }
@@ -149,8 +182,15 @@
       {#snippet tree()}
         <Tree
           {model} level={session.level} selection={session.selection} expanded={session.expanded}
-          focused={session.focus === "tree"} onselect={select} onopen={open} ontoggle={toggleExpanded}
-        />
+          focused={session.focus === "tree"} {listing} {marks} {counts} onselect={select} onopen={open} ontoggle={toggleExpanded}
+        >
+          {#snippet search()}
+            <Search
+              {model} level={session.level} query={session.query} {found} bind:listing
+              onquery={setQuery} onselect={select} ondone={focusCanvas}
+            />
+          {/snippet}
+        </Tree>
       {/snippet}
       {#snippet breadcrumb()}
         <Breadcrumb {model} level={session.level} onopen={open} onfile={openFile} />
@@ -159,7 +199,7 @@
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} selected={drawn}
+              bind:this={canvasView} {model} path={session.level} selected={drawn} {hits}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}

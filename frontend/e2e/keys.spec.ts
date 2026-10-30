@@ -1,7 +1,8 @@
 // The keyboard table (workspace.md answers 11 and 3) on closed_loop's root: h j k l
 // move the selection by quadrant and center distance with the view following,
 // Shift with them and the arrows pan, 0 + - fit and zoom, d toggles the drawer,
-// Tab cycles the four regions, the reserved keys do nothing. The geometric pins
+// Tab cycles the four regions, the reserved keys do nothing, Escape clears the
+// query before the selection. The geometric pins
 // are recomputed here from the DOM, by the brief's rules.
 import { test, type Page } from "@playwright/test";
 import { blockBoxes, clickWire, drop, expect, press, shot, viewBox } from "./fixtures";
@@ -178,4 +179,18 @@ test("t r y o and ? leave the selection, the view and the drawer as they were", 
   expect(await viewBox(page)).toEqual(before.view);
   expect(await page.locator("section.drawer").getAttribute("data-open")).toBe(before.drawer);
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "");
+});
+
+test("Escape clears a standing query first, leaving the selection, then the selection", async ({ page }) => {
+  await press(page, "/");
+  await page.locator("input.query").fill("h");
+  await page.locator('g.block[data-id="plant"]').click();
+  await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+  await expect(page.locator("svg.canvas")).toHaveClass(/searching/);
+  await press(page, "Escape");
+  await expect(page.locator("input.query")).toHaveValue("");
+  await expect(page.locator("svg.canvas")).not.toHaveClass(/searching/);
+  await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+  await press(page, "Escape");
+  await expect(selectedBlock(page)).toHaveCount(0);
 });

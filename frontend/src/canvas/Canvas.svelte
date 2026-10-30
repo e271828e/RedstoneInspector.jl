@@ -14,6 +14,7 @@
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, portId } from "../lib/level";
   import type { Model } from "../lib/model";
+  import type { LevelHits } from "../lib/search";
   import { follow as followView, type Box } from "../lib/navigate";
   import { fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
@@ -24,7 +25,7 @@
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, selected, view: savedView, layout: savedLayout, focused = false, onopen, onselect, onview, onlayout }: {
+  let { model, path, selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
     model: Model;
     path: string;
     /** The target drawn as selected; the caller passes it only on the level it was selected on. */
@@ -33,6 +34,8 @@
     view?: View;
     /** The level's layout the session holds, drawn instead of running ELK unless stale; read when the level is drawn. */
     layout?: LevelLayout;
+    /** A standing query's hits on this level: drawn with the dashed halo, the rest dimmed. */
+    hits?: LevelHits;
     /** The keyboard's focus is in the canvas region. */
     focused?: boolean;
     onopen?: (path: string) => void;
@@ -278,22 +281,27 @@
   const blockClass = (b: Block) => ({
     selected: same(selected, "block", b.id),
     hover: same(hovered, "block", b.id) && !same(selected, "block", b.id),
+    "search-hit": !!hits?.blocks.has(b.id),
+    "search-under": !!hits?.under.has(b.id),
   });
+  /** A hit's halo is dashed, the selected hit's solid. */
+  const dashed = (b: Block) => (!!hits?.blocks.has(b.id) || !!hits?.under.has(b.id)) && !same(selected, "block", b.id);
   const portClass = (id: string) => ({
     selected: same(selected, "port", id),
     hover: same(hovered, "port", id) && !same(selected, "port", id),
     marked: markedPorts.get(id) === "selected",
     "marked-hover": markedPorts.get(id) === "hover",
+    "search-hit": !!hits?.ports.has(id),
   });
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
   class="viewport" class:focused tabindex="0" role="region" aria-label="the canvas" bind:clientWidth={width} bind:clientHeight={height}
-  style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight}"
+  style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight};--dim:{palette.dim};--dash:{palette.dash}"
 >
   <svg
-    bind:this={svg} class="canvas" data-level={shown?.level.path} data-ready={ready ? "" : undefined}
+    bind:this={svg} class="canvas" class:searching={!!hits} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
   >
@@ -355,11 +363,11 @@
             >
               <title>{b.name}</title>
               {#if tag}
-                <path class="halo" d={tagD(box.width, 3)} />
+                <path class={["halo", { dashed: dashed(b) }]} d={tagD(box.width, 3)} />
                 <path class="shape" d={tagD(box.width)} fill={palette.rootTag.fill} stroke={palette.rootTag.stroke} />
                 <text x={SLOT + (box.width - SLOT - POINT) / 2} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
               {:else}
-                <rect class="halo" x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx={PIN_HEIGHT / 2 + 3} />
+                <rect class={["halo", { dashed: dashed(b) }]} x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx={PIN_HEIGHT / 2 + 3} />
                 <rect class="shape" width={box.width} height={box.height} rx={PIN_HEIGHT / 2}
                       fill={palette.pin.fill} stroke={palette.pin.stroke} />
                 <text x={box.width / 2} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
@@ -377,7 +385,7 @@
               onpointerleave={() => (hovered = undefined)}
             >
               <title>{`${b.path || "/"}\n${qualified(b.path)}`}</title>
-              <rect class="halo" x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx="7" />
+              <rect class={["halo", { dashed: dashed(b) }]} x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx="7" />
               <rect class="shape" width={box.width} height={box.height} rx="4" fill={c.fill} stroke={c.stroke} />
               {#if b.role === "assembly"}
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
@@ -407,7 +415,9 @@
 </div>
 
 {#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
-  <rect class="port-halo" class:on={portClass(id).selected || portClass(id).marked} class:half={portClass(id).hover || portClass(id)["marked-hover"]}
+  {@const c = portClass(id)}
+  <rect class="port-halo" class:on={c.selected || c.marked} class:half={c.hover || c["marked-hover"]}
+        class:dashed={c["search-hit"] && !c.selected && !c.marked}
         x={x - PORT} y={y - PORT} width={2 * PORT} height={2 * PORT} rx="2" />
   <rect
     class={["port", { stage1: open }, portClass(id)]} data-port={id} role="none"
@@ -447,6 +457,12 @@
   .port-halo.half { opacity: 0.25; }
   .port-halo.on { opacity: 0.5; }
   .pinned { fill: var(--port); }
+
+  /* Search (visual_grammar.md answer 9): hits take a dashed halo, everything else dims by opacity. */
+  .block > .halo.dashed { opacity: 0.9; stroke-width: 2; stroke-dasharray: var(--dash); }
+  .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
+  .searching .wire { opacity: var(--dim); }
+  .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }
 </style>
