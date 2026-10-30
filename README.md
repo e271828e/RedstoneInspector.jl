@@ -130,14 +130,24 @@ root:
     cd frontend && npm ci
     npm test
     npm run check
+    npm run build
+    npm run e2e
     npm run dev
 
 `npm test` validates every fixture against the schema copy with ajv, then runs
 the unit tests of the pure modules over the fixtures. `npm run check` type-checks
-the sources. The TypeScript types are generated from the schema copy into
+the sources and the browser checks. `npm run e2e` runs the browser checks:
+Playwright drives headless Chromium against the built bundle, served by `vite
+preview`, so `npm run build` comes first, and `npx playwright install chromium`
+once on a new machine. Each check drops fixtures on the page and saves
+screenshots to `frontend/e2e/screenshots/`, which CI keeps as a job output. The
+TypeScript types are generated from the schema copy into
 `frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
-each of `dev`, `build`, `check` and `test`. The page draws nothing yet: it
-reads a picked or dropped descriptor and prints the outcome as text.
+each of `dev`, `build`, `check` and `test`. The page reads a picked or dropped
+descriptor and draws its root level: blocks, the level's boundary pins and the
+wires, laid out by ELK. Drag pans, the wheel zooms, the corner button fits; a
+double-click or Enter opens a closed assembly and Backspace returns to its
+parent; a click selects a block, pin, wire or port square, and Escape clears.
 `frontend/MAP.md` maps the files.
 
 ## The pin
@@ -171,7 +181,7 @@ and the fixtures regenerate against the old core.
 - `frontend/fixtures/`, `frontend/schema/`: the committed descriptors and schema copy.
 - `Artifacts.toml`: the bundle's entry, written by the release workflow.
 - `frontend/`: the page, mapped in `frontend/MAP.md`.
-- `.github/workflows/CI.yml`: the package suite, the fixtures' drift check and the frontend's check and tests.
+- `.github/workflows/CI.yml`: the package suite, the fixtures' drift check, and the frontend's check, tests, build and browser checks, its screenshots and `dist/` kept as job outputs.
 
 ## License
 

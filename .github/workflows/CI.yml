@@ -83,3 +83,16 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      # Upload paths are repository-relative: the working-directory default applies to `run` steps only.
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: screenshots
+          path: frontend/e2e/screenshots
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: frontend/dist
