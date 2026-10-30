@@ -298,4 +298,5 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
 - A primitive root's leaf has an empty segment, so its bold first line is
   blank; the level line already shows the label.
 - The layout of `closed_loop`'s root is tangled, feedback wires looping over and
-  under the level, as the spike found; no ELK option was tuned here.
+  under the level, as the spike found; greedy cycle breaking left it as it
+  was and nothing else was tuned.
