@@ -1,4 +1,6 @@
 [deps]
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JSONSchema = "7d188eb4-7ad8-530c-ae41-71a32a6d4692"
 Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
@@ -6,5 +8,6 @@ RedstoneInspector = "45843df5-9334-4d9d-947e-db062adebde9"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+HTTP = "2"
 JSON = "1"
 JSONSchema = "1"

@@ -7,12 +7,18 @@ version = "0.1.0"
 projects = ["test", "scripts"]
 
 [deps]
+Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Preferences = "21216c6a-2e73-6563-6e65-726566657250"
 Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
 
 [sources]
 Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "abf1d81f6e0c35e0721710cd6a1589a0b6ac7ae2"}
 
 [compat]
+HTTP = "2"
 JSON = "1"
+Preferences = "1"
 julia = "1.13"

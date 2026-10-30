@@ -107,4 +107,6 @@ const SCHEMA = Schema(JSON.parsefile(joinpath(pkgdir(Redstone), "src", "descript
             end
         end
     end
+
+    include("test_server.jl")
 end
