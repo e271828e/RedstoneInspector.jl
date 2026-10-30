@@ -1,0 +1,476 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "build",
+  "name": "descent",
+  "build": {
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Redstone.Blocks.Group",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, gear::RedstoneExamples.GroundContact, stop::Redstone.Blocks.StopRequest}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{}, @NamedTuple{}}",
+          "inputs": [
+            {
+              "name": "δe"
+            },
+            {
+              "name": "δt"
+            }
+          ],
+          "outputs": [],
+          "wires": [
+            {
+              "from": {
+                "path": "plant",
+                "port": "h"
+              },
+              "to": {
+                "path": "gear",
+                "port": "h"
+              }
+            },
+            {
+              "from": {
+                "path": "gear",
+                "port": "contact"
+              },
+              "to": {
+                "path": "stop",
+                "port": "u"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "δe"
+              },
+              "to": {
+                "path": "plant",
+                "port": "δe"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "δt"
+              },
+              "to": {
+                "path": "plant",
+                "port": "δt"
+              }
+            }
+          ],
+          "parameters": [
+            {
+              "name": "local_wires",
+              "value": "(\"plant/h\"=>\"gear/h\", \"gear/contact\"=>\"stop/u\")"
+            },
+            {
+              "name": "input_wires",
+              "value": "(\"δe\"=>\"plant/δe\", \"δt\"=>\"plant/δt\")"
+            },
+            {
+              "name": "output_wires",
+              "value": "()"
+            },
+            {
+              "name": "sample_times",
+              "value": "NamedTuple()"
+            }
+          ]
+        },
+        {
+          "path": "plant",
+          "field": "children",
+          "key": "plant",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "RedstoneExamples.Longitudinal",
+          "signature": "RedstoneExamples.Longitudinal",
+          "inputs": [
+            {
+              "name": "δe",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "δt",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "V",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "γ",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "θ",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "q",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "h",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "α",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "m",
+              "value": "1000.0"
+            },
+            {
+              "name": "S",
+              "value": "16.0"
+            },
+            {
+              "name": "c̄",
+              "value": "1.5"
+            },
+            {
+              "name": "Iyy",
+              "value": "1800.0"
+            },
+            {
+              "name": "T_max",
+              "value": "2500.0"
+            },
+            {
+              "name": "ρ",
+              "value": "1.225"
+            },
+            {
+              "name": "CL0",
+              "value": "0.3"
+            },
+            {
+              "name": "CLα",
+              "value": "5.0"
+            },
+            {
+              "name": "CD0",
+              "value": "0.03"
+            },
+            {
+              "name": "k",
+              "value": "0.05"
+            },
+            {
+              "name": "Cm0",
+              "value": "0.05"
+            },
+            {
+              "name": "Cmα",
+              "value": "-1.0"
+            },
+            {
+              "name": "Cmq",
+              "value": "-12.0"
+            },
+            {
+              "name": "Cmδe",
+              "value": "-1.2"
+            }
+          ]
+        },
+        {
+          "path": "gear",
+          "field": "children",
+          "key": "gear",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "RedstoneExamples.GroundContact",
+          "signature": "RedstoneExamples.GroundContact",
+          "inputs": [
+            {
+              "name": "h",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "contact",
+              "type": "Bool",
+              "kind": {
+                "kind": "boolean"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "h_ground",
+              "value": "0.0"
+            }
+          ]
+        },
+        {
+          "path": "stop",
+          "field": "children",
+          "key": "stop",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.StopRequest",
+          "signature": "Redstone.Blocks.StopRequest",
+          "inputs": [
+            {
+              "name": "u",
+              "type": "Bool",
+              "kind": {
+                "kind": "boolean"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Redstone.StopFlag",
+              "kind": {
+                "kind": "enum",
+                "values": [
+                  "NO_STOP",
+                  "STOP_REQUESTED"
+                ]
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "reason",
+              "value": "\"touchdown\""
+            }
+          ]
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "δe",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        },
+        {
+          "name": "δt",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Redstone.Blocks.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "locations": [
+            {
+              "function": "sample_times",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2123
+            },
+            {
+              "function": "local_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2120
+            },
+            {
+              "function": "input_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2121
+            },
+            {
+              "function": "output_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2122
+            },
+            {
+              "function": "transparent_container",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2124
+            }
+          ]
+        },
+        {
+          "name": "RedstoneExamples.Longitudinal",
+          "docstring": "    Longitudinal(; m = 1000.0, S = 16.0, c̄ = 1.5, Iyy = 1800.0, T_max = 2500.0, ρ = 1.225,\n                   CL0 = 0.3, CLα = 5.0, CD0 = 0.03, k = 0.05,\n                   Cm0 = 0.05, Cmα = -1.0, Cmq = -12.0, Cmδe = -1.2)\n\nA rigid aircraft in its plane of symmetry, with three degrees of freedom:\nairspeed `V`, flight path angle `γ`, pitch angle `θ`, pitch rate `q` and\naltitude `h` as its states, elevator `δe` and throttle `δt` as its inputs, and\nthe states with the angle of attack `α = θ - γ` as its outputs, all from the\nstate, so the plant has no feedthrough. A continuous leaf. Lift and drag follow\na linear lift curve and a parabolic polar, the pitching moment a static, a\ndamping and an elevator term, and the thrust is `δt T_max` along the body\naxis, with constant density and still air:\n\n    V̇ = (T cos α - D) / m - g sin γ\n    γ̇ = (L + T sin α) / (m V) - g cos γ / V\n    θ̇ = q\n    q̇ = M / Iyy\n    ḣ = V sin γ\n\nThe defaults are a light single-engine aircraft. The parameters, the trim and\nthe modes are `longitudinal_aircraft.md`, sections 1 to 3.\n\nThe example is didactic, and it may change in a minor version.\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 45
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 46
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 44
+            }
+          ]
+        },
+        {
+          "name": "RedstoneExamples.GroundContact",
+          "docstring": "    GroundContact(; h_ground = 0.0)\n\nThe ground under the aircraft: one input `h`, the altitude, and one mode,\n`contact`, false until the aircraft reaches `h_ground`. A stateless continuous\nleaf with one event, `touchdown`, a localized state event (§2.3, §10.4): the\nguard returns the sign-form value `h_ground - h`, so the step in which the\ncrossing falls ends at the crossing itself, and the handler sets `contact`. The\n`Bool` output `contact` publishes the mode from stage 1, so a `StopRequest` fed\nfrom it ends the run at the touchdown's boundary (§13.5).\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 92
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 93
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 90
+            },
+            {
+              "function": "m_init",
+              "file": "<depot>/packages/RedstoneExamples/UAmnI/src/longitudinal.jl",
+              "line": 91
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Blocks.StopRequest",
+          "docstring": "    StopRequest(; reason = \"\") -> StopRequest\n\nA continuous [primitive](@ref g-primitive) that publishes a\n[stop request](@ref g-stop-request) while its `Bool` input holds.\n\nIts one output, a bare [`StopFlag`](@ref), publishes `STOP_REQUESTED` while its\none input, a bare `Bool`, holds and `NO_STOP` otherwise. A wire names them `u`\nand `y`. The [block](@ref g-block) is\nstateless, so it refreshes at every [boundary](@ref g-boundary) and sits\nanywhere in the tree. It holds no privilege: the request is the\n[port](@ref g-port)'s type, and any component may publish one.\n\n# Keywords\n\n- `reason`: the reason the block's requests report, read by\n  [`stop_reason`](@ref). It is instance data.\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 274
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 275
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 273
+            },
+            {
+              "function": "stop_reason",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 277
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "order": [
+        "plant",
+        "gear",
+        "stop"
+      ],
+      "components": [
+        {
+          "path": "plant",
+          "stage1": [
+            "V",
+            "γ",
+            "θ",
+            "q",
+            "h",
+            "α"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "gear",
+          "stage1": [
+            "contact"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "stop",
+          "stage1": [],
+          "stage2": [
+            "y"
+          ]
+        }
+      ]
+    },
+    "warnings": []
+  }
+}

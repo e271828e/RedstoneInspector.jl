@@ -1,0 +1,545 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "build",
+  "name": "kinds",
+  "build": {
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Redstone.Blocks.Group",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{i::Redstone.Blocks.Constant{Int8}, r::Redstone.Blocks.Constant{Rational{Int64}}, v::Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}, mat::Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}, nt::Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}, fn::Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}, g::Main.Synthetic.GearMode, s::Main.Synthetic.PhaseSelector, p::Main.Synthetic.PhaseReader}, Tuple{Pair{String, String}}, Tuple{}, Tuple{}, @NamedTuple{}}",
+          "inputs": [],
+          "outputs": [],
+          "wires": [
+            {
+              "from": {
+                "path": "s",
+                "port": "phase"
+              },
+              "to": {
+                "path": "p",
+                "port": "phase"
+              }
+            }
+          ],
+          "parameters": [
+            {
+              "name": "local_wires",
+              "value": "(\"s/phase\"=>\"p/phase\",)"
+            },
+            {
+              "name": "input_wires",
+              "value": "()"
+            },
+            {
+              "name": "output_wires",
+              "value": "()"
+            },
+            {
+              "name": "sample_times",
+              "value": "NamedTuple()"
+            }
+          ]
+        },
+        {
+          "path": "i",
+          "field": "children",
+          "key": "i",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{Int8}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Int8",
+              "kind": {
+                "kind": "integer"
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "0"
+            }
+          ]
+        },
+        {
+          "path": "r",
+          "field": "children",
+          "key": "r",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{Rational{Int64}}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Rational{Int64}",
+              "kind": {
+                "kind": "number"
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "1//2"
+            }
+          ]
+        },
+        {
+          "path": "v",
+          "field": "children",
+          "key": "v",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "StaticArraysCore.SVector{2, Float64}",
+              "kind": {
+                "kind": "vector",
+                "shape": [
+                  2
+                ],
+                "element": {
+                  "kind": "float"
+                }
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "[1.0, 2.0]"
+            }
+          ]
+        },
+        {
+          "path": "mat",
+          "field": "children",
+          "key": "mat",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "StaticArraysCore.SMatrix{2, 2, Float64, 4}",
+              "kind": {
+                "kind": "vector",
+                "shape": [
+                  2,
+                  2
+                ],
+                "element": {
+                  "kind": "float"
+                }
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "[1.0 3.0; 2.0 4.0]"
+            }
+          ]
+        },
+        {
+          "path": "nt",
+          "field": "children",
+          "key": "nt",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "@NamedTuple{a::Float64, b::Float64}",
+              "kind": {
+                "kind": "struct",
+                "fields": [
+                  "a",
+                  "b"
+                ]
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "(a = 1.0, b = 2.0)"
+            }
+          ]
+        },
+        {
+          "path": "fn",
+          "field": "children",
+          "key": "fn",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Redstone.Blocks.Constant",
+          "signature": "Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}",
+              "kind": {
+                "kind": "opaque"
+              },
+              "pinned": true
+            }
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "value": "#scaled##0"
+            }
+          ]
+        },
+        {
+          "path": "g",
+          "field": "children",
+          "key": "g",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.GearMode",
+          "signature": "Main.Synthetic.GearMode",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "gear",
+              "type": "Main.Synthetic.Gear",
+              "kind": {
+                "kind": "enum",
+                "values": [
+                  "up",
+                  "down"
+                ]
+              },
+              "pinned": false
+            },
+            {
+              "name": "y",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "s",
+          "field": "children",
+          "key": "s",
+          "class": "leaf",
+          "tier": "discrete",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.PhaseSelector",
+          "signature": "Main.Synthetic.PhaseSelector",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "phase",
+              "type": "Symbol",
+              "kind": {
+                "kind": "symbol"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "p",
+          "field": "children",
+          "key": "p",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.PhaseReader",
+          "signature": "Main.Synthetic.PhaseReader",
+          "inputs": [
+            {
+              "name": "phase",
+              "type": "Symbol",
+              "kind": {
+                "kind": "symbol"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "armed",
+              "type": "Bool",
+              "kind": {
+                "kind": "boolean"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": []
+        }
+      ],
+      "root_inputs": [],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Redstone.Blocks.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "locations": [
+            {
+              "function": "sample_times",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2123
+            },
+            {
+              "function": "local_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2120
+            },
+            {
+              "function": "input_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2121
+            },
+            {
+              "function": "output_wires",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2122
+            },
+            {
+              "function": "transparent_container",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 2124
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Blocks.Constant",
+          "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, bare, publishes `value` from [stage 1](@ref g-stage-function).\nThe [block](@ref g-block) is stateless, so discrete consumers read it as well.\n\nThe output is [pinned](@ref g-walked) at `V`, the type of `value`. A constant is\nnever seeded, so it carries zero partials under every `Dual`\n[activation](@ref g-activation). A consumer input declared plain `Float64`,\nwhich admits a value with or without partials, accepts it as a value that never\ncarries partials. The value is instance data, not an overridable default. A\nsource set from outside is a [root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 193
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/sSbGy/src/blocks.jl",
+              "line": 192
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.GearMode",
+          "docstring": "An enum mode returned from stage 1, beside a `Float64` read off it.",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 159
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 158
+            },
+            {
+              "function": "m_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 157
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.PhaseSelector",
+          "docstring": "A discrete producer of a `Symbol` port.",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 166
+            },
+            {
+              "function": "s_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 165
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.PhaseReader",
+          "docstring": "A consumer of a `Symbol` port, producing a `Bool` one.",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 174
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 175
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 173
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "order": [
+        "i",
+        "r",
+        "v",
+        "mat",
+        "nt",
+        "fn",
+        "g",
+        "s",
+        "p"
+      ],
+      "components": [
+        {
+          "path": "i",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "r",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "v",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "mat",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "nt",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "fn",
+          "stage1": [
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "g",
+          "stage1": [
+            "gear",
+            "y"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "s",
+          "stage1": [
+            "phase"
+          ],
+          "stage2": []
+        },
+        {
+          "path": "p",
+          "stage1": [],
+          "stage2": [
+            "armed"
+          ]
+        }
+      ]
+    },
+    "warnings": []
+  }
+}

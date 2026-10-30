@@ -1,0 +1,36 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "failure",
+  "name": "failure_structure",
+  "failure": {
+    "policy": "collected",
+    "diagnostics": [
+      {
+        "kind": "UnknownPort",
+        "severity": "error",
+        "path": "g",
+        "message": "local_wires at the root component, entry `\"g/ot\" => \"s/a\"`: `g/ot` names no `ot` on `g` — its faces are e, out"
+      },
+      {
+        "kind": "UnconnectedInput",
+        "severity": "error",
+        "path": "s",
+        "message": "`s/a` declared Float64 is fed by nothing — every input is fed exactly once, by a local wire or by an `input_wires` chain ending at a root input face (§6.1)",
+        "marks": {
+          "ports": [
+            {
+              "path": "s",
+              "port": "a"
+            }
+          ],
+          "wires": []
+        }
+      }
+    ],
+    "warnings": []
+  }
+}

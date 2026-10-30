@@ -1,0 +1,458 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "build",
+  "name": "containers",
+  "build": {
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Main.Synthetic.Containers",
+          "signature": "Main.Synthetic.Containers",
+          "inputs": [
+            {
+              "name": "u"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "gains/a",
+                "port": "out"
+              },
+              "to": {
+                "path": "gains/b",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "gains/b",
+                "port": "out"
+              },
+              "to": {
+                "path": "pair/1",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "pair/1",
+                "port": "out"
+              },
+              "to": {
+                "path": "s1",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "s1",
+                "port": "out"
+              },
+              "to": {
+                "path": "s2",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "s2",
+                "port": "out"
+              },
+              "to": {
+                "path": "scale",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "u"
+              },
+              "to": {
+                "path": "gains/a",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "scale",
+                "port": "out"
+              },
+              "to": {
+                "path": "",
+                "port": "y"
+              }
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "gains/a",
+          "field": "gains",
+          "key": "a",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "2.0"
+            }
+          ]
+        },
+        {
+          "path": "gains/b",
+          "field": "gains",
+          "key": "b",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "3.0"
+            }
+          ]
+        },
+        {
+          "path": "pair/1",
+          "field": "pair",
+          "key": "1",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "4.0"
+            }
+          ]
+        },
+        {
+          "path": "s1",
+          "field": "stages",
+          "key": "s1",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "0.5"
+            }
+          ]
+        },
+        {
+          "path": "s2",
+          "field": "stages",
+          "key": "s2",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "0.25"
+            }
+          ]
+        },
+        {
+          "path": "scale",
+          "field": "scale",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "10.0"
+            }
+          ]
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "u",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Main.Synthetic.Containers",
+          "docstring": "A chain of gains through a keyed container `gains`, a `Tuple` container `pair`,\nthe name-transparent container `stages` and the component field `scale`.\n",
+          "locations": [
+            {
+              "function": "local_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 124
+            },
+            {
+              "function": "input_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 126
+            },
+            {
+              "function": "output_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 127
+            },
+            {
+              "function": "transparent_container",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 123
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.Gain",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 108
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 109
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 107
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "order": [
+        "gains/a",
+        "gains/b",
+        "pair/1",
+        "s1",
+        "s2",
+        "scale"
+      ],
+      "components": [
+        {
+          "path": "gains/a",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "gains/b",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "pair/1",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "s1",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "s2",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "scale",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        }
+      ]
+    },
+    "warnings": []
+  }
+}

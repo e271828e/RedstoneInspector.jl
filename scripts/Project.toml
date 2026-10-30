@@ -1,0 +1,11 @@
+[deps]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
+RedstoneExamples = "28cf5f55-110a-4578-bc3c-cf560fa74dd0"
+RedstoneInspector = "45843df5-9334-4d9d-947e-db062adebde9"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+
+[sources]
+RedstoneInspector = {path = ".."}
+RedstoneExamples = {url = "https://github.com/e271828e/Redstone.jl", subdir = "examples", rev = "dc5e833e2ea00b6a363ea06d922a9c47e80fa67b"}

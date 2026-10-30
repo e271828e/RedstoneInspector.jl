@@ -1,0 +1,133 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "build",
+  "name": "primitive",
+  "build": {
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Plant",
+          "signature": "Main.Synthetic.Plant",
+          "inputs": [
+            {
+              "name": "u",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "d",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "power",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "ω",
+              "value": "2.0"
+            },
+            {
+              "name": "ζ",
+              "value": "0.3"
+            }
+          ]
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "u",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        },
+        {
+          "name": "d",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Main.Synthetic.Plant",
+          "docstring": "A damped oscillator driven by `u` and `d`, with a state output and a direct one.",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 141
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 142
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 140
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "order": [
+        ""
+      ],
+      "components": [
+        {
+          "path": "",
+          "stage1": [
+            "y"
+          ],
+          "stage2": [
+            "power"
+          ]
+        }
+      ]
+    },
+    "warnings": []
+  }
+}
