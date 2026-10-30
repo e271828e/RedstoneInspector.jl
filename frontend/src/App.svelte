@@ -5,13 +5,15 @@
   import Canvas, { type Target } from "./canvas/Canvas.svelte";
   import { palette } from "./canvas/palette";
   import Breadcrumb from "./frame/Breadcrumb.svelte";
+  import Detail from "./frame/Detail.svelte";
+  import Drawer from "./frame/Drawer.svelte";
   import Frame from "./frame/Frame.svelte";
   import Landing from "./frame/Landing.svelte";
   import StatusBar from "./frame/StatusBar.svelte";
   import Tree from "./frame/Tree.svelte";
   import { fromFile } from "./lib/loader";
   import { loadModel } from "./lib/model";
-  import { climb, load, open, select, session, toggleExpanded } from "./state/session.svelte";
+  import { climb, load, open, select, session, toggleDrawer, toggleExpanded } from "./state/session.svelte";
 
   let refusal = $state<string | undefined>();
   let dragging = $state(false);
@@ -95,7 +97,10 @@
         {/if}
       {/snippet}
       {#snippet detail()}
-        <aside class="detail" data-kind="placeholder"><p>The selection's detail lands with the next commit.</p></aside>
+        <Detail {model} level={session.level} selection={session.selection} onselect={select} onopen={open} />
+      {/snippet}
+      {#snippet drawer()}
+        <Drawer {model} open={session.drawer.open} tab={session.drawer.tab} ontab={toggleDrawer} />
       {/snippet}
       {#snippet status()}
         <StatusBar {model} />
