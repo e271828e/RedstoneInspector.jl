@@ -1,0 +1,33 @@
+{
+  "name": "redstone-inspector",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "types": "json2ts -i schema/descriptor.json -o src/lib/descriptor.d.ts --cwd . --additionalProperties false",
+    "predev": "npm run types",
+    "dev": "vite",
+    "prebuild": "npm run types",
+    "build": "vite build",
+    "preview": "vite preview",
+    "precheck": "npm run types",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "pretest": "npm run types",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "elkjs": "0.12.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@tsconfig/svelte": "5.0.8",
+    "@types/node": "26.6.6",
+    "ajv": "8.20.0",
+    "json-schema-to-typescript": "16.0.0",
+    "svelte": "5.57.2",
+    "svelte-check": "4.7.7",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}
