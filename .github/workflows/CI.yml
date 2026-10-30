@@ -1,0 +1,66 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  # One run per branch at a time: a pull request cancels its superseded runs,
+  # while a master run always finishes and only queued ones are skipped.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+jobs:
+  julia:
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:  # lets julia-actions/cache delete the old caches it created
+      actions: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        julia-version: ['1.13']
+    defaults:
+      run:
+        shell: bash  # the gate line is bash syntax; Windows defaults to PowerShell
+    steps:
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
+        with:
+          version: ${{ matrix.julia-version }}
+      - uses: julia-actions/cache@v3
+      # From the root: with no manifest, a member project cannot see the root's [sources].
+      - name: Instantiate the workspace
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      - name: Run the gate
+        run: >-
+          JULIA_LOAD_PATH="@" julia -t auto --startup-file=no --check-bounds=yes
+          --warn-overwrite=yes --depwarn=yes --project=test test/runtests.jl
+  fixtures:
+    name: Fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:  # lets julia-actions/cache delete the old caches it created
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
+        with:
+          version: '1.13'
+      - uses: julia-actions/cache@v3
+      # From the root: with no manifest, a member project cannot see the root's [sources].
+      - name: Instantiate the workspace
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      - name: Regenerate the fixtures and the schema copy
+        run: julia --project=scripts scripts/fixtures.jl
+      - name: Check that nothing changed
+        run: |
+          changes=$(git status --porcelain -- frontend/fixtures frontend/schema)
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            git diff -- frontend/fixtures frontend/schema
+            exit 1
+          fi
