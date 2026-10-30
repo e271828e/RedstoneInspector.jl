@@ -1,10 +1,17 @@
+<script lang="ts" module>
+  /** What a click selects: a block or pin by block id, a wire by wire id, a port square by port id. */
+  export type Target = { kind: "block" | "wire" | "port"; id: string };
+</script>
+
 <script lang="ts">
   // The level's canvas: ELK's layout drawn as SVG (visual_grammar.md answers 1
-  // to 4), the view as the SVG's viewBox (workspace.md answer 3).
-  import type { BlockSize, ChildBlock, Level } from "../lib/level";
+  // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
+  // answers 3 and 4), halos and casings in the one highlight hue (answer 9).
+  import { untrack } from "svelte";
+  import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, portId } from "../lib/level";
   import type { Model } from "../lib/model";
-  import { fitView, viewRect, type View } from "../lib/view";
+  import { fitView, pan, viewRect, zoomAt, type Point, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry } from "./layout";
   import { palette } from "./palette";
   import {
@@ -12,16 +19,29 @@
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path }: { model: Model; path: string } = $props();
+  let { model, path, onopen, onselect }: {
+    model: Model;
+    path: string;
+    onopen?: (path: string) => void;
+    onselect?: (target: Target | undefined) => void;
+  } = $props();
 
   const FIT_PADDING = 24;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
+  /** The wheel's zoom per pixel of scroll. */
+  const WHEEL_RATE = 0.0015;
+  /** A pointer travel under this many pixels is a click, not a drag. */
+  const CLICK_SLOP = 3;
 
+  let svg = $state<SVGSVGElement>();
   let width = $state(0);
   let height = $state(0);
-  let shown = $state<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
+  let shown = $state.raw<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
+  let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
+  let selected = $state<Target | undefined>();
+  let hovered = $state<Target | undefined>();
 
   const tree = $derived(model.tree!);
   const stage1 = $derived(new Map((model.outputs?.components ?? []).map((c) => [c.path, new Set(c.stage1)])));
@@ -30,10 +50,14 @@
     const level = levelOf(tree, model.resolution!, path);
     const sizes = sizeLevel(level, tree);
     let stale = false;
+    ready = false;
+    untrack(() => select(undefined));
+    hovered = undefined;
     layoutLevel(level, sizes).then((geometry) => {
       if (stale) return;
       shown = { level, sizes, geometry };
       fit();
+      ready = true;
     });
     return () => { stale = true; };
   });
@@ -49,23 +73,114 @@
     return `${r.x} ${r.y} ${r.width} ${r.height}`;
   });
 
+  // Selection and hover.
+  function select(t: Target | undefined) {
+    selected = t;
+    onselect?.(t);
+  }
+  const same = (a: Target | undefined, kind: Target["kind"], id: string) => a?.kind === kind && a.id === id;
+  const touches = (w: LevelWire, t: Target | undefined) => t?.kind === "block" && (w.from.block === t.id || w.to.block === t.id);
+  const endPort = (e: LevelEnd, side: "in" | "out") => portId(e.block, side, e.port);
+  /** The two port squares of the selected or hovered wire. */
+  const markedPorts = $derived.by(() => {
+    const marked = new Map<string, "selected" | "hover">();
+    for (const [t, strength] of [[hovered, "hover"], [selected, "selected"]] as const) {
+      const w = t?.kind === "wire" ? shown?.level.wires.find((x) => x.id === t.id) : undefined;
+      if (w) for (const p of [endPort(w.from, "out"), endPort(w.to, "in")]) marked.set(p, strength);
+    }
+    return marked;
+  });
+
+  function onkeydown(e: KeyboardEvent) {
+    if (e.key === "Escape") select(undefined);
+  }
+
+  // Pan, zoom and the background click.
+  let drag: { start: Point; view: View; moved: boolean; id: number } | undefined;
+  const local = (e: MouseEvent): Point => {
+    const r = svg!.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  function pointerdown(e: PointerEvent) {
+    if (e.target !== svg || e.button !== 0) return;
+    drag = { start: local(e), view, moved: false, id: e.pointerId };
+    svg.setPointerCapture(e.pointerId);
+  }
+  function pointermove(e: PointerEvent) {
+    if (!drag || e.pointerId !== drag.id) return;
+    const p = local(e);
+    const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
+    if (!drag.moved && Math.hypot(dx, dy) < CLICK_SLOP) return;
+    drag.moved = true;
+    view = pan(drag.view, dx, dy);
+  }
+  function pointerup(e: PointerEvent) {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.moved) select(undefined);
+    drag = undefined;
+  }
+  $effect(() => {
+    const el = svg;
+    if (!el) return;
+    // Added by hand: the wheel must not scroll the page, so the listener cannot be passive.
+    const wheel = (e: WheelEvent) => {
+      e.preventDefault();
+      view = zoomAt(view, local(e), Math.exp(-e.deltaY * WHEEL_RATE));
+    };
+    el.addEventListener("wheel", wheel, { passive: false });
+    return () => el.removeEventListener("wheel", wheel);
+  });
+
+  // Opening.
+  function dblclick(b: Block) {
+    if (b.role === "assembly") onopen?.(b.path);
+  }
+
+  // Drawing.
   const isStage1 = (b: ChildBlock, name: string) => b.role === "leaf" && !!stage1.get(b.path)?.has(name);
   const tierColors = (b: ChildBlock) =>
     b.role === "assembly" ? palette.assembly : b.tier === "discrete" ? palette.discrete : palette.continuous;
   /** A root tag: rounded at its outer end past the empty slot, pointed at its inner end. */
-  function tagD(w: number): string {
-    const r = PIN_HEIGHT / 2;
-    return `M${SLOT + r},0 L${w - POINT},0 L${w},${r} L${w - POINT},${PIN_HEIGHT} L${SLOT + r},${PIN_HEIGHT} A${r},${r} 0 0 1 ${SLOT + r},0 Z`;
+  function tagD(w: number, grow = 0): string {
+    const r = PIN_HEIGHT / 2 + grow, x0 = SLOT + PIN_HEIGHT / 2, y0 = -grow, y1 = PIN_HEIGHT + grow;
+    return `M${x0},${y0} L${w - POINT},${y0} L${w + grow},${PIN_HEIGHT / 2} L${w - POINT},${y1} L${x0},${y1} A${r},${r} 0 0 1 ${x0},${y0} Z`;
   }
   /** A pinned face's mark, a small diamond centered at (x, y). */
   const markD = (x: number, y: number) => `M${x},${y - 3} L${x + 3},${y} L${x},${y + 3} L${x - 3},${y} Z`;
+  const qualified = (p: string) => {
+    const n = tree.byPath.get(p)!;
+    return n.alias ?? n.type;
+  };
+  /** A wire endpoint as text: a pin by its face name, a block by its path and port. */
+  function endText(e: LevelEnd): string {
+    const b = shown?.level.blocks.find((x) => x.id === e.block);
+    if (b?.role === "in") return `${e.port} (level input)`;
+    if (b?.role === "out") return `${e.port} (level output)`;
+    return `${e.block || "/"} ${e.port}`;
+  }
+  const blockClass = (b: Block) => ({
+    selected: same(selected, "block", b.id),
+    hover: same(hovered, "block", b.id) && !same(selected, "block", b.id),
+  });
+  const portClass = (id: string) => ({
+    selected: same(selected, "port", id),
+    hover: same(hovered, "port", id) && !same(selected, "port", id),
+    marked: markedPorts.has(id),
+    "marked-hover": markedPorts.get(id) === "hover",
+  });
 </script>
+
+<svelte:window {onkeydown} />
 
 <div
   class="frame" bind:clientWidth={width} bind:clientHeight={height}
   style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight}"
 >
-  <svg class="canvas" data-level={shown?.level.path} {viewBox} width={width} height={height}>
+  <svg
+    bind:this={svg} class="canvas" data-level={shown?.level.path} data-ready={ready ? "" : undefined}
+    {viewBox} {width} {height} role="application" aria-label="the open level"
+    onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
+  >
     <defs>
       <marker id="arrow" viewBox="0 0 8 8" refX="11" refY="4" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M0,0 L8,4 L0,8 z" fill={palette.wire} />
@@ -73,11 +188,33 @@
     </defs>
     {#if shown}
       {@const g = shown.geometry}
+      <g class="casings">
+        {#each shown.level.wires as w (w.id)}
+          {@const route = g.routes.get(w.id)}
+          {#if route}
+            {#if same(selected, "wire", w.id)}
+              <path class="casing selected" data-wire={w.id} d={pathD(route)} />
+            {:else if touches(w, selected)}
+              <path class="casing incident" data-wire={w.id} d={pathD(route)} />
+            {:else if same(hovered, "wire", w.id)}
+              <path class="casing hover" data-wire={w.id} d={pathD(route)} />
+            {:else if touches(w, hovered)}
+              <path class="casing incident-hover" data-wire={w.id} d={pathD(route)} />
+            {/if}
+          {/if}
+        {/each}
+      </g>
       <g class="wires">
         {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
           {#if route}
-            <path class="wire" data-wire={w.id} d={pathD(route)} marker-end="url(#arrow)" />
+            <path class="wire" class:selected={same(selected, "wire", w.id)} data-wire={w.id} d={pathD(route)} marker-end="url(#arrow)" />
+            <path
+              class="wire-hit" data-hit={w.id} d={pathD(route)} role="none"
+              onclick={() => select({ kind: "wire", id: w.id })}
+              onpointerenter={() => (hovered = { kind: "wire", id: w.id })}
+              onpointerleave={() => (hovered = undefined)}
+            ><title>{endText(w.from)} → {endText(w.to)}</title></path>
           {/if}
         {/each}
       </g>
@@ -88,21 +225,38 @@
           {#if b.role === "in" || b.role === "out"}
             {@const tag = b.role === "in" && b.rootInput}
             {@const p = size.ports[0]}
-            <g class="block pin {b.role}" class:root-input={tag} data-id={b.id} transform="translate({box.x},{box.y})">
+            {@const pid = portId(b.id, p.side, p.name)}
+            <g
+              class={["block pin", b.role, { "root-input": tag }, blockClass(b)]} data-id={b.id}
+              transform="translate({box.x},{box.y})" role="none"
+              onclick={() => select({ kind: "block", id: b.id })}
+              onpointerenter={() => (hovered = { kind: "block", id: b.id })}
+              onpointerleave={() => (hovered = undefined)}
+            >
+              <title>{b.name}</title>
               {#if tag}
+                <path class="halo" d={tagD(box.width, 3)} />
                 <path class="shape" d={tagD(box.width)} fill={palette.rootTag.fill} stroke={palette.rootTag.stroke} />
                 <text x={SLOT + (box.width - SLOT - POINT) / 2} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
               {:else}
+                <rect class="halo" x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx={PIN_HEIGHT / 2 + 3} />
                 <rect class="shape" width={box.width} height={box.height} rx={PIN_HEIGHT / 2}
                       fill={palette.pin.fill} stroke={palette.pin.stroke} />
                 <text x={box.width / 2} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
               {/if}
-              <rect class="port" data-port={portId(b.id, p.side, p.name)}
-                    x={p.x - PORT / 2} y={p.y - PORT / 2} width={PORT} height={PORT} />
+              {@render port(b.id, pid, p.x, p.y, p.name, false)}
             </g>
           {:else}
             {@const c = tierColors(b)}
-            <g class="block {b.role}" data-id={b.id} transform="translate({box.x},{box.y})">
+            <g
+              class={["block", b.role, blockClass(b)]} data-id={b.id} transform="translate({box.x},{box.y})" role="none"
+              onclick={() => select({ kind: "block", id: b.id })}
+              ondblclick={() => dblclick(b)}
+              onpointerenter={() => (hovered = { kind: "block", id: b.id })}
+              onpointerleave={() => (hovered = undefined)}
+            >
+              <title>{b.path || "/"}&#10;{qualified(b.path)}</title>
+              <rect class="halo" x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx="7" />
               <rect class="shape" width={box.width} height={box.height} rx="4" fill={c.fill} stroke={c.stroke} />
               {#if b.role === "assembly"}
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
@@ -113,12 +267,13 @@
                 {@const id = portId(b.id, p.side, p.name)}
                 {@const west = p.side === "in"}
                 {@const nameX = west ? PAD : box.width - PAD}
-                <rect class="port" class:stage1={!west && isStage1(b, p.name)} data-port={id}
-                      x={p.x - PORT / 2} y={p.y - PORT / 2} width={PORT} height={PORT} />
+                {@render port(b.id, id, p.x, p.y, p.name, !west && isStage1(b, p.name))}
                 <text x={nameX} y={p.y + 4} text-anchor={west ? "start" : "end"} style="font:{FACE_FONT}">{p.name}</text>
                 {#if isPinned(tree, b, p.side, p.name)}
                   {@const w = textWidth(p.name, FACE_FONT)}
-                  <path class="pinned" data-port={id} d={markD(west ? nameX + w + MARK / 2 : nameX - w - MARK / 2, p.y)} />
+                  <path class="pinned" data-port={id} d={markD(west ? nameX + w + MARK / 2 : nameX - w - MARK / 2, p.y)}>
+                    <title>{p.name} pinned</title>
+                  </path>
                 {/if}
               {/each}
             </g>
@@ -127,15 +282,47 @@
       </g>
     {/if}
   </svg>
+  <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
 </div>
 
+{#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
+  <rect class="port-halo" class:on={portClass(id).selected || portClass(id).marked} class:half={portClass(id).hover || portClass(id)["marked-hover"]}
+        x={x - PORT} y={y - PORT} width={2 * PORT} height={2 * PORT} rx="2" />
+  <rect
+    class={["port", { stage1: open }, portClass(id)]} data-port={id} role="none"
+    x={x - PORT / 2} y={y - PORT / 2} width={PORT} height={PORT}
+    onclick={(e) => { e.stopPropagation(); select({ kind: "port", id }); }}
+    onpointerenter={() => (hovered = { kind: "port", id })}
+    onpointerleave={() => (hovered = { kind: "block", id: block })}
+  ><title>{name}</title></rect>
+{/snippet}
+
 <style>
-  .frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
-  svg { display: block; }
-  .wire { fill: none; stroke: var(--wire); stroke-width: 1; }
-  .block { cursor: default; }
-  .port { fill: var(--port); stroke: var(--port); stroke-width: 1; }
+  /* A double-click on the canvas must not select the page's text. */
+  .frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
+  svg { display: block; touch-action: none; cursor: grab; }
+  .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
+
+  .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
+  .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }
+  .casing { fill: none; stroke: var(--highlight); stroke-linejoin: round; pointer-events: none; }
+  .casing.selected { stroke-width: 7; opacity: 0.4; }
+  .casing.hover { stroke-width: 7; opacity: 0.2; }
+  .casing.incident { stroke-width: 5; opacity: 0.22; }
+  .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
+
+  .block { cursor: pointer; }
+  .shape { pointer-events: visible; }
+  .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: none; }
+  .block.selected > .halo { opacity: 0.5; }
+  .block.hover > .halo { opacity: 0.25; }
+
+  .port { fill: var(--port); stroke: var(--port); stroke-width: 1; cursor: pointer; }
   .port.stage1 { fill: var(--bg); }
+  .port.selected, .port.marked { stroke: var(--highlight); }
+  .port-halo { fill: var(--highlight); opacity: 0; pointer-events: none; }
+  .port-halo.half { opacity: 0.25; }
+  .port-halo.on { opacity: 0.5; }
   .pinned { fill: var(--port); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }

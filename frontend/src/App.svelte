@@ -2,7 +2,7 @@
   // The shell: a file picked or dropped anywhere on the page; once a model with
   // a structure loads, its label and open level above the canvas. Increment 4
   // replaces the text lines with the frame.
-  import Canvas from "./canvas/Canvas.svelte";
+  import Canvas, { type Target } from "./canvas/Canvas.svelte";
   import { fromFile } from "./lib/loader";
   import { loadModel, type Model } from "./lib/model";
 
@@ -10,6 +10,7 @@
   let model = $state.raw<Model | undefined>();
   let path = $state("");
   let dragging = $state(false);
+  let selected: Target | undefined;
 
   async function open(file: File | undefined) {
     if (!file) return;
@@ -27,6 +28,17 @@
   function pick(e: Event) {
     open((e.currentTarget as HTMLInputElement).files?.[0]);
   }
+  function onkeydown(e: KeyboardEvent) {
+    const tree = model?.tree;
+    if (!tree || e.target instanceof HTMLInputElement) return;
+    if (e.key === "Backspace" && path !== "") {
+      e.preventDefault();
+      path = tree.parent.get(path) ?? "";
+    } else if (e.key === "Enter" && selected?.kind === "block" && tree.byPath.get(selected.id)?.class === "assembly") {
+      e.preventDefault();
+      path = selected.id;
+    }
+  }
   function drop(e: DragEvent) {
     e.preventDefault();
     dragging = false;
@@ -38,6 +50,7 @@
   ondragover={(e) => { e.preventDefault(); dragging = true; }}
   ondragleave={() => (dragging = false)}
   ondrop={drop}
+  {onkeydown}
 />
 
 <main class:dragging>
@@ -53,7 +66,7 @@
   </header>
   {#if model?.tree}
     {#key model}
-      <div class="stage"><Canvas {model} {path} /></div>
+      <div class="stage"><Canvas {model} {path} onopen={(p) => (path = p)} onselect={(t) => (selected = t)} /></div>
     {/key}
   {/if}
 </main>
