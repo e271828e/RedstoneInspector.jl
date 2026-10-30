@@ -117,8 +117,9 @@ Each file sits beside its module, loads fixtures by name through
   its two input pins flagged as root inputs, two output pins and four wires;
   `elkGraph` on `descent`: children, layer constraints, fixed ports
   with sides, edges port to port, the root options with components packed in
-  model order; on `containers`' root the `in` and `out` pins' layer
-  constraints and every port's side.
+  model order and cycles broken greedily with model order as the tie-break;
+  on `containers`' root the `in` and `out` pins' layer constraints and every
+  port's side.
 - `model.test.ts`: the model's fields, and a structureless failure's left
   undefined.
 - `view.test.ts`: `zoomAt` keeps the world point under the pointer to within
@@ -191,8 +192,10 @@ handler, then waits for `svg.canvas[data-ready]` or the outcome text.
 - `open.spec.ts`: on `closed_loop`, `sensing` by double-click (4 blocks), back
   by Backspace (9), `actuators` by click then Enter, a double-click on `plant`
   and Enter on a selected `plant` each leaving the root; at `actuators` the
-  pins and the two chains top to bottom in the fixture's declared order; on
-  `rates`, `fast/outer` two deep and two Backspaces back.
+  pins and the two chains top to bottom in the fixture's declared order; at
+  `lqr_controller` every wire left to right and `tracker` right of its six
+  feeders and left of `u_unpack`; on `rates`, `fast/outer` two deep and two
+  Backspaces back.
 - `select.spec.ts`: on `closed_loop`'s root, `plant` alone `selected` with 11
   `incident` casings and no other casing; the wire into `sensing|in|h`
   `selected`, its casing, its two port squares `marked`; a port square and a
@@ -277,6 +280,11 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
 - **ELK's components.** ELK packs a level's disconnected components in its own
   order unless `considerModelOrder.components` is `MODEL_ORDER`; without it
   `actuators` drew its `δt` chain above its `δe` chain.
+- **ELK's cycle breaking.** `MODEL_ORDER` reverses every edge against model
+  order, cycle or not, so `lqr_controller`'s `tracker`, declared before its
+  feeders, landed in the first layer with every feeder wire looping back.
+  `GREEDY_MODEL_ORDER` reverses a minimal set and uses model order only as the
+  tie-break.
 - **ELK's weight.** The bundle is one 1.49 MB chunk and Vite warns past
   500 kB; ELK is most of it. Not split.
 - **Svelte state.** The laid-out level is `$state.raw`: a deep proxy over 156

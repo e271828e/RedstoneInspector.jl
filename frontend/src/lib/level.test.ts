@@ -157,10 +157,11 @@ describe("elkGraph", () => {
     expect(g.edges!.map((e) => e.id)).toEqual(l.wires.map((w) => w.id));
   });
 
-  it("keeps the spike's root options and packs components in model order", () => {
+  it("keeps the spike's root options, packs components in model order and breaks cycles greedily with model order as the tie-break", () => {
     expect(g.layoutOptions).toMatchObject({
       "elk.algorithm": "layered", "elk.direction": "RIGHT", "elk.edgeRouting": "ORTHOGONAL",
       "elk.layered.considerModelOrder.components": "MODEL_ORDER",
+      "elk.layered.cycleBreaking.strategy": "GREEDY_MODEL_ORDER",
     });
   });
 

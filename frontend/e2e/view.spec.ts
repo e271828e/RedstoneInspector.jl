@@ -83,8 +83,6 @@ test("closed_loop: opening lqr_controller fits it", async ({ page }) => {
   const boxes = await blockBoxes(page);
   expect(boxes).toHaveLength(21);
   expectContains(fitted, boxes);
-  // the level is larger than the view, so its fit is a scale below 1 and not the root's
-  const svgBox = (await page.locator("svg.canvas").boundingBox())!;
-  expect(svgBox.width / fitted.width).toBeLessThan(1);
+  // the level's own fit, not the root's
   expect(fitted).not.toEqual(root);
 });

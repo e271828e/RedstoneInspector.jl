@@ -102,13 +102,14 @@ export interface BlockSize {
   ports: PortPosition[];
 }
 
+// Greedy cycle breaking, with declaration order as the tie-break.
 const ROOT_OPTIONS = {
   "elk.algorithm": "layered",
   "elk.direction": "RIGHT",
   "elk.edgeRouting": "ORTHOGONAL",
   "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
   "elk.layered.considerModelOrder.components": "MODEL_ORDER",
-  "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+  "elk.layered.cycleBreaking.strategy": "GREEDY_MODEL_ORDER",
   "elk.spacing.nodeNode": "24",
   "elk.layered.spacing.nodeNodeBetweenLayers": "40",
   "elk.layered.spacing.edgeNodeBetweenLayers": "14",

@@ -64,6 +64,21 @@ test("closed_loop: actuators draws its pins and its two chains in declared order
   for (const ids of byType.values()) expect(topDown(ids)).toEqual(ids);
 });
 
+test("closed_loop: lqr_controller runs every wire left to right, the tracker after its feeders", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await openPath(page, "lqr_controller");
+  const ends = await page.evaluate(() => [...document.querySelectorAll<SVGPathElement>("svg.canvas path.wire")]
+    .map((p) => ({ id: p.dataset.wire!, x0: p.getPointAtLength(0).x, x1: p.getPointAtLength(p.getTotalLength()).x })));
+  expect(ends.length).toBeGreaterThan(0);
+  expect(ends.filter((e) => !(e.x0 < e.x1)).map((e) => e.id)).toEqual([]);
+  const at = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.block")]
+    .map((g) => [g.dataset.id!, g.transform.baseVal.consolidate()!.matrix.e])));
+  const x = (name: string) => at[`lqr_controller/${name}`];
+  for (const feeder of ["state_pack", "z_pack", "z_ref_pack", "command_pack", "free_pair", "engaged"])
+    expect(x("tracker"), feeder).toBeGreaterThan(x(feeder));
+  expect(x("tracker")).toBeLessThan(x("u_unpack"));
+});
+
 test("rates: two deep and two Backspaces back", async ({ page }) => {
   await drop(page, "rates");
   await page.locator('g.block[data-id="fast"]').dblclick();
