@@ -45,7 +45,8 @@ function write_descriptor(io::IO, root::AbstractComponent; name = nothing)
     write_descriptor(io, root_build; name)
 end
 
-write_descriptor(path::AbstractString, x; name = nothing) =
+write_descriptor(path::AbstractString, x::Union{Build, Deployment, DiagnosticError, AbstractComponent};
+                 name = nothing) =
     open(io -> write_descriptor(io, x; name), path, "w")
 
 end # module RedstoneInspector

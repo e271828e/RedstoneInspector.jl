@@ -11,6 +11,13 @@ let redstone_rev = TOML.parsefile(joinpath(REPO, "Project.toml"))["sources"]["Re
     redstone_rev == examples_rev ||
         error("the pin's revisions differ: Redstone at $redstone_rev in Project.toml, " *
               "RedstoneExamples at $examples_rev in scripts/Project.toml")
+    manifest_deps = TOML.parsefile(joinpath(REPO, "Manifest.toml"))["deps"]
+    for pkg in ("Redstone", "RedstoneExamples")
+        manifest_rev = manifest_deps[pkg][1]["repo-rev"]
+        manifest_rev == redstone_rev ||
+            error("the manifest is stale: $pkg at $manifest_rev in Manifest.toml, pinned at " *
+                  "$redstone_rev; delete Manifest.toml and instantiate from the repo root")
+    end
 end
 
 using Redstone, RedstoneExamples, RedstoneInspector
@@ -65,4 +72,4 @@ for base_name in ("failure_cycle", "failure_structure")
     write_failure_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end
 
-cp(joinpath(pkgdir(Redstone), "src", "descriptor.json"), joinpath(SCHEMA_DIR, "descriptor.json"); force = true)
+write(joinpath(SCHEMA_DIR, "descriptor.json"), read(joinpath(pkgdir(Redstone), "src", "descriptor.json")))

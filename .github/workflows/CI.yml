@@ -31,7 +31,8 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/cache@v3
-      # From the root: with no manifest, a member project cannot see the root's [sources].
+      # With no manifest, Pkg.instantiate() from a member project fails; instantiate
+      # from the root, which resolves the one manifest every member loads.
       - name: Instantiate the workspace
         run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Run the gate
@@ -51,7 +52,8 @@ jobs:
         with:
           version: '1.13'
       - uses: julia-actions/cache@v3
-      # From the root: with no manifest, a member project cannot see the root's [sources].
+      # With no manifest, Pkg.instantiate() from a member project fails; instantiate
+      # from the root, which resolves the one manifest every member loads.
       - name: Instantiate the workspace
         run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Regenerate the fixtures and the schema copy

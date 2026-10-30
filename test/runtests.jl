@@ -91,6 +91,8 @@ const SCHEMA = Schema(JSON.parsefile(joinpath(pkgdir(Redstone), "src", "descript
         @testset "the root form" begin
             write_descriptor(file, loop("y"))
             @test read(file, String) == text(clean_build)
+            write_descriptor(file, loop("y"); name = "loop")
+            @test read(file, String) == text(clean_build; name = "loop")
 
             for (root, has_structure) in ((loop("power"), true), (loop("q"), false))
                 err = caught(root)
@@ -101,6 +103,7 @@ const SCHEMA = Schema(JSON.parsefile(joinpath(pkgdir(Redstone), "src", "descript
                 @test parsed["name"] == "loop"
                 @test written_kinds(parsed) == carried_kinds(err)
                 @test haskey(parsed["failure"], "structure") == has_structure
+                @test read(file, String) == text(err; name = "loop")
             end
         end
     end

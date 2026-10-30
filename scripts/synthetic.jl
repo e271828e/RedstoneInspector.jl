@@ -93,7 +93,7 @@ function large()
     end
     Group(NamedTuple{Tuple(block_names)}(Tuple(blocks));
           local_wires = Tuple(level_wires),
-          input_wires = ntuple(k -> "u$k" => Tuple(root_consumers[k]), 4),
+          input_wires = ntuple(i -> "u$i" => Tuple(root_consumers[i]), 4),
           output_wires = ("$(block_names[end])/out1" => "y1", "$(block_names[end - 1])/out1" => "y2"),
           sample_times = NamedTuple{Tuple(anchored)}(ntuple(_ -> Absolute(Hz(50)), length(anchored))))
 end

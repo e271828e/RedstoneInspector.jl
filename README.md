@@ -37,11 +37,12 @@ repository root:
     julia --project=. -e 'using Pkg; Pkg.instantiate()'
     julia --project=scripts scripts/fixtures.jl
 
-Instantiate from the root: with no manifest, a member project of the workspace
-does not see the root's `[sources]`. The file paths in a fixture's method
-locations are labels, never opened: the script replaces the repository root
-with `<repo>` and the depot with `<depot>`, so every machine writes the same
-bytes. CI regenerates the fixtures and fails on any difference.
+With no manifest, `Pkg.instantiate()` from a member project fails, so
+instantiate from the root, which resolves the one manifest every member loads.
+The file paths in a fixture's method locations are labels, never opened: the
+script replaces the repository root with `<repo>` and the depot with `<depot>`,
+so every machine writes the same bytes. CI regenerates the fixtures and fails
+on any difference.
 
 ## The pin
 
@@ -51,9 +52,16 @@ RedstoneExamples (`subdir = "examples"`) name the same commit of the core repo,
 and the fixture script refuses to run when they differ. The workspace
 `Manifest.toml` is never committed.
 
-A bump is one commit: both revisions set to the new commit, the workspace
-instantiated again, the fixtures and the schema copy regenerated, and whatever
-the package needs to follow the core.
+A bump is one commit, with whatever the package needs to follow the core:
+
+1. Set both revisions to the new commit.
+2. Delete `Manifest.toml`.
+3. Instantiate from the root.
+4. Regenerate the fixtures and the schema copy.
+5. Commit.
+
+Step 2 matters because with the old manifest kept, instantiation only warns
+and the fixtures regenerate against the old core.
 
 ## Layout
 
