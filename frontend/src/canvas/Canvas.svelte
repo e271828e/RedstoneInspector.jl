@@ -7,25 +7,41 @@
   // The level's canvas: ELK's layout drawn as SVG (visual_grammar.md answers 1
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9).
+  // The view and the layout are the session's: restored on a revisit, reported
+  // on every change. A child block drags, its wires re-routed locally
+  // (initial_design.md answer 12).
+  import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, portId } from "../lib/level";
   import type { Model } from "../lib/model";
-  import { fitView, pan, viewRect, zoomAt, type Point, type View } from "../lib/view";
-  import { layoutLevel, pathD, type Geometry } from "./layout";
+  import { follow as followView, type Box } from "../lib/navigate";
+  import { fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
+  import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
   import { palette } from "./palette";
+  import { rerouteTouching } from "./router";
   import {
     cutName, FACE_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, selected, onopen, onselect }: {
+  let { model, path, selected, view: savedView, layout: savedLayout, focused = false, onopen, onselect, onview, onlayout }: {
     model: Model;
     path: string;
     /** The target drawn as selected; the caller passes it only on the level it was selected on. */
     selected?: Target;
+    /** The level's view the session holds, restored instead of fitting; read when the level is drawn. */
+    view?: View;
+    /** The level's layout the session holds, drawn instead of running ELK unless stale; read when the level is drawn. */
+    layout?: LevelLayout;
+    /** The keyboard's focus is in the canvas region. */
+    focused?: boolean;
     onopen?: (path: string) => void;
     /** A click on a target, `undefined` for a background click; the caller decides. */
     onselect?: (target: Target | undefined) => void;
+    /** Every change of the view. */
+    onview?: (view: View) => void;
+    /** A level laid out, or a drag released: the geometry and the dragged block ids in drag order. */
+    onlayout?: (geometry: Geometry, dragged: ReadonlySet<string>) => void;
   } = $props();
 
   const FIT_PADDING = 24;
@@ -40,6 +56,8 @@
   let width = $state(0);
   let height = $state(0);
   let shown = $state.raw<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
+  /** The dragged block ids in drag order; the last is drawn last. */
+  let dragged = $state.raw<ReadonlySet<string>>(new Set());
   let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
   let hovered = $state<Target | undefined>();
@@ -47,25 +65,87 @@
   const tree = $derived(model.tree!);
   const stage1 = $derived(new Map((model.outputs?.components ?? []).map((c) => [c.path, new Set(c.stage1)])));
 
+  /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
+  function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
+    let g = laid;
+    const kept = new Set<string>();
+    for (const id of old.dragged) {
+      const was = old.geometry.boxes.get(id), now = g.boxes.get(id);
+      if (!was || !now) continue;
+      g = { ...g, boxes: new Map(g.boxes).set(id, { ...now, x: was.x, y: was.y }) };
+      g = { ...g, routes: rerouteTouching(g, level, sizes, id) };
+      kept.add(id);
+    }
+    return { geometry: g, dragged: kept };
+  }
+
+  function draw(level: Level, sizes: Map<string, BlockSize>, geometry: Geometry, d: ReadonlySet<string>, v: View | undefined) {
+    shown = { level, sizes, geometry };
+    dragged = d;
+    if (v) setView(v);
+    else fit();
+    ready = true;
+  }
+
   $effect(() => {
     const level = levelOf(tree, model.resolution!, path);
     const sizes = sizeLevel(level, tree);
+    const [saved, v] = untrack(() => [savedLayout, savedView] as const);
     let stale = false;
-    ready = false;
     hovered = undefined;
-    layoutLevel(level, sizes).then((geometry) => {
+    blockDrag = undefined;
+    if (saved && !saved.stale) {
+      untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
+      return;
+    }
+    ready = false;
+    layoutLevel(level, sizes).then((laid) => {
       if (stale) return;
-      shown = { level, sizes, geometry };
-      fit();
-      ready = true;
+      const r = saved ? replace(laid, level, sizes, saved) : { geometry: laid, dragged: new Set<string>() };
+      draw(level, sizes, r.geometry, r.dragged, v);
+      onlayout?.(r.geometry, r.dragged);
     });
     return () => { stale = true; };
   });
 
-  function fit() {
+  function setView(v: View) {
+    view = v;
+    onview?.(v);
+  }
+
+  /** Fits the level, dragged blocks included. */
+  export function fit() {
     if (!shown) return;
     const g = shown.geometry;
-    view = fitView({ x: 0, y: 0, width: g.width, height: g.height }, { width, height }, FIT_PADDING, FIT_MAX_SCALE);
+    let x0 = 0, y0 = 0, x1 = g.width, y1 = g.height;
+    for (const b of g.boxes.values()) {
+      x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
+      x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
+    }
+    setView(fitView({ x: x0, y: y0, width: x1 - x0, height: y1 - y0 }, { width, height }, FIT_PADDING, FIT_MAX_SCALE));
+  }
+
+  /** Zooms by a factor about the viewport's center. */
+  export function zoomBy(factor: number) {
+    setView(zoomAt(view, { x: width / 2, y: height / 2 }, factor));
+  }
+
+  /** Moves the view by screen pixels: a positive `dx` shows what lies to the right. */
+  export function panBy(dx: number, dy: number) {
+    setView(pan(view, -dx, -dy));
+  }
+
+  /** The drawn level's blocks and pins in world units, in the level's order; none while a level is laid out. */
+  export function boxes(): Box[] {
+    if (!ready || !shown) return [];
+    const g = shown.geometry;
+    return shown.level.blocks.map((b) => ({ id: b.id, ...g.boxes.get(b.id)! }));
+  }
+
+  /** Pans by the least amount that brings a block into view. */
+  export function follow(id: string) {
+    const b = ready ? shown?.geometry.boxes.get(id) : undefined;
+    if (b) setView(followView(view, { width, height }, b, FIT_PADDING));
   }
 
   const viewBox = $derived.by(() => {
@@ -88,8 +168,9 @@
     return marked;
   });
 
-  // Pan, zoom and the background click.
+  // Pan, zoom, the background click and the block drag.
   let drag: { start: Point; view: View; moved: boolean; id: number } | undefined;
+  let blockDrag: { block: string; el: Element; start: Point; box: Rect; moved: boolean; id: number } | undefined;
   const local = (e: MouseEvent): Point => {
     const r = svg!.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -99,15 +180,50 @@
     drag = { start: local(e), view, moved: false, id: e.pointerId };
     svg.setPointerCapture(e.pointerId);
   }
+  /**
+   * A press on a child block, the drag starting past the slop. The pointer is captured on the block's group only
+   * then, once the raise has moved the group last: a capture from the press would retarget a port square's click,
+   * and moving a captured node releases the capture.
+   */
+  function blockdown(e: PointerEvent, b: Block) {
+    if (e.button !== 0 || !shown || (b.role !== "leaf" && b.role !== "assembly")) return;
+    const el = e.currentTarget as Element;
+    blockDrag = { block: b.id, el, start: local(e), box: shown.geometry.boxes.get(b.id)!, moved: false, id: e.pointerId };
+  }
+  function blockmove(e: PointerEvent) {
+    const d = blockDrag!;
+    const p = local(e);
+    const dx = p.x - d.start.x, dy = p.y - d.start.y;
+    if (!d.moved && Math.hypot(dx, dy) < CLICK_SLOP) return;
+    if (!d.moved) {
+      d.moved = true;
+      dragged = new Set([...dragged].filter((id) => id !== d.block).concat(d.block));
+      tick().then(() => blockDrag === d && d.el.isConnected && d.el.setPointerCapture(d.id));
+    }
+    const s = shown!;
+    const box = { ...d.box, x: d.box.x + dx / view.scale, y: d.box.y + dy / view.scale };
+    const g = { ...s.geometry, boxes: new Map(s.geometry.boxes).set(d.block, box) };
+    shown = { ...s, geometry: { ...g, routes: rerouteTouching(g, s.level, s.sizes, d.block) } };
+  }
   function pointermove(e: PointerEvent) {
+    if (blockDrag && e.pointerId === blockDrag.id) return blockmove(e);
     if (!drag || e.pointerId !== drag.id) return;
     const p = local(e);
     const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
     if (!drag.moved && Math.hypot(dx, dy) < CLICK_SLOP) return;
     drag.moved = true;
-    view = pan(drag.view, dx, dy);
+    setView(pan(drag.view, dx, dy));
   }
   function pointerup(e: PointerEvent) {
+    if (blockDrag && e.pointerId === blockDrag.id) {
+      // The raise moved the pressed node, so the browser fires no click after the release: select here.
+      if (blockDrag.moved && shown) {
+        onlayout?.(shown.geometry, dragged);
+        select({ kind: "block", id: blockDrag.block });
+      }
+      blockDrag = undefined;
+      return;
+    }
     if (!drag || e.pointerId !== drag.id) return;
     if (!drag.moved) select(undefined);
     drag = undefined;
@@ -118,10 +234,18 @@
     // Added by hand: the wheel must not scroll the page, so the listener cannot be passive.
     const wheel = (e: WheelEvent) => {
       e.preventDefault();
-      view = zoomAt(view, local(e), Math.exp(-e.deltaY * WHEEL_RATE));
+      setView(zoomAt(view, local(e), Math.exp(-e.deltaY * WHEEL_RATE)));
     };
     el.addEventListener("wheel", wheel, { passive: false });
     return () => el.removeEventListener("wheel", wheel);
+  });
+
+  /** The blocks in drawing order: the most recently dragged last, above its neighbours. */
+  const ordered = $derived.by(() => {
+    if (!shown) return [];
+    const last = [...dragged].at(-1);
+    const top = shown.level.blocks.find((b) => b.id === last);
+    return top ? [...shown.level.blocks.filter((b) => b !== top), top] : shown.level.blocks;
   });
 
   // Opening.
@@ -163,8 +287,9 @@
   });
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
-  class="viewport" bind:clientWidth={width} bind:clientHeight={height}
+  class="viewport" class:focused tabindex="0" role="region" aria-label="the canvas" bind:clientWidth={width} bind:clientHeight={height}
   style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight}"
 >
   <svg
@@ -214,7 +339,7 @@
         {/each}
       </g>
       <g class="blocks">
-        {#each shown.level.blocks as b (b.id)}
+        {#each ordered as b (b.id)}
           {@const box = g.boxes.get(b.id)!}
           {@const size = shown.sizes.get(b.id)!}
           {#if b.role === "in" || b.role === "out"}
@@ -245,6 +370,7 @@
             {@const c = tierColors(b)}
             <g
               class={["block", b.role, blockClass(b)]} data-id={b.id} transform="translate({box.x},{box.y})" role="none"
+              onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
               ondblclick={() => dblclick(b)}
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
@@ -307,6 +433,7 @@
   .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
 
   .block { cursor: pointer; }
+  .block.leaf, .block.assembly { cursor: move; }
   .shape { pointer-events: visible; }
   .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: none; }
   .block.selected > .halo { opacity: 0.5; }

@@ -7,10 +7,12 @@
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
 
-  let { model, level, selection, onselect, onopen }: {
+  let { model, level, selection, focused = false, onselect, onopen }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
+    /** The keyboard's focus is in the detail region. */
+    focused?: boolean;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
   } = $props();
@@ -90,12 +92,14 @@
 {/snippet}
 
 {#if !facts}
-  <aside class="detail" data-kind="level" data-id="">
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
+  <aside class="detail" class:focused data-kind="level" data-id="" tabindex="0">
     <h2><span class="segment">{model.label}</span> <span class="name">{model.kind}</span></h2>
     <p class="facts">{model.kind} descriptor, no structure</p>
   </aside>
 {:else}
-  <aside class="detail" data-kind={facts.kind} data-id={dataId}>
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
+  <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
     {#if facts.kind === "level"}
       {@render header(facts.label ?? model.tree!.segment.get(facts.path)!, facts.displayName, facts.path)}
       <p class="facts">open level · {count(facts.children, "child", "children")} · {count(facts.wires, "wire", "wires")}</p>

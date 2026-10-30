@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AssemblyNode, LeafNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
-import { elkGraph, inPinId, levelOf, outPinId, portId, type BlockSize, type Level } from "./level";
+import { elkGraph, inPinId, levelOf, outPinId, parsePortId, portId, type BlockSize, type Level } from "./level";
 
 const level = (name: string, path = ""): Level => {
   const m = fixtureModel(name);
@@ -183,5 +183,12 @@ describe("elkGraph", () => {
       expect(n.ports!.map((p) => p.layoutOptions!["elk.port.side"]))
         .toEqual(pinSizes.get(n.id)!.ports.map((p) => (p.side === "in" ? "WEST" : "EAST")));
     }
+  });
+});
+
+describe("parsePortId", () => {
+  it("reads a port id's block, side and name back from its end", () => {
+    expect(parsePortId(portId("sensing/altimeter", "in", "in1"))).toEqual({ block: "sensing/altimeter", side: "in", name: "in1" });
+    expect(parsePortId(portId(inPinId("h_ref"), "out", "h_ref"))).toEqual({ block: "⟨in⟩h_ref", side: "out", name: "h_ref" });
   });
 });

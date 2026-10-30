@@ -50,6 +50,11 @@ export interface Level {
 export const inPinId = (name: string) => `⟨in⟩${name}`;
 export const outPinId = (name: string) => `⟨out⟩${name}`;
 export const portId = (block: string, side: "in" | "out", name: string) => `${block}|${side}|${name}`;
+/** A port id's parts, read from its end, since a face name holds no `|`. */
+export function parsePortId(id: string): { block: string; side: "in" | "out"; name: string } {
+  const j = id.lastIndexOf("|"), i = id.lastIndexOf("|", j - 1);
+  return { block: id.slice(0, i), side: id.slice(i + 1, j) as "in" | "out", name: id.slice(j + 1) };
+}
 
 /**
  * Input pins, the children in walk order, output pins; the wires keyed by their consumer.

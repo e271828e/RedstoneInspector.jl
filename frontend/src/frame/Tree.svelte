@@ -7,11 +7,13 @@
   import type { Model } from "../lib/model";
   import { outlineRows, type Row } from "../lib/outline";
 
-  let { model, level, selection, expanded, onselect, onopen, ontoggle }: {
+  let { model, level, selection, expanded, focused = false, onselect, onopen, ontoggle }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
     expanded: ReadonlySet<string>;
+    /** The keyboard's focus is in the tree region. */
+    focused?: boolean;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
     ontoggle: (path: string) => void;
@@ -47,7 +49,8 @@
   };
 </script>
 
-<nav class="tree" bind:this={nav} aria-label="the model tree">
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
+<nav class="tree" class:focused bind:this={nav} aria-label="the model tree" tabindex="0">
   {#each rows as r (r.path)}
     <!-- svelte-ignore a11y_click_events_have_key_events (the keyboard table is increment 5's) -->
     <div

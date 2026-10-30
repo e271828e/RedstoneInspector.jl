@@ -1,12 +1,7 @@
 // Pan, zoom and fit (workspace.md answer 3) on closed_loop's root, read through
 // the SVG's own coordinate transform.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, openPath, shot } from "./fixtures";
-
-const viewBox = (page: Page) => page.evaluate(() => {
-  const v = document.querySelector<SVGSVGElement>("svg.canvas")!.viewBox.baseVal;
-  return { x: v.x, y: v.y, width: v.width, height: v.height };
-});
+import { blockBoxes, drop, expect, openPath, shot, viewBox } from "./fixtures";
 /** A client point's world coordinates under the SVG's current transform. */
 const toWorld = (page: Page, x: number, y: number) => page.evaluate(([x, y]) => {
   const svg = document.querySelector<SVGSVGElement>("svg.canvas")!;
@@ -20,11 +15,6 @@ const toClient = (page: Page, x: number, y: number) => page.evaluate(([x, y]) =>
   return { x: p.x, y: p.y };
 }, [x, y]);
 
-/** Every block's box in world units. */
-const blockBoxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block")].map((g) => {
-  const b = g.getBBox(), m = g.transform.baseVal.consolidate()!.matrix;
-  return { id: g.dataset.id, x: b.x + m.e, y: b.y + m.f, width: b.width, height: b.height };
-}));
 type Box = { x: number; y: number; width: number; height: number };
 const expectContains = (outer: Box, boxes: (Box & { id?: string })[]) => {
   for (const b of boxes) {

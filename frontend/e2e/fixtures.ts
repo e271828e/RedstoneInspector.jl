@@ -16,19 +16,30 @@ export const fixtureText = (name: string): string => readFileSync(new URL(`${nam
 export const readyLevel = (level: string) => `svg.canvas[data-level="${level}"][data-ready]`;
 
 /**
- * Opens the page and drops the text as a file through a `drop` event dispatched on the window, as the
- * shell's own handler receives one; waits for the root level drawn or for the outcome text.
+ * Opens the page at `at` and drops the text as a file through a `drop` event dispatched on the window, as the
+ * shell's own handler receives one; waits for the level drawn or for the outcome text.
  */
-export async function drop(page: Page, name: string, text = fixtureText(name)): Promise<void> {
-  await page.goto("/");
+export async function drop(page: Page, name: string, text = fixtureText(name), at = "/"): Promise<void> {
+  await page.goto(at);
+  await dropOver(page, name, text);
+}
+
+/**
+ * Drops the text on the page as it stands, no navigation, so the session lives on; waits for a canvas or an
+ * outcome other than the one shown before the drop.
+ */
+export async function dropOver(page: Page, name: string, text = fixtureText(name)): Promise<void> {
   await page.evaluate(({ text, file }) => {
+    for (const el of document.querySelectorAll("svg.canvas, pre.outcome")) (el as any).__before = true;
     const dt = new DataTransfer();
     dt.items.add(new File([text], file, { type: "application/json" }));
     window.dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true }));
   }, { text, file: `${name}.json` });
-  await page.waitForFunction(() =>
-    document.querySelector("svg.canvas[data-ready]") !== null
-    || (document.querySelector("pre.outcome")?.textContent ?? "No file open.") !== "No file open.");
+  await page.waitForFunction(() => {
+    const svg = document.querySelector("svg.canvas[data-ready]") as any;
+    const outcome = document.querySelector("pre.outcome") as any;
+    return (svg && !svg.__before) || (outcome && !outcome.__before && outcome.textContent !== "No file open.");
+  });
 }
 
 /** Opens the level at `path` by double-clicking down from the root along it. */
@@ -60,6 +71,27 @@ export const counts = (page: Page) => page.evaluate(() => {
 export async function shot(page: Page, fixture: string, level: string, check?: string): Promise<void> {
   const name = `${check ? `${check}.` : ""}${fixture}__${level === "" ? "root" : level.replaceAll("/", "__")}.png`;
   await page.screenshot({ path: fileURLToPath(new URL(name, screenshots)) });
+}
+
+/** The SVG's viewBox, the world rectangle it shows. */
+export const viewBox = (page: Page) => page.evaluate(() => {
+  const v = document.querySelector<SVGSVGElement>("svg.canvas")!.viewBox.baseVal;
+  return { x: v.x, y: v.y, width: v.width, height: v.height };
+});
+
+/** Every block's and pin's box in world units, in drawing order. */
+export const blockBoxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block")].map((g) => {
+  const b = g.getBBox(), m = g.transform.baseVal.consolidate()!.matrix;
+  return { id: g.dataset.id!, x: b.x + m.e, y: b.y + m.f, width: b.width, height: b.height };
+}));
+
+/** The page's URL hash, `""` when it has none. */
+export const hash = (page: Page) => page.evaluate(() => location.hash);
+
+/** A key pressed on the page, then a frame waited for, so the view's reads see the key's effect. */
+export async function press(page: Page, key: string): Promise<void> {
+  await page.keyboard.press(key);
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r(undefined))));
 }
 
 /** Every element under the canvas carrying `selected`. */

@@ -13,6 +13,12 @@ export interface Geometry {
   width: number;
   height: number;
 }
+/** A level's layout as the session keeps it: ELK's output plus drags, the dragged ids in drag order, `stale` after a push until laid out again. */
+export interface LevelLayout {
+  geometry: Geometry;
+  dragged: ReadonlySet<string>;
+  stale: boolean;
+}
 
 const elk = new ELK();
 

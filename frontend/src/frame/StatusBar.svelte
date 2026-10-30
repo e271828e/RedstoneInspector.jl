@@ -1,9 +1,9 @@
 <script lang="ts">
-  // One line (workspace.md answers 1 and 10): the kind word, the model's totals,
-  // the loader's note.
+  // One line (workspace.md answers 1, 3 and 10): the kind word, the model's
+  // totals, the loader's note, the push's fallback note.
   import type { Model } from "../lib/model";
 
-  let { model }: { model: Model } = $props();
+  let { model, fallback }: { model: Model; fallback?: string } = $props();
 
   const totals = $derived.by(() => {
     const nodes = model.structure?.nodes;
@@ -31,6 +31,7 @@
     {/if}
   </span>
   {#if model.note}<span class="note">{model.note}</span>{/if}
+  {#if fallback}<span class="fallback">{fallback}</span>{/if}
 </footer>
 
 <style>
@@ -40,4 +41,5 @@
   }
   .kind { font-weight: 600; }
   .counts, .note { color: var(--text-light); }
+  .fallback { font-weight: 600; }
 </style>

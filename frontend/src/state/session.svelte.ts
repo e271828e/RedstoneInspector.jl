@@ -1,18 +1,30 @@
 // The per-tab state in memory (workspace.md answer 9's second lifetime): the
-// model, the open level, the selection, the tree's expansion and the drawer.
-// Keyed by path and name, never by index; nothing here touches local storage.
+// model, the open level and its hash, each visited level's view and layout, the
+// selection, the tree's expansion, the query, the drawer and the keyboard's
+// region. Keyed by path and name, never by index; a push rekeys it (`rekey`).
+// Nothing here touches local storage; the open level is the URL's hash.
+import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
 import type { Model } from "../lib/model";
 import { ancestors, defaultExpansion, folderOf } from "../lib/outline";
+import { isLevel, rekey } from "../lib/rekey";
+import type { View } from "../lib/view";
 
 export type Tab = "diagnostics" | "root-inputs" | "timing" | "order";
 export const TABS: Tab[] = ["diagnostics", "root-inputs", "timing", "order"];
+/** The four regions Tab moves between, in order. */
+export type Region = "tree" | "canvas" | "detail" | "drawer";
 
 let model = $state.raw<Model | undefined>();
 let level = $state("");
 let selection = $state.raw<Selection | undefined>();
 let expanded = $state.raw<ReadonlySet<string>>(new Set());
 let drawer = $state.raw<{ open: boolean; tab: Tab }>({ open: false, tab: "diagnostics" });
+let views = $state.raw<ReadonlyMap<string, View>>(new Map());
+let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
+let query = $state("");
+let focus = $state<Region | undefined>();
+let note = $state<string | undefined>();
 
 export const session = {
   get model() { return model; },
@@ -22,7 +34,41 @@ export const session = {
   /** The expanded node and folder rows, by path. */
   get expanded() { return expanded; },
   get drawer() { return drawer; },
+  /** Each visited level's zoom and pan, by path. */
+  get views() { return views; },
+  /** Each visited level's geometry, by path. */
+  get layouts() { return layouts; },
+  /** The search text. */
+  get query() { return query; },
+  /** The region holding the keyboard's focus. */
+  get focus() { return focus; },
+  /** The fallback note, while it stands. */
+  get note() { return note; },
 };
+
+/** The hash naming a level: none for the root, `#level=<path>` otherwise. */
+export const hashOf = (path: string): string =>
+  path === "" ? "" : `#level=${encodeURIComponent(path).replaceAll("%2F", "/")}`;
+/** The level a hash names, undefined when it names none. */
+export function levelOfHash(hash: string): string | undefined {
+  const m = /^#level=(.+)$/.exec(hash);
+  if (!m) return undefined;
+  try {
+    return decodeURIComponent(m[1]);
+  } catch {
+    return undefined;
+  }
+}
+
+const browser = typeof window !== "undefined";
+/** The URL with the level's hash, the page's own address for the root. */
+const urlOf = (path: string) => `${location.pathname}${location.search}${hashOf(path)}`;
+function pushHash() {
+  if (browser && location.hash !== hashOf(level)) history.pushState(null, "", urlOf(level));
+}
+function replaceHash() {
+  if (browser && location.hash !== hashOf(level)) history.replaceState(null, "", urlOf(level));
+}
 
 const bodyOf = (m: Model) => {
   const d = m.descriptor;
@@ -41,13 +87,45 @@ function opensDrawer(m: Model): boolean {
   return "diagnostics" in body && body.diagnostics.length > 0;
 }
 
-/** A new model, or none after a refusal: the root open, its row expanded one level, nothing selected, the drawer open on diagnostics only when one exists. */
+/**
+ * A new model. The first, or one after a refusal, resets everything: the root open, its row expanded one level,
+ * nothing selected, the drawer open on diagnostics only when one exists. A replacement rekeys the per-tab state
+ * and notes a fallen level; the drawer stays, opening on diagnostics when the new model carries one. In both, a
+ * hash naming a level of the new model wins.
+ */
 export function load(m: Model | undefined) {
+  const hashed = browser ? levelOfHash(location.hash) : undefined;
+  const replacing = !!model && !!m;
+  if (m && replacing) {
+    const r = rekey({ level, selection, expanded, views, layouts, query }, m);
+    level = r.level;
+    selection = r.selection;
+    expanded = r.expanded;
+    views = r.views;
+    layouts = new Map([...r.layouts].map(([p, l]) => [p, { ...l, stale: true }]));
+    query = r.query;
+    note = r.note;
+    if (opensDrawer(m)) drawer = { open: true, tab: "diagnostics" };
+  } else {
+    level = "";
+    selection = undefined;
+    expanded = m?.tree ? defaultExpansion(m.tree) : new Set();
+    drawer = { open: !!m && opensDrawer(m), tab: "diagnostics" };
+    views = new Map();
+    layouts = new Map();
+    query = "";
+    note = undefined;
+  }
   model = m;
-  level = "";
-  selection = undefined;
-  expanded = m?.tree ? defaultExpansion(m.tree) : new Set();
-  drawer = { open: !!m && opensDrawer(m), tab: "diagnostics" };
+  if (m?.tree && hashed !== undefined && hashed !== level && isLevel(m.tree, hashed)) {
+    level = hashed;
+    note = undefined;
+    const v = new Map(views);
+    v.delete(hashed);
+    views = v;
+  }
+  if (m?.tree) expand([...ancestors(m.tree, level), level]);
+  replaceHash();
 }
 
 function expand(paths: string[]) {
@@ -55,19 +133,32 @@ function expand(paths: string[]) {
   expanded = new Set([...expanded, ...paths]);
 }
 
-/** Opens a level: the selection cleared, its row and its ancestors expanded. */
-export function open(path: string) {
+/** Shows a level without touching the history: the selection cleared, its row and its ancestors expanded, the note gone. */
+function show(path: string): boolean {
   const tree = model?.tree;
-  if (!tree || tree.byPath.get(path)?.class !== "assembly") return;
+  if (!tree || !isLevel(tree, path)) return false;
   level = path;
   selection = undefined;
+  note = undefined;
   expand([...ancestors(tree, path), path]);
+  return true;
+}
+
+/** Opens a level, a history entry pushed with its hash. */
+export function open(path: string) {
+  if (show(path)) pushHash();
 }
 
 /** Opens the open level's parent. */
 export function climb() {
   const p = model?.tree?.parent.get(level);
   if (p !== undefined) open(p);
+}
+
+/** Back or forward: the level the hash names, the root when it names none, nothing pushed. */
+export function openFromHistory(path: string | undefined) {
+  if (!show(path !== undefined && model?.tree && isLevel(model.tree, path) ? path : "")) return;
+  replaceHash();
 }
 
 /** Selects an element on its level, showing that level; a node's or folder's row is revealed. */
@@ -77,7 +168,10 @@ export function select(s: Selection | undefined) {
   if (!tree || !s) return;
   const { kind, id } = s.target;
   if ((kind === "block" && tree.byPath.has(id)) || (kind === "folder" && folderOf(tree, id))) expand(ancestors(tree, id));
-  if (s.level !== level) level = s.level;
+  if (s.level !== level) {
+    level = s.level;
+    replaceHash();
+  }
 }
 
 export function toggleExpanded(path: string) {
@@ -93,4 +187,30 @@ export function openDrawer(tab: Tab) {
 /** A click on a tab: opens the drawer on it, or closes the drawer when it is the open tab. */
 export function toggleDrawer(tab: Tab) {
   drawer = drawer.open && drawer.tab === tab ? { open: false, tab } : { open: true, tab };
+}
+
+export function setView(path: string, view: View) {
+  views = new Map(views).set(path, view);
+}
+
+export function setLayout(path: string, geometry: Geometry, dragged: ReadonlySet<string>) {
+  layouts = new Map(layouts).set(path, { geometry, dragged, stale: false });
+}
+
+export function setQuery(text: string) {
+  query = text;
+}
+
+export function setFocus(region: Region | undefined) {
+  focus = region;
+}
+
+export function clearNote() {
+  note = undefined;
+}
+
+/** Escape's chain: a standing query is cleared, else the selection. The route's step waits for increment 7. */
+export function escape() {
+  if (query !== "") query = "";
+  else select(undefined);
 }

@@ -120,4 +120,7 @@
   .splitter.active[data-pane="drawer"] { cursor: row-resize; }
   .splitter.active:hover { background: var(--border); }
   .splitter:not(.active) { pointer-events: none; }
+  /* The four regions take focus at their roots; the one holding it shows the ring, the halo's hue (answer 11). */
+  .frame :global([tabindex="0"]:focus) { outline: none; }
+  .frame :global(.focused[tabindex="0"]) { outline: 2px solid var(--highlight); outline-offset: -2px; }
 </style>

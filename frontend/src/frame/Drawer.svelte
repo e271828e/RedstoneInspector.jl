@@ -4,7 +4,14 @@
   import type { Model } from "../lib/model";
   import { diagnosticCount, type Tab } from "../state/session.svelte";
 
-  let { model, open, tab, ontab }: { model: Model; open: boolean; tab: Tab; ontab: (tab: Tab) => void } = $props();
+  let { model, open, tab, focused = false, ontab }: {
+    model: Model;
+    open: boolean;
+    tab: Tab;
+    /** The keyboard's focus is in the drawer region. */
+    focused?: boolean;
+    ontab: (tab: Tab) => void;
+  } = $props();
 
   const TABS: { tab: Tab; label: string; body: string }[] = [
     { tab: "diagnostics", label: "Diagnostics", body: "The diagnostics and warnings, one row each, linked to the element they name, land with increment 7." },
@@ -19,7 +26,8 @@
   });
 </script>
 
-<section class="drawer" data-open={open ? "true" : "false"} data-tab={tab}>
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
+<section class="drawer" class:focused data-open={open ? "true" : "false"} data-tab={tab} tabindex="0" aria-label="the drawer">
   <div class="strip" role="tablist">
     {#each TABS as t (t.tab)}
       <button
