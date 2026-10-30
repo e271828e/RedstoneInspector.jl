@@ -7,14 +7,18 @@
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
 
-  let { model, level, selection, focused = false, onselect, onopen }: {
+  let { model, level, selection, focused = false, editor = false, onselect, onopen, onlocation }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
     /** The keyboard's focus is in the detail region. */
     focused?: boolean;
+    /** A location click opens the editor; otherwise it copies the file label. */
+    editor?: boolean;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
+    /** A location clicked: true when the shell sent it to the editor, false to copy it here. */
+    onlocation: (file: string, line: number) => boolean;
   } = $props();
 
   const facts = $derived<Facts | undefined>(model.tree ? detailOf(model, level, selection) : undefined);
@@ -123,7 +127,10 @@
         <ul class="locations">
           {#each facts.locations as l, i (i)}
             <li>
-              <button class="location" title="Copy the file label" onclick={() => copy(fileLabel(l.file, l.line))}>
+              <button
+                class="location" class:editor title={editor ? "Open in the editor" : "Copy the file label"}
+                onclick={() => onlocation(l.file, l.line) || copy(fileLabel(l.file, l.line))}
+              >
                 <code class="function">{l.function}</code> <code class="file">{fileLabel(l.file, l.line)}</code>
               </button>{#if copied === fileLabel(l.file, l.line)} <span class="copied">copied</span>{/if}
             </li>
@@ -191,6 +198,7 @@
   .locations { list-style: none; padding: 0; }
   .locations li { margin: 2px 0; }
   .location { all: unset; display: block; cursor: copy; overflow-wrap: anywhere; }
+  .location.editor { cursor: pointer; }
   .location:hover .file { text-decoration: underline; }
   .locations .file, .copied { color: var(--text-light); }
   table { border-collapse: collapse; width: 100%; }

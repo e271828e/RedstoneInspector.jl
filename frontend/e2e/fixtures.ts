@@ -1,10 +1,10 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
 // the wait for the drawn level or the outcome text, counts, the frame's locators,
-// a wire's clickable point and screenshots.
+// a wire's clickable point, screenshots and the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Page, type WebSocketRoute } from "@playwright/test";
 
 const fixtures = new URL("../fixtures/", import.meta.url);
 const screenshots = new URL("screenshots/", import.meta.url);
@@ -121,6 +121,38 @@ export async function wirePoint(page: Page, id: string): Promise<{ x: number; y:
 export async function clickWire(page: Page, id: string): Promise<void> {
   const at = await wirePoint(page, id);
   await page.mouse.click(at.x, at.y);
+}
+
+/** The mock server behind `live()`: what the page sent and the latest connection's two moves. */
+export interface LiveMock {
+  /** Every text the page sent, over every connection, in order. */
+  sent: string[];
+  /** The connections the page opened so far. */
+  connections(): number;
+  /** A text frame to the page on the latest connection. */
+  send(text: string): void;
+  /** The latest connection closed from the server's side. */
+  close(): Promise<void>;
+}
+
+/**
+ * Opens the page at `path` with its socket to `/ws` answered by a mock: every connection opens, every message
+ * the page sends is recorded, and the handle sends a text or closes the latest connection.
+ */
+export async function live(page: Page, path: string): Promise<LiveMock> {
+  const routes: WebSocketRoute[] = [];
+  const sent: string[] = [];
+  await page.routeWebSocket("**/ws", (ws) => {
+    routes.push(ws);
+    ws.onMessage((m) => sent.push(typeof m === "string" ? m : m.toString()));
+  });
+  await page.goto(path);
+  return {
+    sent,
+    connections: () => routes.length,
+    send: (text) => routes.at(-1)!.send(text),
+    close: () => routes.at(-1)!.close(),
+  };
 }
 
 export { expect };

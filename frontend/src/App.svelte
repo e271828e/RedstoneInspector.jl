@@ -2,7 +2,8 @@
   // The shell: a file picked or dropped anywhere on the page, the landing panel
   // before a model, the frame over the session once one loads; the window's
   // title, the hash and back and forward, and the keyboard table outside text
-  // fields (workspace.md answer 11).
+  // fields (workspace.md answer 11); the live tab's socket, its descriptors fed
+  // to the loader a dropped file goes through (live_session.md answer 5).
   import Canvas, { type Target } from "./canvas/Canvas.svelte";
   import { palette } from "./canvas/palette";
   import Breadcrumb from "./frame/Breadcrumb.svelte";
@@ -14,7 +15,8 @@
   import StatusBar from "./frame/StatusBar.svelte";
   import Tree from "./frame/Tree.svelte";
   import { parsePortId } from "./lib/level";
-  import { fromFile } from "./lib/loader";
+  import { connect, sendOpenLocation } from "./live/socket";
+  import { fromFile, parseDescriptor, type Loaded, type Refusal } from "./lib/loader";
   import { loadModel } from "./lib/model";
   import { nearest, type Direction } from "./lib/navigate";
   import { beneath, levelHits, marked, parseQuery, searchModel } from "./lib/search";
@@ -22,13 +24,16 @@
     climb, escape, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery, setView,
     toggleDrawer, toggleExpanded, type Region,
   } from "./state/session.svelte";
+  import { live } from "./state/live.svelte";
   import { prefs, toggleCollapsed } from "./state/prefs.svelte";
-  import { tick } from "svelte";
+  import { onMount, tick } from "svelte";
 
   let refusal = $state<string | undefined>();
   let dragging = $state(false);
   let canvasView = $state<ReturnType<typeof Canvas>>();
   let listing = $state(false);
+  /** The model came over the socket, so `live.text` holds its bytes for the download. */
+  let pushed = $state(false);
 
   /** Screen pixels a panning key moves the view by. */
   const PAN_STEP = 48;
@@ -59,17 +64,27 @@
     document.title = model ? `${model.label} – Redstone inspector` : "Redstone inspector";
   });
 
-  async function openFile(file: File | undefined) {
-    if (!file) return;
-    const r = await fromFile(file);
+  /** A descriptor loaded, replacing the model, or refused, unloading it with the reason on the landing. */
+  function accept(r: Loaded | Refusal, fromSocket: boolean) {
     if (!r.ok) {
       load(undefined);
       refusal = r.reason;
       return;
     }
     refusal = undefined;
+    pushed = fromSocket;
     load(loadModel(r));
   }
+
+  async function openFile(file: File | undefined) {
+    if (!file) return;
+    accept(await fromFile(file), false);
+  }
+
+  onMount(() => connect((text) => accept(parseDescriptor(text), true)));
+
+  /** A location click: sent to the editor while connected, else false and the pane copies it. */
+  const onlocation = (file: string, line: number) => sendOpenLocation(file, line);
 
   const typing = (t: EventTarget | null) =>
     t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement
@@ -176,7 +191,10 @@
   onpopstate={() => openFromHistory(levelOfHash(location.hash))}
 />
 
-<main class:dragging style="--text:{palette.text};--text-light:{palette.textLight};--bg:{palette.background}">
+<main
+  class:dragging
+  style="--text:{palette.text};--text-light:{palette.textLight};--bg:{palette.background};--border:{palette.paneBorder};--strip:{palette.strip}"
+>
   {#if model}
     <Frame drawerOpen={session.drawer.open}>
       {#snippet tree()}
@@ -214,18 +232,26 @@
       {#snippet detail()}
         <Detail
           {model} level={session.level} selection={session.selection} focused={session.focus === "detail"}
-          onselect={select} onopen={open}
+          editor={live.state === "connected"} onselect={select} onopen={open} {onlocation}
         />
       {/snippet}
       {#snippet drawer()}
         <Drawer {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} ontab={toggleDrawer} />
       {/snippet}
       {#snippet status()}
-        <StatusBar {model} fallback={session.note} />
+        <StatusBar
+          {model} fallback={session.note} connection={live.state} received={live.text !== undefined}
+          download={pushed ? live.text : undefined}
+        />
       {/snippet}
     </Frame>
   {:else}
-    <Landing outcome={refusal} onfile={openFile} />
+    <div class="waiting">
+      <div class="landing-area"><Landing outcome={refusal} onfile={openFile} /></div>
+      {#if live.state === "connected" || live.state === "lost"}
+        <StatusBar connection={live.state} received={live.text !== undefined} />
+      {/if}
+    </div>
   {/if}
 </main>
 
@@ -234,4 +260,6 @@
   main { font-family: system-ui, sans-serif; height: 100vh; box-sizing: border-box; color: var(--text); background: var(--bg); }
   main.dragging { outline: 2px dashed gray; outline-offset: -2px; }
   pre.outcome { white-space: pre-wrap; margin: 1rem; }
+  .waiting { display: flex; flex-direction: column; height: 100%; }
+  .landing-area { flex: 1; min-height: 0; overflow: auto; }
 </style>
