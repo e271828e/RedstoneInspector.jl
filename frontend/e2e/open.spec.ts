@@ -1,5 +1,6 @@
 // Opening and climbing (workspace.md answer 3): double-click or Enter opens a
-// closed assembly, Backspace goes to the parent, a leaf does not open.
+// closed assembly, Backspace or Alt-Up goes to the parent, a breadcrumb link opens
+// its level, a leaf does not open.
 import { test } from "@playwright/test";
 import { drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
@@ -93,4 +94,22 @@ test("rates: two deep and two Backspaces back", async ({ page }) => {
   await expect(levelLine(page)).toHaveAttribute("data-level-path", "");
   await expect(page.locator("g.block")).toHaveCount(6);
   await shot(page, "rates", "", "open");
+});
+
+test("rates: the breadcrumb's links at fast/outer, the fast link, and Alt-Up climbing", async ({ page }) => {
+  await drop(page, "rates");
+  await openPath(page, "fast/outer");
+  const crumb = levelLine(page);
+  await expect(crumb.locator("a")).toHaveCount(2);
+  await expect(crumb.locator('a[data-path=""]')).toHaveText("rates");
+  await expect(crumb.locator('a[data-path="fast"]')).toHaveText("fast");
+  await expect(crumb.locator(".current")).toHaveText("outer");
+  await crumb.locator('a[data-path="fast"]').click();
+  await page.locator(readyLevel("fast")).waitFor();
+  await expect(crumb).toHaveAttribute("data-level-path", "fast");
+  await expect(crumb.locator(".current")).toHaveText("fast");
+  await page.keyboard.press("Alt+ArrowUp");
+  await page.locator(readyLevel("")).waitFor();
+  await expect(crumb).toHaveAttribute("data-level-path", "");
+  await expect(crumb.locator(".current")).toHaveText("rates");
 });

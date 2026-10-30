@@ -1,6 +1,7 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
-// the wait for the drawn level or the outcome text, counts and screenshots.
+// the wait for the drawn level or the outcome text, counts, the frame's locators,
+// a wire's clickable point and screenshots.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, type Page } from "@playwright/test";
@@ -63,5 +64,31 @@ export async function shot(page: Page, fixture: string, level: string, check?: s
 
 /** Every element under the canvas carrying `selected`. */
 export const selected = (page: Page) => page.locator("svg.canvas .selected");
+
+/** The tree's rows, node and folder; counted with `toHaveCount`, which retries. */
+export const rows = (page: Page) => page.locator("nav.tree .row");
+
+/** The status bar, read with `toContainText` or `toHaveAttribute("data-kind", ...)`. */
+export const status = (page: Page) => page.locator("footer.status");
+
+/** A client point of a wire's line where the wire's own hit path is on top. */
+export async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {
+  const at = await page.evaluate((id) => {
+    const hit = document.querySelector<SVGPathElement>(`path.wire-hit[data-hit="${CSS.escape(id)}"]`)!;
+    const m = hit.getScreenCTM()!, length = hit.getTotalLength();
+    for (let k = 1; k < 20; k++) {
+      const p = hit.getPointAtLength((length * k) / 20).matrixTransform(m);
+      if (document.elementFromPoint(p.x, p.y) === hit) return { x: p.x, y: p.y };
+    }
+    return undefined;
+  }, id);
+  expect(at, `a clickable point on ${id}`).toBeDefined();
+  return at!;
+}
+
+export async function clickWire(page: Page, id: string): Promise<void> {
+  const at = await wirePoint(page, id);
+  await page.mouse.click(at.x, at.y);
+}
 
 export { expect };

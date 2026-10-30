@@ -52,7 +52,7 @@
 {#snippet side(pane: Side, body: Snippet)}
   {@const collapsed = prefs.collapsed[pane]}
   <section
-    class="pane side {pane}" class:collapsed data-pane={pane}
+    class="pane side" class:collapsed data-pane={pane}
     style:width={collapsed ? undefined : `${prefs.sizes[pane]}px`}
   >
     <div class="head">
@@ -80,9 +80,9 @@
     {@render breadcrumb()}
     <div class="canvas-area">{@render canvas()}</div>
     {@render splitter("drawer", drawerOpen)}
-    <section class="pane drawer" class:collapsed={!drawerOpen} data-pane="drawer" style:height={drawerOpen ? `${prefs.sizes.drawer}px` : undefined}>
+    <div class="pane" class:collapsed={!drawerOpen} data-pane="drawer" style:height={drawerOpen ? `${prefs.sizes.drawer}px` : undefined}>
       {@render drawer?.()}
-    </section>
+    </div>
     {@render status()}
   </div>
   {@render splitter("detail", !prefs.collapsed.detail)}
@@ -97,22 +97,22 @@
   .center { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .canvas-area { flex: 1; min-height: 0; position: relative; }
   .pane.side { flex: none; display: flex; flex-direction: column; min-height: 0; background: var(--bg); }
-  .pane.side.tree { border-right: 1px solid var(--border); }
-  .pane.side.detail { border-left: 1px solid var(--border); }
+  .pane[data-pane="tree"] { border-right: 1px solid var(--border); }
+  .pane[data-pane="detail"] { border-left: 1px solid var(--border); }
   .pane.side .body { flex: 1; min-height: 0; overflow: auto; }
   .pane.side.collapsed { width: 24px; background: var(--strip); align-items: center; }
   .head {
     flex: none; display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 4px;
     color: var(--text-light); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .pane.tree .head { flex-direction: row-reverse; justify-content: space-between; }
+  .pane[data-pane="tree"] .head { flex-direction: row-reverse; justify-content: space-between; }
   .collapse {
     width: 18px; height: 18px; padding: 0; line-height: 16px; color: var(--text);
     font: 13px system-ui, sans-serif; border: 1px solid var(--border); border-radius: 3px; background: var(--strip); cursor: pointer;
   }
   .icon { margin-top: 6px; color: var(--text-light); }
   .pane.collapsed .head { padding: 0; }
-  .pane.drawer { flex: none; min-height: 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; }
+  .pane[data-pane="drawer"] { flex: none; min-height: 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; }
   .splitter { flex: none; background: transparent; }
   .splitter[data-pane="tree"], .splitter[data-pane="detail"] { width: 5px; margin: 0 -2px; z-index: 2; }
   .splitter[data-pane="drawer"] { height: 5px; margin: -2px 0; z-index: 2; }

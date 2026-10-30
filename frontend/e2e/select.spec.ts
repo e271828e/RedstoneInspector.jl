@@ -1,27 +1,7 @@
 // Single selection and hover (workspace.md answer 4, visual_grammar.md answer 9)
 // on closed_loop's root.
-import { test, type Page } from "@playwright/test";
-import { drop, expect, selected, shot } from "./fixtures";
-
-/** A client point of a wire's line where the wire's own hit path is on top. */
-async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {
-  const at = await page.evaluate((id) => {
-    const hit = document.querySelector<SVGPathElement>(`path.wire-hit[data-hit="${CSS.escape(id)}"]`)!;
-    const m = hit.getScreenCTM()!, length = hit.getTotalLength();
-    for (let k = 1; k < 20; k++) {
-      const p = hit.getPointAtLength((length * k) / 20).matrixTransform(m);
-      if (document.elementFromPoint(p.x, p.y) === hit) return { x: p.x, y: p.y };
-    }
-    return undefined;
-  }, id);
-  expect(at, `a clickable point on ${id}`).toBeDefined();
-  return at!;
-}
-
-async function clickWire(page: Page, id: string): Promise<void> {
-  const at = await wirePoint(page, id);
-  await page.mouse.click(at.x, at.y);
-}
+import { test } from "@playwright/test";
+import { clickWire, drop, expect, selected, shot, wirePoint } from "./fixtures";
 
 test.beforeEach(async ({ page }) => {
   await drop(page, "closed_loop");
