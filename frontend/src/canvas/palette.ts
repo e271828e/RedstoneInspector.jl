@@ -1,5 +1,6 @@
-// The canvas's placeholder colors, the only file that names one; increment 6
-// settles the palette (visual_grammar.md answer 6) and replaces this file.
+// The placeholder colors, the canvas's and the frame's, the only file that names
+// one; increment 6 settles the palette (visual_grammar.md answer 6) and replaces
+// this file.
 
 export const palette = {
   /** Leaf fill and stroke by tier, the spike's. */
@@ -20,4 +21,14 @@ export const palette = {
   background: "#ffffff",
   /** The one highlight hue: halos, casings, marked ports. */
   highlight: "#1f6feb",
+
+  // The frame's.
+  /** The panes' borders and the splitters' rest color. */
+  paneBorder: "#d0d0d0",
+  /** A collapsed pane's strip, the drawer's tab strip and the status bar. */
+  strip: "#f3f3f3",
+  /** The selected tree row's tint. */
+  rowSelected: "#dbe8fd",
+  /** The open level's row marker. */
+  openMarker: "#1f6feb",
 };

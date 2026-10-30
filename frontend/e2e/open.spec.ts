@@ -3,7 +3,7 @@
 import { test } from "@playwright/test";
 import { drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
-const levelLine = (page: import("@playwright/test").Page) => page.locator("[data-level-path]");
+const levelLine = (page: import("@playwright/test").Page) => page.locator("nav.breadcrumb[data-level-path]");
 
 test("closed_loop: double-click and Enter open, Backspace climbs", async ({ page }) => {
   await drop(page, "closed_loop");

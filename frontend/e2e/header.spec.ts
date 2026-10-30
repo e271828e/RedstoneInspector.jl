@@ -20,7 +20,7 @@ test("a major 2 copy of descent is refused in a sentence naming 2 and 1", async 
 
 test("a minor 1 copy of descent loads with the note shown and the canvas drawn", async ({ page }) => {
   await drop(page, "descent", withVersion(1, 1));
-  await expect(page.locator(".note")).toContainText("format 1.1");
+  await expect(page.locator("footer.status .note")).toContainText("format 1.1");
   await expect(page.locator(readyLevel(""))).toHaveCount(1);
   await expect(page.locator("g.block")).toHaveCount(5);
   await shot(page, "descent", "", "minor1");

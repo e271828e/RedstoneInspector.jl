@@ -7,7 +7,6 @@
   // The level's canvas: ELK's layout drawn as SVG (visual_grammar.md answers 1
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9).
-  import { untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, portId } from "../lib/level";
   import type { Model } from "../lib/model";
@@ -19,10 +18,13 @@
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, onopen, onselect }: {
+  let { model, path, selected, onopen, onselect }: {
     model: Model;
     path: string;
+    /** The target drawn as selected; the caller passes it only on the level it was selected on. */
+    selected?: Target;
     onopen?: (path: string) => void;
+    /** A click on a target, `undefined` for a background click; the caller decides. */
     onselect?: (target: Target | undefined) => void;
   } = $props();
 
@@ -40,7 +42,6 @@
   let shown = $state.raw<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
   let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
-  let selected = $state<Target | undefined>();
   let hovered = $state<Target | undefined>();
 
   const tree = $derived(model.tree!);
@@ -51,7 +52,6 @@
     const sizes = sizeLevel(level, tree);
     let stale = false;
     ready = false;
-    untrack(() => select(undefined));
     hovered = undefined;
     layoutLevel(level, sizes).then((geometry) => {
       if (stale) return;
@@ -74,10 +74,7 @@
   });
 
   // Selection and hover.
-  function select(t: Target | undefined) {
-    selected = t;
-    onselect?.(t);
-  }
+  const select = (t: Target | undefined) => onselect?.(t);
   const same = (a: Target | undefined, kind: Target["kind"], id: string) => a?.kind === kind && a.id === id;
   const touches = (w: LevelWire, t: Target | undefined) => t?.kind === "block" && (w.from.block === t.id || w.to.block === t.id);
   const endPort = (e: LevelEnd, side: "in" | "out") => portId(e.block, side, e.port);
@@ -90,10 +87,6 @@
     }
     return marked;
   });
-
-  function onkeydown(e: KeyboardEvent) {
-    if (e.key === "Escape") select(undefined);
-  }
 
   // Pan, zoom and the background click.
   let drag: { start: Point; view: View; moved: boolean; id: number } | undefined;
@@ -170,10 +163,8 @@
   });
 </script>
 
-<svelte:window {onkeydown} />
-
 <div
-  class="frame" bind:clientWidth={width} bind:clientHeight={height}
+  class="viewport" bind:clientWidth={width} bind:clientHeight={height}
   style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight}"
 >
   <svg
@@ -303,7 +294,7 @@
 
 <style>
   /* A double-click on the canvas must not select the page's text. */
-  .frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
+  .viewport { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
   svg { display: block; touch-action: none; cursor: grab; }
   .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
 
