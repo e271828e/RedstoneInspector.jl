@@ -37,13 +37,14 @@ import RedstoneInspector: inspect
 inspect(model)                                 # builds the root and draws the build
 inspect(broken; name = "broken")               # draws the failure, then rethrows
 inspect(Deployment(build(model); h = 1//100))  # draws the deployment
-inspect(err)                                   # draws a DiagnosticError caught earlier
+inspect(err)                                   # draws the DiagnosticError in the REPL's last error
 ```
 
-`inspect` takes a root component, a `Build`, a `Deployment` or a
-`DiagnosticError`, and returns `nothing`. A root that fails to build pushes the
-failure descriptor, then the `DiagnosticError` is rethrown, so `err` at the
-REPL holds it.
+`inspect` takes a root component, a `Build`, a `Deployment`, a
+`DiagnosticError` or an exception stack, and returns `nothing`. A root that
+fails to build pushes the failure descriptor, then the `DiagnosticError` is
+rethrown. At the REPL, `err` then holds the exception stack, and `inspect(err)`
+pushes the last `DiagnosticError` in it.
 
 `name` picks the channel, `""` by default, and is the envelope's `name`. The
 page shows the channel `variant` at `/?tab=variant` and the default one at `/`.
@@ -61,7 +62,8 @@ your own.
 ### Preferences
 
 Three per-machine preferences, read when the server starts, each set after
-`using Preferences, RedstoneInspector`:
+`using Preferences, RedstoneInspector`; a line for a key already set throws
+unless it adds `force = true`:
 
 - `port`, default 8601:
   `Preferences.set_preferences!(RedstoneInspector, "port" => 8700)`
@@ -92,7 +94,7 @@ this to `~/.julia/config/startup.jl`:
 
 ```julia
 using InteractiveUtils
-define_editor("zed") do cmd, path, line, column
+InteractiveUtils.define_editor("zed") do cmd, path, line, column  # neither exported nor public
     line == 0 ? `$cmd $path` : column == 0 ? `$cmd $path:$line` : `$cmd $path:$line:$column`
 end
 ```

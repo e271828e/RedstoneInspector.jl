@@ -65,6 +65,7 @@ include("server.jl")
     inspect(build::Build; name = nothing, port = nothing)
     inspect(deployment::Deployment; name = nothing, port = nothing)
     inspect(err::DiagnosticError; name = nothing, port = nothing)
+    inspect(stack::Base.ExceptionStack; name = nothing, port = nothing)
 
 Push the descriptor of a root component, a `Build`, a `Deployment` or a carrier
 exception to the inspector's page in the browser.
@@ -80,6 +81,8 @@ unless the `open_browser` preference is `false`. `name` is also the envelope's
 
 The root form builds `root` and pushes the build's descriptor. When the build
 fails, it pushes the failure descriptor and rethrows the `DiagnosticError`.
+The `ExceptionStack` form, the REPL's `err` after that failure, pushes the
+stack's last `DiagnosticError` and throws an `ArgumentError` when it holds none.
 
 Return `nothing`.
 
@@ -87,7 +90,7 @@ See also `write_descriptor` and `Redstone.descriptor`.
 """
 function inspect(x::Union{Build, Deployment, DiagnosticError}; name = nothing, port = nothing)
     session = _session(port)
-    push!(session, something(name, ""), _envelope(x; name))
+    push_descriptor!(session, String(something(name, "")), _envelope(x; name))
     return nothing
 end
 
@@ -100,6 +103,12 @@ function inspect(root::AbstractComponent; name = nothing, port = nothing)
         rethrow()
     end
     inspect(root_build; name, port)
+end
+
+function inspect(stack::Base.ExceptionStack; name = nothing, port = nothing)
+    i = findlast(entry -> entry.exception isa DiagnosticError, stack)
+    i === nothing && throw(ArgumentError("the exception stack holds no `DiagnosticError`"))
+    inspect(stack[i].exception; name, port)
 end
 
 end # module RedstoneInspector

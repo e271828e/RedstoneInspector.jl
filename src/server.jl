@@ -78,10 +78,11 @@ function _bind_server(handler, port::Int)
     end
 end
 
-# The slot's session while its server is open, else a new one.
+# The slot's session while its server is open and serving, else a new one.
 function _session(port)
     session = SESSION[]
-    if session !== nothing && isopen(session.server)
+    # `serve_task` is an internal field of HTTP's `Server`; a dead task leaves it open.
+    if session !== nothing && isopen(session.server) && !istaskdone(session.server.serve_task)
         port === nothing || port == session.port ||
             @warn "RedstoneInspector's server already runs on port $(session.port); `port = $port` is ignored."
         return session
@@ -89,34 +90,38 @@ function _session(port)
     return port === nothing ? start!() : start!(; port)
 end
 
-# Close the server and clear the slot.
+# Clear the slot and close the server; a failure to close is a warning.
 function stop!()
     session = SESSION[]
     session === nothing && return nothing
-    HTTP.forceclose(session.server)
     SESSION[] = nothing
+    try
+        HTTP.forceclose(session.server)
+    catch err
+        @warn "RedstoneInspector's server failed while closing." exception = err
+    end
     return nothing
 end
 
 # Store the envelope's text and locations on the channel `name`, then send the
 # text to the channel's sockets, or open a browser tab when it has none.
-function Base.push!(session::Session, name::String, envelope)
+function push_descriptor!(session::Session, name::String, envelope)
     text = sprint(_write_envelope, envelope)
     locations = _location_set(envelope)
-    channel_sockets, listening = @lock session.lock begin
+    channel_sockets, listening_sockets = @lock session.lock begin
         channel = get!(InspectorChannel, session.channels, name)
         session.channels[name] = InspectorChannel(text, locations, channel.sockets)
         channel.sockets, copy(channel.sockets)
     end
-    for socket in listening
+    for socket in listening_sockets
         try
             HTTP.WebSockets.send(socket, text)
         catch
             @lock session.lock delete!(channel_sockets, socket)
         end
     end
-    if isempty(listening) && session.open_browser
-        query = isempty(name) ? "" : "?tab=" * HTTP.escape(name)
+    if isempty(listening_sockets) && session.open_browser
+        query = isempty(name) ? "" : "?tab=" * HTTP.escapeuri(name)
         _open_browser("http://localhost:$(session.port)/$query")
     end
     return session
@@ -166,6 +171,10 @@ end
 
 # Act on one message and return the socket's channel name, which `hello` sets.
 function _handle_message(session::Session, socket, channel_name, message)
+    if !(message isa String)
+        @warn "RedstoneInspector dropped a binary socket frame; stage 1's frames are text."
+        return channel_name
+    end
     parsed = try
         JSON.parse(message)
     catch
