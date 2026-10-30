@@ -89,16 +89,6 @@ A click on a source location in the page opens the file at that line through
 `types` table of the descriptor the tab shows, the methods that declare each
 component type.
 
-Julia's editor table does not know Zed, and its fallback drops the line. Add
-this to `~/.julia/config/startup.jl`:
-
-```julia
-using InteractiveUtils
-InteractiveUtils.define_editor("zed") do cmd, path, line, column  # neither exported nor public
-    line == 0 ? `$cmd $path` : column == 0 ? `$cmd $path:$line` : `$cmd $path:$line:$column`
-end
-```
-
 The server binds `127.0.0.1` and accepts a socket only from a page served at
 its own address, so another site open in the browser cannot connect. There is
 no TLS and no login: a local process that is not a browser can connect, as it
