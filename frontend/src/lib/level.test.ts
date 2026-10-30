@@ -149,4 +149,24 @@ describe("elkGraph", () => {
   it("keeps the spike's root options", () => {
     expect(g.layoutOptions).toMatchObject({ "elk.algorithm": "layered", "elk.direction": "RIGHT", "elk.edgeRouting": "ORTHOGONAL" });
   });
+
+  it("containers: pins its input pin first and its output pin last, every port on its side", () => {
+    const c = level("containers");
+    const pinSizes = new Map<string, BlockSize>(c.blocks.map((b): [string, BlockSize] => [b.id, {
+      width: 80, height: 40,
+      ports: b.role === "in" ? [{ side: "out", name: b.name, x: 80, y: 20 }]
+        : b.role === "out" ? [{ side: "in", name: b.name, x: 0, y: 20 }]
+        : [...b.inputs.map((name) => ({ side: "in" as const, name, x: 0, y: 20 })),
+           ...b.outputs.map((name) => ({ side: "out" as const, name, x: 80, y: 20 }))],
+    }]));
+    const children = elkGraph(c, pinSizes).children!;
+    const constraint = (role: string) => children.filter((n) => c.blocks.find((b) => b.id === n.id)!.role === role)
+      .map((n) => [n.id, n.layoutOptions!["elk.layered.layering.layerConstraint"]]);
+    expect(constraint("in")).toEqual([[inPinId("u"), "FIRST_SEPARATE"]]);
+    expect(constraint("out")).toEqual([[outPinId("y"), "LAST_SEPARATE"]]);
+    for (const n of children) {
+      expect(n.ports!.map((p) => p.layoutOptions!["elk.port.side"]))
+        .toEqual(pinSizes.get(n.id)!.ports.map((p) => (p.side === "in" ? "WEST" : "EAST")));
+    }
+  });
 });

@@ -88,11 +88,18 @@ describe("the header check", () => {
     expect(refusal(edit("descent", (d) => delete d.build))).toMatch(/no build body/);
   });
 
-  it("refuses a build or a deployment without structure.nodes, naming it", () => {
+  it("refuses a null body as a missing one", () => {
+    expect(refusal(edit("descent", (d) => (d.build = null)))).toMatch(/no build body/);
+    expect(refusal(edit("closed_loop_deployment", (d) => (d.deployment = null)))).toMatch(/no deployment body/);
+    expect(refusal(edit("failure_cycle", (d) => (d.failure = null)))).toMatch(/no failure body/);
+  });
+
+  it("refuses a build or a deployment without structure.nodes, and a failure whose structure lacks it, naming it", () => {
     expect(refusal(edit("descent", (d) => delete d.build.structure))).toMatch(/build\.structure\.nodes/);
     expect(refusal(edit("descent", (d) => delete d.build.structure.nodes))).toMatch(/build\.structure\.nodes/);
     expect(refusal(edit("closed_loop_deployment", (d) => delete d.deployment.build.structure)))
       .toMatch(/deployment\.build\.structure\.nodes/);
+    expect(refusal(edit("failure_cycle", (d) => (d.failure.structure = {})))).toMatch(/failure\.structure\.nodes/);
   });
 
   it("accepts a failure with or without structure", () => {

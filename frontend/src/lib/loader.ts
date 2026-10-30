@@ -34,12 +34,15 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
   if (!KINDS.includes(d.kind)) {
     return refuse(`This file's kind is ${JSON.stringify(d.kind)}, none of build, deployment and failure.`);
   }
-  if (d[d.kind] === undefined) return refuse(`This ${d.kind} descriptor has no ${d.kind} body.`);
+  if (typeof d[d.kind] !== "object" || d[d.kind] === null) return refuse(`This ${d.kind} descriptor has no ${d.kind} body.`);
   if (d.kind === "build" && !Array.isArray(d.build.structure?.nodes)) {
     return refuse("This build descriptor has no build.structure.nodes.");
   }
   if (d.kind === "deployment" && !Array.isArray(d.deployment.build?.structure?.nodes)) {
     return refuse("This deployment descriptor has no deployment.build.structure.nodes.");
+  }
+  if (d.kind === "failure" && d.failure.structure !== undefined && !Array.isArray(d.failure.structure?.nodes)) {
+    return refuse("This failure descriptor has no failure.structure.nodes.");
   }
   const descriptor = d as RedstoneDescriptor;
   const loaded: Loaded = { ok: true, descriptor, label: labelOf(descriptor, fileName) };

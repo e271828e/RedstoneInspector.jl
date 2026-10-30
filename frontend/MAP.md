@@ -73,16 +73,17 @@ Each file sits beside its module, loads fixtures by name through
 - `loader.test.ts`: every fixture loads; the label order (envelope `name`,
   file name, root display name, kind word); `failure_structure` loads with no
   structure; refusals in words for another major, no `format_version`, not
-  JSON, an unknown kind, a missing body and a build or deployment without
-  `structure.nodes`; the minor-version note; a failure loads without structure.
+  JSON, an unknown kind, a missing or null body, a build or deployment without
+  `structure.nodes` and a failure whose `structure` lacks it; the minor-version
+  note; a failure loads without structure.
 - `tree.test.ts`: per fixture the node, assembly and root-child counts and
   the memberships; every parent an assembly the path extends; the longest
   prefix (`rates`' `fast/outer/hold`); `containers`' keyed segments
   `field/key` and its field-only node; display names by alias, then type.
 - `resolve.test.ts`: `closed_loop`'s 42 assembly faces and 55 leaf inputs by
   terminal, deepest chain 3; `rates`' 7 output faces, deepest 4; `large`'s
-  313 and 18 leaf inputs, 12 output faces; `primitive`'s root inputs;
-  `faceInfo` on leaf, assembly and root faces; route consumer totals per
+  313 and 18 leaf inputs, 12 output faces; `primitive`'s root inputs; an
+  inline assembly whose input and output faces share a name; `faceInfo` on leaf, assembly and root faces; route consumer totals per
   fixture, `closed_loop`'s 11 root-input consumers and largest fan-out 7,
   `containers`' and `large`'s and `rates`' root-face routes, level sets; a
   wire's route equal to its producer's and its consumer's.
@@ -94,7 +95,8 @@ Each file sits beside its module, loads fixtures by name through
   wire ids in every level; `closed_loop`'s `pid_controller` and
   `lqr_controller`; `large`'s ten inner levels; the primitive root's one
   block; `elkGraph` on `descent`: children, layer constraints, fixed ports
-  with sides, edges port to port, the root options.
+  with sides, edges port to port, the root options; on `containers`' root
+  the `in` and `out` pins' layer constraints and every port's side.
 - `model.test.ts`: the model's fields, and a structureless failure's left
   undefined.
 

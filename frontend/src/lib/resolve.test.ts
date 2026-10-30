@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { AssemblyNode, LeafNode } from "./descriptor";
+import type { AssemblyNode, LeafFace, LeafNode, StructureSection } from "./descriptor";
 import { fixtureModel } from "./fixtures";
-import { faceInfo, route, terminalConsumers, terminalProducer, wireFaces, wireRoute, type Face, type Resolution, type Route } from "./resolve";
+import { buildTree } from "./tree";
+import { buildResolution, faceInfo, route, terminalConsumers, terminalProducer, wireFaces, wireRoute, type Face, type Resolution, type Route } from "./resolve";
 
 const res = (name: string): Resolution => fixtureModel(name).resolution!;
 const nodes = (r: Resolution) => [...r.tree.byPath.values()];
@@ -64,9 +65,23 @@ describe("the resolution", () => {
   });
 
   it("keeps an assembly's input and output faces of one name apart", () => {
-    const r = res("rates");
-    expect(terminalProducer(r, face("fast/outer", "in", "in"))!.face).toEqual(face("src", "out", "out"));
-    expect(terminalProducer(r, face("fast/outer", "out", "out"))!.face).toEqual(face("fast/outer/hold", "out", "out"));
+    // A's input face x and output face x share a name; only the side tells them apart.
+    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const id = { type: "T", signature: "T", parameters: [] };
+    const structure: StructureSection = {
+      nodes: [
+        { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [],
+          wires: [{ from: { path: "", port: "x" }, to: { path: "A", port: "x" } }] },
+        { ...id, path: "A", field: "A", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "x" }],
+          wires: [{ from: { path: "A", port: "x" }, to: { path: "A/L", port: "e" } }, { from: { path: "A/L", port: "o" }, to: { path: "A", port: "x" } }] },
+        { ...id, path: "A/L", field: "L", class: "leaf", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [f("o")] },
+      ],
+      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+    };
+    const r = buildResolution(buildTree(structure), structure);
+    expect(terminalProducer(r, face("A", "in", "x"))!.face).toEqual(face("", "in", "x"));
+    expect(terminalProducer(r, face("A", "out", "x"))!.face).toEqual(face("A/L", "out", "o"));
+    expect(terminalConsumers(r, face("", "in", "x"))).toEqual([face("A/L", "in", "e")]);
   });
 });
 
