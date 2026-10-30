@@ -133,12 +133,19 @@ once on a new machine. Each check drops fixtures on the page and saves
 screenshots to `frontend/e2e/screenshots/`, which CI keeps as a job output. The
 TypeScript types are generated from the schema copy into
 `frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
-each of `dev`, `build`, `check` and `test`. The page reads a picked or dropped
-descriptor and draws its root level: blocks, the level's boundary pins and the
-wires, laid out by ELK. Drag pans, the wheel zooms, the corner button fits; a
-double-click or Enter opens a closed assembly and Backspace returns to its
-parent; a click selects a block, pin, wire or port square, and Escape clears.
-`frontend/MAP.md` maps the files.
+each of `dev`, `build`, `check` and `test`. Before a file is open the page shows
+a landing panel with its privacy statement: the file is read in the browser and
+never uploaded, and the page loads nothing from the network. The page reads a
+picked or dropped descriptor and draws its root level: blocks, the level's
+boundary pins and the wires, laid out by ELK. Around the canvas sit the model
+tree on the left, the detail pane on the right, the breadcrumb above, the
+drawer's tab strip with its counts and the status bar below; the splitters
+between them drag, the side panes collapse, and both are kept per browser.
+Drag pans, the wheel zooms, the corner button fits; a double-click or Enter
+opens a closed assembly, from the canvas or the tree, and Backspace, Alt-Up or
+the breadcrumb returns; a click selects a block, pin, wire or port square, or a
+row in the tree, the tree and the canvas following each other and the detail
+pane showing what is selected; Escape clears. `frontend/MAP.md` maps the files.
 
 ## The pin
 
