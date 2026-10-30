@@ -145,7 +145,34 @@ Drag pans, the wheel zooms, the corner button fits; a double-click or Enter
 opens a closed assembly, from the canvas or the tree, and Backspace, Alt-Up or
 the breadcrumb returns; a click selects a block, pin, wire or port square, or a
 row in the tree, the tree and the canvas following each other and the detail
-pane showing what is selected; Escape clears. `frontend/MAP.md` maps the files.
+pane showing what is selected; Escape clears.
+
+The open level is the URL's hash, `#level=sensing`, none at the root, so back
+and forward move between levels and a reload or a link reopens one. Each
+level keeps its zoom, pan and layout for the session, and a block dragged on
+the canvas keeps its place until the page reloads; only its own wires are
+re-routed. A second descriptor dropped or pushed over the first keeps the open
+level, the selection, the expansion, the views and the search by path and
+name; what the new model lacks is dropped, and a level that is gone falls back
+to its nearest ancestor with a note in the status bar. The keyboard: `h` `j`
+`k` `l` move the selection to the nearest block or pin in that direction, the
+view following; Shift with them, or the arrows, pan; `0` fits, `+` and `-`
+zoom; `d` toggles the drawer; Tab moves between the tree, the canvas, the
+detail pane and the drawer; `t`, `r`, `y`, `o` and `?` are reserved. Search,
+in the field at the top of the tree, opened by `/` or Cmd-K, matches paths,
+types and face names as case-insensitive substrings, `path:`, `type:` and
+`face:` narrowing a term to one field; the hits list while the field has
+focus, take a dashed halo on the canvas with the rest dimmed, and mark the
+tree's rows with counts up collapsed ones.
+
+In the live session the page connects to the server's socket on load and
+greets with its tab's channel. The status bar reads "connected, waiting for
+`inspect`" until a descriptor arrives, then "connected", and "disconnected,
+retrying" while the server is away; the page reconnects by itself. A download
+button saves the pushed descriptor named after the model, byte for byte the
+file `write_descriptor` writes, and a location click opens the editor. The hosted
+copy has no server, so it shows none of this and a location click copies
+`file:line`. `frontend/MAP.md` maps the files.
 
 ## The pin
 
