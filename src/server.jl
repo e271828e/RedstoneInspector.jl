@@ -87,6 +87,8 @@ function _session(port)
             @warn "RedstoneInspector's server already runs on port $(session.port); `port = $port` is ignored."
         return session
     end
+    # A dead server still holds its listener and its sockets: close it, so its tabs retry.
+    session === nothing || stop!()
     return port === nothing ? start!() : start!(; port)
 end
 

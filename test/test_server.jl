@@ -106,12 +106,21 @@ end
         @test_logs (:warn, r"failed while closing") stop!()
         @test SESSION[] === nothing
 
+        # A tab connected before the death is cut off by the restart, so its page retries.
         dead = start_stub()
+        orphan = page_socket(dead)
+        greet(orphan, "before death")
+        @test joined(dead, "before death", 1)
         @test kill_serving(dead)
-        with_stub_preferences(() -> inspect(loop_build; name = "after death", port = 0))
+        @test_logs (:warn, r"failed while closing") match_mode = :any begin
+            with_stub_preferences(() -> inspect(loop_build; name = "after death", port = 0))
+        end
         @test SESSION[] !== nothing && SESSION[] !== dead
         @test SESSION[] !== nothing && isopen(SESSION[].server)
-        thrown(() -> HTTP.forceclose(dead.server))
+        @test !isopen(dead.server)
+        @test joined(dead, "before death", 0)
+        orphan_read = Threads.@spawn thrown(() -> HTTP.WebSockets.receive(orphan))
+        @test within(() -> istaskdone(orphan_read)) && fetch(orphan_read) isa HTTP.WebSockets.WebSocketError
         @test thrown(stop!) === nothing
         @test SESSION[] === nothing
 
