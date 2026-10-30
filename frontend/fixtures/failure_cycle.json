@@ -94,8 +94,8 @@
               "value": "(\"plant/y\"=>\"y\",)"
             },
             {
-              "name": "sample_times",
-              "value": "(ctl = Absolute(1//50, 0//1),)"
+              "name": "sample_times.ctl",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -252,27 +252,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2123
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2120
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2121
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2122
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2124
             }
           ]

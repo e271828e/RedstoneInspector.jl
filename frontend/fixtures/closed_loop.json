@@ -550,8 +550,8 @@
               "value": "(\"altimeter/y\"=>\"h_meas\",)"
             },
             {
-              "name": "sample_times",
-              "value": "(noise = Absolute(1//50, 0//1),)"
+              "name": "sample_times.noise",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -927,8 +927,20 @@
               "value": "(\"q_ctl/u\"=>\"δe\", \"V_ctl/u\"=>\"δt\")"
             },
             {
-              "name": "sample_times",
-              "value": "(h_ctl = Absolute(1//50, 0//1), θ_ctl = Absolute(1//50, 0//1), q_ctl = Absolute(…"
+              "name": "sample_times.h_ctl",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.θ_ctl",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.q_ctl",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.V_ctl",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -1015,8 +1027,40 @@
           ],
           "parameters": [
             {
-              "name": "fixed",
-              "value": "(Kp = 0.01, Ki = 0.001, Kd = 0.0, τd = 0.1, Tt = 0.02, u_min = -0.26, u_max = 0.…"
+              "name": "fixed.Kp",
+              "value": "0.01"
+            },
+            {
+              "name": "fixed.Ki",
+              "value": "0.001"
+            },
+            {
+              "name": "fixed.Kd",
+              "value": "0.0"
+            },
+            {
+              "name": "fixed.τd",
+              "value": "0.1"
+            },
+            {
+              "name": "fixed.Tt",
+              "value": "0.02"
+            },
+            {
+              "name": "fixed.u_min",
+              "value": "-0.26"
+            },
+            {
+              "name": "fixed.u_max",
+              "value": "0.26"
+            },
+            {
+              "name": "fixed.b",
+              "value": "1.0"
+            },
+            {
+              "name": "fixed.c",
+              "value": "0.0"
             }
           ]
         },
@@ -1103,8 +1147,40 @@
           ],
           "parameters": [
             {
-              "name": "fixed",
-              "value": "(Kp = 2.0, Ki = 0.5, Kd = 0.0, τd = 0.1, Tt = 0.02, u_min = -0.5, u_max = 0.5, b…"
+              "name": "fixed.Kp",
+              "value": "2.0"
+            },
+            {
+              "name": "fixed.Ki",
+              "value": "0.5"
+            },
+            {
+              "name": "fixed.Kd",
+              "value": "0.0"
+            },
+            {
+              "name": "fixed.τd",
+              "value": "0.1"
+            },
+            {
+              "name": "fixed.Tt",
+              "value": "0.02"
+            },
+            {
+              "name": "fixed.u_min",
+              "value": "-0.5"
+            },
+            {
+              "name": "fixed.u_max",
+              "value": "0.5"
+            },
+            {
+              "name": "fixed.b",
+              "value": "1.0"
+            },
+            {
+              "name": "fixed.c",
+              "value": "0.0"
             }
           ]
         },
@@ -1191,8 +1267,40 @@
           ],
           "parameters": [
             {
-              "name": "fixed",
-              "value": "(Kp = -0.2, Ki = -0.4, Kd = 0.0, τd = 0.1, Tt = 0.02, u_min = -0.5, u_max = 0.5,…"
+              "name": "fixed.Kp",
+              "value": "-0.2"
+            },
+            {
+              "name": "fixed.Ki",
+              "value": "-0.4"
+            },
+            {
+              "name": "fixed.Kd",
+              "value": "0.0"
+            },
+            {
+              "name": "fixed.τd",
+              "value": "0.1"
+            },
+            {
+              "name": "fixed.Tt",
+              "value": "0.02"
+            },
+            {
+              "name": "fixed.u_min",
+              "value": "-0.5"
+            },
+            {
+              "name": "fixed.u_max",
+              "value": "0.5"
+            },
+            {
+              "name": "fixed.b",
+              "value": "1.0"
+            },
+            {
+              "name": "fixed.c",
+              "value": "0.0"
             }
           ]
         },
@@ -1279,8 +1387,40 @@
           ],
           "parameters": [
             {
-              "name": "fixed",
-              "value": "(Kp = 0.2, Ki = 0.05, Kd = 0.0, τd = 0.1, Tt = 0.02, u_min = 0.0, u_max = 1.0, b…"
+              "name": "fixed.Kp",
+              "value": "0.2"
+            },
+            {
+              "name": "fixed.Ki",
+              "value": "0.05"
+            },
+            {
+              "name": "fixed.Kd",
+              "value": "0.0"
+            },
+            {
+              "name": "fixed.τd",
+              "value": "0.1"
+            },
+            {
+              "name": "fixed.Tt",
+              "value": "0.02"
+            },
+            {
+              "name": "fixed.u_min",
+              "value": "0.0"
+            },
+            {
+              "name": "fixed.u_max",
+              "value": "1.0"
+            },
+            {
+              "name": "fixed.b",
+              "value": "1.0"
+            },
+            {
+              "name": "fixed.c",
+              "value": "0.0"
             }
           ]
         },
@@ -1591,8 +1731,8 @@
               "value": "(\"u_unpack/out1\"=>\"δe\", \"u_unpack/out2\"=>\"δt\")"
             },
             {
-              "name": "sample_times",
-              "value": "(tracker = Absolute(1//50, 0//1),)"
+              "name": "sample_times.tracker",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -1741,8 +1881,40 @@
           ],
           "parameters": [
             {
-              "name": "fixed",
-              "value": "(K_fbk = [0.00307881 -2.08471 … -1.0186 -0.0235805; 0.102546 0.151034 … -0.00051…"
+              "name": "fixed.K_fbk",
+              "value": "[0.00307881 -2.08471 … -1.0186 -0.0235805; 0.102546 0.151034 … -0.000515958 0.01…"
+            },
+            {
+              "name": "fixed.K_fwd",
+              "value": "[-0.0235805 0.0190785; 0.0141596 0.111257]"
+            },
+            {
+              "name": "fixed.K_int",
+              "value": "[-0.00189508 0.00255706; 0.000958897 0.0113705]"
+            },
+            {
+              "name": "fixed.x_trim",
+              "value": "[50.0, 0.0, 0.0199302, 0.0, 1000.0]"
+            },
+            {
+              "name": "fixed.u_trim",
+              "value": "[0.0250582, 0.372337]"
+            },
+            {
+              "name": "fixed.z_trim",
+              "value": "[1000.0, 50.0]"
+            },
+            {
+              "name": "fixed.Tt",
+              "value": "[0.02, 0.02]"
+            },
+            {
+              "name": "fixed.u_min",
+              "value": "[-0.5, 0.0]"
+            },
+            {
+              "name": "fixed.u_max",
+              "value": "[0.5, 1.0]"
             }
           ]
         },
@@ -2296,8 +2468,12 @@
               "value": "(\"select_δe/y\"=>\"δe\", \"select_δt/y\"=>\"δt\", \"command_δe/y\"=>\"δe_prev\", \"command_δ…"
             },
             {
-              "name": "sample_times",
-              "value": "(command_δe = Absolute(1//50, 0//1), command_δt = Absolute(1//50, 0//1))"
+              "name": "sample_times.command_δe",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.command_δt",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -2582,8 +2758,12 @@
               "value": "(\"δe_lag/y\"=>\"δe\", \"δt_lag/y\"=>\"δt\")"
             },
             {
-              "name": "sample_times",
-              "value": "(δe_limiter = Absolute(1//50, 0//1), δt_limiter = Absolute(1//50, 0//1))"
+              "name": "sample_times.δe_limiter",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.δt_limiter",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -2928,27 +3108,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2123
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2120
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2121
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2122
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2124
             }
           ]
@@ -2980,12 +3160,12 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 526
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 525
             }
           ]
@@ -2996,17 +3176,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 111
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 113
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 110
             }
           ]
@@ -3017,17 +3197,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 1453
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 1705
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 1704
             }
           ]
@@ -3038,12 +3218,12 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 193
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 192
             }
           ]
@@ -3054,17 +3234,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 1761
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2037
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2035
             }
           ]
@@ -3075,17 +3255,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 136
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 137
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 135
             }
           ]
@@ -3096,17 +3276,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 164
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 165
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 163
             }
           ]
@@ -3117,17 +3297,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 220
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 221
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 219
             }
           ]
@@ -3138,17 +3318,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 451
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 452
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 450
             }
           ]
@@ -3159,17 +3339,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 637
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 638
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 636
             }
           ]

@@ -3282,8 +3282,176 @@
               "value": "(\"b150/out1\"=>\"y1\", \"b149/out1\"=>\"y2\")"
             },
             {
-              "name": "sample_times",
-              "value": "(b001 = Absolute(1//50, 0//1), b010 = Absolute(1//50, 0//1), b011 = Absolute(1//…"
+              "name": "sample_times.b001",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b010",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b011",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b012",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b013",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b014",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b019",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b020",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b022",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b024",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b025",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b033",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b036",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b041",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b042",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b048",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b050",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b051",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b052",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b054",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b057",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b060",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b062",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b063",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b064",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b074",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b076",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b077",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b084",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b093",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b102",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b109",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b116",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b119",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b123",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b124",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b126",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b135",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b136",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b137",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b145",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b147",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.b149",
+              "value": "Absolute(1//50, 0//1)"
             }
           ]
         },
@@ -13528,27 +13696,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2123
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2120
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2121
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2122
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2124
             }
           ]

@@ -92,8 +92,12 @@
               "value": "(\"fast/inner\"=>\"inner\", \"fast/outer\"=>\"outer\", \"slow/out\"=>\"slow\")"
             },
             {
-              "name": "sample_times",
-              "value": "(fast = Absolute(1//50, 0//1), slow = Absolute(1//10, 0//1))"
+              "name": "sample_times.fast",
+              "value": "Absolute(1//50, 0//1)"
+            },
+            {
+              "name": "sample_times.slow",
+              "value": "Absolute(1//10, 0//1)"
             }
           ]
         },
@@ -199,8 +203,8 @@
               "value": "(\"inner/out\"=>\"inner\", \"outer/out\"=>\"outer\")"
             },
             {
-              "name": "sample_times",
-              "value": "(outer = Relative(2, 0),)"
+              "name": "sample_times.outer",
+              "value": "Relative(2, 0)"
             }
           ]
         },
@@ -489,27 +493,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2123
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2120
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2121
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2122
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/dIXhK/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
               "line": 2124
             }
           ]
