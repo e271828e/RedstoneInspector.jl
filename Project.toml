@@ -1,0 +1,18 @@
+name = "RedstoneInspector"
+uuid = "45843df5-9334-4d9d-947e-db062adebde9"
+authors = ["Miguel Alonso <miguel883@gmail.com>"]
+version = "0.1.0"
+
+[workspace]
+projects = ["test", "scripts"]
+
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
+
+[sources]
+Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "dc5e833e2ea00b6a363ea06d922a9c47e80fa67b"}
+
+[compat]
+JSON = "1"
+julia = "1.13"
