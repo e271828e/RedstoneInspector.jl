@@ -1,11 +1,25 @@
 <script lang="ts">
-  // The text shell: a file picked or dropped anywhere on the page. Increment 3
-  // replaces the body with the canvas.
+  // The text shell: a file picked or dropped anywhere on the page, the loader's
+  // outcome as text. Increment 3 replaces the body with the canvas.
+  import { fromFile, structureOf } from "./lib/loader";
+
   let outcome = $state("No file open.");
   let dragging = $state(false);
 
   async function open(file: File | undefined) {
-    if (file) outcome = `${file.name}: ${(await file.text()).length} characters read.`;
+    if (!file) return;
+    const r = await fromFile(file);
+    if (!r.ok) {
+      outcome = r.reason;
+      return;
+    }
+    const nodes = structureOf(r.descriptor)?.nodes.length;
+    outcome = [
+      `label: ${r.label}`,
+      `kind: ${r.descriptor.kind}`,
+      `nodes: ${nodes ?? "none, no structure"}`,
+      ...(r.note ? [`note: ${r.note}`] : []),
+    ].join("\n");
   }
   function pick(e: Event) {
     open((e.currentTarget as HTMLInputElement).files?.[0]);
