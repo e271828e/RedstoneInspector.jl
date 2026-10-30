@@ -83,14 +83,25 @@ describe("every level", () => {
     }
   });
 
-  it("primitive: one block, the leaf, no pins and no wires", () => {
+  it("primitive: the leaf with a pin and a wire per face", () => {
     const m = fixtureModel("primitive");
     const l = levelOf(m.tree!, m.resolution!, "");
-    expect(l.wires).toEqual([]);
-    expect(l.blocks).toEqual([{
-      id: "", role: "leaf", path: "", segment: "", displayName: "Plant", tier: (m.tree!.root as LeafNode).tier,
-      inputs: ["u", "d"], outputs: ["y", "power"],
-    }]);
+    expect(l.blocks).toEqual([
+      { id: inPinId("u"), role: "in", name: "u", rootInput: true },
+      { id: inPinId("d"), role: "in", name: "d", rootInput: true },
+      {
+        id: "", role: "leaf", path: "", segment: "", displayName: "Plant", tier: (m.tree!.root as LeafNode).tier,
+        inputs: ["u", "d"], outputs: ["y", "power"],
+      },
+      { id: outPinId("y"), role: "out", name: "y" },
+      { id: outPinId("power"), role: "out", name: "power" },
+    ]);
+    expect(l.wires).toEqual([
+      { id: portId("", "in", "u"), from: { block: inPinId("u"), port: "u" }, to: { block: "", port: "u" } },
+      { id: portId("", "in", "d"), from: { block: inPinId("d"), port: "d" }, to: { block: "", port: "d" } },
+      { id: portId(outPinId("y"), "in", "y"), from: { block: "", port: "y" }, to: { block: outPinId("y"), port: "y" } },
+      { id: portId(outPinId("power"), "in", "power"), from: { block: "", port: "power" }, to: { block: outPinId("power"), port: "power" } },
+    ]);
   });
 
   it("refuses a path that is no level", () => {

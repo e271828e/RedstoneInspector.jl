@@ -51,26 +51,33 @@ export const inPinId = (name: string) => `⟨in⟩${name}`;
 export const outPinId = (name: string) => `⟨out⟩${name}`;
 export const portId = (block: string, side: "in" | "out", name: string) => `${block}|${side}|${name}`;
 
-/** Input pins, the children in walk order, output pins; the wires keyed by their consumer. A primitive root is its one block. */
+/**
+ * Input pins, the children in walk order, output pins; the wires keyed by their consumer.
+ * A primitive root is its one block with a pin and a wire per face.
+ */
 export function levelOf(tree: Tree, _res: Resolution, path: string): Level {
   const self = tree.byPath.get(path);
   if (!self) throw new Error(`no node at "${path}"`);
+  const inPins = self.inputs.map((f): InPin => ({ id: inPinId(f.name), role: "in", name: f.name, rootInput: path === "" }));
+  const outPins = self.outputs.map((f): OutPin => ({ id: outPinId(f.name), role: "out", name: f.name }));
   if (self.class === "leaf") {
     if (path !== "") throw new Error(`"${path}" is a leaf, not a level`);
-    return { path, blocks: [childBlock(tree, path)], wires: [] };
+    const wires = [
+      ...self.inputs.map((f) => levelWire({ block: inPinId(f.name), port: f.name }, { block: path, port: f.name })),
+      ...self.outputs.map((f) => levelWire({ block: path, port: f.name }, { block: outPinId(f.name), port: f.name })),
+    ];
+    return { path, blocks: [...inPins, childBlock(tree, path), ...outPins], wires };
   }
-  const blocks: Block[] = [
-    ...self.inputs.map((f): InPin => ({ id: inPinId(f.name), role: "in", name: f.name, rootInput: path === "" })),
-    ...tree.children.get(path)!.map((c) => childBlock(tree, c)),
-    ...self.outputs.map((f): OutPin => ({ id: outPinId(f.name), role: "out", name: f.name })),
-  ];
+  const blocks: Block[] = [...inPins, ...tree.children.get(path)!.map((c) => childBlock(tree, c)), ...outPins];
   const wires = self.wires.map((w): LevelWire => {
     const from = { block: w.from.path === path ? inPinId(w.from.port) : w.from.path, port: w.from.port };
     const to = { block: w.to.path === path ? outPinId(w.to.port) : w.to.path, port: w.to.port };
-    return { id: portId(to.block, "in", to.port), from, to };
+    return levelWire(from, to);
   });
   return { path, blocks, wires };
 }
+
+const levelWire = (from: LevelEnd, to: LevelEnd): LevelWire => ({ id: portId(to.block, "in", to.port), from, to });
 
 function childBlock(tree: Tree, path: string): ChildBlock {
   const n = tree.byPath.get(path)!;
