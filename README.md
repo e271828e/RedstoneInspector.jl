@@ -6,7 +6,7 @@ the core's rendering of the artifact to data (Redstone's spec, §13.9). Stage 1
 is a static page reading descriptor files and a live session that pushes them
 from Julia to an open tab.
 
-**Status:** the writing half; the live session and the page are coming.
+**Status:** the writing half and the live session; the page is coming.
 
 ## Writing a descriptor
 
@@ -25,6 +25,82 @@ writes the same text to a stream. A root that fails to build writes the failure
 descriptor, then the `DiagnosticError` is rethrown. The text is JSON at two
 spaces of indentation with a trailing newline, and `name` follows `kind` in the
 envelope only when given. Nothing is exported.
+
+## The live session
+
+`inspect` pushes a descriptor to the page in the browser, which draws it. At
+the REPL, line by line:
+
+```julia
+import RedstoneInspector: inspect
+
+inspect(model)                                 # builds the root and draws the build
+inspect(broken; name = "broken")               # draws the failure, then rethrows
+inspect(Deployment(build(model); h = 1//100))  # draws the deployment
+inspect(err)                                   # draws a DiagnosticError caught earlier
+```
+
+`inspect` takes a root component, a `Build`, a `Deployment` or a
+`DiagnosticError`, and returns `nothing`. A root that fails to build pushes the
+failure descriptor, then the `DiagnosticError` is rethrown, so `err` at the
+REPL holds it.
+
+`name` picks the channel, `""` by default, and is the envelope's `name`. The
+page shows the channel `variant` at `/?tab=variant` and the default one at `/`.
+Every tab open on a channel receives each push to it, and a tab reopened on its
+URL gets the latest. When no tab is open on the channel, `inspect` opens one
+in the default browser.
+
+The first `inspect` starts a server on `127.0.0.1`, port 8601, and prints one
+line with its URL and the pattern to exclude from Vimium. When 8601 is taken,
+the server tries the nine ports after it. `inspect(x; port = 8700)` on the first
+call picks another port for the session. On a remote machine, forward the port
+with `ssh -L 8601:localhost:8601 host` and open `http://localhost:8601/` on
+your own.
+
+### Preferences
+
+Three per-machine preferences, read when the server starts, each set after
+`using Preferences, RedstoneInspector`:
+
+- `port`, default 8601:
+  `Preferences.set_preferences!(RedstoneInspector, "port" => 8700)`
+- `open_browser`, default `true`; `false` for the remote case:
+  `Preferences.set_preferences!(RedstoneInspector, "open_browser" => false)`
+- `bundle_dir`, default none, the installed bundle being served:
+  `Preferences.set_preferences!(RedstoneInspector, "bundle_dir" => "/path/to/frontend/dist")`
+
+### Developing the page
+
+With `bundle_dir` set to `frontend/dist`, the server reads each file from disk
+on every request, so a rebuild of the page and a browser reload show the edit
+against the live server. With Revise loaded, edits to the server's request and
+message handlers reach the running server. After a change to the session or
+channel structs, `RedstoneInspector.stop!()` closes the server, and the next
+`inspect` starts a fresh one.
+
+### Open in the editor
+
+A click on a source location in the page opens the file at that line through
+`InteractiveUtils.edit`, the function behind `@edit`, so the editor is
+`JULIA_EDITOR`, `VISUAL` or `EDITOR`. The server opens only the locations of the
+`types` table of the descriptor the tab shows, the methods that declare each
+component type.
+
+Julia's editor table does not know Zed, and its fallback drops the line. Add
+this to `~/.julia/config/startup.jl`:
+
+```julia
+using InteractiveUtils
+define_editor("zed") do cmd, path, line, column
+    line == 0 ? `$cmd $path` : column == 0 ? `$cmd $path:$line` : `$cmd $path:$line:$column`
+end
+```
+
+The server binds `127.0.0.1` and accepts a socket only from a page served at
+its own address, so another site open in the browser cannot connect. There is
+no TLS and no login: a local process that is not a browser can connect, as it
+could read the files anyway.
 
 ## Fixtures
 
@@ -83,8 +159,12 @@ and the fixtures regenerate against the old core.
 
 ## Layout
 
-- `src/RedstoneInspector.jl`: the package.
+- `src/RedstoneInspector.jl`: the package, `write_descriptor` and `inspect`.
+- `src/server.jl`: the live session's server.
 - `test/runtests.jl`: the suite, run with `julia --project=test test/runtests.jl`.
+- `test/test_server.jl`: the live session's tests, with HTTP.jl's client as the page.
+- `test/stub_bundle/`: the bundle directory the suite serves.
+- `frontend/PROTOCOL.md`: the messages between the server and the page.
 - `scripts/fixtures.jl`, `scripts/synthetic.jl`: the fixture script and its synthetic models.
 - `frontend/fixtures/`, `frontend/schema/`: the committed descriptors and schema copy.
 - `Artifacts.toml`: the bundle's entry, written by the release workflow.
