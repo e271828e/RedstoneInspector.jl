@@ -33,11 +33,11 @@
   const isFace = (h: NodeHit | FaceHit): h is FaceHit => "side" in h;
   const groups = $derived.by(() => {
     if (!found) return [];
-    const faces: (NodeHit | FaceHit)[] = found.rows.filter(isFace);
-    const nodes = found.rows.filter((h) => !isFace(h));
+    const nodes: (NodeHit | FaceHit)[] = found.rows.filter((h) => !isFace(h));
+    const faces = found.rows.filter(isFace);
     return [
-      { group: "faces" as const, title: "Faces", count: found.faces.length, rows: faces, start: 0 },
-      { group: "nodes" as const, title: "Nodes", count: found.nodes.length, rows: nodes, start: faces.length },
+      { group: "nodes" as const, title: "Nodes", count: found.nodes.length, rows: nodes, start: 0 },
+      { group: "faces" as const, title: "Faces", count: found.faces.length, rows: faces, start: nodes.length },
     ].filter((g) => g.count > 0);
   });
 

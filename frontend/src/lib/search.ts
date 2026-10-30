@@ -33,7 +33,7 @@ export interface Found {
   nodes: NodeHit[];
   /** Every face hit, in walk order, each node's inputs before its outputs. */
   faces: FaceHit[];
-  /** The listed rows, the faces group then the nodes group, at most `CAP`. */
+  /** The listed rows, the nodes group then the faces group, at most `CAP`. */
   rows: (NodeHit | FaceHit)[];
   /** The uncapped count. */
   total: number;
@@ -102,7 +102,7 @@ export function searchModel(model: Model, query: Term[]): Found {
       }
     }
   }
-  return { nodes, faces, rows: [...faces, ...nodes].slice(0, CAP), total: nodes.length + faces.length };
+  return { nodes, faces, rows: [...nodes, ...faces].slice(0, CAP), total: nodes.length + faces.length };
 }
 
 /** The node paths that are hits or own a face hit. */

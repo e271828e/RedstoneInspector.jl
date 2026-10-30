@@ -23,6 +23,9 @@ describe("searchModel, the oracle's table", () => {
     expect(faceTriple(f.faces[0])).toEqual(["", "in", "h_ref"]);
     expect(f.total).toBe(13);
     expect(f.rows).toHaveLength(13);
+    // the rows: the nodes group, then the faces group
+    expect(f.rows.slice(0, 4)).toEqual(f.nodes);
+    expect(f.rows.slice(4)).toEqual(f.faces);
   });
 
   it.each([
