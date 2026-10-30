@@ -109,7 +109,7 @@
       <p class="facts">{nodeLine(facts)}</p>
       {#if facts.alias}<p class="alias" title="the alias"><code>{facts.alias}</code></p>{/if}
       <p class="type" title="the qualified type"><code>{facts.type}</code></p>
-      {#if facts.signature !== facts.type}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/if}
+      {#if facts.signature !== facts.type}{#key facts.path}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/key}{/if}
       {#if facts.kind === "assembly"}<p><button class="open-level" onclick={() => onopen(facts.path)}>Open {facts.segment}</button></p>{/if}
       {#if facts.docstring}
         {#key facts.path}<details class="docstring"><summary>{firstLine(facts.docstring)}</summary><pre class="docstring">{facts.docstring}</pre></details>{/key}
