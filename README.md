@@ -44,6 +44,24 @@ script replaces the repository root with `<repo>` and the depot with `<depot>`,
 so every machine writes the same bytes. CI regenerates the fixtures and fails
 on any difference.
 
+## Frontend
+
+The page lives in `frontend/`, a Vite and Svelte project. From the repository
+root:
+
+    cd frontend && npm ci
+    npm test
+    npm run check
+    npm run dev
+
+`npm test` validates every fixture against the schema copy with ajv, then runs
+the unit tests of the pure modules over the fixtures. `npm run check` type-checks
+the sources. The TypeScript types are generated from the schema copy into
+`frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
+each of `dev`, `build`, `check` and `test`. The page draws nothing yet: it
+reads a picked or dropped descriptor and prints the outcome as text.
+`frontend/MAP.md` maps the files.
+
 ## The pin
 
 Redstone is unregistered, so the package pins it by revision: the root
@@ -70,7 +88,8 @@ and the fixtures regenerate against the old core.
 - `scripts/fixtures.jl`, `scripts/synthetic.jl`: the fixture script and its synthetic models.
 - `frontend/fixtures/`, `frontend/schema/`: the committed descriptors and schema copy.
 - `Artifacts.toml`: the bundle's entry, written by the release workflow.
-- `.github/workflows/CI.yml`: the package suite and the fixtures' drift check.
+- `frontend/`: the page, mapped in `frontend/MAP.md`.
+- `.github/workflows/CI.yml`: the package suite, the fixtures' drift check and the frontend's check and tests.
 
 ## License
 
