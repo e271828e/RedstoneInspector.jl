@@ -11,7 +11,7 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
 
 [sources]
-Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "4e51cbcd98bf4ec505e56e1d1eef118c645c069f"}
+Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "abf1d81f6e0c35e0721710cd6a1589a0b6ac7ae2"}
 
 [compat]
 JSON = "1"
