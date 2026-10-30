@@ -540,9 +540,6 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
   expanded; no fixture has one.
 - The tree's `▸` chevron reads small in the system font.
 - The console shows one 404, the favicon's.
-- The brief's pin "the chevron again collapses `sensing` to 8 rows" disagrees
-  with its session shape, which gives 11; the check pins the collapse by its two
-  rows and awaits a ruling.
 - The layout of `closed_loop`'s root is tangled, feedback wires looping over and
   under the level, as the spike found; greedy cycle breaking left it as it
   was and nothing else was tuned.
