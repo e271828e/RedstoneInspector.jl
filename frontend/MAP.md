@@ -529,11 +529,15 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
 - **A face row's middle.** Playwright clicks an element's centre, which in a face
   row can be a consumer link; the check clicks the `.face-name` cell.
 - **Word breaking in the pane.** `overflow-wrap: anywhere` lets a table cell's
-  min-content shrink to one character, which squashed `Float64`; the pane uses
-  `break-word` and the faces table's cells `nowrap` but the links and the type.
-  The type cell breaks anywhere above a `min-width` of `8ch`, so
-  `lqr_controller/tracker`'s `StaticArraysCore.SVector{5, Float64}` wraps and
-  `Float64` does not.
+  min-content shrink to one character, which squashed `Float64`; the type cell
+  breaks anywhere above a `min-width` of `8ch`, so `lqr_controller/tracker`'s
+  `StaticArraysCore.SVector{5, Float64}` wraps and `Float64` does not. The
+  face name, the kind phrase, the links and both parameter cells break
+  anywhere too, which auto layout uses only under pressure, so a name stays
+  whole until the pane is too narrow for the row; only the side, pinned and
+  stage cells are `nowrap`. CI's wider Linux fonts overflowed the tracker's
+  pane by 9 px with the name and kind cells `nowrap`, which no Mac run showed;
+  the check now also pins the pane at its narrowest width through the prefs.
 
 ## Open items
 

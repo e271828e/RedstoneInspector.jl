@@ -192,10 +192,11 @@
   table { border-collapse: collapse; width: 100%; }
   td, th { padding: 2px 6px 2px 0; vertical-align: top; text-align: left; }
   th { font-weight: 400; color: var(--text-light); font-size: 11px; }
-  .parameters td:first-child { white-space: nowrap; }
+  .parameters td { overflow-wrap: anywhere; }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }
-  .faces td:not(.links, .face-type) { white-space: nowrap; }
+  .faces .side, .faces .pinned, .faces .stage { white-space: nowrap; }
+  .faces .face-name, .faces .face-kind { overflow-wrap: anywhere; }
   .faces .links { overflow-wrap: anywhere; }
   .faces .side { color: var(--text-light); font-size: 11px; }
   .faces .face-name { font-weight: 600; }

@@ -182,8 +182,19 @@ test.describe("closed_loop", () => {
     await page.locator('g.block[data-id="lqr_controller/tracker"]').click();
     await expect(pane(page)).toHaveAttribute("data-id", "lqr_controller/tracker");
     const body = page.locator('.pane[data-pane="detail"] .body');
-    const { scroll, client } = await body.evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth }));
-    expect(scroll).toBe(client);
+    const widths = () => body.evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth }));
+    const wide = await widths();
+    expect(wide.scroll).toBe(wide.client);
+    // The same at the pane's narrowest width, through the stored prefs, so the fonts of the machine decide nothing.
+    await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
+      JSON.stringify({ version: 1, sizes: { tree: 280, detail: 240, drawer: 200 }, collapsed: { tree: false, detail: false } })));
+    await drop(page, "closed_loop");
+    await openPath(page, "lqr_controller");
+    await page.locator('g.block[data-id="lqr_controller/tracker"]').click();
+    await expect(pane(page)).toHaveAttribute("data-id", "lqr_controller/tracker");
+    const narrow = await widths();
+    expect(narrow.client).toBeLessThan(wide.client);
+    expect(narrow.scroll).toBe(narrow.client);
   });
 });
 
