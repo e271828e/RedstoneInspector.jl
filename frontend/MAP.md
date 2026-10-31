@@ -62,9 +62,10 @@ async and bound to ELK, `router.ts` DOM-free and synchronous. `src/live/socket.t
 alone touches `WebSocket`. The stores live under `src/state/`, Svelte runes in
 `.svelte.ts` modules; `prefs.svelte.ts` alone touches local storage, and its
 `parsePrefs` is pure; `session.svelte.ts` alone touches `history` and writes
-the hash, which `App.svelte` also reads on `popstate`. `rekey.ts` is generic over the layout's type, so `src/lib/` never
-imports `src/canvas/`. The panes receive what they show and call back what they
-change; only `Frame.svelte` knows where they sit, and only `App.svelte` wires
+the hash, which `App.svelte` also reads on `popstate`. `rekey.ts` is generic
+over the layout's type, so `src/lib/` never imports `src/canvas/`. The panes
+receive what they show and call back what they change; only `Frame.svelte`
+knows where they sit, and only `App.svelte` wires
 them to the stores. The code imports the generated types by name from
 `./descriptor`.
 
@@ -629,7 +630,7 @@ the page's socket fails against `vite preview`, so every check but
   `sensing`; Right, Shift-`l`, Left, Shift-`h`, Down, Shift-`j`, Up, Shift-`k`
   each moving the `viewBox` by `48 / scale` within 0.01 and no selection made;
   `+` dividing the width by 1.25 and `=` again, `-` three times, all about the
-  center within 0.01, `0` restoring the fitted `viewBox`, and again after a
+  center within 0.01 with the pointer resting off-center over the canvas, `0` restoring the fitted `viewBox`, and again after a
   pan; `d` opening the drawer on `diagnostics` and closing it; Tab from the
   body focusing `nav.tree`, `.viewport`, `aside.detail`, `section.drawer`,
   `nav.tree`, and Shift-Tab back, each the one `.focused` and the active
@@ -641,16 +642,18 @@ the page's socket fails against `vite preview`, so every check but
   `#level=sensing` after a double-click, `goBack` to the root with no hash and
   `goForward` to `sensing`; on `rates` `#level=fast`, `#level=fast/outer`, and
   Backspace to `#level=fast`; on `closed_loop` the wheel zoomed at `sensing`,
-  Backspace, `sensing` reopened from its tree row with the `viewBox` within
-  0.01 of the zoomed one and a `MutationObserver` counting no absence of
-  `data-ready` (no second layout); three clicks leaving `history.length` and
+  Backspace to the root with the hash empty, `sensing` reopened from its tree
+  row with the `viewBox` within 0.01 of the zoomed one and a `MutationObserver`
+  counting no absence of `data-ready` (no second layout); three clicks leaving `history.length` and
   the hash unchanged; the drop at `/#level=sensing` opening `sensing`, fitted
   (`0` changes nothing). Rekeying: `sensing` open, `sensing/noise` selected,
   zoomed, `actuators` expanded, `h` in the search; `closed_loop_deployment`
   dropped over it keeping the level, the selection, the `viewBox`, the
   expansion and the query, the status bar `deployment`, no `.fallback`; `rates`
   dropped, the level the root, `.fallback` naming `sensing` and "the root",
-  nothing selected, the query `h`, no hash; a `major: 2` copy refused on the
+  nothing selected and the pane the root level's own facts, "open level",
+  which a stale selection kept on the fallen level would not show, the query
+  `h`, no hash; a `major: 2` copy refused on the
   landing with no rows; `closed_loop` dropped, fresh at the root with 7 rows
   and no `.fallback`.
 - `drag.spec.ts` (initial 12, the spike): on `closed_loop` `plant` dragged by
@@ -695,7 +698,8 @@ the page's socket fails against `vite preview`, so every check but
   landing up and no `button.download`; `closed_loop`'s text sent, the root
   drawn, the title `closed_loop – Redstone inspector`, `.connection` reading
   `connected`, no `.landing`; the download's suggested name `closed_loop.json`
-  and its bytes equal to the sent text; `plant`'s first location titled "Open
+  and its bytes equal to the sent text, which is the fixture re-indented to 4
+  spaces so that a re-serialized download would differ; `plant`'s first location titled "Open
   in the editor" and clicked, the next message `open_location` with the row's
   file and line; `descent`'s text replacing the model, `build`, 4 rows; the
   mock closed, `data-state="lost"` reading "retrying", a second connection and
@@ -986,9 +990,9 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
   shows no type.
 - The download is offered only for a model that came over the socket; a file
   dropped in the live tab offers none.
-- Acceptable survivors among the brief's mutants: the backoff's 30 s cap, which
-  no check waits for; the five swallowed keys' `preventDefault`, since headless
-  Chromium has no find bar to open; `popstate` pushing again, a no-op while
-  `pushHash` skips a hash already standing.
+- Acceptable survivors among the brief's mutants: the five swallowed keys'
+  `preventDefault`, since headless Chromium has no find bar to open; `popstate`
+  pushing again, a no-op while `pushHash` skips a hash already standing. The
+  backoff's 30 s cap is pinned by `protocol.test.ts` at attempt 10.
 - The live tab's look, through `inspect` with `bundle_dir` at `frontend/dist`,
   is the user's look-and-adjust pass; no check runs the real server.
