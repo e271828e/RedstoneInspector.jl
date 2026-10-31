@@ -65,6 +65,7 @@ test("closed_loop: a revisited level keeps its view and is not laid out again", 
   });
   await press(page, "Backspace");
   await page.locator(readyLevel("")).waitFor();
+  expect(await hash(page)).toBe("");
   await page.locator('nav.tree .row[data-path="sensing"]').dblclick();
   await page.locator(readyLevel("sensing")).waitFor();
   await expectView(page, zoomed);
@@ -120,6 +121,11 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expect(fallback).toContainText("sensing");
   await expect(fallback).toContainText("the root");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  // nothing selected: the detail shows the root level
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-id", "");
+  // the root's facts, not the fallback an unresolved selection also tags as level ""
+  await expect(page.locator("aside.detail .facts").first()).toContainText("open level");
   await expect(page.locator("input.query")).toHaveValue("h");
   expect(await hash(page)).toBe("");
   await shot(page, "rates", "", "fallback");

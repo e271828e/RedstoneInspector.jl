@@ -26,7 +26,8 @@ test("a live tab greets, draws pushes, saves the bytes, opens locations, and rec
   await expect(page.locator("button.download")).toHaveCount(0);
   await shot(page, "none", "", "live");
 
-  const text = fixtureText("closed_loop");
+  // Valid but not canonical, so a re-serialized download would differ.
+  const text = JSON.stringify(JSON.parse(fixtureText("closed_loop")), null, 4);
   mock.send(text);
   await page.locator(readyLevel("")).waitFor();
   await expect(page).toHaveTitle("closed_loop – Redstone inspector");

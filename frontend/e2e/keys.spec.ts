@@ -123,6 +123,9 @@ test("+ and - zoom by 1.25 about the center, = is +, 0 restores the fit", async 
     expect(Math.abs(cy - fy), `${what} center y`).toBeLessThan(0.01);
     return v;
   };
+  // the pointer rests off-center over the canvas: the keys still zoom about the center
+  const canvas = (await page.locator("svg.canvas").boundingBox())!;
+  await page.mouse.move(canvas.x + canvas.width * 0.2, canvas.y + canvas.height * 0.3);
   await press(page, "+");
   expect(Math.abs((await expectCenter("+")).width - fitted.width / 1.25)).toBeLessThan(0.01);
   await press(page, "=");

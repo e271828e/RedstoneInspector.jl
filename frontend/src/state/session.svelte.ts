@@ -205,10 +205,6 @@ export function setFocus(region: Region | undefined) {
   focus = region;
 }
 
-export function clearNote() {
-  note = undefined;
-}
-
 /** Escape's chain: a standing query is cleared, else the selection. The route's step waits for increment 7. */
 export function escape() {
   if (query !== "") query = "";

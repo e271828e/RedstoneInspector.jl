@@ -61,8 +61,8 @@ the level, the frame's components draw the panes; `layout.ts` is DOM-free but
 async and bound to ELK, `router.ts` DOM-free and synchronous. `src/live/socket.ts`
 alone touches `WebSocket`. The stores live under `src/state/`, Svelte runes in
 `.svelte.ts` modules; `prefs.svelte.ts` alone touches local storage, and its
-`parsePrefs` is pure; `session.svelte.ts` alone touches `history` and the
-hash. `rekey.ts` is generic over the layout's type, so `src/lib/` never
+`parsePrefs` is pure; `session.svelte.ts` alone touches `history` and writes
+the hash, which `App.svelte` also reads on `popstate`. `rekey.ts` is generic over the layout's type, so `src/lib/` never
 imports `src/canvas/`. The panes receive what they show and call back what they
 change; only `Frame.svelte` knows where they sit, and only `App.svelte` wires
 them to the stores. The code imports the generated types by name from
@@ -159,8 +159,7 @@ The three lifetimes of `workspace.md` answer 9.
     expands the ancestors. The hash is `#level=` and the path through
     `encodeURIComponent` with `%2F` put back to `/`; the root has none.
   - `setView`, `setLayout` (stores `stale: false`), `setQuery`, `setFocus`,
-    `clearNote`, and `escape`: a non-empty query is cleared, else the
-    selection.
+    and `escape`: a non-empty query is cleared, else the selection.
 - **The push's rekeying** (`rekey.ts`), as built: the level stays when it is
   still a level (the root or an assembly), else falls to its longest
   segment-aligned prefix that is, the root at worst, with `note` reading
@@ -985,7 +984,6 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
   the new model carries one; the records say nothing of it.
 - A face hit found by a `type:` term alone carries no `mark`, since its row
   shows no type.
-- `clearNote` in the session is exported and unused.
 - The download is offered only for a model that came over the socket; a file
   dropped in the live tab offers none.
 - Acceptable survivors among the brief's mutants: the backoff's 30 s cap, which
