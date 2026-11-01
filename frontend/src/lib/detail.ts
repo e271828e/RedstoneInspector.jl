@@ -42,6 +42,44 @@ export function timingPhrase(t: Timing, anchors: Anchor[]): string {
   return `${base}${rate}, m ${t.m}, c ${t.c}`;
 }
 
+/** An ordinal: 2nd, 3rd, 4th, 11th, 21st. */
+function ordinal(n: number): string {
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  return `${n}${teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
+}
+
+/**
+ * A discrete leaf's rate as a phrase: anchor 0 as "every base tick", another anchor as "every tick of q_ctl,
+ * 1/50 s" with its key and T, and its tau when non-zero; `m` > 1 as "every 4th", `c` > 0 adding ", offset 1".
+ */
+export function ratePhrase(t: Timing, anchors: Anchor[]): string {
+  const every = t.m === 1 ? "every" : `every ${ordinal(t.m)}`;
+  const a = t.anchor === 0 ? undefined : anchors[t.anchor - 1];
+  const head = t.anchor === 0 ? `${every} base tick`
+    : !a ? `${every} tick of anchor ${t.anchor}`
+    : `${every} tick of ${a.key}, ${rational(a.T)} s${a.tau.num === 0 ? "" : `, tau ${rational(a.tau)} s`}`;
+  return t.c > 0 ? `${head}, offset ${t.c}` : head;
+}
+
+/** The class and, on a leaf, the tier: "leaf, continuous", "assembly". */
+export const classPhrase = (kind: "leaf" | "assembly", tier?: string): string => (tier ? `${kind}, ${tier}` : kind);
+
+/** The membership kind explained, the member row's hover title. */
+export function memberTitle(m: { how: Membership | undefined; field: string; key: string }): string {
+  if (m.how === "keyed") return `Keyed: an element of the container in field ${m.field}, its path segment ${m.field}/${m.key}.`;
+  if (m.how === "transparent") return `Transparent: an element of the container in field ${m.field}, its path segment the key ${m.key} alone.`;
+  return `An element of the container in field ${m.field} under key ${m.key}, its path segment neither ${m.field}/${m.key} nor ${m.key}.`;
+}
+
+/** What each fact's label means, its hover title. */
+export const FACT_TITLES = {
+  type: "The block's Julia type, qualified by its module, with the alias the library gives it when it gives one.",
+  class: "Whether the node is a leaf or an assembly and, for a leaf, its tier: continuous or discrete.",
+  rate: "When the discrete leaf runs: every m-th tick of its anchor's grid, offset by c ticks.",
+  children: "How many child nodes the assembly holds directly.",
+  member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
+} as const;
+
 /** One face's facts: its type and kind phrase, what feeds it and what it feeds, an output's stage. */
 export interface FaceFacts {
   face: Face;
@@ -77,7 +115,8 @@ export interface NodeFacts {
   segment: string;
   displayName: string;
   tier?: "continuous" | "discrete";
-  timing?: string;
+  /** A discrete leaf's rate: the phrase and the timing in full for its hover title. A continuous leaf has none. */
+  rate?: { phrase: string; title: string };
   membership?: { how: Membership | undefined; field: string; key: string };
   alias?: string;
   type: string;
@@ -154,7 +193,7 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
   if (n.key !== undefined) facts.membership = { how: tree.membership.get(path), field: n.field!, key: n.key };
   if (n.class === "leaf") {
     facts.tier = n.tier;
-    facts.timing = timingPhrase(n.timing, s.anchors);
+    if (n.tier === "discrete") facts.rate = { phrase: ratePhrase(n.timing, s.anchors), title: timingPhrase(n.timing, s.anchors) };
   } else {
     facts.children = tree.children.get(path)!.length;
   }

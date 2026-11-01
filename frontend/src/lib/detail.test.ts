@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { KindMarker } from "./descriptor";
 import {
-  detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, nodeFacts, pinFacts, portFacts, timingPhrase, wireFacts,
+  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberTitle, nodeFacts, pinFacts, portFacts,
+  ratePhrase, timingPhrase, wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
 import { fixtureModel } from "./fixtures";
@@ -44,7 +45,45 @@ describe("timingPhrase", () => {
   });
   it("rates' fast/outer/hold hangs from anchor fast at m 2, T 1/50", () => {
     const r = fixtureModel("rates");
-    expect(nodeFacts(r, "fast/outer/hold").timing).toBe("anchor fast (T 1/50 s, tau 0/1 s), m 2, c 0");
+    expect(nodeFacts(r, "fast/outer/hold").rate?.title).toBe("anchor fast (T 1/50 s, tau 0/1 s), m 2, c 0");
+  });
+});
+
+describe("ratePhrase", () => {
+  const q = { key: "q_ctl", T: { num: 1, den: 50 }, tau: { num: 0, den: 1 }, scope: "pid_controller" };
+  it.each([
+    [{ anchor: 0, m: 1, c: 0 }, "every base tick"],
+    [{ anchor: 0, m: 4, c: 0 }, "every 4th base tick"],
+    [{ anchor: 0, m: 4, c: 1 }, "every 4th base tick, offset 1"],
+    [{ anchor: 0, m: 2, c: 3 }, "every 2nd base tick, offset 3"],
+    [{ anchor: 0, m: 3, c: 0 }, "every 3rd base tick"],
+    [{ anchor: 0, m: 11, c: 0 }, "every 11th base tick"],
+    [{ anchor: 0, m: 22, c: 0 }, "every 22nd base tick"],
+    [{ anchor: 1, m: 1, c: 0 }, "every tick of q_ctl, 1/50 s"],
+    [{ anchor: 1, m: 5, c: 2 }, "every 5th tick of q_ctl, 1/50 s, offset 2"],
+  ])("inline %o reads %s", (t, phrase) => {
+    expect(ratePhrase(t, [q])).toBe(phrase);
+  });
+  it("a non-zero tau joins the anchor's T", () => {
+    expect(ratePhrase({ anchor: 1, m: 1, c: 0 }, [{ ...q, tau: { num: 1, den: 100 } }])).toBe("every tick of q_ctl, 1/50 s, tau 1/100 s");
+  });
+  it("the fixtures: rates' hold every 2nd tick of fast, closed_loop's q_ctl, a discrete leaf at anchor 0", () => {
+    expect(nodeFacts(fixtureModel("rates"), "fast/outer/hold").rate?.phrase).toBe("every 2nd tick of fast, 1/50 s");
+    const ctl = nodeFacts(cl, "pid_controller/q_ctl");
+    expect(ctl.rate).toEqual({ phrase: "every tick of q_ctl, 1/50 s", title: "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0" });
+    const kinds = fixtureModel("kinds");
+    const discrete = [...kinds.tree!.byPath.values()].find((n) => n.class === "leaf" && n.tier === "discrete")!;
+    expect(nodeFacts(kinds, discrete.path).rate?.phrase).toBe("every base tick");
+  });
+  it("a continuous leaf has no rate; the class phrase names the tier", () => {
+    const p = nodeFacts(cl, "plant");
+    expect(p.rate).toBeUndefined();
+    expect(classPhrase(p.kind, p.tier)).toBe("leaf, continuous");
+    expect(classPhrase("assembly")).toBe("assembly");
+  });
+  it("the member title explains the kind", () => {
+    expect(memberTitle({ how: "transparent", field: "children", key: "plant" })).toMatch(/^Transparent: .*children.*plant/);
+    expect(memberTitle({ how: "keyed", field: "gains", key: "a" })).toMatch(/^Keyed: .*gains\/a/);
   });
 });
 
@@ -60,8 +99,8 @@ describe("closed_loop's elements", () => {
 
   it("plant, a leaf", () => {
     const p = nodeFacts(cl, "plant");
-    expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.timing, p.alias, p.type])
-      .toEqual(["leaf", "plant", "Longitudinal", "plant", "continuous", "the base grid, m 1, c 0", undefined, "RedstoneExamples.Longitudinal"]);
+    expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.rate, p.alias, p.type])
+      .toEqual(["leaf", "plant", "Longitudinal", "plant", "continuous", undefined, undefined, "RedstoneExamples.Longitudinal"]);
     expect(p.membership).toEqual({ how: "transparent", field: "children", key: "plant" });
     expect([p.parameters.length, p.locations.length, !!p.docstring]).toEqual([14, 3, true]);
     expect(p.inputs.map((f) => [f.name, f.type, f.phrase, f.pinned])).toEqual([["δe", "Float64", "float", false], ["δt", "Float64", "float", false]]);
@@ -84,7 +123,7 @@ describe("closed_loop's elements", () => {
 
   it("sensing, a closed assembly", () => {
     const s = nodeFacts(cl, "sensing");
-    expect([s.kind, s.displayName, s.children, s.tier, s.timing]).toEqual(["assembly", "Group", 2, undefined, undefined]);
+    expect([s.kind, s.displayName, s.children, s.tier, s.rate]).toEqual(["assembly", "Group", 2, undefined, undefined]);
     expect(s.inputs.map((f) => [f.name, f.type, f.phrase])).toEqual([["h", "Float64", "float"]]);
     expect(s.outputs.map((f) => [f.name, f.type, f.stage])).toEqual([["h_meas", "Float64", undefined]]);
     expect(by(s.inputs, "h").producer).toEqual(face("plant", "out", "h"));

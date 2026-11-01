@@ -1,6 +1,7 @@
 // The detail pane (workspace.md answer 4): each layout read field by field on
-// closed_loop, the links and face rows that select, the copy button; rates' scope
-// line and containers' folder keys.
+// closed_loop, the labelled facts with their titles, the open button beside the copy
+// button, the links and face rows that select, the copy button; rates' scope line and
+// rate row, and containers' folder keys.
 import { test, type Page } from "@playwright/test";
 import { clickWire, drop, expect, openPath, readyLevel, shot } from "./fixtures";
 
@@ -8,6 +9,13 @@ const pane = (page: Page) => page.locator("aside.detail");
 const faceRow = (page: Page, port: string) => pane(page).locator(`table.faces tr[data-port="${port}"]`);
 const link = (page: Page, cls: "producer" | "consumer", path: string, port: string) =>
   pane(page).locator(`a.${cls}[data-path="${path}"][data-port="${port}"]`);
+const fact = (page: Page, name: string) => pane(page).locator(`dl.facts dd[data-fact="${name}"]`);
+/** The facts list's labels in order, and that each carries a one-sentence hover title. */
+async function expectLabels(page: Page, labels: string[]) {
+  const dts = pane(page).locator("dl.facts dt");
+  await expect(dts).toHaveText(labels);
+  for (const t of await dts.evaluateAll((els) => els.map((e) => e.getAttribute("title") ?? ""))) expect(t).toMatch(/^[A-Z].+\.$/);
+}
 
 test.describe("closed_loop", () => {
   test.beforeEach(async ({ page }) => {
@@ -33,23 +41,32 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator("h2 .segment")).toHaveText("plant");
     await expect(pane(page).locator("h2 .name")).toHaveText("Longitudinal");
     await expect(pane(page).locator(".path")).toHaveText("plant");
-    const facts = pane(page).locator(".facts");
-    for (const t of ["leaf", "continuous", "the base grid, m 1, c 0", "transparent in field children, key plant"]) {
-      await expect(facts).toContainText(t);
-    }
+    // the labelled facts: a continuous leaf has no rate row
+    await expectLabels(page, ["type", "class", "member"]);
+    await expect(fact(page, "class")).toHaveText("leaf, continuous");
+    await expect(fact(page, "rate")).toHaveCount(0);
+    await expect(fact(page, "member")).toHaveText("field children, key plant");
+    await expect(fact(page, "member")).toHaveAttribute("title", /^Transparent: /);
     await expect(pane(page).locator(".alias")).toHaveCount(0);
-    await expect(pane(page).locator(".type")).toHaveText("RedstoneExamples.Longitudinal");
+    await expect(fact(page, "type").locator(".type")).toHaveText("RedstoneExamples.Longitudinal");
+    await expect(pane(page).locator("button.open-level")).toHaveCount(0);
     await expect(pane(page).locator("details.signature")).toHaveCount(0);
     await expect(pane(page).locator(".parameters tr")).toHaveCount(14);
     await expect(pane(page).locator(".locations li")).toHaveCount(3);
     const docstring = pane(page).locator("details.docstring");
     await expect(docstring).toHaveCount(1);
     await expect(docstring).not.toHaveAttribute("open");
-    // raw textContent: the summary is the first non-empty line without its leading spaces
+    // the summary: the title, then the first non-empty line without its leading spaces, on one line
     const doc = (await docstring.locator("pre.docstring").textContent())!;
-    const summary = (await docstring.locator("summary").textContent())!;
-    expect(summary).toMatch(/^Longitudinal\(/);
-    expect(summary).toBe(doc.split("\n").find((l) => l.trim())!.trimStart());
+    await expect(docstring.locator("summary .title")).toHaveText("docstring");
+    const first = (await docstring.locator("summary .first").textContent())!;
+    expect(first).toMatch(/^Longitudinal\(/);
+    expect(first).toBe(doc.split("\n").find((l) => l.trim())!.trimStart());
+    const line = await docstring.locator("summary .first").evaluate((e) => ({
+      height: e.getBoundingClientRect().height, overflow: getComputedStyle(e).textOverflow, wrap: getComputedStyle(e).whiteSpace,
+    }));
+    expect(line.height).toBeLessThan(20);
+    expect([line.overflow, line.wrap]).toEqual(["ellipsis", "nowrap"]);
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["δe", "δt"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["V", "γ", "θ", "q", "h", "α"]);
     await expect(pane(page).locator("table.faces tr[data-port] .face-type")).toHaveText(Array(8).fill("Float64"));
@@ -94,10 +111,16 @@ test.describe("closed_loop", () => {
     await openPath(page, "sensing");
     await page.locator('g.block[data-id="sensing/altimeter"]').click();
     await expect(pane(page).locator("h2 .name")).toHaveText("SumJunction");
-    await expect(pane(page).locator(".alias")).toHaveText("Redstone.Blocks.SumJunction");
-    await expect(pane(page).locator(".type")).toHaveText("Redstone.Blocks.Junction");
+    await expect(fact(page, "type").locator(".alias")).toHaveText("Redstone.Blocks.SumJunction");
+    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Blocks.Junction");
     const signature = pane(page).locator("details.signature");
     await expect(signature).not.toHaveAttribute("open");
+    await expect(signature.locator("summary")).toHaveText("signature");
+    // below the header: the facts, the signature, the docstring, the locations
+    const order = await pane(page).evaluate((aside) => ["dl.facts", "details.signature", "details.docstring", ".locations"]
+      .map((s) => [...aside.querySelectorAll("*")].indexOf(aside.querySelector(s)!)));
+    expect(order.every((i) => i >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
     await expect(signature.locator("code")).toHaveText("Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}");
     await expect(faceRow(page, "sensing/altimeter|in|in1").locator('a.producer[data-path="plant"][data-port="h"]')).toHaveCount(1);
   });
@@ -109,14 +132,26 @@ test.describe("closed_loop", () => {
     await page.locator('g.block[data-id="sensing"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "assembly");
     await expect(pane(page).locator("h2 .name")).toHaveText("Group");
-    await expect(pane(page).locator(".facts")).toContainText("2 children");
-    await expect(pane(page).locator(".facts")).not.toContainText("continuous");
+    await expectLabels(page, ["type", "class", "children", "member"]);
+    await expect(fact(page, "class")).toHaveText("assembly");
+    await expect(fact(page, "children")).toHaveText("2");
+    // the open button stands beside the copy button on the path line
+    await expect(pane(page).locator(".path-line button.copy + button.open-level")).toHaveCount(1);
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["h"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["h_meas"]);
     await expect(pane(page).locator("table.faces .stage")).toHaveCount(0);
     await pane(page).locator("button.open-level").click();
     await page.locator(readyLevel("sensing")).waitFor();
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
+  });
+
+  test("pid_controller/q_ctl: a discrete leaf's rate row, its timing in the title", async ({ page }) => {
+    await openPath(page, "pid_controller");
+    await page.locator('g.block[data-id="pid_controller/q_ctl"]').click();
+    await expectLabels(page, ["type", "class", "rate", "member"]);
+    await expect(fact(page, "class")).toHaveText("leaf, discrete");
+    await expect(fact(page, "rate")).toHaveText("every tick of q_ctl, 1/50 s");
+    await expect(fact(page, "rate")).toHaveAttribute("title", "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0");
   });
 
   test("the root wire into sensing|in|h: the wire layout", async ({ page }) => {
@@ -205,6 +240,10 @@ test("rates: level fast's scope line", async ({ page }) => {
   const scopes = pane(page).locator(".scopes li");
   await expect(scopes).toHaveCount(1);
   for (const t of ["fast", "anchor fast", "T 1/50", "m 1"]) await expect(scopes).toContainText(t);
+  await page.locator('g.block[data-id="fast/outer"]').dblclick();
+  await page.locator(readyLevel("fast/outer")).waitFor();
+  await page.locator('g.block[data-id="fast/outer/hold"]').click();
+  await expect(fact(page, "rate")).toHaveText("every 2nd tick of fast, 1/50 s");
 });
 
 test("containers: the folder's keys select their nodes", async ({ page }) => {

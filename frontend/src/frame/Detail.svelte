@@ -2,7 +2,9 @@
   // The detail pane (workspace.md answer 4): one layout per element kind over
   // detail.ts's facts, the open level's when nothing is selected. Links select
   // through the session; nothing here is truncated, the pane scrolls.
-  import { detailOf, faceSelection, type FaceFacts, type Facts, type NodeFacts, type Selection } from "../lib/detail";
+  import {
+    classPhrase, detailOf, FACT_TITLES, faceSelection, memberTitle, type FaceFacts, type Facts, type Selection,
+  } from "../lib/detail";
   import type { Model } from "../lib/model";
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
@@ -39,22 +41,18 @@
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
   const firstLine = (doc: string) => doc.split("\n").find((l) => l.trim())!.trimStart();
   const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-  /** The facts line: class, tier, timing, child count, membership. */
-  const nodeLine = (f: NodeFacts) => [
-    f.kind, f.tier, f.timing, f.children === undefined ? undefined : count(f.children, "child", "children"),
-    f.membership && `${f.membership.how ?? "member"} in field ${f.membership.field}, key ${f.membership.key}`,
-  ].filter((x) => x !== undefined).join(" · ");
   /** A face row selects its port, or on the level's layout the level's pin. */
   const rowSelection = (f: Face): Selection => facts?.kind === "level"
     ? { level, target: { kind: "block", id: f.side === "in" ? inPinId(f.port) : outPinId(f.port) } }
     : faceSelection(model.tree!, f);
 </script>
 
-{#snippet header(segment: string, name: string, path: string)}
+{#snippet header(segment: string, name: string, path: string, opens = false)}
   <h2><span class="segment">{segment}</span> <span class="name">{name}</span></h2>
   <div class="path-line">
     <code class="path" title={path || "/"}>{path || "/"}</code>
     <button class="copy" title="Copy the path" onclick={() => copy(path)}>{copied === path ? "Copied" : "Copy"}</button>
+    {#if opens}<button class="open-level" title={`Open ${segment} as the level`} onclick={() => onopen(path)}>Open</button>{/if}
   </div>
 {/snippet}
 
@@ -113,14 +111,37 @@
       {/if}
       {@render faces(facts.inputs, facts.outputs, false, false)}
     {:else if "signature" in facts}
-      {@render header(facts.segment, facts.displayName, facts.path)}
-      <p class="facts">{nodeLine(facts)}</p>
-      {#if facts.alias}<p class="alias" title="the alias"><code>{facts.alias}</code></p>{/if}
-      <p class="type" title="the qualified type"><code>{facts.type}</code></p>
+      {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly")}
+      <dl class="facts">
+        <dt title={FACT_TITLES.type}>type</dt>
+        <dd data-fact="type">
+          <code class="type">{facts.type}</code>{#if facts.alias}<span class="aside">alias</span><code class="alias">{facts.alias}</code>{/if}
+        </dd>
+        <dt title={FACT_TITLES.class}>class</dt>
+        <dd data-fact="class">{classPhrase(facts.kind, facts.tier)}</dd>
+        {#if facts.rate}
+          <dt title={FACT_TITLES.rate}>rate</dt>
+          <dd data-fact="rate" title={facts.rate.title}>{facts.rate.phrase}</dd>
+        {/if}
+        {#if facts.children !== undefined}
+          <dt title={FACT_TITLES.children}>children</dt>
+          <dd data-fact="children">{facts.children}</dd>
+        {/if}
+        {#if facts.membership}
+          <dt title={FACT_TITLES.member}>member</dt>
+          <dd data-fact="member" title={memberTitle(facts.membership)}>
+            field <code>{facts.membership.field}</code>, key <code>{facts.membership.key}</code>
+          </dd>
+        {/if}
+      </dl>
       {#if facts.signature !== facts.type}{#key facts.path}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/key}{/if}
-      {#if facts.kind === "assembly"}<p><button class="open-level" onclick={() => onopen(facts.path)}>Open {facts.segment}</button></p>{/if}
       {#if facts.docstring}
-        {#key facts.path}<details class="docstring"><summary>{firstLine(facts.docstring)}</summary><pre class="docstring">{facts.docstring}</pre></details>{/key}
+        {#key facts.path}
+          <details class="docstring">
+            <summary><span class="title">docstring</span><span class="first">{firstLine(facts.docstring)}</span></summary>
+            <pre class="docstring">{facts.docstring}</pre>
+          </details>
+        {/key}
       {/if}
       {#if facts.locations.length}
         <h3>Locations</h3>
@@ -187,12 +208,23 @@
   .path { color: var(--text-light); }
   .copy { font: 11px system-ui, sans-serif; padding: 0 6px; }
   .facts { margin: 8px 0; }
+  dl.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 10px; }
+  dl.facts dt { color: var(--text-light); font-size: 11px; line-height: 17px; cursor: help; }
+  dl.facts dd { margin: 0; overflow-wrap: break-word; }
+  dl.facts dd[title] { cursor: help; }
+  dl.facts .aside { color: var(--text-light); font-size: 11px; margin: 0 4px 0 8px; }
+  .open-level { font: 11px system-ui, sans-serif; padding: 0 6px; }
   p { margin: 6px 0; }
   code, pre, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-  .signature summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
+  .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
   .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
   details.docstring { margin: 8px 0; }
-  details.docstring summary { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; cursor: pointer; overflow-wrap: anywhere; }
+  details.docstring summary { white-space: nowrap; overflow: hidden; }
+  details.docstring summary .first {
+    display: inline-block; vertical-align: bottom; max-width: calc(100% - 90px); margin-left: 8px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; opacity: 0.8;
+  }
   pre.docstring { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 8px 0; border-radius: 3px; }
   ul { margin: 0; padding-left: 16px; }
   .locations { list-style: none; padding: 0; }
