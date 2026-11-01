@@ -18,6 +18,8 @@
   import type { Model } from "../lib/model";
   import { blockTriple, fromRootInput, legend, multiRate, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
   import { labelledPorts, levelWireClasses } from "../lib/wires";
+  import { iconOf } from "../lib/icons";
+  import { GLYPHS } from "./glyphs";
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
   import { follow as followView, type Box } from "../lib/navigate";
@@ -26,7 +28,7 @@
   import { palette, tint, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutName, cutType, FACE_FONT, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, cutConstant, FONT_STACK, cutName, cutType, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
@@ -414,6 +416,15 @@
           <path d="M0,0 L8,4 L0,8 z" fill={color} />
         </marker>
       {/each}
+      <!-- the library icons' glyphs, in the text color through `currentColor` -->
+      {#each Object.entries(GLYPHS) as [id, gl] (id)}
+        <symbol id="icon-{id}" viewBox="0 0 {gl.width} {ICON_HEIGHT}" width={gl.width} height={ICON_HEIGHT}>
+          <path d={gl.d} fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" />
+          {#if gl.text}
+            <text x={gl.text.x} y={gl.text.y} text-anchor="middle" font-size={gl.text.size} fill="currentColor" style="font-family:{FONT_STACK}">{gl.text.s}</text>
+          {/if}
+        </symbol>
+      {/each}
     </defs>
     {#if shown}
       {@const g = shown.geometry}
@@ -506,6 +517,7 @@
           {:else}
             {@const { c, step } = colorsOf(b)}
             {@const badge = badgeOf(b, step)}
+            {@const icon = iconOf(tree.byPath.get(b.path)!)}
             <g
               class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id}
               transform="translate({box.x},{box.y})" role="none"
@@ -522,7 +534,22 @@
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
               {/if}
               <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{b.segment}</text>
-              <text class="display" x={PAD} y={29} style="font:{NAME_FONT}">{cutName(b.displayName)}</text>
+              {#if !icon}
+                <text class="display" x={PAD} y={29} style="font:{NAME_FONT}">{cutName(b.displayName)}</text>
+              {:else if icon.kind === "glyph"}
+                <g class="icon" data-icon={icon.id}>
+                  <title>{icon.title}</title>
+                  <use href="#icon-{icon.id}" x={PAD} y={29 - 10} width={GLYPHS[icon.id].width} height={ICON_HEIGHT} />
+                </g>
+              {:else}
+                {@const text = icon.id === "constant" ? cutConstant(icon.text!) : icon.text!}
+                {@const squeeze = icon.id !== "constant" && textWidth(text, NAME_FONT) > ICON_WIDTH}
+                <g class="icon" data-icon={icon.id}>
+                  <title>{icon.title}</title>
+                  <text x={PAD} y={29} style="font:{NAME_FONT}" textLength={squeeze ? ICON_WIDTH : undefined}
+                        lengthAdjust={squeeze ? "spacingAndGlyphs" : undefined}>{text}</text>
+                </g>
+              {/if}
               {#if badge}
                 {@const w = Math.ceil(textWidth(badge.text, BADGE_FONT)) + 2 * BADGE_PAD}
                 <g class="badge-pill">
@@ -636,4 +663,6 @@
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }
+  /* An icon's glyph takes the text color; its title shows on hover. */
+  .icon { color: var(--text); pointer-events: bounding-box; }
 </style>

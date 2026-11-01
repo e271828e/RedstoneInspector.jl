@@ -1,6 +1,7 @@
 // Block sizes and port positions from measured text (visual_grammar.md answers
 // 1 to 3 and 10). DOM: text is measured with a 2D canvas context, nothing else.
 import type { Block, BlockSize, ChildBlock, Level, PortPosition } from "../lib/level";
+import { iconOf, type Icon } from "../lib/icons";
 import type { Tree } from "../lib/tree";
 
 /** One system sans stack for the whole canvas, no bundled or web font. */
@@ -16,6 +17,12 @@ export const BADGE_FONT = `9px ${FONT_STACK}`;
 
 /** The display name's fixed width, past which it is cut with an ellipsis. */
 export const DISPLAY_NAME_WIDTH = 120;
+/** An icon's fixed width, standing in for the display name's in the sizing rule (visual_grammar.md answer 7). */
+export const ICON_WIDTH = 44;
+/** An icon's height, the second line's. */
+export const ICON_HEIGHT = 12;
+/** A `Constant`'s value text's width, past which it is cut, shorter than a display name (answer 10). */
+export const CONSTANT_WIDTH = 60;
 /** A wire type label's fixed width, past which it is cut with an ellipsis (visual_grammar.md answer 4). */
 export const TYPE_LABEL_WIDTH = 140;
 export const PAD = 8;
@@ -32,9 +39,9 @@ export const PIN_HEIGHT = 22;
 /** A root tag's point, and the empty slot at its outer end. */
 export const POINT = 9;
 export const SLOT = POINT;
-const MIN_WIDTH = 60;
+export const MIN_WIDTH = 60;
 /** The gap between an input name and the output name on its row. */
-const GUTTER = 16;
+export const GUTTER = 16;
 
 let ctx: CanvasRenderingContext2D | null = null;
 export function textWidth(s: string, font: string): number {
@@ -57,11 +64,16 @@ function cutText(cuts: Map<string, string>, s: string, font: string, width: numb
   cuts.set(s, cut);
   return cut;
 }
-const names = new Map<string, string>(), types = new Map<string, string>();
+const names = new Map<string, string>(), types = new Map<string, string>(), constants = new Map<string, string>();
 /** The display name as drawn: whole when it fits the fixed width, else cut with an ellipsis. */
 export const cutName = (name: string): string => cutText(names, name, NAME_FONT, DISPLAY_NAME_WIDTH);
 /** A wire's type label as drawn, cut at `TYPE_LABEL_WIDTH`. */
 export const cutType = (type: string): string => cutText(types, type, LABEL_FONT, TYPE_LABEL_WIDTH);
+/** A `Constant`'s value as drawn, cut at `CONSTANT_WIDTH`. */
+export const cutConstant = (value: string): string => cutText(constants, value, NAME_FONT, CONSTANT_WIDTH);
+/** An icon's width in the head term: `ICON_WIDTH`, or a wider `Constant`'s cut text's. */
+export const iconWidth = (icon: Icon): number =>
+  icon.id === "constant" ? Math.max(ICON_WIDTH, textWidth(cutConstant(icon.text!), NAME_FONT)) : ICON_WIDTH;
 
 /** Whether a face of a leaf child is pinned. */
 export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: string): boolean {
@@ -81,7 +93,9 @@ export function sizeBlock(b: Block, tree: Tree): BlockSize {
   const rows = Math.max(b.inputs.length, b.outputs.length, 1);
   let body = 0;
   for (let i = 0; i < rows; i++) body = Math.max(body, face("in", b.inputs[i]) + face("out", b.outputs[i]));
-  const head = Math.max(textWidth(b.segment, SEGMENT_FONT), textWidth(cutName(b.displayName), NAME_FONT));
+  const icon = iconOf(tree.byPath.get(b.path)!);
+  const second = icon ? iconWidth(icon) : textWidth(cutName(b.displayName), NAME_FONT);
+  const head = Math.max(textWidth(b.segment, SEGMENT_FONT), second);
   const width = Math.ceil(Math.max(MIN_WIDTH, head + 2 * PAD, body + 2 * PAD + GUTTER));
   const row = (i: number) => HEADER + i * ROW + ROW / 2;
   return {
