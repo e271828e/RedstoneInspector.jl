@@ -268,15 +268,27 @@ test("Tab and Shift-Tab cycle the four regions, each the one focused", async ({ 
   }
 });
 
-test("t r y o and ? leave the selection, the view and the drawer as they were", async ({ page }) => {
+test("t o and ? leave the selection, the view and the drawer as they were", async ({ page }) => {
   await page.locator('g.block[data-id="plant"]').click();
   await press(page, "+");
   const before = { view: await viewBox(page), drawer: await page.locator("section.drawer").getAttribute("data-open") };
-  for (const key of ["t", "r", "y", "o", "?"]) await press(page, key);
+  for (const key of ["t", "o", "?"]) await press(page, key);
   await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
   expect(await viewBox(page)).toEqual(before.view);
   expect(await page.locator("section.drawer").getAttribute("data-open")).toBe(before.drawer);
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "");
+});
+
+test("r toggles the color mode, leaving the selection and the view", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  const before = await viewBox(page);
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+  await press(page, "r");
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "rate");
+  await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+  expect(await viewBox(page)).toEqual(before);
+  await press(page, "r");
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
 });
 
 test("Escape clears a standing query first, leaving the selection, then the selection", async ({ page }) => {

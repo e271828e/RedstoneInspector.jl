@@ -1,0 +1,135 @@
+// Rate mode's data (visual_grammar.md answer 6): each drawn block's timing
+// triple, the model's palette order, a level's legend and the multi-rate badge.
+import type { Node } from "./descriptor";
+import { producerFace, type LevelWire } from "./level";
+import type { Model } from "./model";
+import { terminalProducer } from "./resolve";
+
+/** A timing triple: the anchor's index (0 the base grid), the multiple `m` and the phase `c`. */
+export type Triple = [anchor: number, m: number, c: number];
+export const tripleKey = (t: Triple): string => t.join(",");
+/** The palette's colored steps; a triple from this index on is an extra. */
+export const STEPS = 8;
+
+const triple = (t: { anchor: number; m: number; c: number }): Triple => [t.anchor, t.m, t.c];
+const isDiscreteLeaf = (n: Node) => n.class === "leaf" && n.tier === "discrete";
+
+/** The timing triples of the discrete leaves beneath an assembly, in walk order, repeats kept. */
+function leafTriples(model: Model, path: string): Triple[] {
+  const tree = model.tree!;
+  const out: Triple[] = [];
+  for (const c of tree.children.get(path) ?? []) {
+    const n = tree.byPath.get(c)!;
+    if (n.class === "leaf") {
+      if (isDiscreteLeaf(n)) out.push(triple(n.timing));
+    } else out.push(...leafTriples(model, c));
+  }
+  return out;
+}
+
+/** An assembly's scope triple: its `scopes` row, else the nearest ancestor's, else the base grid. */
+function scopeTriple(model: Model, path: string): Triple {
+  const rows = model.structure!.scopes;
+  for (let p: string | undefined = path; p !== undefined; p = model.tree!.parent.get(p)) {
+    const row = rows.find((r) => r.path === p);
+    if (row) return triple(row.timing);
+  }
+  return [0, 1, 0];
+}
+
+/**
+ * A block's triple in rate mode: a discrete leaf's own timing, a closed assembly's scope triple when a discrete
+ * leaf lies beneath it; `undefined` for a continuous leaf and an assembly with none, which take the continuous color.
+ */
+export function blockTriple(model: Model, path: string): Triple | undefined {
+  const n = model.tree!.byPath.get(path);
+  if (!n) return undefined;
+  if (n.class === "leaf") return isDiscreteLeaf(n) ? triple(n.timing) : undefined;
+  return leafTriples(model, path).length > 0 ? scopeTriple(model, path) : undefined;
+}
+
+/** A triple's period in seconds, the anchor's `T` times `m`; the base grid before every anchor. */
+function period(model: Model, t: Triple): number {
+  if (t[0] === 0) return -1;
+  const T = model.structure!.anchors[t[0] - 1].T;
+  return (T.num / T.den) * t[1];
+}
+
+/**
+ * Every triple a drawn block takes, the root's leaf included when the root is primitive, in palette order: anchor 0
+ * first, then by period ascending, ties by anchor index, then `m`, then `c`. A triple's step is its index.
+ */
+export function tripleOrder(model: Model): Triple[] {
+  const seen = new Map<string, Triple>();
+  for (const n of model.structure!.nodes) {
+    if (n.path === "" && n.class !== "leaf") continue;
+    const t = blockTriple(model, n.path);
+    if (t) seen.set(tripleKey(t), t);
+  }
+  return [...seen.values()].sort((a, b) => period(model, a) - period(model, b) || a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+}
+
+/** Each triple's step by its key. */
+export const stepsOf = (model: Model): Map<string, number> => new Map(tripleOrder(model).map((t, i) => [tripleKey(t), i]));
+
+/** A triple read out: `anchor 1 (1/10 s) × 2, phase 1`, `base grid` for anchor 0, `× m` past 1, the phase past 0. */
+export function tripleText(model: Model, t: Triple): string {
+  const T = t[0] === 0 ? undefined : model.structure!.anchors[t[0] - 1].T;
+  const head = T ? `anchor ${t[0]} (${T.num}/${T.den} s)` : "base grid";
+  return `${head}${t[1] > 1 ? ` × ${t[1]}` : ""}${t[2] > 0 ? `, phase ${t[2]}` : ""}`;
+}
+
+/** The anchor's key and the scope declaring it, `fast at the root`; the base grid for anchor 0. */
+export function tripleTitle(model: Model, t: Triple): string {
+  if (t[0] === 0) return "the base grid";
+  const a = model.structure!.anchors[t[0] - 1];
+  return `${a.key} at ${a.scope === "" ? "the root" : a.scope}`;
+}
+
+export interface LegendLine {
+  triple: Triple;
+  step: number;
+  text: string;
+  title: string;
+}
+
+/** The blocks a level draws that can take a color: its children, or a primitive root's leaf. */
+function drawnPaths(model: Model, level: string): string[] {
+  const n = model.tree!.byPath.get(level)!;
+  return n.class === "leaf" ? [level] : model.tree!.children.get(level)!;
+}
+
+/** The triples visible on a level, each drawn block's, in palette order. */
+export function legend(model: Model, level: string, steps = stepsOf(model)): LegendLine[] {
+  const visible = new Map<string, Triple>();
+  for (const p of drawnPaths(model, level)) {
+    const t = blockTriple(model, p);
+    if (t) visible.set(tripleKey(t), t);
+  }
+  return [...visible.values()]
+    .map((t) => ({ triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
+    .sort((a, b) => a.step - b.step);
+}
+
+/** The distinct triples of the discrete leaves under an assembly, in walk order. */
+export function clocksBeneath(model: Model, path: string): Triple[] {
+  return [...new Map(leafTriples(model, path).map((t) => [tripleKey(t), t])).values()];
+}
+
+/** The multi-rate badge's count: the clocks beneath when any differs from the block's own triple, else 0. */
+export function multiRate(model: Model, path: string): number {
+  const own = blockTriple(model, path);
+  const clocks = clocksBeneath(model, path);
+  return own && clocks.some((t) => tripleKey(t) !== tripleKey(own)) ? clocks.length : 0;
+}
+
+/** Whether a level wire's terminal producer is a root input, whose wires stay neutral. */
+export function fromRootInput(model: Model, level: string, w: LevelWire): boolean {
+  return terminalProducer(model.resolution!, producerFace(level, w))?.end === "root-input";
+}
+
+/** A wire's terminal producer's triple; `undefined` from a root input (neutral) and from a continuous producer (the continuous tint). */
+export function wireTriple(model: Model, level: string, w: LevelWire): Triple | undefined {
+  const t = terminalProducer(model.resolution!, producerFace(level, w));
+  return t?.end === "leaf-output" ? blockTriple(model, t.face.path) : undefined;
+}

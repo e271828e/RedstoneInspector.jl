@@ -26,7 +26,7 @@
     setView, toggleDrawer, toggleExpanded, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
-  import { prefs, toggleCollapsed } from "./state/prefs.svelte";
+  import { prefs, setMode, toggleCollapsed } from "./state/prefs.svelte";
   import { onMount, tick } from "svelte";
 
   let refusal = $state<string | undefined>();
@@ -42,8 +42,8 @@
   const ZOOM_STEP = 1.25;
   /** The four regions in Tab's order, by their roots. */
   const REGIONS: [Region, string][] = [["tree", "nav.tree"], ["canvas", ".viewport"], ["detail", "aside.detail"], ["drawer", "section.drawer"]];
-  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: trace, rate mode, type labels, order badges, help. */
-  const RESERVED = new Set(["t", "r", "y", "o", "?"]);
+  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: trace, order badges, help. */
+  const RESERVED = new Set(["t", "o", "?"]);
 
   const model = $derived(session.model);
   /** The selection the canvas draws: one made on the open level, a folder excepted. */
@@ -216,6 +216,7 @@
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
     else if (key === "d" && !e.shiftKey) toggleDrawer(session.drawer.tab);
     else if (e.key === "/") focusSearch();
+    else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
     else handled = RESERVED.has(e.key); // swallowed until their increments
     if (handled) e.preventDefault();
   }
@@ -253,7 +254,7 @@
     <Frame drawerOpen={session.drawer.open}>
       {#snippet tree()}
         <Tree
-          {model} level={session.level} selection={session.selection} expanded={session.expanded}
+          {model} level={session.level} mode={prefs.mode} selection={session.selection} expanded={session.expanded}
           focused={session.focus === "tree"} {listing} {marks} {counts} onselect={select} onopen={open} ontoggle={toggleExpanded}
         >
           {#snippet search()}
@@ -265,13 +266,13 @@
         </Tree>
       {/snippet}
       {#snippet breadcrumb()}
-        <Breadcrumb {model} level={session.level} onopen={open} onfile={openFile} />
+        <Breadcrumb {model} level={session.level} mode={prefs.mode} onopen={open} onfile={openFile} onmode={setMode} />
       {/snippet}
       {#snippet canvas()}
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} selected={drawn} {hits}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} selected={drawn} {hits}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
@@ -294,7 +295,7 @@
       {/snippet}
       {#snippet status()}
         <StatusBar
-          {model} fallback={session.note} connection={live.state} received={live.text !== undefined}
+          {model} mode={prefs.mode} fallback={session.note} connection={live.state} received={live.text !== undefined}
           download={pushed ? live.text : undefined}
         />
       {/snippet}

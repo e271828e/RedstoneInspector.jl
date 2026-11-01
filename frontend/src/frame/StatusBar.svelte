@@ -6,9 +6,12 @@
   import type { Model } from "../lib/model";
   import { downloadName } from "../lib/protocol";
   import type { LiveState } from "../state/live.svelte";
+  import type { Mode } from "../state/prefs.svelte";
 
-  let { model, fallback, connection, received = false, download }: {
+  let { model, mode = "tier", fallback, connection, received = false, download }: {
     model?: Model;
+    /** The canvas's color mode, shown after the counts. */
+    mode?: Mode;
     fallback?: string;
     /** The live connection's state; nothing shows in the hosted copy or before the handshake resolves. */
     connection?: LiveState;
@@ -55,6 +58,7 @@
         no structure
       {/if}
     </span>
+    <span class="mode" data-mode={mode}>{mode} colors</span>
     {#if model.note}<span class="note">{model.note}</span>{/if}
     {#if fallback}<span class="fallback">{fallback}</span>{/if}
   {/if}
@@ -75,7 +79,7 @@
     border-top: 1px solid var(--border); background: var(--strip); font-size: 12px; white-space: nowrap; overflow: hidden;
   }
   .kind { font-weight: 600; }
-  .counts, .note { color: var(--text-light); }
+  .counts, .note, .mode { color: var(--text-light); }
   .fallback { font-weight: 600; }
   .connection { margin-left: auto; color: var(--text-light); }
   .connection[data-state="lost"] { font-weight: 600; }

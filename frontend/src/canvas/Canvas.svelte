@@ -6,7 +6,8 @@
 <script lang="ts">
   // The level's canvas: ELK's layout drawn as SVG (visual_grammar.md answers 1
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
-  // answers 3 and 4), halos and casings in the one highlight hue (answer 9).
+  // answers 3 and 4), halos and casings in the one highlight hue (answer 9), the
+  // tier or rate colors with the badge and the legend (answer 6).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -14,20 +15,24 @@
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId } from "../lib/level";
   import type { Model } from "../lib/model";
+  import { blockTriple, legend, multiRate, STEPS, stepsOf, tripleKey } from "../lib/rates";
+  import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
-  import { palette } from "./palette";
+  import { palette, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    cutName, FACE_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, cutName, FACE_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
+  let { model, path, mode = "tier", selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
     model: Model;
     path: string;
+    /** The color mode: by tier, or by rate with the badges and the legend. */
+    mode?: Mode;
     /** The target drawn as selected; the caller passes it only on the level it was selected on. */
     selected?: Target;
     /** The level's view the session holds, restored instead of fitting; read when the level is drawn. */
@@ -48,6 +53,11 @@
   } = $props();
 
   const FIT_PADDING = 24;
+  /**
+   * The badge pill: its inset from the block's right edge, its height and its text's side padding. It straddles
+   * the top edge, so it never covers the segment, which answer 10 never truncates.
+   */
+  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
   /** The wheel's zoom per pixel of scroll. */
@@ -69,6 +79,9 @@
 
   const tree = $derived(model.tree!);
   const stage1 = $derived(new Map((model.outputs?.components ?? []).map((c) => [c.path, new Set(c.stage1)])));
+  /** Each rate triple's palette step, over the whole model. */
+  const steps = $derived(stepsOf(model));
+  const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
 
   /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
   function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
@@ -291,6 +304,30 @@
   const isStage1 = (b: ChildBlock, name: string) => b.role === "leaf" && !!stage1.get(b.path)?.has(name);
   const tierColors = (b: ChildBlock) =>
     b.role === "assembly" ? palette.assembly : b.tier === "discrete" ? palette.discrete : palette.continuous;
+  /** A child's colors in the mode, and in rate mode its step: a palette step's, an extra's, or the continuous pair with no triple. */
+  function colorsOf(b: ChildBlock): { c: Pair; step?: number } {
+    if (mode === "tier") return { c: tierColors(b) };
+    const t = blockTriple(model, b.path);
+    const step = t && steps.get(tripleKey(t));
+    if (step === undefined) return { c: palette.continuous };
+    return { c: step < STEPS ? palette.rate[step] : palette.extra, step };
+  }
+  /** Rate mode's badge: the legend number of an extra, the clock count of a multi-rate assembly, joined when both. */
+  function badgeOf(b: ChildBlock, step: number | undefined): { text: string; title: string } | undefined {
+    if (mode !== "rate") return undefined;
+    const text: string[] = [], title: string[] = [];
+    if (step !== undefined && step >= STEPS) {
+      text.push(`#${step + 1}`);
+      title.push(`Rate ${step + 1} of the legend, past the palette's ${STEPS} colors.`);
+    }
+    const k = b.role === "assembly" ? multiRate(model, b.path) : 0;
+    if (k > 0) {
+      const clocks = `${k} ${k === 1 ? "clock" : "clocks"}`;
+      text.push(clocks);
+      title.push(`Multi-rate: the discrete leaves inside tick on ${clocks}, not all on this assembly's own.`);
+    }
+    return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
+  }
   /** A root tag: rounded at its outer end past the empty slot, pointed at its inner end. */
   function tagD(w: number, grow = 0): string {
     const r = PIN_HEIGHT / 2 + grow, x0 = SLOT + PIN_HEIGHT / 2, y0 = -grow, y1 = PIN_HEIGHT + grow;
@@ -333,6 +370,7 @@
 >
   <svg
     bind:this={svg} class="canvas" class:searching={!!hits} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
+    data-mode={mode}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
   >
@@ -407,9 +445,11 @@
               {@render port(b.id, pid, p.x, p.y, p.name, false)}
             </g>
           {:else}
-            {@const c = tierColors(b)}
+            {@const { c, step } = colorsOf(b)}
+            {@const badge = badgeOf(b, step)}
             <g
-              class={["block", b.role, blockClass(b)]} data-id={b.id} transform="translate({box.x},{box.y})" role="none"
+              class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id}
+              transform="translate({box.x},{box.y})" role="none"
               onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
               ondblclick={() => dblclick(b)}
@@ -418,12 +458,20 @@
             >
               <title>{`${b.path || "/"}\n${qualified(b.path)}`}</title>
               <rect class={["halo", { dashed: dashed(b) }]} x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx="7" />
-              <rect class="shape" width={box.width} height={box.height} rx="4" fill={c.fill} stroke={c.stroke} />
+              <rect class="shape" width={box.width} height={box.height} rx="4" fill={c.fill} stroke={c.stroke} data-step={step} />
               {#if b.role === "assembly"}
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
               {/if}
               <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{b.segment}</text>
               <text class="display" x={PAD} y={29} style="font:{NAME_FONT}">{cutName(b.displayName)}</text>
+              {#if badge}
+                {@const w = Math.ceil(textWidth(badge.text, BADGE_FONT)) + 2 * BADGE_PAD}
+                <g class="badge-pill">
+                  <title>{badge.title}</title>
+                  <rect x={box.width - BADGE_INSET - w} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
+                  <text class="badge" x={box.width - BADGE_INSET - BADGE_PAD} y={BADGE_TOP + 9} text-anchor="end" style="font:{BADGE_FONT}">{badge.text}</text>
+                </g>
+              {/if}
               {#each size.ports as p (p.side + p.name)}
                 {@const id = portId(b.id, p.side, p.name)}
                 {@const west = p.side === "in"}
@@ -444,6 +492,22 @@
     {/if}
   </svg>
   <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
+  {#if lines.length}
+    <div class="legend" aria-label="the rates on this level">
+      <ul>
+        {#each lines as l (l.step)}
+          <li data-step={l.step} title={l.title}>
+            {#if l.step < STEPS}
+              <span class="swatch" style:background={palette.rate[l.step].fill} style:border-color={palette.rate[l.step].stroke}></span>
+            {:else}
+              <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
+            {/if}
+            <span class="text">{l.text}</span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
 </div>
 
 {#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
@@ -465,6 +529,15 @@
   .viewport { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
   svg { display: block; touch-action: none; cursor: grab; }
   .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
+  .legend {
+    position: absolute; bottom: 8px; left: 8px; padding: 4px 8px; font: 11px system-ui, sans-serif;
+    background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
+  }
+  .legend ul { list-style: none; margin: 0; padding: 0; }
+  .legend li { display: flex; align-items: center; gap: 6px; line-height: 16px; }
+  .legend .swatch { width: 12px; height: 10px; border: 1px solid; border-radius: 2px; }
+  .legend .number { min-width: 20px; padding: 0 2px; border: 1px solid; border-radius: 6px; font-size: 9px; line-height: 10px; text-align: center; }
+  .badge-pill rect { fill: var(--bg); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
   .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }

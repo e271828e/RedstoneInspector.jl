@@ -1,7 +1,7 @@
 // One level as the canvas draws it (visual_grammar.md answers 3 and 4), and
 // the ELK graph over it. Sizes come from the caller: nothing here measures text.
 import type { ElkExtendedEdge, ElkNode } from "elkjs/lib/elk-api";
-import type { Resolution } from "./resolve";
+import type { Face, Resolution } from "./resolve";
 import { displayName, type Tree } from "./tree";
 
 /** An input face of the opened level, drawn as a pin with one output port. */
@@ -83,6 +83,12 @@ export function levelOf(tree: Tree, _res: Resolution, path: string): Level {
 }
 
 const levelWire = (from: LevelEnd, to: LevelEnd): LevelWire => ({ id: portId(to.block, "in", to.port), from, to });
+
+/** A level wire's producer as a face: the level's own input face from a pin, else the child's output face. */
+export function producerFace(level: string, w: LevelWire): Face {
+  const pin = w.from.block === inPinId(w.from.port);
+  return { path: pin ? level : w.from.block, side: pin ? "in" : "out", port: w.from.port };
+}
 
 function childBlock(tree: Tree, path: string): ChildBlock {
   const n = tree.byPath.get(path)!;

@@ -7,11 +7,15 @@
   import { palette } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
   import type { Model } from "../lib/model";
+  import { blockTriple, STEPS, stepsOf, tripleKey } from "../lib/rates";
+  import type { Mode } from "../state/prefs.svelte";
   import { folderOf, outlineRows, rowSelection, type Row } from "../lib/outline";
 
-  let { model, level, selection, expanded, focused = false, search, listing = false, marks, counts, onselect, onopen, ontoggle }: {
+  let { model, level, mode = "tier", selection, expanded, focused = false, search, listing = false, marks, counts, onselect, onopen, ontoggle }: {
     model: Model;
     level: string;
+    /** The canvas's color mode, which the dots follow. */
+    mode?: Mode;
     selection: Selection | undefined;
     expanded: ReadonlySet<string>;
     /** The keyboard's focus is in the tree region. */
@@ -58,9 +62,15 @@
     if (r.kind === "node") return counts.get(r.path) ?? 0;
     return (folderOf(model.tree!, r.path)?.members ?? []).reduce((n, m) => n + (marks.has(m) ? 1 : 0) + (counts.get(m) ?? 0), 0);
   }
+  const steps = $derived(stepsOf(model));
+  /** A row's dot: the tier's color, or in rate mode the triple's step, an extra, the continuous color, an assembly with no discrete leaf gray. */
   const dot = (r: Row) => {
     const n = model.tree!.byPath.get(r.path)!;
-    return n.class === "assembly" ? palette.assembly : n.tier === "discrete" ? palette.discrete : palette.continuous;
+    if (mode === "tier") return n.class === "assembly" ? palette.assembly : n.tier === "discrete" ? palette.discrete : palette.continuous;
+    const t = blockTriple(model, r.path);
+    const step = t && steps.get(tripleKey(t));
+    if (step !== undefined) return step < STEPS ? palette.rate[step] : palette.extra;
+    return n.class === "assembly" ? palette.assembly : palette.continuous;
   };
 </script>
 

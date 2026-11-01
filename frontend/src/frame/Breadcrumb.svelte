@@ -1,14 +1,19 @@
 <script lang="ts">
   // The open level's path as links (workspace.md answer 3), the root labelled as
-  // the tree labels it, the open control at the left end (answer 10).
+  // the tree labels it, the open control at the left end (answer 10), the
+  // color mode's segmented switch at the right end (answer 7).
   import type { Model } from "../lib/model";
+  import type { Mode } from "../state/prefs.svelte";
 
-  let { model, level, onopen, onfile }: {
+  let { model, level, mode = "tier", onopen, onfile, onmode }: {
     model: Model;
     level: string;
+    mode?: Mode;
     onopen: (path: string) => void;
     onfile: (file: File | undefined) => void;
+    onmode?: (mode: Mode) => void;
   } = $props();
+  const MODES: [Mode, string, string][] = [["tier", "tier", "Color by tier"], ["rate", "rate", "Color by rate"]];
 
   let input = $state<HTMLInputElement>();
   /** The open level's ancestors, root first, then the level itself. */
@@ -38,6 +43,13 @@
       {/if}
     {/each}
   </span>
+  <div class="controls">
+    <div class="mode" role="group" aria-label="the color mode">
+      {#each MODES as [m, text, title] (m)}
+        <button data-mode={m} aria-pressed={mode === m} {title} onclick={() => onmode?.(m)}>{text}</button>
+      {/each}
+    </div>
+  </div>
 </nav>
 
 <style>
@@ -51,4 +63,12 @@
   a { color: var(--highlight); text-decoration: none; }
   a:hover { text-decoration: underline; }
   .current { font-weight: 600; }
+  .controls { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
+  .controls button { font: 11px system-ui, sans-serif; padding: 1px 8px; }
+  .mode { display: flex; }
+  .mode button { border-radius: 0; margin: 0; }
+  .mode button:first-child { border-radius: 4px 0 0 4px; }
+  .mode button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  .controls button { border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  .controls button[aria-pressed="true"] { background: var(--strip); font-weight: 600; }
 </style>

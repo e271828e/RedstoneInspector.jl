@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
-import type { KindMarker } from "./descriptor";
+import type { KindMarker, LeafFace, StructureSection } from "./descriptor";
 import {
-  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberTitle, nodeFacts, pinFacts, portFacts,
+  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, levelLine, memberTitle, nodeFacts, pinFacts, portFacts,
   ratePhrase, timingPhrase, wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
 import { fixtureModel } from "./fixtures";
-import type { Face } from "./resolve";
+import type { Model } from "./model";
+import { buildResolution, type Face } from "./resolve";
+import { buildTree } from "./tree";
 
 const cl = fixtureModel("closed_loop");
 const face = (path: string, side: "in" | "out", port: string): Face => ({ path, side, port });
@@ -195,6 +197,23 @@ describe("other fixtures", () => {
     const l = levelFacts(fixtureModel("rates"), "fast") as LevelFacts;
     expect([l.children, l.wires, l.inputs.map((f) => f.name), l.outputs.map((f) => f.name)]).toEqual([2, 4, ["in"], ["inner", "outer"]]);
     expect(l.scopes).toEqual([{ key: "fast", timing: "anchor fast (T 1/50 s, tau 0/1 s), m 1, c 0" }]);
+  });
+
+  it("counts the level line in the singular for one child and one wire, the plural otherwise", () => {
+    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const id = { type: "T", signature: "T", parameters: [] };
+    const structure: StructureSection = {
+      nodes: [
+        { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [],
+          wires: [{ from: { path: "", port: "x" }, to: { path: "L", port: "e" } }] },
+        { ...id, path: "L", field: "L", class: "leaf", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
+      ],
+      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+    };
+    const tree = buildTree(structure);
+    const one = { tree, structure, resolution: buildResolution(tree, structure) } as Model;
+    expect(levelLine(levelFacts(one, "") as LevelFacts)).toBe("open level · 1 child · 1 wire");
+    expect(levelLine(levelFacts(fixtureModel("rates"), "fast") as LevelFacts)).toBe("open level · 2 children · 4 wires");
   });
 
   it("a primitive root's level is its leaf, its segment the label", () => {

@@ -200,6 +200,13 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
   return facts;
 }
 
+/** A count in words, the singular for one: `1 wire`, `2 wires`. */
+export const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
+
+/** The level layout's facts line: `open level · 9 children · 1 wire`. */
+export const levelLine = (f: LevelFacts): string =>
+  `open level · ${count(f.children, "child", "children")} · ${count(f.wires, "wire", "wires")}`;
+
 /** The open level's facts; a primitive root's level is its leaf. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
   const s = model.structure!, tree = model.tree!;

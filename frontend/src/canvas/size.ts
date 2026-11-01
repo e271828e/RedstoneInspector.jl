@@ -9,6 +9,8 @@ export const SEGMENT_FONT = `600 12px ${FONT_STACK}`;
 export const FACE_FONT = `11px ${FONT_STACK}`;
 export const NAME_FONT = `11px ${FONT_STACK}`;
 export const PIN_FONT = `12px ${FONT_STACK}`;
+/** Rate mode's badge in a block's top-right corner. */
+export const BADGE_FONT = `9px ${FONT_STACK}`;
 
 /** The display name's fixed width, past which it is cut with an ellipsis. */
 export const DISPLAY_NAME_WIDTH = 120;

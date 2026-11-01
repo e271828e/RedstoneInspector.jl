@@ -3,7 +3,7 @@
   // detail.ts's facts, the open level's when nothing is selected. Links select
   // through the session; nothing here is truncated, the pane scrolls.
   import {
-    classPhrase, detailOf, FACT_TITLES, faceSelection, memberTitle, type FaceFacts, type Facts, type Selection,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberTitle, type FaceFacts, type Facts, type Selection,
   } from "../lib/detail";
   import type { Model } from "../lib/model";
   import { inPinId, outPinId, portId } from "../lib/level";
@@ -40,7 +40,6 @@
   const faceText = (f: Face) => (f.path === "" ? `${f.port} (root ${f.side === "in" ? "input" : "output"})` : `${f.path}/${f.port}`);
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
   const firstLine = (doc: string) => doc.split("\n").find((l) => l.trim())!.trimStart();
-  const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   /** A face row selects its port, or on the level's layout the level's pin. */
   const rowSelection = (f: Face): Selection => facts?.kind === "level"
     ? { level, target: { kind: "block", id: f.side === "in" ? inPinId(f.port) : outPinId(f.port) } }
@@ -104,7 +103,7 @@
   <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
     {#if facts.kind === "level"}
       {@render header(facts.label ?? model.tree!.segment.get(facts.path)!, facts.displayName, facts.path)}
-      <p class="facts">open level · {count(facts.children, "child", "children")} · {count(facts.wires, "wire", "wires")}</p>
+      <p class="facts">{levelLine(facts)}</p>
       {#if facts.scopes.length}
         <h3>Rate scopes</h3>
         <ul class="scopes">{#each facts.scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>

@@ -1,6 +1,12 @@
-// The placeholder colors, the canvas's and the frame's, the only file that names
-// one; increment 6 settles the palette (visual_grammar.md answer 6) and replaces
-// this file.
+// The settled palette, the canvas's and the frame's, the only file that names a
+// color (visual_grammar.md answers 6 and 9). The values are the look pass's to
+// tune; the checks pin mechanisms, never a value.
+
+/** A block's fill and stroke. */
+export interface Pair {
+  fill: string;
+  stroke: string;
+}
 
 export const palette = {
   /** Leaf fill and stroke by tier, the spike's. */
@@ -26,6 +32,26 @@ export const palette = {
   /** The search hit's dashed halo, as a dash array. */
   dash: "4 3",
 
+  /**
+   * Rate mode's eight steps, fastest first: light fills for black text, no red, no amber, no blue near the
+   * highlight. A first pass from Paul Tol's light and muted qualitative schemes and Okabe–Ito.
+   */
+  rate: [
+    { fill: "#c9ecdf", stroke: "#2e8b6f" }, // mint, Tol light
+    { fill: "#ffdbe3", stroke: "#b8506a" }, // pink, Tol light
+    { fill: "#e7efb3", stroke: "#75831a" }, // pear, Tol light
+    { fill: "#ecd2e8", stroke: "#8e3a80" }, // purple, Tol muted
+    { fill: "#f8efc6", stroke: "#977f12" }, // light yellow, Tol light
+    { fill: "#d2f0f7", stroke: "#2a8296" }, // light cyan, Tol light, kept off the highlight's blue
+    { fill: "#e4e4a3", stroke: "#6b6b00" }, // olive, Tol light
+    { fill: "#f1d5e5", stroke: "#a04b7d" }, // reddish purple, Okabe–Ito
+  ] as readonly Pair[],
+  /** A block past the eighth step: a light neutral, its legend number in a badge. */
+  extra: { fill: "#f2f2f2", stroke: "#8c8c8c" },
+  /** Increment 7's diagnostics overlay: errors and warnings. */
+  error: "#cf222e",
+  warning: "#bf8700",
+
   // The frame's.
   /** The panes' borders and the splitters' rest color. */
   paneBorder: "#d0d0d0",
@@ -36,3 +62,6 @@ export const palette = {
   /** The open level's row marker. */
   openMarker: "#1f6feb",
 };
+
+/** A wire's lighter tint of a step's stroke. */
+export const tint = (stroke: string): string => `color-mix(in srgb, ${stroke} 55%, white)`;
