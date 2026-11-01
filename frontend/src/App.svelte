@@ -19,10 +19,11 @@
   import { fromFile, parseDescriptor, type Loaded, type Refusal } from "./lib/loader";
   import { loadModel } from "./lib/model";
   import { nearest, type Direction } from "./lib/navigate";
-  import { beneath, levelHits, marked, parseQuery, searchModel } from "./lib/search";
+  import { outlineRows, rowSelection, treeStep } from "./lib/outline";
+  import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import {
-    climb, escape, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery, setView,
-    toggleDrawer, toggleExpanded, type Region,
+    back, climb, escape, forward, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery,
+    setView, toggleDrawer, toggleExpanded, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, toggleCollapsed } from "./state/prefs.svelte";
@@ -73,7 +74,14 @@
     }
     refusal = undefined;
     pushed = fromSocket;
+    // A replaced canvas takes the focus with it; the region that held it gets it back.
+    const held = session.model ? session.focus : undefined;
     load(loadModel(r));
+    if (held) {
+      tick().then(() => {
+        if (!document.activeElement || document.activeElement === document.body) rootOf(held)?.focus();
+      });
+    }
   }
 
   async function openFile(file: File | undefined) {
@@ -89,6 +97,8 @@
   const typing = (t: EventTarget | null) =>
     t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement
     || (t instanceof HTMLElement && t.isContentEditable);
+
+  const rootOf = (region: Region) => document.querySelector<HTMLElement>(REGIONS.find(([r]) => r === region)![1]);
 
   /** Tab and Shift-Tab: the next or previous region root present, wrapping; false when there is none. */
   function cycle(back: boolean): boolean {
@@ -130,8 +140,38 @@
     canvasView?.follow(to);
   }
 
+  /** The tree's `h j k l` (workspace.md answer 2): a row selected as a click selects it, or a row toggled. */
+  function treeMove(key: Direction) {
+    const tree = model?.tree;
+    if (!tree) return;
+    const t = session.selection?.target;
+    const at = t && (t.kind === "folder" || tree.byPath.has(t.id)) ? t.id : undefined;
+    const step = treeStep(outlineRows(tree, model!.label, session.expanded), at, key, session.expanded);
+    if (!step) return;
+    if ("toggle" in step) toggleExpanded(step.toggle);
+    else select(rowSelection(tree, session.level, step.select));
+  }
+
+  /** `n` and `N`: the next or previous search hit selected as a pick selects it, its level opened, the view following. */
+  async function stepSearch(step: 1 | -1) {
+    const tree = model?.tree;
+    const s = tree && found ? stepHit(tree, session.level, found, session.selection, step) : undefined;
+    if (!s) return;
+    select(s);
+    await tick();
+    const t = s.target;
+    if (t.kind !== "folder") canvasView?.follow(t.kind === "block" ? t.id : parsePortId(t.id).block);
+  }
+
+  /** Enter and Shift-j: the selected closed assembly opened; false when the selection is none. */
+  function openSelected(): boolean {
+    const t = session.selection?.target;
+    if (t?.kind !== "block" || model?.tree?.byPath.get(t.id)?.class !== "assembly") return false;
+    open(t.id);
+    return true;
+  }
+
   function onkeydown(e: KeyboardEvent) {
-    const tree = session.model?.tree;
     if (e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
@@ -143,21 +183,26 @@
       return;
     }
     if (e.ctrlKey || e.metaKey) return;
-    const s = session.selection;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    const inTree = e.target instanceof Element && !!e.target.closest("nav.tree");
     const arrows: Record<string, [number, number]> = {
       ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1], ArrowRight: [1, 0],
     };
     const vim: Record<string, [number, number]> = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] };
     let handled = true;
-    if (e.key === "Backspace" || (e.key === "ArrowUp" && e.altKey)) climb();
+    if (e.key === "Backspace" || (e.key === "ArrowUp" && e.altKey) || (key === "k" && e.shiftKey && !e.altKey)) climb();
     else if (e.altKey) handled = false;
-    else if (e.key === "Enter" && s?.target.kind === "block" && tree?.byPath.get(s.target.id)?.class === "assembly") open(s.target.id);
+    else if (e.key === "Enter") handled = openSelected();
+    else if (key === "j" && e.shiftKey) openSelected();
     else if (e.key === "Escape") escape();
-    else if (key in vim && e.shiftKey) canvasView?.panBy(vim[key][0] * PAN_STEP, vim[key][1] * PAN_STEP);
+    else if (key === "h" && e.shiftKey) back();
+    else if (key === "l" && e.shiftKey) forward();
+    else if (key in vim && inTree) treeMove(key as Direction);
     else if (key in vim) move(key as Direction);
     else if (e.key in arrows) canvasView?.panBy(arrows[e.key][0] * PAN_STEP, arrows[e.key][1] * PAN_STEP);
     else if (e.key === "0") canvasView?.fit();
+    else if (key === "z" && !e.shiftKey) { if (drawn) canvasView?.centre(drawn); }
+    else if (key === "n") stepSearch(e.key === "N" ? -1 : 1);
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
     else if (key === "d" && !e.shiftKey) toggleDrawer(session.drawer.tab);
@@ -188,7 +233,7 @@
   {onkeydown}
   onfocusin={focusin}
   onfocusout={focusout}
-  onpopstate={() => openFromHistory(levelOfHash(location.hash))}
+  onpopstate={(e) => openFromHistory(levelOfHash(location.hash), e.state)}
 />
 
 <main

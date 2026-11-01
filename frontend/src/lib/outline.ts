@@ -1,5 +1,6 @@
 // The tree pane's rows (workspace.md answer 2): one row per node in walk order,
 // nested by the parent rule, a keyed container's elements under a folder row.
+import type { Selection } from "./detail";
 import { displayName, type Tree } from "./tree";
 
 export interface Row {
@@ -104,4 +105,30 @@ export function ancestors(tree: Tree, path: string): string[] {
   const above = [...ancestors(tree, parent), parent];
   if (tree.membership.get(path) === "keyed") above.push(folderPath(parent, tree.byPath.get(path)!.field!));
   return above;
+}
+
+/** What a row's click selects: a folder on its parent's level, a node on its parent's, the root on the open level. */
+export function rowSelection(tree: Tree, level: string, r: Row): Selection {
+  if (r.kind === "folder") return { level: r.parent!, target: { kind: "folder", id: r.path } };
+  return { level: r.parent === undefined ? level : tree.parent.get(r.path)!, target: { kind: "block", id: r.path } };
+}
+
+/**
+ * The tree's `h j k l` from the selected row (workspace.md answer 2): `j` and `k` the next and previous visible
+ * row, the first when none is selected; `l` expands a collapsed row, steps into an expanded one's first child;
+ * `h` collapses an expanded row, steps from a collapsed one or a leaf to its parent's row. Nothing when no row fits.
+ */
+export function treeStep(
+  rows: readonly Row[], at: string | undefined, key: "h" | "j" | "k" | "l", expanded: ReadonlySet<string>,
+): { select: Row } | { toggle: string } | undefined {
+  const i = rows.findIndex((r) => r.path === at);
+  if (i < 0) return (key === "j" || key === "k") && rows.length ? { select: rows[0] } : undefined;
+  const r = rows[i];
+  const open = r.expandable && expanded.has(r.path);
+  if (key === "j") return i + 1 < rows.length ? { select: rows[i + 1] } : undefined;
+  if (key === "k") return i > 0 ? { select: rows[i - 1] } : undefined;
+  if (key === "l") return !r.expandable ? undefined : open ? { select: rows[i + 1] } : { toggle: r.path };
+  if (open) return { toggle: r.path };
+  const parent = rows.find((p) => p.path === r.parent);
+  return parent ? { select: parent } : undefined;
 }

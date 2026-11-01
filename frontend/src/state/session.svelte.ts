@@ -63,11 +63,34 @@ export function levelOfHash(hash: string): string | undefined {
 const browser = typeof window !== "undefined";
 /** The URL with the level's hash, the page's own address for the root. */
 const urlOf = (path: string) => `${location.pathname}${location.search}${hashOf(path)}`;
+
+/**
+ * The level entries this page load made, each carrying `{load, depth}` in `history.state`: the entry the page
+ * loaded on is depth 0, each `open` one deeper; `top` is the deepest reachable forward. Shift-h and Shift-l walk
+ * them and never leave the page.
+ */
+const LOAD = browser ? `${Date.now()}-${Math.random()}` : "";
+let depth = 0;
+let top = 0;
+if (browser) history.replaceState({ load: LOAD, depth }, "");
+
 function pushHash() {
-  if (browser && location.hash !== hashOf(level)) history.pushState(null, "", urlOf(level));
+  if (!browser || location.hash === hashOf(level)) return;
+  depth += 1;
+  top = depth;
+  history.pushState({ load: LOAD, depth }, "", urlOf(level));
 }
 function replaceHash() {
-  if (browser && location.hash !== hashOf(level)) history.replaceState(null, "", urlOf(level));
+  if (browser && location.hash !== hashOf(level)) history.replaceState(history.state, "", urlOf(level));
+}
+
+/** Shift-h: the previous level entry of this page load; nothing at the first. */
+export function back() {
+  if (depth > 0) history.back();
+}
+/** Shift-l: the next level entry of this page load; nothing at the last. */
+export function forward() {
+  if (depth < top) history.forward();
 }
 
 const bodyOf = (m: Model) => {
@@ -155,8 +178,10 @@ export function climb() {
   if (p !== undefined) open(p);
 }
 
-/** Back or forward: the level the hash names, the root when it names none, nothing pushed. */
-export function openFromHistory(path: string | undefined) {
+/** Back or forward: the level the hash names, the root when it names none, nothing pushed; `state` the entry's. */
+export function openFromHistory(path: string | undefined, state?: unknown) {
+  const s = state as { load?: string; depth?: number } | null | undefined;
+  depth = s?.load === LOAD && typeof s.depth === "number" ? s.depth : 0;
   if (!show(path !== undefined && model?.tree && isLevel(model.tree, path) ? path : "")) return;
   replaceHash();
 }

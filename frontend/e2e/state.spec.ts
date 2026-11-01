@@ -113,6 +113,9 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expect(status(page)).toHaveAttribute("data-kind", "deployment");
   await expect(page.locator("input.query")).toHaveValue("h");
   await expect(page.locator("footer.status .fallback")).toHaveCount(0);
+  // the new canvas holds the focus the old one had
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
 
   await dropOver(page, "rates");
   await page.locator(readyLevel("")).waitFor();

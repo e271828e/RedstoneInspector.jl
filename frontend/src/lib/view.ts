@@ -53,3 +53,7 @@ export function zoomAt(v: View, pointer: Point, factor: number): View {
 
 /** The view moved with a drag of `dx`, `dy` screen pixels. */
 export const pan = (v: View, dx: number, dy: number): View => ({ x: v.x - dx / v.scale, y: v.y - dy / v.scale, scale: v.scale });
+
+/** The view with the rectangle's center at the viewport's center, the scale unchanged. */
+export const centreOn = (v: View, viewport: Size, r: Rect): View =>
+  ({ x: r.x + r.width / 2 - viewport.width / (2 * v.scale), y: r.y + r.height / 2 - viewport.height / (2 * v.scale), scale: v.scale });

@@ -1,8 +1,8 @@
 // The model tree (workspace.md answer 2): rows and folders, the default
 // expansion, selection shared both ways, the chevron expanding, the double-click
-// opening, the open level's row.
+// opening, the open level's row, the tree's own h j k l.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, openPath, readyLevel, rows, shot } from "./fixtures";
+import { drop, expect, openPath, press, readyLevel, rows, shot } from "./fixtures";
 
 const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path="${path}"]`);
 const levelPath = (page: Page) => page.locator("nav.breadcrumb");
@@ -129,6 +129,70 @@ test("large: 151 rows at load, and a block click scrolls its row into view", asy
   await expect(row(page, "b150")).toHaveClass(/\bselected\b/);
   await expect.poll(() => body.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
   const [b, r] = [(await body.boundingBox())!, (await row(page, "b150").boundingBox())!];
+  expect(r.y).toBeGreaterThanOrEqual(b.y);
+  expect(r.y + r.height).toBeLessThanOrEqual(b.y + b.height);
+});
+
+test("closed_loop: with the tree focused, j k l h walk, expand and collapse rows, Shift-j and Enter open", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const paths = () => rows(page).evaluateAll((els) => els.map((e) => e.getAttribute("data-path")!));
+  const selectedRow = page.locator("nav.tree .row.selected");
+  await row(page, "").click();
+  const at = await paths();
+  const i = at.indexOf("sensing");
+  // j and k: the next and previous visible row, selected as a click selects it
+  await press(page, "j");
+  await expect(selectedRow).toHaveAttribute("data-path", at[1]);
+  await expect(page.locator(`svg.canvas g.block.selected[data-id="${at[1]}"]`)).toHaveCount(1);
+  for (let k = 2; k <= i; k++) await press(page, "j");
+  await press(page, "k");
+  await expect(selectedRow).toHaveAttribute("data-path", at[i - 1]);
+  await press(page, "j");
+  await expect(selectedRow).toHaveAttribute("data-path", "sensing");
+  // l on a collapsed assembly expands it, the level and the selection unchanged: the canvas's l stays out
+  await press(page, "l");
+  await expect(row(page, "sensing")).toHaveClass(/\bexpanded\b/);
+  await expect(rows(page)).toHaveCount(at.length + 2);
+  await expect(selectedRow).toHaveAttribute("data-path", "sensing");
+  await expect(levelPath(page)).toHaveAttribute("data-level-path", "");
+  // l on an expanded row steps to its first child, which shows its level as a click does
+  await press(page, "l");
+  const child = (await paths())[i + 1];
+  await expect(selectedRow).toHaveAttribute("data-path", child);
+  await expect(levelPath(page)).toHaveAttribute("data-level-path", "sensing");
+  // h on a leaf steps to its parent's row; on an expanded row it collapses; then to the root's row
+  await press(page, "h");
+  await expect(selectedRow).toHaveAttribute("data-path", "sensing");
+  await press(page, "h");
+  await expect(row(page, "sensing")).not.toHaveClass(/\bexpanded\b/);
+  await expect(rows(page)).toHaveCount(at.length);
+  await press(page, "h");
+  await expect(selectedRow).toHaveAttribute("data-path", "");
+  // the root's row, expanded, collapses; collapsed, it has no row above; l expands it again
+  await press(page, "h");
+  await expect(rows(page)).toHaveCount(1);
+  await press(page, "h");
+  await expect(selectedRow).toHaveAttribute("data-path", "");
+  await press(page, "l");
+  await expect(rows(page)).toHaveCount(at.length);
+  // Shift-j opens the selected assembly, Enter too
+  for (let k = 1; k <= i; k++) await press(page, "j");
+  await press(page, "Shift+J");
+  await expect(levelPath(page)).toHaveAttribute("data-level-path", "sensing");
+  await row(page, "actuators").click();
+  await press(page, "Enter");
+  await expect(levelPath(page)).toHaveAttribute("data-level-path", "actuators");
+});
+
+test("large: j walking the tree scrolls the selected row into view", async ({ page }) => {
+  await drop(page, "large");
+  const body = page.locator('.pane[data-pane="tree"] .body');
+  await row(page, "").click();
+  for (let k = 0; k < 60; k++) await press(page, "j");
+  const at = (await rows(page).evaluateAll((els) => els.map((e) => e.getAttribute("data-path")!)))[60];
+  await expect(page.locator("nav.tree .row.selected")).toHaveAttribute("data-path", at);
+  await expect.poll(() => body.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
+  const [b, r] = [(await body.boundingBox())!, (await row(page, at).boundingBox())!];
   expect(r.y).toBeGreaterThanOrEqual(b.y);
   expect(r.y + r.height).toBeLessThanOrEqual(b.y + b.height);
 });

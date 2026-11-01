@@ -1,6 +1,7 @@
 // Search over the model (workspace.md answer 5): case-insensitive substrings over
 // paths, types with their aliases and face names, never a regular expression and
 // never a parse of a name. Docstrings and parameters are not searched.
+import { faceSelection, type Selection } from "./detail";
 import { inPinId, outPinId, portId } from "./level";
 import type { Model } from "./model";
 import type { Side } from "./resolve";
@@ -42,13 +43,16 @@ export interface Found {
 export const CAP = 100;
 const PREFIXES: Field[] = ["path", "type", "face"];
 
-/** Space-separated terms, lower-cased; `path:`, `type:` and `face:` taken when spelled exactly, else the whole word bare. */
+/**
+ * Space-separated terms, lower-cased; `path:`, `type:` and `face:` taken when spelled exactly, else the whole word
+ * bare. A prefix with no text after it is no term.
+ */
 export function parseQuery(text: string): Term[] {
-  return text.split(/\s+/).filter((w) => w !== "").map((w) => {
+  return text.split(/\s+/).filter((w) => w !== "").map((w): Term => {
     const i = w.indexOf(":");
     const prefix = w.slice(0, i) as Field;
     return i > 0 && PREFIXES.includes(prefix) ? { field: prefix, text: w.slice(i + 1).toLowerCase() } : { field: undefined, text: w.toLowerCase() };
-  });
+  }).filter((t) => t.text !== "");
 }
 
 /** Every occurrence of every needle in the text, merged, case-insensitive. */
@@ -140,4 +144,23 @@ export function levelHits(tree: Tree, level: string, found: Found): LevelHits {
   }
   const under = new Set([...children].filter((c) => !nodeHits.has(c) && tree.byPath.get(c)!.class === "assembly" && (counts.get(c) ?? 0) > 0));
   return { blocks, under, ports };
+}
+
+/** What picking a hit selects: a node as its tree row's click does, a face through `faceSelection`. */
+export function hitSelection(tree: Tree, level: string, hit: NodeHit | FaceHit): Selection {
+  if ("side" in hit) return faceSelection(tree, { path: hit.path, side: hit.side, port: hit.name });
+  return { level: hit.path === "" ? level : tree.parent.get(hit.path)!, target: { kind: "block", id: hit.path } };
+}
+
+/**
+ * `n` and `N`: the selection of the next (`step` 1) or previous (-1) hit in the full order, nodes then faces, not
+ * capped, after the current selection when it is a hit, else the first or the last; wrapping. Undefined without hits.
+ */
+export function stepHit(tree: Tree, level: string, found: Found, current: Selection | undefined, step: 1 | -1): Selection | undefined {
+  const all = [...found.nodes, ...found.faces].map((h) => hitSelection(tree, level, h));
+  if (!all.length) return undefined;
+  const i = current
+    ? all.findIndex((s) => s.level === current.level && s.target.kind === current.target.kind && s.target.id === current.target.id)
+    : -1;
+  return all[i < 0 ? (step > 0 ? 0 : all.length - 1) : (i + step + all.length) % all.length];
 }

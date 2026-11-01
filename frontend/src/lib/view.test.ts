@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fitView, pan, toWorld, viewRect, zoomAt, type View } from "./view";
+import { centreOn, fitView, pan, toWorld, viewRect, zoomAt, type View } from "./view";
 
 const viewport = { width: 1600, height: 1000 };
 
@@ -65,5 +65,16 @@ describe("pan", () => {
     const after = toWorld(p, { x: 350, y: 270 });
     expect(after.x).toBeCloseTo(before.x, 9);
     expect(after.y).toBeCloseTo(before.y, 9);
+  });
+});
+
+describe("centreOn", () => {
+  it("puts the rectangle's center at the viewport's center and keeps the scale", () => {
+    const v: View = { x: 10, y: 20, scale: 1.7 };
+    const c = centreOn(v, viewport, { x: 300, y: -40, width: 80, height: 30 });
+    expect(c.scale).toBe(1.7);
+    const mid = toWorld(c, { x: viewport.width / 2, y: viewport.height / 2 });
+    expect(mid.x).toBeCloseTo(340, 9);
+    expect(mid.y).toBeCloseTo(-25, 9);
   });
 });

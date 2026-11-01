@@ -66,6 +66,21 @@ test("a live tab greets, draws pushes, saves the bytes, opens locations, and rec
   await expect(page.locator(".frame")).toHaveCount(0);
 });
 
+test("a push keeps the keyboard's focus in the region that held it", async ({ page }) => {
+  const mock = await live(page, "/?tab=loop");
+  await expect.poll(() => mock.sent.length).toBe(1);
+  mock.send(fixtureText("closed_loop"));
+  await page.locator(readyLevel("")).waitFor();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  mock.send(fixtureText("descent"));
+  await expect(page).toHaveTitle("descent – Redstone inspector");
+  await page.locator(readyLevel("")).waitFor();
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
+});
+
 test("a control frame from the server is dropped, and so is anything else", async ({ page }) => {
   // A frame fed to the loader would be refused, unloading the model, and descent would then load fresh with
   // nothing selected; dropped, descent replaces closed_loop and the rekeyed selection keeps `plant`.

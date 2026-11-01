@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
-import { allRows, ancestors, defaultExpansion, folderOf, outlineRows } from "./outline";
+import { allRows, ancestors, defaultExpansion, folderOf, outlineRows, rowSelection, treeStep } from "./outline";
 
 // The oracle's rows, node and folder, in full and at load (the root and its folders expanded).
 const ROWS: [string, number, number][] = [
@@ -90,5 +90,48 @@ describe("the root row", () => {
   it("a node row's label is its segment and its display name the type's last segment", () => {
     const r = rowsOf("closed_loop").all.find((x) => x.path === "sensing/altimeter")!;
     expect([r.label, r.segment, r.displayName, r.depth]).toEqual(["altimeter", "altimeter", "SumJunction", 2]);
+  });
+});
+
+describe("treeStep, the tree's h j k l", () => {
+  const { m, tree } = rowsOf("closed_loop");
+  const at = (expanded: Set<string>) => outlineRows(tree, m.label, expanded);
+  const path = (r: ReturnType<typeof treeStep>) => (r && "select" in r ? r.select.path : r);
+  it("j and k move one visible row, the first with none selected, and stop at the ends", () => {
+    const rows = at(new Set([""]));
+    expect(path(treeStep(rows, undefined, "j", new Set([""])))).toBe("");
+    expect(path(treeStep(rows, "", "j", new Set([""])))).toBe(rows[1].path);
+    expect(path(treeStep(rows, rows[2].path, "k", new Set([""])))).toBe(rows[1].path);
+    expect(treeStep(rows, "", "k", new Set([""]))).toBeUndefined();
+    expect(treeStep(rows, rows.at(-1)!.path, "j", new Set([""]))).toBeUndefined();
+  });
+  it("l expands a collapsed row, then steps into its first child; on a leaf it does nothing", () => {
+    const e = new Set([""]);
+    expect(treeStep(at(e), "sensing", "l", e)).toEqual({ toggle: "sensing" });
+    const e2 = new Set(["", "sensing"]);
+    expect(path(treeStep(at(e2), "sensing", "l", e2))).toBe(tree.children.get("sensing")![0]);
+    expect(treeStep(at(e), "plant", "l", e)).toBeUndefined();
+  });
+  it("h collapses an expanded row, steps from a collapsed row or a leaf to its parent's row; the root has none", () => {
+    const e = new Set(["", "sensing"]);
+    expect(treeStep(at(e), "sensing", "h", e)).toEqual({ toggle: "sensing" });
+    expect(path(treeStep(at(e), "sensing/noise", "h", e))).toBe("sensing");
+    expect(path(treeStep(at(e), "plant", "h", e))).toBe("");
+    const root = new Set<string>();
+    expect(treeStep(at(root), "", "h", root)).toBeUndefined();
+  });
+  it("folder rows are rows: a keyed member steps to its folder, the folder to its node", () => {
+    const c = rowsOf("containers");
+    const e = defaultExpansion(c.tree);
+    const rows = outlineRows(c.tree, c.m.label, e);
+    const member = rows.find((r) => r.kind === "node" && r.parent !== undefined && r.parent !== "")!;
+    const folder = rows.find((r) => r.path === member.parent)!;
+    expect(folder.kind).toBe("folder");
+    expect(path(treeStep(rows, member.path, "h", e))).toBe(folder.path);
+    // the folder is expanded: h collapses it; collapsed, h steps to the root
+    expect(treeStep(rows, folder.path, "h", e)).toEqual({ toggle: folder.path });
+    const shut = new Set([...e].filter((p) => p !== folder.path));
+    expect(path(treeStep(outlineRows(c.tree, c.m.label, shut), folder.path, "h", shut))).toBe("");
+    expect(rowSelection(c.tree, "", folder)).toEqual({ level: "", target: { kind: "folder", id: folder.path } });
   });
 });

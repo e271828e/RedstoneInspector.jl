@@ -12,11 +12,11 @@
   // (initial_design.md answer 12).
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
-  import { levelOf, portId } from "../lib/level";
+  import { levelOf, parsePortId, portId } from "../lib/level";
   import type { Model } from "../lib/model";
   import type { LevelHits } from "../lib/search";
   import { follow as followView, type Box } from "../lib/navigate";
-  import { fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
+  import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
   import { palette } from "./palette";
   import { rerouteTouching } from "./router";
@@ -64,6 +64,8 @@
   let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
   let hovered = $state<Target | undefined>();
+  /** A block `follow` was asked for while the level was being laid out, followed once it is drawn. */
+  let pending: string | undefined;
 
   const tree = $derived(model.tree!);
   const stage1 = $derived(new Map((model.outputs?.components ?? []).map((c) => [c.path, new Set(c.stage1)])));
@@ -88,6 +90,8 @@
     if (v) setView(v);
     else fit();
     ready = true;
+    if (pending !== undefined) follow(pending);
+    pending = undefined;
   }
 
   $effect(() => {
@@ -145,10 +149,37 @@
     return shown.level.blocks.map((b) => ({ id: b.id, ...g.boxes.get(b.id)! }));
   }
 
-  /** Pans by the least amount that brings a block into view. */
+  /** Pans by the least amount that brings a block into view; while a level is laid out, once it is drawn. */
   export function follow(id: string) {
-    const b = ready ? shown?.geometry.boxes.get(id) : undefined;
+    if (!ready) {
+      pending = id;
+      return;
+    }
+    const b = shown?.geometry.boxes.get(id);
     if (b) setView(followView(view, { width, height }, b, FIT_PADDING));
+  }
+
+  /** A target's extent in world units: a block's or pin's box, a port's square, a wire's route's bounding box. */
+  function extent(t: Target): Rect | undefined {
+    const g = shown?.geometry;
+    if (!g) return undefined;
+    if (t.kind === "block") return g.boxes.get(t.id);
+    if (t.kind === "port") {
+      const { block, side, name } = parsePortId(t.id);
+      const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
+      return box && p ? { x: box.x + p.x - PORT / 2, y: box.y + p.y - PORT / 2, width: PORT, height: PORT } : undefined;
+    }
+    const route = g.routes.get(t.id);
+    if (!route?.length) return undefined;
+    const xs = route.map((q) => q.x), ys = route.map((q) => q.y);
+    const x = Math.min(...xs), y = Math.min(...ys);
+    return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y };
+  }
+
+  /** Centres a target at the current zoom. */
+  export function centre(t: Target) {
+    const r = ready ? extent(t) : undefined;
+    if (r) setView(centreOn(view, { width, height }, r));
   }
 
   const viewBox = $derived.by(() => {

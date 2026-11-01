@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
-import { beneath, CAP, levelHits, marked, parseQuery, ranges, searchModel } from "./search";
+import { beneath, CAP, hitSelection, levelHits, marked, parseQuery, ranges, searchModel, stepHit } from "./search";
 
 const closedLoop = fixtureModel("closed_loop");
 const find = (fixture: string, q: string) => searchModel(fixture === "closed_loop" ? closedLoop : fixtureModel(fixture), parseQuery(q));
@@ -12,6 +12,41 @@ describe("parseQuery", () => {
     expect(parseQuery("TYPE:junction")).toEqual([{ field: undefined, text: "type:junction" }]);
     expect(parseQuery("doc:x face:in1")).toEqual([{ field: undefined, text: "doc:x" }, { field: "face", text: "in1" }]);
     expect(parseQuery("")).toEqual([]);
+  });
+
+  it("reads a prefix with no text after it as no term, so a query of bare prefixes is the empty query", () => {
+    expect(parseQuery("face:")).toEqual([]);
+    expect(parseQuery("path: type: face:")).toEqual([]);
+    expect(parseQuery("face: h")).toEqual([{ field: undefined, text: "h" }]);
+    expect(find("closed_loop", "face:").total).toBe(0);
+    expect(find("closed_loop", "type:").total).toBe(0);
+  });
+});
+
+describe("stepHit, n and N", () => {
+  const tree = closedLoop.tree!;
+  it("walks the full order from the first or the last, after a selected hit, and wraps both ways", () => {
+    const f = find("closed_loop", "h");
+    const all = [...f.nodes, ...f.faces].map((h) => hitSelection(tree, "", h));
+    expect(stepHit(tree, "", f, undefined, 1)).toEqual(all[0]);
+    expect(stepHit(tree, "", f, undefined, -1)).toEqual(all[12]);
+    expect(stepHit(tree, "", f, all[3], 1)).toEqual(all[4]);
+    expect(stepHit(tree, "", f, all[4], -1)).toEqual(all[3]);
+    expect(stepHit(tree, "", f, all[12], 1)).toEqual(all[0]);
+    expect(stepHit(tree, "", f, all[0], -1)).toEqual(all[12]);
+    // a selection that is no hit starts the walk afresh
+    expect(stepHit(tree, "", f, { level: "", target: { kind: "block", id: "plant" } }, 1)).toEqual(all[0]);
+    expect(stepHit(tree, "", find("closed_loop", "zzz"), undefined, 1)).toBeUndefined();
+  });
+
+  it("walks past the cap: on large's b, N from nothing selects the 171st hit, not the 100th row", () => {
+    const large = fixtureModel("large");
+    const f = searchModel(large, parseQuery("b"));
+    expect(f.total).toBeGreaterThan(CAP);
+    const last = [...f.nodes, ...f.faces].at(-1)!;
+    expect(stepHit(large.tree!, "", f, undefined, -1)).toEqual(hitSelection(large.tree!, "", last));
+    expect(stepHit(large.tree!, "", f, hitSelection(large.tree!, "", f.rows[CAP - 1]), 1))
+      .toEqual(hitSelection(large.tree!, "", [...f.nodes, ...f.faces][CAP]));
   });
 });
 

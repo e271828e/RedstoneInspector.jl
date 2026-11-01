@@ -7,7 +7,7 @@
   import { palette } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
   import type { Model } from "../lib/model";
-  import { folderOf, outlineRows, type Row } from "../lib/outline";
+  import { folderOf, outlineRows, rowSelection, type Row } from "../lib/outline";
 
   let { model, level, selection, expanded, focused = false, search, listing = false, marks, counts, onselect, onopen, ontoggle }: {
     model: Model;
@@ -38,7 +38,7 @@
     return undefined;
   });
 
-  // A selection made outside the tree scrolls its row into view; the tree's own click does not.
+  // A selection made outside the tree, or by the tree's keys, scrolls its row into view; the tree's own click does not.
   let ownPath: string | undefined;
   $effect(() => {
     const p = selectedRow;
@@ -50,8 +50,7 @@
 
   function click(r: Row) {
     ownPath = r.path;
-    if (r.kind === "folder") onselect({ level: r.parent!, target: { kind: "folder", id: r.path } });
-    else onselect({ level: r.parent === undefined ? level : model.tree!.parent.get(r.path)!, target: { kind: "block", id: r.path } });
+    onselect(rowSelection(model.tree!, level, r));
   }
   /** A collapsed row's count of marked nodes beneath it; a folder's sums its members. */
   function hitsBeneath(r: Row): number {

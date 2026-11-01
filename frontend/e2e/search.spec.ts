@@ -161,3 +161,60 @@ test("rates: hold marks fast and slow with one beneath each, and fast/outer once
   await page.locator(readyLevel("fast")).waitFor();
   await expect(page.locator('g.block.search-under[data-id="fast/outer"]')).toHaveCount(1);
 });
+
+test("closed_loop: a prefix with no text after it is no term, so the query lists, dims and marks nothing", async ({ page }) => {
+  await drop(page, "closed_loop");
+  for (const q of ["face:", "path:", "type:", "face: type:"]) {
+    await search(page, q);
+    await expect(page.locator(".results")).toHaveCount(0);
+    await expect(canvas(page)).not.toHaveClass(/searching/);
+    await expect(page.locator("nav.tree .row.hit")).toHaveCount(0);
+  }
+  await search(page, "face:i");
+  await expect(page.locator(".results")).toHaveCount(1);
+  await expect(canvas(page)).toHaveClass(/searching/);
+});
+
+test("closed_loop: n and N walk every hit in the list's order, opening its level, the view following, and wrap", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await search(page, "h");
+  await expect(hitRows(page)).toHaveCount(13);
+  const hits = await hitRows(page).evaluateAll((els) => els.map((e) => ({
+    path: e.getAttribute("data-path")!, side: e.getAttribute("data-side"), face: e.getAttribute("data-face"),
+  })));
+  // the canvas takes the keyboard; the root zoomed in, so a hit there needs the view to follow
+  await press(page, "Tab");
+  expect(await isFocused(page, ".viewport")).toBe(true);
+  for (let i = 0; i < 6; i++) await press(page, "+");
+  const parent = (p: string) => (p.includes("/") ? p.slice(0, p.lastIndexOf("/")) : "");
+  const expectAt = async (k: number) => {
+    const h = hits[k];
+    const [level, sel] = h.face === null
+      ? [parent(h.path), `g.block.selected[data-id="${h.path}"]`]
+      : h.path === ""
+        ? ["", `g.block.selected[data-id="⟨${h.side}⟩${h.face}"]`]
+        : [parent(h.path), `rect.port.selected[data-port="${h.path}|${h.side}|${h.face}"]`];
+    await expect(page.locator(readyLevel(level)), `hit ${k}'s level`).toHaveCount(1);
+    await expect(page.locator(sel), `hit ${k}`).toHaveCount(1);
+    // the outline's client box, a block's shape or the port square, inside the canvas's
+    const shape = h.face === null || h.path === "" ? `${sel} > .shape` : sel;
+    await expect.poll(() => page.evaluate((s) => {
+      const r = document.querySelector(s)!.getBoundingClientRect(), c = document.querySelector("svg.canvas")!.getBoundingClientRect();
+      return r.x >= c.x && r.y >= c.y && r.right <= c.right && r.bottom <= c.bottom;
+    }, shape), `hit ${k} in view`).toBe(true);
+  };
+  // N with no hit selected: the last; n wraps to the first and walks them all
+  await press(page, "Shift+N");
+  await expectAt(12);
+  for (let k = 0; k < 13; k++) {
+    await press(page, "n");
+    await expectAt(k);
+  }
+  // N from the first wraps to the last
+  await press(page, "n");
+  await expectAt(0);
+  await press(page, "Shift+N");
+  await expectAt(12);
+  await press(page, "Shift+N");
+  await expectAt(11);
+});
