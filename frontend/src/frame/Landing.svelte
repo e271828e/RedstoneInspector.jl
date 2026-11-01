@@ -9,7 +9,7 @@
   <h1>Redstone inspector</h1>
   <p class="privacy">
     The file is read inside your browser and never uploaded.
-    This page loads nothing from the network.
+    The page loads nothing from any other site.
   </p>
   <p>
     <button class="open-file" onclick={() => input?.click()} title="Open a descriptor (.json)">Open a descriptor…</button>

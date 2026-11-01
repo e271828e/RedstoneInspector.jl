@@ -15,7 +15,8 @@ test("before a drop: the privacy statement, the open control, no canvas, no rows
   const landing = page.locator(".landing");
   await expect(landing).toHaveCount(1);
   await expect(landing.locator(".privacy")).toContainText("never uploaded");
-  await expect(landing.locator(".privacy")).toContainText("nothing from the network");
+  await expect(landing.locator(".privacy")).toContainText("The page loads nothing from any other site.");
+  await expect(landing.locator(".privacy")).not.toContainText("network");
   await expect(landing.locator("button.open-file")).toHaveCount(1);
   await expect(landing.locator(".drop-hint")).toHaveCount(1);
   await expect(landing.locator("pre.outcome")).toHaveCount(0);

@@ -3,7 +3,7 @@ import type { LeafFace, StructureSection } from "./descriptor";
 import { fixtureJson, fixtureModel } from "./fixtures";
 import { parseDescriptor } from "./loader";
 import { loadModel, type Model } from "./model";
-import { rekey, type PerTab } from "./rekey";
+import { rekey, sameBlocks, type PerTab } from "./rekey";
 import { buildResolution } from "./resolve";
 import { buildTree } from "./tree";
 
@@ -80,5 +80,20 @@ describe("rekey", () => {
     expect(r.selection).toBeUndefined();
     expect([...r.expanded]).toEqual(["", "a", "a/b"]);
     expect(r.views.size).toBe(0);
+  });
+});
+
+describe("a view kept only for an unchanged level", () => {
+  const closedLoop = fixtureModel("closed_loop");
+  it("sameBlocks: the deployment's levels draw closed_loop's blocks; descent's root is not aircraft's", () => {
+    expect(sameBlocks(closedLoop, deployment, "")).toBe(true);
+    expect(sameBlocks(closedLoop, deployment, "sensing")).toBe(true);
+    expect(sameBlocks(fixtureModel("aircraft"), fixtureModel("descent"), "")).toBe(false);
+    expect(sameBlocks(closedLoop, rates, "")).toBe(false);
+  });
+  it("rekey given the previous model keeps the deployment's views and drops a changed root's", () => {
+    expect(rekey(atSensing(noise), deployment, closedLoop).views).toEqual(new Map([["", view], ["sensing", view]]));
+    const r = rekey({ ...atSensing(undefined), level: "" }, fixtureModel("descent"), fixtureModel("aircraft"));
+    expect(r.views.has("")).toBe(false);
   });
 });

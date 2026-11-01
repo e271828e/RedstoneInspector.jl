@@ -60,12 +60,21 @@ function rekeySelection(model: Model, s: Selection | undefined): Selection | und
   return levelOf(tree, model.resolution!, s.level).wires.some((w) => w.id === id) ? s : undefined;
 }
 
+/** Whether a path draws the same blocks, by id, as a level of both models. */
+export function sameBlocks(a: Model, b: Model, path: string): boolean {
+  if (!a.tree || !b.tree || !isLevel(a.tree, path) || !isLevel(b.tree, path)) return false;
+  const ids = (m: Model) => new Set(levelOf(m.tree!, m.resolution!, path).blocks.map((x) => x.id));
+  const x = ids(a), y = ids(b);
+  return x.size === y.size && [...x].every((id) => y.has(id));
+}
+
 /**
  * What survives a new model: the level by path or its longest prefix still a level, noted when it falls; the
  * expansion's existing paths; the selection by its key; the views and layouts of surviving levels, a fallen
- * level's and the fallback's views dropped so the canvas fits; the query whole.
+ * level's and the fallback's views dropped so the canvas fits, and, given the previous model, a view whose level's
+ * blocks changed (workspace.md answer 9); the query whole.
  */
-export function rekey<L>(previous: PerTab<L>, model: Model): Rekeyed<L> {
+export function rekey<L>(previous: PerTab<L>, model: Model, from?: Model): Rekeyed<L> {
   const tree = model.tree;
   const fell = (to: string) =>
     `\`${previous.level}\` is not in this model; showing ${to === "" ? "the root" : `\`${to}\``}`;
@@ -76,7 +85,7 @@ export function rekey<L>(previous: PerTab<L>, model: Model): Rekeyed<L> {
     };
   }
   const level = fallback(tree, previous.level);
-  const views = new Map([...previous.views].filter(([p]) => isLevel(tree, p)));
+  const views = new Map([...previous.views].filter(([p]) => isLevel(tree, p) && (!from || sameBlocks(from, model, p))));
   if (level !== previous.level) views.delete(level);
   return {
     level,

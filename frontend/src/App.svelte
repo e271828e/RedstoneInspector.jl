@@ -65,6 +65,15 @@
     document.title = model ? `${model.label} – Redstone inspector` : "Redstone inspector";
   });
 
+  // A model from a dropped or picked file asks before the page unloads; the socket serves its model again, and the
+  // development server reloads freely (workspace.md answer 10).
+  $effect(() => {
+    if (!model || pushed || import.meta.env.DEV) return;
+    const ask = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", ask);
+    return () => window.removeEventListener("beforeunload", ask);
+  });
+
   /** A descriptor loaded, replacing the model, or refused, unloading it with the reason on the landing. */
   function accept(r: Loaded | Refusal, fromSocket: boolean) {
     if (!r.ok) {

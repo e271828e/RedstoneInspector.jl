@@ -8,7 +8,7 @@
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9).
   // The view and the layout are the session's: restored on a revisit, reported
-  // on every change. A child block drags, its wires re-routed locally
+  // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
@@ -215,12 +215,12 @@
     svg.setPointerCapture(e.pointerId);
   }
   /**
-   * A press on a child block, the drag starting past the slop. The pointer is captured on the block's group only
+   * A press on a block or a pin, root inputs' tags included, the drag starting past the slop. The pointer is captured on the block's group only
    * then, once the raise has moved the group last: a capture from the press would retarget a port square's click,
    * and moving a captured node releases the capture.
    */
   function blockdown(e: PointerEvent, b: Block) {
-    if (e.button !== 0 || !shown || (b.role !== "leaf" && b.role !== "assembly")) return;
+    if (e.button !== 0 || !shown) return;
     const el = e.currentTarget as Element;
     blockDrag = { block: b.id, el, start: local(e), box: shown.geometry.boxes.get(b.id)!, moved: false, id: e.pointerId };
   }
@@ -388,6 +388,7 @@
             <g
               class={["block pin", b.role, { "root-input": tag }, blockClass(b)]} data-id={b.id}
               transform="translate({box.x},{box.y})" role="none"
+              onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
               onpointerleave={() => (hovered = undefined)}
@@ -473,8 +474,7 @@
   .casing.incident { stroke-width: 5; opacity: 0.22; }
   .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
 
-  .block { cursor: pointer; }
-  .block.leaf, .block.assembly { cursor: move; }
+  .block { cursor: move; }
   .shape { pointer-events: visible; }
   .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: none; }
   .block.selected > .halo { opacity: 0.5; }

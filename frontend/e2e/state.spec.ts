@@ -144,3 +144,17 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expect(page.locator("footer.status .fallback")).toHaveCount(0);
   await expect(rows(page)).toHaveCount(7);
 });
+
+test("a push keeps a level's view only while its blocks are unchanged: descent over aircraft fits the root", async ({ page }) => {
+  await drop(page, "aircraft");
+  await press(page, "+");
+  await press(page, "+");
+  const zoomed = await viewBox(page);
+  await dropOver(page, "descent");
+  await page.locator(readyLevel("")).waitFor();
+  const shown = await viewBox(page);
+  expect(shown.width).not.toBeCloseTo(zoomed.width, 3);
+  // descent's own fit: 0 changes nothing
+  await press(page, "0");
+  await expectView(page, shown);
+});

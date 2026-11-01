@@ -120,7 +120,7 @@ export function load(m: Model | undefined) {
   const hashed = browser ? levelOfHash(location.hash) : undefined;
   const replacing = !!model && !!m;
   if (m && replacing) {
-    const r = rekey({ level, selection, expanded, views, layouts, query }, m);
+    const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
     level = r.level;
     selection = r.selection;
     expanded = r.expanded;
