@@ -46,10 +46,10 @@
   const RESERVED = new Set(["t", "o", "?"]);
 
   const model = $derived(session.model);
-  /** The selection the canvas draws: one made on the open level, a folder excepted. */
+  /** The selection the canvas draws: one made on the open level, a folder as its region. */
   const drawn = $derived.by((): Target | undefined => {
     const s = session.selection;
-    return s && s.level === session.level && s.target.kind !== "folder" ? (s.target as Target) : undefined;
+    return s && s.level === session.level ? s.target : undefined;
   });
 
   // The standing query's hits over the whole model, the marks on the tree and the hits on the drawn level.
@@ -135,6 +135,7 @@
   function origin(): string | undefined {
     const t = drawn;
     if (!t) return undefined;
+    if (t.kind === "folder") return undefined;
     return t.kind === "block" ? t.id : parsePortId(t.id).block;
   }
 

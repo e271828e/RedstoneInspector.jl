@@ -2,6 +2,7 @@
 // 1 to 3 and 10). DOM: text is measured with a 2D canvas context, nothing else.
 import type { Block, BlockSize, ChildBlock, Level, PortPosition } from "../lib/level";
 import { iconOf, type Icon } from "../lib/icons";
+import { label } from "../lib/regions";
 import type { Tree } from "../lib/tree";
 
 /** One system sans stack for the whole canvas, no bundled or web font. */
@@ -95,7 +96,7 @@ export function sizeBlock(b: Block, tree: Tree): BlockSize {
   for (let i = 0; i < rows; i++) body = Math.max(body, face("in", b.inputs[i]) + face("out", b.outputs[i]));
   const icon = iconOf(tree.byPath.get(b.path)!);
   const second = icon ? iconWidth(icon) : textWidth(cutName(b.displayName), NAME_FONT);
-  const head = Math.max(textWidth(b.segment, SEGMENT_FONT), second);
+  const head = Math.max(textWidth(label(tree, b.path), SEGMENT_FONT), second);
   const width = Math.ceil(Math.max(MIN_WIDTH, head + 2 * PAD, body + 2 * PAD + GUTTER));
   const row = (i: number) => HEADER + i * ROW + ROW / 2;
   return {

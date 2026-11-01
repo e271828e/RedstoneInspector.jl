@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AssemblyNode, LeafNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
+import { regionsOf } from "./regions";
 import { elkGraph, inPinId, levelOf, outPinId, parsePortId, portId, type BlockSize, type Level } from "./level";
 
 const level = (name: string, path = ""): Level => {
@@ -183,6 +184,53 @@ describe("elkGraph", () => {
       expect(n.ports!.map((p) => p.layoutOptions!["elk.port.side"]))
         .toEqual(pinSizes.get(n.id)!.ports.map((p) => (p.side === "in" ? "WEST" : "EAST")));
     }
+  });
+});
+
+describe("elkGraph's regions", () => {
+  /** Every block at 80 by 40, its ports on the edges. */
+  const sized = (l: Level) => new Map<string, BlockSize>(l.blocks.map((b): [string, BlockSize] => [b.id, {
+    width: 80, height: 40,
+    ports: b.role === "in" ? [{ side: "out", name: b.name, x: 80, y: 20 }]
+      : b.role === "out" ? [{ side: "in", name: b.name, x: 0, y: 20 }]
+      : [...b.inputs.map((name) => ({ side: "in" as const, name, x: 0, y: 20 })),
+         ...b.outputs.map((name) => ({ side: "out" as const, name, x: 80, y: 20 }))],
+  }]));
+
+  it("containers' root nests gains' and pair's members in two compound nodes, across the hierarchy", () => {
+    const m = fixtureModel("containers");
+    const l = level("containers");
+    const g = elkGraph(l, sized(l), regionsOf(m.tree!, ""));
+    expect(g.layoutOptions!["elk.hierarchyHandling"]).toBe("INCLUDE_CHILDREN");
+    expect(g.children!.map((c) => [c.id, c.children?.map((k) => k.id)])).toEqual([
+      [inPinId("u"), undefined], ["region:gains", ["gains/a", "gains/b"]], ["region:pair", ["pair/1"]],
+      ["s1", undefined], ["s2", undefined], ["scale", undefined], [outPinId("y"), undefined],
+    ]);
+    const region = g.children!.find((c) => c.id === "region:gains")!;
+    expect(region.layoutOptions).toEqual({ "elk.padding": "[top=28,left=12,bottom=12,right=12]" });
+    expect(g.edges).toHaveLength(7);
+  });
+
+  it("closed_loop's root, with no region, builds increment 5's flat graph", () => {
+    const m = fixtureModel("closed_loop");
+    const l = level("closed_loop");
+    const g = elkGraph(l, sized(l), regionsOf(m.tree!, ""));
+    expect(g).toEqual(elkGraph(l, sized(l)));
+    expect(g.layoutOptions).toEqual({
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.layered.considerModelOrder.components": "MODEL_ORDER",
+      "elk.layered.cycleBreaking.strategy": "GREEDY_MODEL_ORDER",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "40",
+      "elk.layered.spacing.edgeNodeBetweenLayers": "14",
+      "elk.spacing.edgeEdge": "6",
+      "elk.padding": "[top=20,left=20,bottom=20,right=20]",
+    });
+    expect(g.children!.map((c) => c.id)).toEqual(l.blocks.map((b) => b.id));
+    expect(g.children!.every((c) => c.children === undefined)).toBe(true);
   });
 });
 

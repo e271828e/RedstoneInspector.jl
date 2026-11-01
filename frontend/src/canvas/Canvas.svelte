@@ -1,6 +1,6 @@
 <script lang="ts" module>
-  /** What a click selects: a block or pin by block id, a wire by wire id, a port square by port id. */
-  export type Target = { kind: "block" | "wire" | "port"; id: string };
+  /** What a click selects: a block or pin by block id, a wire by wire id, a port square by port id, a region by its folder's path. */
+  export type Target = { kind: "block" | "wire" | "port" | "folder"; id: string };
 </script>
 
 <script lang="ts">
@@ -14,11 +14,12 @@
   // (initial_design.md answer 12).
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
-  import { levelOf, parsePortId, portId } from "../lib/level";
+  import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { blockTriple, fromRootInput, legend, multiRate, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
   import { labelledPorts, levelWireClasses } from "../lib/wires";
   import { iconOf } from "../lib/icons";
+  import { label, regionsOf } from "../lib/regions";
   import { GLYPHS } from "./glyphs";
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
@@ -112,6 +113,28 @@
   const arrows = $derived(new Map([...new Set(strokes.values())].map((c, i) => [c, `arrow-${i}`])));
   const arrowOf = (id: string) => `url(#${arrows.get(strokes.get(id)!)})`;
   const typeLabels = $derived(labels && shown ? labelledPorts(model, shown.level) : []);
+  /** The drawn level's regions, and each keyed member's region path. */
+  const regions = $derived(shown ? regionsOf(tree, shown.level.path) : []);
+  const regionOf = $derived(new Map(regions.flatMap((r) => r.members.map((m) => [m, r.path] as const))));
+  /**
+   * Each region's frame, by path: its members' current boxes' union grown by the padding, so a dragged member
+   * carries it; ELK's box until a drag.
+   */
+  const frames = $derived.by(() => {
+    const out = new Map<string, Rect>();
+    if (!shown) return out;
+    for (const r of regions) {
+      const bs = r.members.map((m) => shown!.geometry.boxes.get(m)).filter((b) => b !== undefined);
+      if (!bs.length) continue;
+      const x = Math.min(...bs.map((b) => b.x)) - REGION_PADDING.left, y = Math.min(...bs.map((b) => b.y)) - REGION_PADDING.top;
+      out.set(r.path, {
+        x, y,
+        width: Math.max(...bs.map((b) => b.x + b.width)) + REGION_PADDING.right - x,
+        height: Math.max(...bs.map((b) => b.y + b.height)) + REGION_PADDING.bottom - y,
+      });
+    }
+    return out;
+  });
   /** A type label's anchor: 6 px along its wire's first segment from the port, 3 px above it. */
   function labelAt(route: Point[]): Point {
     const [a, b] = route, len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
@@ -154,7 +177,7 @@
       return;
     }
     ready = false;
-    layoutLevel(level, sizes).then((laid) => {
+    layoutLevel(level, sizes, regionsOf(tree, path)).then((laid) => {
       if (stale) return;
       const r = saved ? replace(laid, level, sizes, saved) : { geometry: laid, dragged: new Set<string>() };
       draw(level, sizes, r.geometry, r.dragged, v);
@@ -173,7 +196,7 @@
     if (!shown) return;
     const g = shown.geometry;
     let x0 = 0, y0 = 0, x1 = g.width, y1 = g.height;
-    for (const b of g.boxes.values()) {
+    for (const b of [...g.boxes.values(), ...frames.values()]) {
       x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
       x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
     }
@@ -212,6 +235,7 @@
     const g = shown?.geometry;
     if (!g) return undefined;
     if (t.kind === "block") return g.boxes.get(t.id);
+    if (t.kind === "folder") return frames.get(t.id);
     if (t.kind === "port") {
       const { block, side, name } = parsePortId(t.id);
       const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
@@ -428,6 +452,22 @@
     </defs>
     {#if shown}
       {@const g = shown.geometry}
+      <g class="regions">
+        {#each regions as r (r.path)}
+          {@const f = frames.get(r.path)}
+          {#if f}
+            <g
+              class="region" class:selected={same(selected, "folder", r.path)} data-path={r.path} role="none"
+              onclick={() => select({ kind: "folder", id: r.path })}
+            >
+              <title>{r.path} (folder)</title>
+              <rect class="halo" x={f.x - 3} y={f.y - 3} width={f.width + 6} height={f.height + 6} rx="9" />
+              <rect class="shape" x={f.x} y={f.y} width={f.width} height={f.height} rx="6" />
+              <text class="caption" x={f.x + 8} y={f.y + 15} style="font:{FACE_FONT}">{r.field}</text>
+            </g>
+          {/if}
+        {/each}
+      </g>
       <g class="casings">
         {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
@@ -519,7 +559,7 @@
             {@const badge = badgeOf(b, step)}
             {@const icon = iconOf(tree.byPath.get(b.path)!)}
             <g
-              class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id}
+              class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id} data-region={regionOf.get(b.id)}
               transform="translate({box.x},{box.y})" role="none"
               onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
@@ -533,7 +573,7 @@
               {#if b.role === "assembly"}
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
               {/if}
-              <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{b.segment}</text>
+              <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{label(tree, b.path)}</text>
               {#if !icon}
                 <text class="display" x={PAD} y={29} style="font:{NAME_FONT}">{cutName(b.displayName)}</text>
               {:else if icon.kind === "glyph"}
@@ -640,6 +680,12 @@
   .casing.hover { stroke-width: 7; opacity: 0.2; }
   .casing.incident { stroke-width: 5; opacity: 0.22; }
   .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
+
+  /* A region (visual_grammar.md answer 5): a thin dashed frame captioned with the field; its frame and caption select the folder. */
+  .region > .shape { fill: none; stroke: var(--wire); stroke-width: 1; stroke-dasharray: 3 3; pointer-events: stroke; cursor: pointer; }
+  .region > .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: stroke; cursor: pointer; }
+  .region.selected > .halo { opacity: 0.5; }
+  .region > text.caption { fill: var(--text-light); pointer-events: visiblePainted; cursor: pointer; }
 
   .block { cursor: move; }
   .shape { pointer-events: visible; }

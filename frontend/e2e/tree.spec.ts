@@ -85,7 +85,9 @@ test("containers: the folder rows and the keyed rows under them", async ({ page 
   await expect(pane(page)).toHaveAttribute("data-kind", "folder");
   await expect(pane(page).locator(".facts")).toContainText("field gains");
   await expect(pane(page).locator(".keys a")).toHaveCount(2);
-  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  // the folder's one mark on the canvas is its region's halo
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(1);
+  await expect(page.locator('svg.canvas g.region[data-path="gains"]')).toHaveClass(/\bselected\b/);
 });
 
 test("rates: opening and selecting on the canvas expands, selects and marks the rows", async ({ page }) => {

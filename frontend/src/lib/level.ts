@@ -1,6 +1,7 @@
 // One level as the canvas draws it (visual_grammar.md answers 3 and 4), and
 // the ELK graph over it. Sizes come from the caller: nothing here measures text.
 import type { ElkExtendedEdge, ElkNode } from "elkjs/lib/elk-api";
+import type { Region } from "./regions";
 import type { Face, Resolution } from "./resolve";
 import { displayName, type Tree } from "./tree";
 
@@ -128,9 +129,21 @@ const ROOT_OPTIONS = {
   "elk.padding": "[top=20,left=20,bottom=20,right=20]",
 };
 
-/** ELK's graph for one level: fixed ports, input pins first and output pins last, the wires port to port. */
-export function elkGraph(level: Level, sizes: ReadonlyMap<string, BlockSize>): ElkNode {
-  const children: ElkNode[] = level.blocks.map((b) => {
+/** A region's compound node id. */
+export const regionNodeId = (path: string) => `region:${path}`;
+/** A region's frame around its members: room for the caption on top. */
+export const REGION_PADDING = { top: 28, left: 12, bottom: 12, right: 12 };
+const REGION_OPTIONS = {
+  "elk.padding": `[top=${REGION_PADDING.top},left=${REGION_PADDING.left},bottom=${REGION_PADDING.bottom},right=${REGION_PADDING.right}]`,
+};
+
+/**
+ * ELK's graph for one level: fixed ports, input pins first and output pins last, the wires port to port. A level
+ * with regions nests each region's members in a compound node, at its first member's place, and lays out across
+ * the hierarchy; a level with none builds the flat graph.
+ */
+export function elkGraph(level: Level, sizes: ReadonlyMap<string, BlockSize>, regions: readonly Region[] = []): ElkNode {
+  const flat: ElkNode[] = level.blocks.map((b) => {
     const size = sizes.get(b.id)!;
     const layer: Record<string, string> = b.role === "in" ? { "elk.layered.layering.layerConstraint": "FIRST_SEPARATE" }
       : b.role === "out" ? { "elk.layered.layering.layerConstraint": "LAST_SEPARATE" } : {};
@@ -146,5 +159,15 @@ export function elkGraph(level: Level, sizes: ReadonlyMap<string, BlockSize>): E
   const edges: ElkExtendedEdge[] = level.wires.map((w) => ({
     id: w.id, sources: [portId(w.from.block, "out", w.from.port)], targets: [portId(w.to.block, "in", w.to.port)],
   }));
-  return { id: "level", layoutOptions: ROOT_OPTIONS, children, edges };
+  if (!regions.length) return { id: "level", layoutOptions: ROOT_OPTIONS, children: flat, edges };
+  const regionOf = new Map(regions.flatMap((r) => r.members.map((m) => [m, r] as const)));
+  const byId = new Map(flat.map((c) => [c.id, c]));
+  const children: ElkNode[] = [];
+  for (const c of flat) {
+    const r = regionOf.get(c.id);
+    if (!r) children.push(c);
+    else if (r.members[0] === c.id)
+      children.push({ id: regionNodeId(r.path), layoutOptions: REGION_OPTIONS, children: r.members.map((m) => byId.get(m)!) });
+  }
+  return { id: "level", layoutOptions: { ...ROOT_OPTIONS, "elk.hierarchyHandling": "INCLUDE_CHILDREN" }, children, edges };
 }
