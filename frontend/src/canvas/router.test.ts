@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "../lib/fixtures";
-import { levelOf, type BlockSize } from "../lib/level";
+import { levelOf, type BlockSize, type Level } from "../lib/level";
 import { layoutLevel } from "./layout";
 import { orthoRoute, rerouteTouching } from "./router";
 
@@ -18,7 +18,33 @@ describe("orthoRoute", () => {
   });
 });
 
+/** Every block of a level at 80 by 60, its ports on the west and east edges, as no text is measured here. */
+const flatSizes = (l: Level) => new Map<string, BlockSize>(l.blocks.map((b): [string, BlockSize] => [b.id, {
+  width: 80, height: 60,
+  ports: b.role === "in" ? [{ side: "out", name: b.name, x: 80, y: 11 }]
+    : b.role === "out" ? [{ side: "in", name: b.name, x: 0, y: 11 }]
+    : [...b.inputs.map((name, k) => ({ side: "in" as const, name, x: 0, y: 30 + 16 * k })),
+       ...b.outputs.map((name, k) => ({ side: "out" as const, name, x: 80, y: 30 + 16 * k }))],
+}]));
+
 describe("rerouteTouching", () => {
+  it("on closed_loop's root drops the junction points of plant's wires and keeps every other wire's", async () => {
+    const m = fixtureModel("closed_loop");
+    const l = levelOf(m.tree!, m.resolution!, "");
+    const sizes = flatSizes(l);
+    const g = await layoutLevel(l, sizes);
+    const touching = new Set(l.wires.filter((w) => w.from.block === "plant" || w.to.block === "plant").map((w) => w.id));
+    const before = [...g.junctions.keys()];
+    expect(before.some((id) => touching.has(id)), "a plant wire with junctions").toBe(true);
+    expect(before.some((id) => !touching.has(id)), "another wire with junctions").toBe(true);
+    const box = g.boxes.get("plant")!;
+    const { junctions } = rerouteTouching({ ...g, boxes: new Map(g.boxes).set("plant", { ...box, y: box.y + 200 }) }, l, sizes, "plant");
+    for (const id of before) {
+      if (touching.has(id)) expect(junctions.has(id), id).toBe(false);
+      else expect(junctions.get(id), id).toBe(g.junctions.get(id));
+    }
+  });
+
   it("on descent's root re-routes plant's three wires and keeps gear's wire to stop", async () => {
     const m = fixtureModel("descent");
     const l = levelOf(m.tree!, m.resolution!, "");
@@ -32,7 +58,7 @@ describe("rerouteTouching", () => {
     const g = await layoutLevel(l, sizes);
     const box = g.boxes.get("plant")!;
     const moved = { ...g, boxes: new Map(g.boxes).set("plant", { ...box, y: box.y + 200 }) };
-    const routes = rerouteTouching(moved, l, sizes, "plant");
+    const { routes } = rerouteTouching(moved, l, sizes, "plant");
     const touching = l.wires.filter((w) => w.from.block === "plant" || w.to.block === "plant").map((w) => w.id);
     expect(touching.sort()).toEqual(["gear|in|h", "plant|in|δe", "plant|in|δt"].sort());
     for (const id of touching) expect(routes.get(id), id).not.toEqual(g.routes.get(id));

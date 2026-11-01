@@ -19,6 +19,8 @@ export const palette = {
   /** A root input's tag: the external color at a light tint. */
   rootTag: { fill: "#dcefd6", stroke: "#4b7f3e" },
   wire: "#6b6b6b",
+  /** An opaque wire's lighter gray, its dotted line's. */
+  wireLight: "#a3a3a3",
   /** Port squares: filled for stage 2, open (the background) for stage 1. */
   port: "#333333",
   text: "#1d1d1d",

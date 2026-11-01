@@ -9,11 +9,15 @@ export const SEGMENT_FONT = `600 12px ${FONT_STACK}`;
 export const FACE_FONT = `11px ${FONT_STACK}`;
 export const NAME_FONT = `11px ${FONT_STACK}`;
 export const PIN_FONT = `12px ${FONT_STACK}`;
+/** A wire's type label. */
+export const LABEL_FONT = `10px ${FONT_STACK}`;
 /** Rate mode's badge in a block's top-right corner. */
 export const BADGE_FONT = `9px ${FONT_STACK}`;
 
 /** The display name's fixed width, past which it is cut with an ellipsis. */
 export const DISPLAY_NAME_WIDTH = 120;
+/** A wire type label's fixed width, past which it is cut with an ellipsis (visual_grammar.md answer 4). */
+export const TYPE_LABEL_WIDTH = 140;
 export const PAD = 8;
 /** The two header lines: the segment, then the display name. */
 export const HEADER = 36;
@@ -40,20 +44,24 @@ export function textWidth(s: string, font: string): number {
   return ctx.measureText(s).width;
 }
 
-const cuts = new Map<string, string>();
-/** The display name as drawn: whole when it fits the fixed width, else cut with an ellipsis. */
-export function cutName(name: string): string {
-  let cut = cuts.get(name);
+/** A text whole when it fits the width in the font, else cut with an ellipsis; memoized per font and width. */
+function cutText(cuts: Map<string, string>, s: string, font: string, width: number): string {
+  let cut = cuts.get(s);
   if (cut !== undefined) return cut;
-  cut = name;
-  if (textWidth(name, NAME_FONT) > DISPLAY_NAME_WIDTH) {
-    let n = name.length;
-    while (n > 0 && textWidth(name.slice(0, n) + "…", NAME_FONT) > DISPLAY_NAME_WIDTH) n--;
-    cut = name.slice(0, n) + "…";
+  cut = s;
+  if (textWidth(s, font) > width) {
+    let n = s.length;
+    while (n > 0 && textWidth(s.slice(0, n) + "…", font) > width) n--;
+    cut = s.slice(0, n) + "…";
   }
-  cuts.set(name, cut);
+  cuts.set(s, cut);
   return cut;
 }
+const names = new Map<string, string>(), types = new Map<string, string>();
+/** The display name as drawn: whole when it fits the fixed width, else cut with an ellipsis. */
+export const cutName = (name: string): string => cutText(names, name, NAME_FONT, DISPLAY_NAME_WIDTH);
+/** A wire's type label as drawn, cut at `TYPE_LABEL_WIDTH`. */
+export const cutType = (type: string): string => cutText(types, type, LABEL_FONT, TYPE_LABEL_WIDTH);
 
 /** Whether a face of a leaf child is pinned. */
 export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: string): boolean {

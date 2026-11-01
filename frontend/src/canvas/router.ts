@@ -23,15 +23,22 @@ function portPoint(g: Geometry, sizes: ReadonlyMap<string, BlockSize>, block: st
   return { x: box.x + p.x, y: box.y + p.y };
 }
 
-/** A new routes map: every wire with `block` at either end re-routed port to port, every other route kept. */
-export function rerouteTouching(g: Geometry, level: Level, sizes: ReadonlyMap<string, BlockSize>, block: string): Map<string, Point[]> {
+/**
+ * New routes and junctions: every wire with `block` at either end re-routed port to port with its junction points
+ * dropped, since the local router draws no trunks; every other wire kept.
+ */
+export function rerouteTouching(
+  g: Geometry, level: Level, sizes: ReadonlyMap<string, BlockSize>, block: string,
+): Pick<Geometry, "routes" | "junctions"> {
   const routes = new Map(g.routes);
+  const junctions = new Map(g.junctions);
   for (const w of level.wires) {
     if (w.from.block !== block && w.to.block !== block) continue;
+    junctions.delete(w.id);
     const a = portPoint(g, sizes, w.from.block, "out", w.from.port);
     const b = portPoint(g, sizes, w.to.block, "in", w.to.port);
     const fa = g.boxes.get(w.from.block)!, fb = g.boxes.get(w.to.block)!;
     routes.set(w.id, orthoRoute(a, b, Math.max(fa.y + fa.height, fb.y + fb.height)));
   }
-  return routes;
+  return { routes, junctions };
 }

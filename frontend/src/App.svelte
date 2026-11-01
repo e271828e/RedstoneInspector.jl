@@ -26,7 +26,7 @@
     setView, toggleDrawer, toggleExpanded, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
-  import { prefs, setMode, toggleCollapsed } from "./state/prefs.svelte";
+  import { prefs, setMode, toggleCollapsed, toggleLabels } from "./state/prefs.svelte";
   import { onMount, tick } from "svelte";
 
   let refusal = $state<string | undefined>();
@@ -217,6 +217,7 @@
     else if (key === "d" && !e.shiftKey) toggleDrawer(session.drawer.tab);
     else if (e.key === "/") focusSearch();
     else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
+    else if (key === "y" && !e.shiftKey) toggleLabels();
     else handled = RESERVED.has(e.key); // swallowed until their increments
     if (handled) e.preventDefault();
   }
@@ -266,13 +267,13 @@
         </Tree>
       {/snippet}
       {#snippet breadcrumb()}
-        <Breadcrumb {model} level={session.level} mode={prefs.mode} onopen={open} onfile={openFile} onmode={setMode} />
+        <Breadcrumb {model} level={session.level} mode={prefs.mode} labels={prefs.labels} onopen={open} onfile={openFile} onmode={setMode} onlabels={toggleLabels} />
       {/snippet}
       {#snippet canvas()}
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} selected={drawn} {hits}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} {hits}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}

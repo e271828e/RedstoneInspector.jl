@@ -7,7 +7,8 @@
   // The level's canvas: ELK's layout drawn as SVG (visual_grammar.md answers 1
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9), the
-  // tier or rate colors with the badge and the legend (answer 6).
+  // tier or rate colors with the badge and the legend (answer 6), wire styles by
+  // kind with the trunks' dots and the type labels (answer 4).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -15,24 +16,27 @@
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId } from "../lib/level";
   import type { Model } from "../lib/model";
-  import { blockTriple, legend, multiRate, STEPS, stepsOf, tripleKey } from "../lib/rates";
+  import { blockTriple, fromRootInput, legend, multiRate, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
+  import { labelledPorts, levelWireClasses } from "../lib/wires";
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
-  import { palette, type Pair } from "./palette";
+  import { palette, tint, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutName, FACE_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, cutName, cutType, FACE_FONT, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, mode = "tier", selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
+  let { model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
     model: Model;
     path: string;
     /** The color mode: by tier, or by rate with the badges and the legend. */
     mode?: Mode;
+    /** The type labels shown, one per producer port. */
+    labels?: boolean;
     /** The target drawn as selected; the caller passes it only on the level it was selected on. */
     selected?: Target;
     /** The level's view the session holds, restored instead of fitting; read when the level is drawn. */
@@ -82,6 +86,35 @@
   /** Each rate triple's palette step, over the whole model. */
   const steps = $derived(stepsOf(model));
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
+  /** Each wire's class by wire id, the drawn level's. */
+  const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
+  /**
+   * Each wire's color: in tier mode gray, an opaque wire the lighter gray; in rate mode the tint of its terminal
+   * producer's step, the continuous tint with no triple, the neutral gray from a root input.
+   */
+  const strokes = $derived.by(() => {
+    const out = new Map<string, string>();
+    if (!shown) return out;
+    for (const w of shown.level.wires) {
+      if (mode === "tier") out.set(w.id, classes.get(w.id) === "opaque" ? palette.wireLight : palette.wire);
+      else if (fromRootInput(model, shown.level.path, w)) out.set(w.id, palette.wire);
+      else {
+        const t = wireTriple(model, shown.level.path, w);
+        const step = t && steps.get(tripleKey(t));
+        out.set(w.id, tint(step === undefined ? palette.continuous.stroke : step < STEPS ? palette.rate[step].stroke : palette.extra.stroke));
+      }
+    }
+    return out;
+  });
+  /** One arrowhead marker per wire color on the level, by color. */
+  const arrows = $derived(new Map([...new Set(strokes.values())].map((c, i) => [c, `arrow-${i}`])));
+  const arrowOf = (id: string) => `url(#${arrows.get(strokes.get(id)!)})`;
+  const typeLabels = $derived(labels && shown ? labelledPorts(model, shown.level) : []);
+  /** A type label's anchor: 6 px along its wire's first segment from the port, 3 px above it. */
+  function labelAt(route: Point[]): Point {
+    const [a, b] = route, len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+    return { x: a.x + (6 * (b.x - a.x)) / len, y: a.y + (6 * (b.y - a.y)) / len - 3 };
+  }
 
   /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
   function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
@@ -91,7 +124,7 @@
       const was = old.geometry.boxes.get(id), now = g.boxes.get(id);
       if (!was || !now) continue;
       g = { ...g, boxes: new Map(g.boxes).set(id, { ...now, x: was.x, y: was.y }) };
-      g = { ...g, routes: rerouteTouching(g, level, sizes, id) };
+      g = { ...g, ...rerouteTouching(g, level, sizes, id) };
       kept.add(id);
     }
     return { geometry: g, dragged: kept };
@@ -250,7 +283,7 @@
     const s = shown!;
     const box = { ...d.box, x: d.box.x + dx / view.scale, y: d.box.y + dy / view.scale };
     const g = { ...s.geometry, boxes: new Map(s.geometry.boxes).set(d.block, box) };
-    shown = { ...s, geometry: { ...g, routes: rerouteTouching(g, s.level, s.sizes, d.block) } };
+    shown = { ...s, geometry: { ...g, ...rerouteTouching(g, s.level, s.sizes, d.block) } };
   }
   function pointermove(e: PointerEvent) {
     if (blockDrag && e.pointerId === blockDrag.id) return blockmove(e);
@@ -370,14 +403,17 @@
 >
   <svg
     bind:this={svg} class="canvas" class:searching={!!hits} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
-    data-mode={mode}
+    data-mode={mode} data-labels={labels ? "" : undefined}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
   >
     <defs>
-      <marker id="arrow" viewBox="0 0 8 8" refX="11" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-        <path d="M0,0 L8,4 L0,8 z" fill={palette.wire} />
-      </marker>
+      <!-- in user units, so a thick wire's arrowhead keeps a thin wire's size; one per color, the struct's on its core -->
+      {#each arrows as [color, id] (id)}
+        <marker {id} viewBox="0 0 8 8" refX="11" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill={color} />
+        </marker>
+      {/each}
     </defs>
     {#if shown}
       {@const g = shown.geometry}
@@ -401,11 +437,16 @@
         {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
           {#if route}
+            {@const struct = classes.get(w.id) === "struct"}
             <path
               class="wire" class:selected={same(selected, "wire", w.id)}
               class:hover={same(hovered, "wire", w.id) && !same(selected, "wire", w.id)}
-              data-wire={w.id} d={pathD(route)} marker-end="url(#arrow)"
+              data-wire={w.id} data-kind={classes.get(w.id)} d={pathD(route)} style:stroke={strokes.get(w.id)}
+              marker-end={struct ? undefined : arrowOf(w.id)}
             />
+            {#if struct}
+              <path class="wire-core" data-wire={w.id} d={pathD(route)} marker-end={arrowOf(w.id)} />
+            {/if}
             <path
               class="wire-hit" data-hit={w.id} d={pathD(route)} role="none"
               onclick={() => select({ kind: "wire", id: w.id })}
@@ -415,6 +456,24 @@
           {/if}
         {/each}
       </g>
+      <g class="junctions">
+        {#each g.junctions as [id, points] (id)}
+          {#each points as p, k (k)}
+            <circle class="junction" data-wire={id} cx={p.x} cy={p.y} r="2.5" fill={strokes.get(id)} />
+          {/each}
+        {/each}
+      </g>
+      {#if labels}
+        <g class="type-labels">
+          {#each typeLabels as t (t.port)}
+            {@const route = g.routes.get(t.wire)}
+            {#if route}
+              {@const at = labelAt(route)}
+              <text class="type-label" data-port={t.port} x={at.x} y={at.y} style="font:{LABEL_FONT}"><title>{t.type}</title>{cutType(t.type)}</text>
+            {/if}
+          {/each}
+        </g>
+      {/if}
       <g class="blocks">
         {#each ordered as b (b.id)}
           {@const box = g.boxes.get(b.id)!}
@@ -540,6 +599,14 @@
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
+  /* The kind as line weight and pattern (visual_grammar.md answer 4); the struct's triple line is a wide stroke under a core in the background color. */
+  .wire[data-kind="flag"] { stroke-dasharray: 4 3; }
+  .wire[data-kind="vector"] { stroke-width: 3; }
+  .wire[data-kind="opaque"] { stroke-dasharray: 1 3; }
+  .wire[data-kind="struct"] { stroke-width: 5; }
+  .wire-core { fill: none; stroke: var(--bg); stroke-width: 1.6; pointer-events: none; }
+  .junction { pointer-events: none; }
+  text.type-label { fill: var(--text-light); pointer-events: visiblePainted; }
   .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }
   .casing { fill: none; stroke: var(--highlight); stroke-linejoin: round; pointer-events: none; }
   .casing.selected { stroke-width: 7; opacity: 0.4; }
@@ -565,7 +632,7 @@
   /* Search (visual_grammar.md answer 9): hits take a dashed halo, everything else dims by opacity. */
   .block > .halo.dashed { opacity: 0.9; stroke-width: 2; stroke-dasharray: var(--dash); }
   .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
-  .searching .wire { opacity: var(--dim); }
+  .searching :is(.wire, .wire-core, .junction, .type-label) { opacity: var(--dim); }
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }

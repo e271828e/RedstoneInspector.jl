@@ -1,17 +1,20 @@
 <script lang="ts">
   // The open level's path as links (workspace.md answer 3), the root labelled as
   // the tree labels it, the open control at the left end (answer 10), the
-  // color mode's segmented switch at the right end (answer 7).
+  // color mode's segmented switch and the type labels' toggle at the right end
+  // (answer 7).
   import type { Model } from "../lib/model";
   import type { Mode } from "../state/prefs.svelte";
 
-  let { model, level, mode = "tier", onopen, onfile, onmode }: {
+  let { model, level, mode = "tier", labels = false, onopen, onfile, onmode, onlabels }: {
     model: Model;
     level: string;
     mode?: Mode;
+    labels?: boolean;
     onopen: (path: string) => void;
     onfile: (file: File | undefined) => void;
     onmode?: (mode: Mode) => void;
+    onlabels?: () => void;
   } = $props();
   const MODES: [Mode, string, string][] = [["tier", "tier", "Color by tier"], ["rate", "rate", "Color by rate"]];
 
@@ -49,6 +52,7 @@
         <button data-mode={m} aria-pressed={mode === m} {title} onclick={() => onmode?.(m)}>{text}</button>
       {/each}
     </div>
+    <button class="type-labels" aria-pressed={labels} title="Show the type of every wire" onclick={() => onlabels?.()}>types</button>
   </div>
 </nav>
 

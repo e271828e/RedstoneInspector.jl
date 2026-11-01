@@ -11,6 +11,12 @@ const shape = (page: Page, id: string) => block(page, id).locator(".shape");
 const badge = (page: Page, id: string) => block(page, id).locator("text.badge");
 const legendLines = (page: Page) => page.locator(".viewport .legend li");
 const modeButton = (page: Page, mode: string) => page.locator(`nav.breadcrumb .controls .mode button[data-mode="${mode}"]`);
+const wireStroke = (page: Page, id: string) => page.locator(`path.wire[data-wire="${id}"]`).evaluate((w) => getComputedStyle(w).stroke);
+/** The fill of the arrowhead a wire's line ends in: its own marker, or its core's for a struct. */
+const arrowFill = (page: Page, id: string) => page.evaluate((id) => {
+  const end = [...document.querySelectorAll(`[data-wire="${CSS.escape(id)}"]`)].map((p) => p.getAttribute("marker-end")).find(Boolean)!;
+  return getComputedStyle(document.querySelector(`${end.slice(4, -1)} path`)!).fill;
+}, id);
 
 test("closed_loop: tier at load, r to rate mode with the base grid on every assembly, the badges and the legend", async ({ page }) => {
   await drop(page, "closed_loop");
@@ -42,9 +48,12 @@ test("closed_loop: tier at load, r to rate mode with the base grid on every asse
   await shot(page, "closed_loop", "", "colors");
 });
 
-test("closed_loop: pid_controller's four steps and lines, actuators' extras, the tree's dot, the mode kept across a reload", async ({ page }) => {
+test("closed_loop: pid_controller's four steps and lines, actuators' extras and wires, the tree's dot, the mode kept across a reload", async ({ page }) => {
   await drop(page, "closed_loop");
+  const gray = await wireStroke(page, "sensing|in|h");
   await press(page, "r");
+  // a root input's wires stay gray in rate mode
+  for (const id of ["pid_controller|in|V_ref", "lqr_controller|in|V_ref"]) expect(await wireStroke(page, id), id).toBe(gray);
   await openPath(page, "pid_controller");
   const controllers = ["h_ctl", "θ_ctl", "q_ctl", "V_ctl"].map((c) => `pid_controller/${c}`);
   const fills = new Set<string | null>();
@@ -79,6 +88,12 @@ test("closed_loop: pid_controller's four steps and lines, actuators' extras, the
   await expect(shape(page, "actuators/δt_limiter")).toHaveAttribute("fill", extraFill!);
   expect(extraFill).not.toBe(await shape(page, "actuators/δe_lag").getAttribute("fill"));
   for (const id of ["actuators/δe_lag", "actuators/δt_lag"]) await expect(shape(page, id)).not.toHaveAttribute("data-step");
+  // the wires take their producer's tint, the extra's out of the limiter, the continuous one out of the lag
+  const fromLimiter = await wireStroke(page, "actuators/δe_lag|in|u"), fromLag = await wireStroke(page, "⟨out⟩δe|in|δe");
+  expect(fromLimiter).not.toBe(fromLag);
+  expect([fromLimiter, fromLag]).not.toContain(gray);
+  expect(fromLimiter).not.toBe(await shape(page, "actuators/δe_limiter").evaluate((r) => getComputedStyle(r).stroke));
+  for (const id of ["actuators/δe_lag|in|u", "⟨out⟩δe|in|δe"]) expect(await arrowFill(page, id), id).toBe(await wireStroke(page, id));
 
   await page.reload();
   await dropOver(page, "closed_loop");

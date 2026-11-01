@@ -279,16 +279,24 @@ test("t o and ? leave the selection, the view and the drawer as they were", asyn
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "");
 });
 
-test("r toggles the color mode, leaving the selection and the view", async ({ page }) => {
+test("r toggles the color mode and y the type labels, each alone, leaving the selection and the view", async ({ page }) => {
+  const svg = page.locator("svg.canvas");
   await page.locator('g.block[data-id="plant"]').click();
   const before = await viewBox(page);
-  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+  await expect(svg).toHaveAttribute("data-mode", "tier");
   await press(page, "r");
-  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "rate");
+  await expect(svg).toHaveAttribute("data-mode", "rate");
+  await expect(svg).not.toHaveAttribute("data-labels");
+  await press(page, "y");
+  await expect(svg).toHaveAttribute("data-labels", "");
+  await expect(svg).toHaveAttribute("data-mode", "rate");
   await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
   expect(await viewBox(page)).toEqual(before);
   await press(page, "r");
-  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+  await expect(svg).toHaveAttribute("data-mode", "tier");
+  await expect(svg).toHaveAttribute("data-labels", "");
+  await press(page, "y");
+  await expect(svg).not.toHaveAttribute("data-labels");
 });
 
 test("Escape clears a standing query first, leaving the selection, then the selection", async ({ page }) => {
