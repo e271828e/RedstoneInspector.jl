@@ -135,7 +135,7 @@ TypeScript types are generated from the schema copy into
 `frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
 each of `dev`, `build`, `check` and `test`. Before a file is open the page shows
 a landing panel with its privacy statement: the file is read in the browser and
-never uploaded, and the page loads nothing from the network. The page reads a
+never uploaded, and the page loads nothing from any other site. The page reads a
 picked or dropped descriptor and draws its root level: blocks, the level's
 boundary pins and the wires, laid out by ELK. Around the canvas sit the model
 tree on the left, the detail pane on the right, the breadcrumb above, the
@@ -149,21 +149,29 @@ pane showing what is selected; Escape clears.
 
 The open level is the URL's hash, `#level=sensing`, none at the root, so back
 and forward move between levels and a reload or a link reopens one. Each
-level keeps its zoom, pan and layout for the session, and a block dragged on
-the canvas keeps its place until the page reloads; only its own wires are
-re-routed. A second descriptor dropped or pushed over the first keeps the open
-level, the selection, the expansion, the views and the search by path and
-name; what the new model lacks is dropped, and a level that is gone falls back
-to its nearest ancestor with a note in the status bar. The keyboard: `h` `j`
-`k` `l` move the selection to the nearest block or pin in that direction, the
-view following; Shift with them, or the arrows, pan; `0` fits, `+` and `-`
-zoom; `d` toggles the drawer; Tab moves between the tree, the canvas, the
-detail pane and the drawer; `t`, `r`, `y`, `o` and `?` are reserved. Search,
-in the field at the top of the tree, opened by `/` or Cmd-K, matches paths,
-types and face names as case-insensitive substrings, `path:`, `type:` and
-`face:` narrowing a term to one field; the hits list while the field has
-focus, take a dashed halo on the canvas with the rest dimmed, and mark the
-tree's rows with counts up collapsed ones.
+level keeps its zoom, pan and layout for the session, and a block or pin
+dragged on the canvas keeps its place until the page reloads; only its own
+wires are re-routed. A second descriptor dropped or pushed over the first keeps
+the open level, the selection, the expansion, the views and the search by path
+and name, and the keyboard's focus; a level's view is kept only while its
+blocks are unchanged, else it fits; what the new model lacks is dropped, and a
+level that is gone falls back to its nearest ancestor with a note in the status
+bar. While a model opened from a file is loaded, the page asks before it
+unloads; a pushed one does not. The keyboard: on the canvas `h` `j` `k` `l`
+move the selection to the nearest block or pin in that direction, the view
+following; in the tree they move a row, expand and collapse; the arrows pan;
+Shift-`h` and Shift-`l` go back and forward between the levels this page load
+opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
+or Alt-Up climbs; `z` centres the selection; `0` fits, `+` and `-` zoom; `d`
+toggles the drawer; Tab moves between the tree, the canvas, the detail pane
+and the drawer, the focus ring showing for the keyboard only; `t`, `r`, `y`,
+`o` and `?` are reserved. Search, in the field at the top of the tree, opened
+by `/` or Cmd-K, matches paths, types and face names as case-insensitive
+substrings, `path:`, `type:` and `face:` narrowing a term to one field, a
+prefix alone matching nothing yet; the hits list while the field has focus,
+take a dashed halo on the canvas with the rest dimmed, and mark the tree's rows
+with counts up collapsed ones; `n` and `N` select the next and the previous hit
+of the whole list, opening its level.
 
 In the live session the page connects to the server's socket on load and
 greets with its tab's channel. The status bar reads "connected, waiting for
