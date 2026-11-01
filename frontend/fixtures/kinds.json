@@ -530,17 +530,17 @@
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 159
+              "line": 163
             },
             {
               "function": "x_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 158
+              "line": 162
             },
             {
               "function": "m_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 157
+              "line": 161
             }
           ]
         },
@@ -551,12 +551,12 @@
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 166
+              "line": 170
             },
             {
               "function": "s_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 165
+              "line": 169
             }
           ]
         },
@@ -567,17 +567,17 @@
             {
               "function": "u_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 174
+              "line": 178
             },
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 175
+              "line": 179
             },
             {
               "function": "x_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 173
+              "line": 177
             }
           ]
         }

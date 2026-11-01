@@ -121,7 +121,7 @@ describe("routes", () => {
   // Every terminal consumer is reached once, from its one terminal producer.
   it.each([
     ["aircraft", 2], ["descent", 4], ["closed_loop", 55], ["closed_loop_deployment", 55], ["containers", 7],
-    ["primitive", 0], ["kinds", 10], ["rates", 6], ["large", 333], ["failure_cycle", 5],
+    ["primitive", 0], ["kinds", 10], ["rates", 6], ["large", 333], ["failure_cycle", 5], ["library", 40],
   ] as const)("%s: the producers' routes reach %i consumers", (name, n) => {
     expect(producerRoutes(res(name)).reduce((sum, rt) => sum + rt.consumers.length, 0)).toBe(n);
   });

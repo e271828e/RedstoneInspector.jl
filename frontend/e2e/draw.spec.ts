@@ -33,6 +33,7 @@ const TABLE: Record<string, Record<string, Pins>> = {
   },
   large: { "": row(156, 323, 4, 2, 10, 294, 0), ...Object.fromEntries(LARGE_INNER.map((p) => [p, row(4, 3, 1, 1, 0, 2, 0)])) },
   failure_cycle: { "": row(5, 5, 2, 1, 0, 0, 0) },
+  library: { "": row(34, 40, 2, 0, 0, 22, 5) },
 };
 
 for (const [fixture, levels] of Object.entries(TABLE)) {

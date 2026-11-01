@@ -8,7 +8,7 @@ const named = (name: string) =>
 describe("feedthrough edges", () => {
   it.each([
     ["aircraft", 0], ["descent", 0], ["closed_loop", 16], ["closed_loop_deployment", 16], ["containers", 5],
-    ["primitive", 0], ["kinds", 0], ["rates", 0], ["large", 0], ["failure_cycle", 0],
+    ["primitive", 0], ["kinds", 0], ["rates", 0], ["large", 0], ["failure_cycle", 0], ["library", 14],
   ] as const)("%s: %i edges", (name, n) => {
     expect(fixtureModel(name).feedthrough).toHaveLength(n);
   });

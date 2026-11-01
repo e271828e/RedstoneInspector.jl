@@ -5,7 +5,11 @@ using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
     transparent_container, Absolute, Relative, Hz
-import Redstone.Blocks: Group, Constant
+import Redstone.Blocks: Group, Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
+    Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
+    TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
+    DiscreteTransferFunction, DiscretizedStateSpace, DiscretizedTransferFunction,
+    DiscreteLimitedIntegrator, Delay, Freeze, PID, DiscretePID, LQRTracker, DiscreteLQRTracker
 using StaticArrays: SVector, SMatrix
 using Random: Xoshiro
 
@@ -213,6 +217,49 @@ rates() = Group((; src = Ramp(),
                 local_wires = ("src/out" => "fast/in", "src/out" => "slow/in"),
                 output_wires = ("fast/inner" => "inner", "fast/outer" => "outer", "slow/out" => "slow"),
                 sample_times = (fast = Absolute(Hz(50)), slow = Absolute(Hz(10))))
+
+# --- library: one of every shipped block --------------------------------------------
+
+wave(t) = sin(t)
+half(x) = x / 2
+
+"""
+One instance of every shipped block of the core's library, beside a `Junction` over
+a user function, wired as one chain from the sources; the discrete leaves on two
+anchors, the base grid, a `Relative(2)` and a phased `Relative(2, 1)`.
+"""
+function library()
+    m = [1.0;;]
+    Group((; sum = SumJunction{Float64, 2}(), or = Or{2}(), and = And{2}(), pack = Pack{Float64, 2}(),
+             unpack = Unpack{Float64, 2}(), switch = Switch{Float64}(), stop = StopRequest(reason = "flags"),
+             constant = Constant(1.0), step = Step(t_step = 1.0), source = Source(wave),
+             noise = GaussianWhiteNoise(seed = 1, σ = 0.1), integrator = Integrator(),
+             limited = LimitedIntegrator(lower = -1.0, upper = 1.0), lag = FirstOrderLag(τ = 0.5),
+             ss = StateSpace(A = -m, B = m, C = m), tf = TransferFunction(num = (1.0,), den = (1.0, 1.0)),
+             relay = Relay(lower = -0.5, upper = 0.5), unit_delay = UnitDelay(0.0),
+             d_integrator = DiscreteIntegrator(), rate_limiter = RateLimiter(rising = 1.0),
+             dss = DiscreteStateSpace(A = 0.5m, B = m, C = m), dtf = DiscreteTransferFunction(num = (1.0,), den = (1.0, -0.5)),
+             zoh_ss = DiscretizedStateSpace(A = -m, B = m, C = m), zoh_tf = DiscretizedTransferFunction(num = (1.0,), den = (1.0, 1.0)),
+             d_limited = DiscreteLimitedIntegrator(lower = -1.0, upper = 1.0), delay = Delay(K = 3),
+             freeze = Freeze{Float64}(), pid = PID(Kp = 1.0, Ki = 0.5), d_pid = DiscretePID(Kp = 1.0, Ki = 0.5),
+             lqr = LQRTracker(K_fbk = SMatrix{1, 2}(1.0, 0.5), K_fwd = SMatrix{1, 2}(1.0, 0.0)),
+             d_lqr = DiscreteLQRTracker(K_fbk = SMatrix{1, 2}(1.0, 0.5), K_fwd = SMatrix{1, 2}(1.0, 0.0)),
+             fn = Junction{Float64, Float64, 1}(half));
+          local_wires = ("source/y" => "sum/in1", "noise/y" => "sum/in2", "constant/y" => "pack/in1",
+                         "step/y" => "pack/in2", "pack/y" => "unpack/u", "pack/y" => "lqr/x", "pack/y" => "lqr/z",
+                         "pack/y" => "lqr/z_ref", "pack/y" => "d_lqr/x", "pack/y" => "d_lqr/z", "pack/y" => "d_lqr/z_ref",
+                         "unpack/out1" => "switch/in1", "unpack/out2" => "switch/in2", "and/y" => "switch/select",
+                         "or/y" => "and/in2", "or/y" => "stop/u", "sum/y" => "integrator/u", "switch/y" => "limited/u",
+                         "integrator/y" => "lag/u", "lag/y" => "ss/u", "ss/y" => "tf/u", "tf/y" => "relay/u",
+                         "relay/y" => "freeze/u", "freeze/y" => "unit_delay/u", "unit_delay/y" => "d_integrator/u",
+                         "d_integrator/y" => "rate_limiter/u", "rate_limiter/y" => "dss/u", "dss/y" => "dtf/u",
+                         "dtf/y" => "zoh_ss/u", "zoh_ss/y" => "zoh_tf/u", "zoh_tf/y" => "d_limited/u",
+                         "d_limited/out" => "delay/u", "delay/y" => "fn/in1", "constant/y" => "pid/r", "constant/y" => "d_pid/r",
+                         "fn/y" => "pid/y", "pid/u" => "d_pid/y"),
+          input_wires = ("a" => ("or/in1", "and/in1"), "b" => "or/in2"),
+          sample_times = (noise = Absolute(Hz(10)), dss = Absolute(Hz(50)), d_limited = Relative(2),
+                          d_pid = Relative(2, 1)))
+end
 
 # --- the failures --------------------------------------------------------------------
 
