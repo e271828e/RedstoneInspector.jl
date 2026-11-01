@@ -13,9 +13,37 @@
           "path": "",
           "class": "assembly",
           "type": "Redstone.Blocks.Group",
-          "signature": "Redstone.Blocks.Group{@NamedTuple{i::Redstone.Blocks.Constant{Int8}, r::Redstone.Blocks.Constant{Rational{Int64}}, v::Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}, mat::Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}, nt::Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}, fn::Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}, g::Main.Synthetic.GearMode, s::Main.Synthetic.PhaseSelector, p::Main.Synthetic.PhaseReader}, Tuple{Pair{String, String}}, Tuple{}, Tuple{}, @NamedTuple{}}",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{i::Redstone.Blocks.Constant{Int8}, r::Redstone.Blocks.Constant{Rational{Int64}}, v::Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}, mat::Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}, nt::Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}, fn::Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}, g::Main.Synthetic.GearMode, s::Main.Synthetic.PhaseSelector, p::Main.Synthetic.PhaseReader}, Tuple{Pair{String, String}}, Tuple{}, NTuple{9, Pair{String, String}}, @NamedTuple{}}",
           "inputs": [],
-          "outputs": [],
+          "outputs": [
+            {
+              "name": "i"
+            },
+            {
+              "name": "r"
+            },
+            {
+              "name": "v"
+            },
+            {
+              "name": "mat"
+            },
+            {
+              "name": "nt"
+            },
+            {
+              "name": "fn"
+            },
+            {
+              "name": "gear"
+            },
+            {
+              "name": "g_y"
+            },
+            {
+              "name": "armed"
+            }
+          ],
           "wires": [
             {
               "from": {
@@ -25,6 +53,96 @@
               "to": {
                 "path": "p",
                 "port": "phase"
+              }
+            },
+            {
+              "from": {
+                "path": "i",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "i"
+              }
+            },
+            {
+              "from": {
+                "path": "r",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "r"
+              }
+            },
+            {
+              "from": {
+                "path": "v",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "v"
+              }
+            },
+            {
+              "from": {
+                "path": "mat",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "mat"
+              }
+            },
+            {
+              "from": {
+                "path": "nt",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "nt"
+              }
+            },
+            {
+              "from": {
+                "path": "fn",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "fn"
+              }
+            },
+            {
+              "from": {
+                "path": "g",
+                "port": "gear"
+              },
+              "to": {
+                "path": "",
+                "port": "gear"
+              }
+            },
+            {
+              "from": {
+                "path": "g",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "g_y"
+              }
+            },
+            {
+              "from": {
+                "path": "p",
+                "port": "armed"
+              },
+              "to": {
+                "path": "",
+                "port": "armed"
               }
             }
           ],
@@ -39,7 +157,7 @@
             },
             {
               "name": "output_wires",
-              "value": "()"
+              "value": "(\"i/y\"=>\"i\", \"r/y\"=>\"r\", \"v/y\"=>\"v\", \"mat/y\"=>\"mat\", \"nt/y\"=>\"nt\", \"fn/y\"=>\"fn\",…"
             },
             {
               "name": "sample_times",

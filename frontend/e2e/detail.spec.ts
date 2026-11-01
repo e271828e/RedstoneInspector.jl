@@ -258,9 +258,9 @@ test("containers: the folder's keys select their nodes", async ({ page }) => {
   await expect(page.locator('g.block.selected[data-id="gains/a"]')).toHaveCount(1);
 });
 
-test("the level facts count in the singular: aircraft's one child, kinds' one wire", async ({ page }) => {
+test("the level facts count in the singular and the plural: aircraft's one child, kinds' ten wires", async ({ page }) => {
   await drop(page, "aircraft");
   await expect(pane(page).locator(".facts")).toHaveText("open level · 1 child · 2 wires");
   await drop(page, "kinds");
-  await expect(pane(page).locator(".facts")).toHaveText("open level · 9 children · 1 wire");
+  await expect(pane(page).locator(".facts")).toHaveText("open level · 9 children · 10 wires");
 });

@@ -181,7 +181,9 @@ scaled(k) = x -> k * x
 kinds() = Group((; i = Constant(Int8(0)), r = Constant(1//2), v = Constant(SVector(1.0, 2.0)),
                    mat = Constant(SMatrix{2, 2}(1.0, 2.0, 3.0, 4.0)), nt = Constant((a = 1.0, b = 2.0)),
                    fn = Constant(scaled(2.0)), g = GearMode(), s = PhaseSelector(), p = PhaseReader());
-                local_wires = ("s/phase" => "p/phase",))
+                local_wires = ("s/phase" => "p/phase",),
+                output_wires = ("i/y" => "i", "r/y" => "r", "v/y" => "v", "mat/y" => "mat", "nt/y" => "nt",
+                                "fn/y" => "fn", "g/gear" => "gear", "g/y" => "g_y", "p/armed" => "armed"))
 
 # --- rates: two anchors and a relative rate ---------------------------------------
 

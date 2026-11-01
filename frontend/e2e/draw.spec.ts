@@ -24,7 +24,7 @@ const TABLE: Record<string, Record<string, Pins>> = {
   closed_loop_deployment: CLOSED_LOOP,
   containers: { "": row(8, 7, 1, 1, 0, 0, 0) },
   primitive: { "": row(5, 4, 2, 2, 0, 1, 0) },
-  kinds: { "": row(9, 1, 0, 0, 0, 9, 6) },
+  kinds: { "": row(18, 10, 0, 9, 0, 9, 6) },
   rates: {
     "": row(6, 5, 0, 3, 2, 1, 0),
     fast: row(5, 4, 1, 2, 1, 0, 0),

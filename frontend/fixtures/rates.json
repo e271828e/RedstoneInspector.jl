@@ -525,12 +525,12 @@
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 200
+              "line": 202
             },
             {
               "function": "x_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 199
+              "line": 201
             }
           ]
         },
@@ -541,17 +541,17 @@
             {
               "function": "u_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 192
+              "line": 194
             },
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 193
+              "line": 195
             },
             {
               "function": "s_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 191
+              "line": 193
             }
           ]
         }

@@ -305,17 +305,17 @@
             {
               "function": "u_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 224
+              "line": 226
             },
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 225
+              "line": 227
             },
             {
               "function": "s_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 223
+              "line": 225
             }
           ]
         }
