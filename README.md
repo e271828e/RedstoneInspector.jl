@@ -151,21 +151,26 @@ drawer's tab strip with its counts and the status bar below; the splitters
 between them drag, the side panes collapse, and both are kept per browser.
 Drag pans, the wheel zooms, the corner button fits; a double-click or Enter
 opens a closed assembly, from the canvas or the tree, and Backspace, Alt-Up or
-the breadcrumb returns; a click selects a block, pin, wire or port square, or a
-row in the tree, the tree and the canvas following each other and the detail
-pane showing what is selected; Escape clears.
+the breadcrumb returns, selecting the assembly it came from; a click selects a
+block, pin, wire or port square, or a row in the tree, the tree and the canvas
+following each other and the detail pane showing what is selected; Escape
+clears. A narrow detail pane stacks each parameter and each face's facts.
 
 The canvas draws the visual grammar. Blocks are colored by tier, or, after `r`
 or the switch at the right of the breadcrumb, by rate: each timing gets one of
 eight colors, fastest first with the base grid first, the rest a neutral fill
 with a numbered badge, an assembly the color of its rate scope with a badge
 counting the clocks inside when they differ, and a legend in the canvas's
-corner reading each rate on the level. Wires show their kind by weight and
+corner reading each rate on the level, then a line for the continuous color.
+A click on a legend line lights the blocks, assemblies and wires of that rate
+and dims the rest, marking the tree; a second click, Escape or tier colors
+clear it. The palette's colors stay apart under the three common kinds of
+weak color vision. Wires show their kind by weight and
 pattern (thin for a scalar, dashed for a flag, thick for a vector, a double
 line for a struct, dotted for an opaque value), take their producer's color
 lighter in rate mode, and branch from a shared trunk with a dot at each split;
-`y` or the toggle beside the switch writes each output's type at the start of
-its wires. Library blocks show an icon in place of their type's name, a glyph
+`y` or the toggle beside the switch writes each output's type, its module
+names dropped, on the longest straight run of its wires. Library blocks show an icon in place of their type's name, a glyph
 or a short formula, a `Constant` its value. A keyed container's elements sit
 inside a dashed region captioned with the field, each labelled by its key; a
 click on the region's frame selects the container as the tree's folder row
@@ -177,7 +182,7 @@ The open level is the URL's hash, `#level=sensing`, none at the root, so back
 and forward move between levels and a reload or a link reopens one. Each
 level keeps its zoom, pan and layout for the session, and a block or pin
 dragged on the canvas keeps its place until the page reloads; only its own
-wires are re-routed. A second descriptor dropped or pushed over the first keeps
+wires are re-routed, and Shift held keeps the move to one axis. A second descriptor dropped or pushed over the first keeps
 the open level, the selection, the expansion, the views and the search by path
 and name, and the keyboard's focus; a level's view is kept only while its
 blocks are unchanged, else it fits; what the new model lacks is dropped, and a
