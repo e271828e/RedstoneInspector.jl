@@ -1,11 +1,10 @@
 // Wire styles by kind (visual_grammar.md answer 4): each wire's class from its
 // terminal producer's kind marker, the producer ports a type label marks with
-// its unqualified type and the segment it sits on, the fan-outs ELK draws as trunks.
+// its unqualified type, the fan-outs ELK draws as trunks.
 import type { KindMarker } from "./descriptor";
 import { portId, producerFace, type Level } from "./level";
 import type { Model } from "./model";
 import { faceInfo } from "./resolve";
-import type { Point } from "./view";
 
 /** The five line styles: thin solid, thin dashed, thick, the triple line, thin dotted. */
 export type WireClass = "scalar" | "flag" | "vector" | "struct" | "opaque";
@@ -43,7 +42,7 @@ export interface PortLabel {
   port: string;
   /** The producer face's type as printed. */
   type: string;
-  /** The port's wires on the level, in wire order; the label sits on one of them. */
+  /** The port's wires on the level, in wire order; the label sits on the first. */
   wires: string[];
 }
 
@@ -67,28 +66,6 @@ export function labelledPorts(model: Model, level: Level): PortLabel[] {
  */
 export const shortType = (type: string): string =>
   type.replace(/var"[^"]*"|"[^"]*"|(?:[\p{L}_][\p{L}\p{N}_!]*\.)+/gu, (m) => (m.endsWith(".") ? "" : m));
-
-/** A horizontal stretch of a wire's route: its wire, its left and right ends and its height. */
-export interface Segment {
-  wire: string;
-  x0: number;
-  x1: number;
-  y: number;
-}
-
-/** The longest horizontal segment among the given wires' routes, the first on a tie; none when no route has one. */
-export function longestHorizontal(routes: [wire: string, points: Point[]][]): Segment | undefined {
-  let best: Segment | undefined;
-  for (const [wire, pts] of routes) {
-    for (let i = 1; i < pts.length; i++) {
-      const a = pts[i - 1], b = pts[i];
-      if (Math.abs(a.y - b.y) > 0.5 || a.x === b.x) continue;
-      const s = { wire, x0: Math.min(a.x, b.x), x1: Math.max(a.x, b.x), y: a.y };
-      if (!best || s.x1 - s.x0 > best.x1 - best.x0) best = s;
-    }
-  }
-  return best;
-}
 
 /** The producer ports feeding two or more wires on the level, with their counts. */
 export function fanouts(level: Level): Map<string, number> {

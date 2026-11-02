@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fixtureModel } from "../lib/fixtures";
 import { levelOf, REGION_PADDING, type BlockSize, type Level } from "../lib/level";
 import { regionsOf } from "../lib/regions";
+import { labelledPorts } from "../lib/wires";
 import { layoutLevel } from "./layout";
 
 /** Every block at 80 by 60, its ports on the west and east edges. */
@@ -47,5 +48,30 @@ describe("layoutLevel with regions", () => {
     const m = fixtureModel("descent");
     const l = levelOf(m.tree!, m.resolution!, "");
     expect((await layoutLevel(l, flatSizes(l), regionsOf(m.tree!, ""))).regions.size).toBe(0);
+  });
+});
+
+describe("layoutLevel's type labels", () => {
+  it.each(["closed_loop", "containers"])("%s's root: one box per labelled port, its size, placed from the port's point beside and below it", async (name) => {
+    const m = fixtureModel(name);
+    const l = levelOf(m.tree!, m.resolution!, "");
+    const sizes = flatSizes(l);
+    const labels = new Map(labelledPorts(m, l).map((p, i) => [p.port, { text: `T${i}`, width: 20 + i, height: 11 }]));
+    const g = await layoutLevel(l, sizes, regionsOf(m.tree!, ""), labels);
+    expect([...g.labels.keys()].sort()).toEqual([...labels.keys()].sort());
+    for (const [port, box] of g.labels) {
+      expect([box.width, box.height], port).toEqual([labels.get(port)!.width, labels.get(port)!.height]);
+      // an offset from the port's point, never the level's coordinates: just right of the port and under its wire
+      expect(box.x, port).toBeGreaterThanOrEqual(0);
+      expect(box.x, port).toBeLessThan(box.width);
+      expect(box.y, port).toBeGreaterThanOrEqual(0);
+      expect(box.y, port).toBeLessThan(box.height);
+    }
+  });
+
+  it("no labels given, none laid out", async () => {
+    const m = fixtureModel("closed_loop");
+    const l = levelOf(m.tree!, m.resolution!, "");
+    expect((await layoutLevel(l, flatSizes(l))).labels.size).toBe(0);
   });
 });

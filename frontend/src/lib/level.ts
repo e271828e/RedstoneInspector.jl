@@ -113,6 +113,12 @@ export interface BlockSize {
   height: number;
   ports: PortPosition[];
 }
+/** A type label as ELK takes it: its text, without which ELK skips it, and its size, measured by the canvas. */
+export interface EdgeLabel {
+  text: string;
+  width: number;
+  height: number;
+}
 
 // Greedy cycle breaking, with declaration order as the tie-break. The thoroughness is increment 6's ELK pass:
 // fewer crossings on closed_loop's root without more on large's or lqr_controller's (MAP.md's traps hold the table).
@@ -135,6 +141,8 @@ const ROOT_OPTIONS = {
 export const regionNodeId = (path: string) => `region:${path}`;
 /** A region's frame around its members: room for the caption on top. */
 export const REGION_PADDING = { top: 28, left: 12, bottom: 12, right: 12 };
+/** A type label at its wire's tail, beside the producer port. */
+const LABEL_OPTIONS = { "elk.edgeLabels.placement": "TAIL" };
 const REGION_OPTIONS = {
   "elk.padding": `[top=${REGION_PADDING.top},left=${REGION_PADDING.left},bottom=${REGION_PADDING.bottom},right=${REGION_PADDING.right}]`,
 };
@@ -142,9 +150,12 @@ const REGION_OPTIONS = {
 /**
  * ELK's graph for one level: fixed ports, input pins first and output pins last, the wires port to port. A level
  * with regions nests each region's members in a compound node, at its first member's place, and lays out across
- * the hierarchy; a level with none builds the flat graph.
+ * the hierarchy; a level with none builds the flat graph. Each producer port's label, by port id, rides on its
+ * first wire, so a fan-out carries one.
  */
-export function elkGraph(level: Level, sizes: ReadonlyMap<string, BlockSize>, regions: readonly Region[] = []): ElkNode {
+export function elkGraph(
+  level: Level, sizes: ReadonlyMap<string, BlockSize>, regions: readonly Region[] = [], labels: ReadonlyMap<string, EdgeLabel> = new Map(),
+): ElkNode {
   const flat: ElkNode[] = level.blocks.map((b) => {
     const size = sizes.get(b.id)!;
     const layer: Record<string, string> = b.role === "in" ? { "elk.layered.layering.layerConstraint": "FIRST_SEPARATE" }
@@ -158,9 +169,17 @@ export function elkGraph(level: Level, sizes: ReadonlyMap<string, BlockSize>, re
       })),
     };
   });
-  const edges: ElkExtendedEdge[] = level.wires.map((w) => ({
-    id: w.id, sources: [portId(w.from.block, "out", w.from.port)], targets: [portId(w.to.block, "in", w.to.port)],
-  }));
+  const labelled = new Set<string>();
+  const edges: ElkExtendedEdge[] = level.wires.map((w) => {
+    const source = portId(w.from.block, "out", w.from.port);
+    const edge: ElkExtendedEdge = { id: w.id, sources: [source], targets: [portId(w.to.block, "in", w.to.port)] };
+    const label = labelled.has(source) ? undefined : labels.get(source);
+    if (label) {
+      labelled.add(source);
+      edge.labels = [{ id: `label:${source}`, ...label, layoutOptions: LABEL_OPTIONS }];
+    }
+    return edge;
+  });
   if (!regions.length) return { id: "level", layoutOptions: ROOT_OPTIONS, children: flat, edges };
   const regionOf = new Map(regions.flatMap((r) => r.members.map((m) => [m, r] as const)));
   const byId = new Map(flat.map((c) => [c.id, c]));

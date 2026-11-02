@@ -17,7 +17,7 @@
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { blockTriple, clockCount, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
-  import { labelledPorts, levelWireClasses, longestHorizontal, shortType } from "../lib/wires";
+  import { labelledPorts, levelWireClasses, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
   import { GLYPHS } from "./glyphs";
@@ -30,8 +30,8 @@
   import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutConstant, cutLabel, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
-    sizeLevel, textWidth,
+    BADGE_FONT, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
   let {
@@ -123,19 +123,21 @@
   /** One arrowhead marker per wire color on the level, by color. */
   const arrows = $derived(new Map([...new Set(strokes.values())].map((c, i) => [c, `arrow-${i}`])));
   const arrowOf = (id: string) => `url(#${arrows.get(strokes.get(id)!)})`;
-  /** The type labels' clear space on their segment, each side, so the text keeps off the corners and the arrowhead. */
-  const LABEL_MARGIN = 6;
+  /** A type label's baseline below the top of its box. */
+  const LABEL_BASELINE = 8;
   /**
-   * One type label per producer port: its unqualified type on the longest horizontal segment among the port's
-   * wires, cut to the segment less the margins, none when too few characters fit; the whole type in its title.
+   * One type label per producer port: its unqualified type whole, at ELK's place by the port, which a dragged
+   * block carries; the whole type in its title, the first wire its wire.
    */
   const typeLabels = $derived.by(() => {
     if (!labels || !shown) return [];
     const g = shown.geometry;
     return labelledPorts(model, shown.level).flatMap((t) => {
-      const seg = longestHorizontal(t.wires.flatMap((w) => (g.routes.has(w) ? [[w, g.routes.get(w)!] as [string, Point[]]] : [])));
-      const text = seg && cutLabel(shortType(t.type), seg.x1 - seg.x0 - 2 * LABEL_MARGIN);
-      return seg && text ? [{ port: t.port, type: t.type, text, wire: seg.wire, x: (seg.x0 + seg.x1) / 2, y: seg.y - 5 }] : [];
+      const at = g.labels.get(t.port);
+      const { block, side, name } = parsePortId(t.port);
+      const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
+      if (!at || !box || !p) return [];
+      return [{ port: t.port, type: t.type, text: shortType(t.type), wire: t.wires[0], x: box.x + p.x + at.x, y: box.y + p.y + at.y + LABEL_BASELINE }];
     });
   });
   /** The drawn level's regions, and each keyed member's region path. */
@@ -197,7 +199,7 @@
       return;
     }
     ready = false;
-    layoutLevel(level, sizes, regionsOf(tree, path)).then((laid) => {
+    layoutLevel(level, sizes, regionsOf(tree, path), sizeLabels(model, level)).then((laid) => {
       if (stale) return;
       const r = saved ? replace(laid, level, sizes, saved) : { geometry: laid, dragged: new Set<string>() };
       draw(level, sizes, r.geometry, r.dragged, v);
@@ -652,7 +654,7 @@
         <!-- above the blocks, each on a halo of the background -->
         <g class="type-labels">
           {#each typeLabels as t (t.port)}
-            <text class="type-label" class:lit={wireLit(t.wire)} data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} text-anchor="middle" style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
+            <text class="type-label" class:lit={wireLit(t.wire)} data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
           {/each}
         </g>
       {/if}

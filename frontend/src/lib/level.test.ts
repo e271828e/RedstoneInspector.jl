@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AssemblyNode, LeafNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { regionsOf } from "./regions";
+import { labelledPorts } from "./wires";
 import { elkGraph, inPinId, levelOf, outPinId, parsePortId, portId, type BlockSize, type Level } from "./level";
 
 const level = (name: string, path = ""): Level => {
@@ -232,6 +233,29 @@ describe("elkGraph's regions", () => {
     });
     expect(g.children!.map((c) => c.id)).toEqual(l.blocks.map((b) => b.id));
     expect(g.children!.every((c) => c.children === undefined)).toBe(true);
+  });
+});
+
+describe("elkGraph's type labels", () => {
+  it("closed_loop's root: each given port's label on its first wire alone, at the wire's tail; a port not given none", () => {
+    const m = fixtureModel("closed_loop");
+    const l = level("closed_loop");
+    const sizes = new Map<string, BlockSize>(l.blocks.map((b): [string, BlockSize] => [b.id, { width: 80, height: 40, ports: [] }]));
+    const ports = labelledPorts(m, l);
+    const given = ports.filter((p) => p.port !== "plant|out|h");
+    const labels = new Map(given.map((p, i) => [p.port, { text: `T${i}`, width: 20 + i, height: 11 }]));
+    const edges = elkGraph(l, sizes, [], labels).edges!;
+    const first = new Map(given.map((p) => [p.wires[0], p.port]));
+    for (const e of edges) {
+      const port = first.get(e.id);
+      if (!port) expect(e.labels, e.id).toBeUndefined();
+      else expect(e.labels, e.id).toEqual([{ id: `label:${port}`, ...labels.get(port)!, layoutOptions: { "elk.edgeLabels.placement": "TAIL" } }]);
+    }
+    // mode fans out to three wires and plant's h to two: one label on mode's first, none on plant's h
+    const mode = ports.find((p) => p.port === "⟨in⟩mode|out|mode")!.wires;
+    expect(mode.map((w) => edges.find((e) => e.id === w)!.labels?.length ?? 0)).toEqual([1, 0, 0]);
+    expect(ports.find((p) => p.port === "plant|out|h")!.wires.map((w) => edges.find((e) => e.id === w)!.labels)).toEqual([undefined, undefined]);
+    expect(edges.filter((e) => e.labels).length).toBe(given.length);
   });
 });
 

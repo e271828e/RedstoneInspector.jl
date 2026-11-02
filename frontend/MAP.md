@@ -19,7 +19,8 @@ docstring's bare title, the narrow pane's stacked rows) and its second round
 (the palette constructed in OKLCh, the wires in their producer's fill, an
 assembly on the one triple its leaves share or gray, the clock badge on every
 assembly with a discrete leaf, the continuous line first, `nearest` by the
-facing-edge gap).
+facing-edge gap), then the type labels as ELK's edge labels, whole beside their
+ports.
 
 ## Layout
 
@@ -37,7 +38,7 @@ facing-edge gap).
 | `src/lib/tree.ts` | the parent rule, segments, memberships, `displayName`, `buildTree` |
 | `src/lib/resolve.ts` | faces, the resolution, terminal producers and consumers, `faceInfo`, face routes |
 | `src/lib/feedthrough.ts` | the feedthrough edges, as the core's `_feedthrough` |
-| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes and the level's regions, `REGION_PADDING`, `regionNodeId`; `parsePortId`, `producerFace` |
+| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes, the level's regions and its type labels (`EdgeLabel`), `REGION_PADDING`, `regionNodeId`; `parsePortId`, `producerFace` |
 | `src/lib/view.ts` | the viewport math: `fitView`, `zoomAt`, `pan`, `centreOn`, `viewRect`, `toWorld` |
 | `src/lib/model.ts` | `loadModel`: everything above, built once |
 | `src/lib/outline.ts` | the tree pane's rows: `outlineRows`, `allRows`, `defaultExpansion`, `folderOf`, `ancestors`; `rowSelection`, what a row's click selects; `treeStep`, the tree's `h j k l` |
@@ -47,13 +48,13 @@ facing-edge gap).
 | `src/lib/rekey.ts` | the push: `rekey` of the per-tab state against a new model, `isLevel`, `fallback`, `sameBlocks` |
 | `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `tripleText`, `tripleTitle`, `CONTINUOUS`, `LegendLine`, `legend` with its continuous line, `mixed`, `clocksBeneath`, `clockCount`, `fromRootInput`, `wireTriple` |
 | `src/lib/focus.ts` | the legend's focus: `legendLit`, what a key lights on a level; `legendMarks`, the tree's rows on it; `rekeyFocus`, the key across a push |
-| `src/lib/wires.ts` | the wire classes: `wireClass`, `levelWireClasses`, `labelledPorts`, `fanouts`; the type labels' `shortType` and `longestHorizontal` |
+| `src/lib/wires.ts` | the wire classes: `wireClass`, `levelWireClasses`, `labelledPorts`, `fanouts`; the type labels' `shortType` |
 | `src/lib/icons.ts` | the library icons: `iconOf`, the roster keyed on the alias, then the type, `Delay`'s `K` from its signature, a `Constant`'s value |
 | `src/lib/regions.ts` | a level's keyed containers, `regionsOf`, and a child's canvas label, `label` |
 | `src/lib/protocol.ts` | the live session's messages: `helloMessage`, `openLocationMessage`, `classifyFrame`, `backoff`, `downloadName` |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
-| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `cutName`, `cutLabel`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_MIN_CHARS`; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
-| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates; `LevelLayout`, the session's record of a level's geometry |
+| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
+| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
 | `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (increment 7's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text |
@@ -289,7 +290,10 @@ Each file sits beside its module, loads fixtures by name through
   and `pair/1` in `region:gains` and `region:pair` at their first member's
   place, the padding option and `INCLUDE_CHILDREN` on the root;
   `closed_loop`'s root, with no region, equal to the two-argument graph, its
-  options pinned whole and its children flat.
+  options pinned whole and its children flat. With type labels, on
+  `closed_loop`'s root: each given port's label on its first wire alone with
+  `TAIL` placement, none on the rest of a fan-out (`mode`'s three wires) and
+  none for a port not given (`plant|out|h`).
 - `model.test.ts`: the model's fields, and a structureless failure's left
   undefined.
 - `view.test.ts`: `zoomAt` keeps the world point under the pointer to within
@@ -375,9 +379,7 @@ Each file sits beside its module, loads fixtures by name through
   root, `mode` 3, none on `kinds`; `mode`'s three wires in `labelledPorts`;
   `shortType` over eleven types (modules dropped, `var"#f#3"` and a dot inside
   `var"…"` or a string kept, numbers untouched) and no qualifier left in
-  `closed_loop`'s or `kinds`' root labels; `longestHorizontal` picking the
-  longest stretch in either direction, the first on a tie, none for vertical
-  routes.
+  `closed_loop`'s or `kinds`' root labels.
 - `icons.test.ts`: all 31 roster keys on inline nodes, their ids and kinds, the
   text icons' texts; `sensing/altimeter` `sum` by alias over the type
   `Junction`, `lqr_controller/engaged`, `plant`, `Group`, a user `Pack` and
@@ -451,9 +453,15 @@ Each file sits beside its module, loads fixtures by name through
 - `src/canvas/layout.test.ts`: `containers`' root laid out with its regions,
   each region box exactly its members' union grown by the padding, every route
   starting and ending on its ports in the level's coordinates (the one inside
-  `gains` included); a level with no region keeping no region box.
+  `gains` included); a level with no region keeping no region box. On
+  `closed_loop`'s and `containers`' roots, one label box per labelled port, its
+  given size, an offset from the port's point right of it and under its wire,
+  never the level's or the region's coordinates; no labels given, none laid
+  out.
 - `src/canvas/size.test.ts`: `detailAt` at and either side of each floor, the
-  floors in order.
+  floors in order; `sizeLabels` on `kinds`' root with `i`'s type emptied, under
+  a stubbed `document` whose canvas has no context: every other producer port's
+  unqualified type at `LABEL_FONT`'s width and `LABEL_HEIGHT`, and none for `i`.
 - `src/state/session.test.ts`: `load` keeps the drawer closed on a build whose
   body carries one warning and no diagnostic, the count 1, and opens it on
   `diagnostics` for `failure_cycle`'s one diagnostic; a replacement rekeys
@@ -492,9 +500,9 @@ order by anchor index before period and anchor 0 not first (`rates.test`, on
 (`rates.test`), `Delay`'s `K` ignored (`icons.test`), the dropped container
 translation (`layout.test`), the thresholds swapped (`size.test`). Its look
 pass's: the continuous line's wire rule dropped, the line always shown, a root
-input's wire counted (`rates.test`); no shortening, the first segment for the
-longest (`wires.test`); no leaf-beneath rule, the query cleared before the
-focus, a push dropping it (`focus.test`, `session.test`); no child selected on
+input's wire counted (`rates.test`); no shortening (`wires.test`); no
+leaf-beneath rule, the query cleared before the focus, a push dropping it
+(`focus.test`, `session.test`); no child selected on
 a climb (`session.test`); every membership "field" (`detail.test`); the
 extras back on the shared neutral, the colored extras reused past the twelfth
 (`palette.test`, the first also `colors.spec`). Its second round's: the
@@ -506,7 +514,13 @@ dropped from `legendLit` and from `rekeyFocus` (`focus.test`);
 without the far-edge filter, between centers and unclamped (`navigate.test`);
 a mixed assembly in the continuous pair, a wire in its producer's stroke, the
 continuous wire in the continuous fill or the gray, one badge title for every
-count, the badge only past one clock (`colors.spec`).
+count, the badge only past one clock (`colors.spec`). The edge labels': an
+empty type sized, the type left qualified (`size.test`); a label on every wire
+of a fan-out, a placement other than `TAIL` (`level.test`); the label box in
+the level's coordinates or its container's, keyed by wire (`layout.test`); the
+last wire for the first, a middle anchor, a cut text, the labels laid out only
+while shown, the baseline above the wire, the labels frozen at ELK's places
+(`wires.spec`).
 
 ## The canvas
 
@@ -516,7 +530,7 @@ background click), `onview(view)`, `onlayout(geometry, dragged)` and
 `onlegend(key)`. The caller
 decides what a click selects and passes back the target to draw, only when the
 selection was made on the drawn level. On each `path` it builds the level and
-sizes it, with its regions (`regionsOf`); when the session holds a layout for the level that is not `stale`,
+sizes it, with its regions (`regionsOf`) and its type labels (`sizeLabels`); when the session holds a layout for the level that is not `stale`,
 it draws that geometry at once, so `data-ready` never goes absent and no ELK
 run happens; otherwise it clears `data-ready`, runs ELK, puts a stale layout's
 dragged blocks back at their dragged places with their wires re-routed
@@ -609,18 +623,22 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `Geometry.junctions` by wire id and the canvas draws a `circle.junction` of
   radius 2.5 in the wire's color at each. `rerouteTouching` drops the junction
   points of the wires it re-routes, so a dragged block's wires lose their dots.
-- **Type labels** (answer 4 as amended). With `labels` on, at most one
-  `text.type-label` per producer port with a wire on the level
-  (`labelledPorts`, every wire of the port): its type with the module
-  qualifiers dropped (`shortType`), centred on the longest horizontal segment
-  among the port's wires (`longestHorizontal`), its baseline 5 above the line,
-  cut by `cutLabel` to the segment's length less 6 px each side
-  (`LABEL_MARGIN`), omitted when fewer than `LABEL_MIN_CHARS` (3) characters
-  would stay before the ellipsis or no route has a horizontal segment; the
-  whole type in its `<title>`. They sit in `g.type-labels` after `g.blocks`,
-  each painted over a 3 px stroke in the background color (`paint-order:
-  stroke`). `labels` off draws none. On `kinds` nine of ten draw, on
-  `closed_loop`'s root all 19.
+- **Type labels** (answer 4 as amended). They are ELK's edge labels.
+  `sizeLabels` gives each producer port with a wire on the level
+  (`labelledPorts`) its type with the module qualifiers dropped (`shortType`),
+  measured at `LABEL_FONT` and `LABEL_HEIGHT` (11) high, none for an empty
+  type. `elkGraph` puts each on its port's first wire alone, with
+  `elk.edgeLabels.placement: TAIL` (`LABEL_OPTIONS`), on every layout, the
+  labels shown or not, so the toggle never moves a block. `layoutLevel` keeps
+  each label's box as `Geometry.labels` by port id, an offset from the port's
+  point, so a dragged block carries its labels. ELK puts a tail label just
+  right of the port and below the wire. With `labels` on, the canvas draws one
+  `text.type-label` per box, start-anchored at the port's point plus the
+  offset, its baseline 8 below the box's top (`LABEL_BASELINE`), whole, the
+  whole type in its `<title>`, the port's first wire its `data-wire`. They sit
+  in `g.type-labels` after `g.blocks`, each painted over a 3 px stroke in the
+  background color (`paint-order: stroke`). `labels` off draws none. On
+  `kinds` all ten draw, on `closed_loop`'s root all 19.
 - **Regions** (answer 5). `regionsOf` gives the level's keyed containers;
   `elkGraph` nests each one's members in a compound node `region:<path>` with
   the padding 28, 12, 12, 12 and sets `elk.hierarchyHandling:
@@ -730,7 +748,7 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `path.wire-core[data-wire]` over every struct wire; `circle.junction
   [data-wire]` at each junction point; `g.type-labels` after `g.blocks`
   holding `text.type-label[data-port][data-wire]`, the producer port's id and
-  the wire whose segment it sits on, with a `<title>` holding the whole type,
+  its first wire, the one ELK labels, with a `<title>` holding the whole type,
   present only while `data-labels`.
 - `g.regions` first in the svg, holding `g.region[data-path]` with `rect.halo`,
   `rect.shape` and `text.caption`, `selected` when the selection is that
@@ -1333,21 +1351,22 @@ the page's socket fails against `vite preview`, so every check but
   narrower, carrying the arrowhead; the flag dashed, the scalar not, the opaque
   dotted unlike the flag and in a lighter gray than a scalar's computed
   stroke, the vector wider; no label at load; `y` giving
-  `data-labels` with `aria-pressed` and the labels by `expectLabels` (below),
-  more than five, `i|out|y` reading `Int8`, `v|out|y` starting `SVe` with its
-  title `StaticArraysCore.SVector{…`, `i`'s at 9 px with `paint-order`
-  starting `stroke` and its stroke the background; `y` off; the button on, the
-  same count; a reload keeping them; the button off. On `closed_loop`'s root
-  19 producer ports, the labels by `expectLabels`, more than nine, `mode`'s
-  `Bool`. `expectLabels` reads each port's longest horizontal segment from the
-  drawn `d`s: a port whose segment less 12 surely fits `MMM…` in the label's
-  font has a label and one that cannot fit `iii…` none; each label's
-  `data-wire` is that segment's wire, its text box inside the segment's
-  horizontal extent, its bottom 0 to 6 above the line, its text free of a
-  module qualifier, its node after `g.blocks`; the count equals the labels
-  read. `mode`'s one or two dots each on at
+  `data-labels` with `aria-pressed`, every block's `transform` unchanged, and
+  the labels by `expectLabels` (below), `i|out|y` reading `Int8`, `v|out|y`
+  starting `SVector{` with its title `StaticArraysCore.SVector{…`, `i`'s at
+  9 px with `paint-order` starting `stroke` and its stroke the background; `y`
+  off; the button on, the same count; a reload keeping them, laid out afresh
+  with every block's `transform` the one at load; the button off. On
+  `closed_loop`'s root `y` moving no block, 19 producer ports, the labels by
+  `expectLabels`, `mode`'s `Bool`. `expectLabels` takes each port's point from
+  its first wire's first point: one label per producer port, its `data-wire`
+  the port's first wire, its computed `text-anchor` `start` with its box
+  starting at its `x`, 0 to 6 right of the port's point, its top 0 to 8 below
+  it, its text the title's `shortType` whole, with no ellipsis and no module
+  qualifier, its node after `g.blocks`. `mode`'s one or two dots each on at
   least two of its three wires; `plant` dragged 120 down, its wires' dots gone
-  and every other dot in place.
+  and every other dot in place; then `y` again, the labels by `expectLabels`,
+  `plant`'s moved by its block's move and every other label in place.
 - `icons.spec.ts` (grammar 7, 1): on `closed_loop`'s `lqr_controller` four
   `pack`, one `unpack`, one `lqr`, one `constant`, seven in all, `free_pair`'s
   text `Int8[0, 0]` whole or cut with its title whole, `engaged` with
@@ -1369,7 +1388,8 @@ the page's socket fails against `vite preview`, so every check but
   both; `g.regions` before `g.blocks`. The `gains` folder row clicked: its
   region `selected`, `pair`'s not, the pane `folder`; `pair`'s caption clicked:
   its region and its tree row `selected`, the pane `field pair`; a click on
-  `gains`' top edge selecting it; `gains/b` dragged 100 down, `gains`' frame
+  `gains`' top edge selecting it, aimed at the middle of the edge's band at the
+  current scale; `gains/b` dragged 100 down, `gains`' frame
   taller and holding it, `pair`'s unchanged; Escape clearing. `closed_loop`'s
   root without a region.
 - `zoom.spec.ts` (grammar 10): on `closed_loop`'s root `full` at the fit; `-`
@@ -1653,6 +1673,23 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
 - **Wires above a region.** The regions draw first, so a wire crossing a frame
   takes the click there through its 8 px hit path; a check clicks the frame's
   top edge, clear of the wires, or the caption.
+- **A frame's edge band.** The frame's 1 px stroke and its halo take a click
+  from 5.5 world units above the edge to 0.5 below. A click one screen pixel
+  below the edge misses at a scale under 2, and one on the edge's line itself
+  missed at two of nine scales probed. `regions.spec.ts` aims at the band's
+  middle, 2.5 units above the edge, at the current scale.
+- **ELK's edge labels, probed 2026-11-03** (elkjs 0.12). A label with no
+  `text` is silently ignored: it comes back at (0, 0) and ELK reserves no
+  space for it. No option moves a tail label to the other side of the wire:
+  `sideSelection`, `inline` and `labelSide` change nothing, and only
+  `elk.spacing.edgeLabel` moves the offset. A label's coordinates are in the
+  edge's `container`, like its sections, so `layoutLevel` keeps it as an offset
+  from the section's start point. Laying out ELK's output object again returns
+  corrupt routes; a fresh layout needs a fresh graph from `elkGraph`. With the
+  labels in, measured on the fixtures: crossings unchanged on every level,
+  layers and pin order unchanged, width up 12% (`pid_controller`) to 42%
+  (`lqr_controller`), `closed_loop`'s root 888 to 1103, `large`'s 8207 to
+  10083, layout time unchanged.
 - **Glyphs in the text color.** A glyph is a `<symbol>` whose path and text use
   `currentColor`, set by `.icon`'s `color`; a `<use>` inherits it.
 - **The rate palette's construction** (increment 6's look pass, second round;
@@ -1708,7 +1745,6 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
 - `large`'s root draws its two output pins in reverse declaration order. Only
   `forceNodeModelOrder` fixes it, at 663 to 699 crossings on `large`, so the
   order check was dropped.
-- The type labels' placement and ELK's own edge labels are under discussion.
 - The base grid's peach is step 0 wherever a block ticks on the base grid;
   `closed_loop` has no such block, so its palette order starts at anchor 1 and
   the peach goes to `sensing`.
@@ -1723,10 +1759,15 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   `library` fits at about 0.36, at `segments`, so no display name or icon
   shows until a zoom in, and `large` fits below the first floor. The look pass
   settles the floors or the fit.
-- Type labels sit above the blocks and take the pointer for their title, so a
-  label on a segment that runs under a block would take that block's click
-  there; no fixture shows one. On `kinds` `g`'s `gear` label is omitted, its
-  segments too short for three characters.
+- The type labels' room widens every level, 12% on `pid_controller` to 42% on
+  `lqr_controller`, so every fit scale moves down, which bears on the floors
+  above.
+- Type labels sit above the blocks and take the pointer for their title. ELK
+  keeps the blocks clear of them, but a block dragged onto a label has the
+  label take its click there.
+- The local router's backward route leaves the port by a 12 px stub, so after a
+  drag its vertical segment can run through the port's label; seen on
+  `actuators`' `δt` after dragging `plant` on `closed_loop`'s root.
 - `CONSTANT_WIDTH` at 60 px cuts `kinds`' `a=1.0, b=2.0` (64 px on a Mac) to
   `a=1.0, b=…`; `Int8[0, 0]` (49 px) may cut under CI's fonts. The checks read
   whole or cut.

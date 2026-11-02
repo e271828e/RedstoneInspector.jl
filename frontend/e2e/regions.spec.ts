@@ -58,9 +58,11 @@ test("containers: the folder selected from the tree and from the region's captio
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "folder");
   await expect(page.locator("aside.detail .facts")).toContainText("field pair");
 
-  // a click on the frame's edge selects too: the top edge, near its right end, clear of the wires
+  // a click on the frame's edge selects too: the top edge, near its right end, clear of the wires, in the middle of
+  // the band the stroke and its halo take, 5.5 world units above the edge to 0.5 below, at the current scale
   const g = (await region(page, "gains").locator("rect.shape").boundingBox())!;
-  await page.mouse.click(g.x + g.width - 16, g.y + 1);
+  const scale = await page.locator("svg.canvas").evaluate((s: SVGSVGElement) => s.clientWidth / s.viewBox.baseVal.width);
+  await page.mouse.click(g.x + g.width - 16, g.y - 2.5 * scale);
   await expect(region(page, "gains")).toHaveClass(/\bselected\b/);
 
   // gains/b dragged 100 down: gains' frame grows to hold it, pair's stays

@@ -171,7 +171,9 @@ pattern (thin for a scalar, dashed for a flag, thick for a vector, a double
 line for a struct, dotted for an opaque value), take their producer's fill in
 rate mode, and branch from a shared trunk with a dot at each split;
 `y` or the toggle beside the switch writes each output's type, its module
-names dropped, on the longest straight run of its wires. Library blocks show an icon in place of their type's name, a glyph
+names dropped, whole beside its port, below the wire leaving it. The layout
+leaves room for the types whether they show or not, so the toggle moves
+nothing, and a dragged block carries them. Library blocks show an icon in place of their type's name, a glyph
 or a short formula, a `Constant` its value. A keyed container's elements sit
 inside a dashed region captioned with the field, each labelled by its key; a
 click on the region's frame selects the container as the tree's folder row

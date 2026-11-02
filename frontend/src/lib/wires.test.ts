@@ -3,7 +3,7 @@ import type { KindMarker, LeafNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
 import type { Model } from "./model";
-import { fanouts, labelledPorts, levelWireClasses, longestHorizontal, shortType, wireClass, type WireClass } from "./wires";
+import { fanouts, labelledPorts, levelWireClasses, shortType, wireClass, type WireClass } from "./wires";
 
 const level = (m: Model, path: string) => levelOf(m.tree!, m.resolution!, path);
 /** The classes' counts on a level, as the oracle prints them. */
@@ -100,21 +100,5 @@ describe("shortType", () => {
     for (const m of [cl, fixtureModel("kinds")]) {
       for (const p of labelledPorts(m, level(m, ""))) expect(shortType(p.type), p.type).not.toMatch(/[\p{L}_][\p{L}\p{N}_]*\.[\p{L}_]/u);
     }
-  });
-});
-
-describe("longestHorizontal", () => {
-  const P = (x: number, y: number) => ({ x, y });
-  it("picks the longest horizontal stretch over every route, either direction, skipping the vertical ones", () => {
-    expect(longestHorizontal([
-      ["a", [P(0, 0), P(30, 0), P(30, 50), P(40, 50)]],
-      ["b", [P(0, 0), P(10, 0), P(10, 80), P(-50, 80)]],
-    ])).toEqual({ wire: "b", x0: -50, x1: 10, y: 80 });
-  });
-
-  it("keeps the first of two equal stretches and gives none for vertical routes alone", () => {
-    expect(longestHorizontal([["a", [P(0, 0), P(20, 0)]], ["b", [P(5, 9), P(25, 9)]]])?.wire).toBe("a");
-    expect(longestHorizontal([["a", [P(0, 0), P(0, 40)]]])).toBeUndefined();
-    expect(longestHorizontal([])).toBeUndefined();
   });
 });
