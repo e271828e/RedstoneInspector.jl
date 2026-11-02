@@ -15,7 +15,11 @@ Firefox as a second, non-blocking browser project, then its look pass (the
 palette respread by CIEDE2000, the legend's continuous line and its focus, the
 type labels unqualified on their longest segment above the blocks, the child
 selected on a climb, Shift's one-axis drag, the member's container kind, the
-docstring's bare title, the narrow pane's stacked rows).
+docstring's bare title, the narrow pane's stacked rows) and its second round
+(the palette constructed in OKLCh, the wires in their producer's fill, an
+assembly on the one triple its leaves share or gray, the clock badge on every
+assembly with a discrete leaf, the continuous line first, `nearest` by the
+facing-edge gap).
 
 ## Layout
 
@@ -38,10 +42,10 @@ docstring's bare title, the narrow pane's stacked rows).
 | `src/lib/model.ts` | `loadModel`: everything above, built once |
 | `src/lib/outline.ts` | the tree pane's rows: `outlineRows`, `allRows`, `defaultExpansion`, `folderOf`, `ancestors`; `rowSelection`, what a row's click selects; `treeStep`, the tree's `h j k l` |
 | `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, `timingPhrase`, `ratePhrase`, `classPhrase`, `memberKind`, `memberTitle`, `FACT_TITLES`, `detailOf`; the level's line `levelLine` and its `count`; the `Selection` type; `faceSelection` |
-| `src/lib/navigate.ts` | the keyboard's cursor: `nearest` by quadrant and center distance, `follow`'s least pan |
+| `src/lib/navigate.ts` | the keyboard's cursor: `nearest` by the facing-edge gap and the perpendicular offset, `follow`'s least pan |
 | `src/lib/search.ts` | `parseQuery`, `searchModel` with its matched ranges and `CAP`, `marked`, `beneath`, `levelHits`; `hitSelection`, what picking a hit selects; `stepHit`, `n` and `N` |
 | `src/lib/rekey.ts` | the push: `rekey` of the per-tab state against a new model, `isLevel`, `fallback`, `sameBlocks` |
-| `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `tripleText`, `tripleTitle`, `CONTINUOUS`, `LegendLine`, `legend` with its continuous line, `clocksBeneath`, `multiRate`, `fromRootInput`, `wireTriple` |
+| `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `tripleText`, `tripleTitle`, `CONTINUOUS`, `LegendLine`, `legend` with its continuous line, `mixed`, `clocksBeneath`, `clockCount`, `fromRootInput`, `wireTriple` |
 | `src/lib/focus.ts` | the legend's focus: `legendLit`, what a key lights on a level; `legendMarks`, the tree's rows on it; `rekeyFocus`, the key across a push |
 | `src/lib/wires.ts` | the wire classes: `wireClass`, `levelWireClasses`, `labelledPorts`, `fanouts`; the type labels' `shortType` and `longestHorizontal` |
 | `src/lib/icons.ts` | the library icons: `iconOf`, the roster keyed on the alias, then the type, `Delay`'s `K` from its signature, a `Constant`'s value |
@@ -51,7 +55,7 @@ docstring's bare title, the narrow pane's stacked rows).
 | `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `cutName`, `cutLabel`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_MIN_CHARS`; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
 | `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates; `LevelLayout`, the session's record of a level's geometry |
 | `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
-| `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (increment 7's), `wireLight`, `tint`; the search's `dim` opacity and `dash` array |
+| `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (increment 7's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text |
 | `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges and legend with its buttons, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the handle the shell's keys call |
 | `src/state/session.svelte.ts` | the per-tab state: the model, the open level and its hash, the history depth, the views and layouts per level, the selection, the expansion, the query, the legend's focus, the drawer, the focused region, the fallback note; `load`'s rekeying; `back` and `forward` |
@@ -326,32 +330,43 @@ Each file sits beside its module, loads fixtures by name through
   "keyed container" and "field". `levelLine` in the singular on an inline
   one-wire structure (`open level · 1 child · 1 wire`) and the plural on
   `rates`' `fast` (`2 children · 4 wires`).
-- `rates.test.ts`, from the oracle (`grammar.py`): `closed_loop`'s 11 triples
-  in palette order, the base grid first, anchors 8 to 10 extra; `rates`' three
-  triples with `fast/outer` at `× 2`; `library`'s five, anchor 2 (1/50 s)
-  before anchor 1 (1/10 s), with its `× 2` and `phase` lines; `kinds` one,
-  `aircraft` and `containers` none; the five assemblies' badges on
-  `closed_loop`'s root and its legend's five lines, `base grid` and the steps
-  4, 5, 7 and 8 its wires carry; `pid_controller`'s six lines, its
-  controllers' steps 2 to 5 and selection's delays' 7 and 8 on its wires;
-  `selection`'s four lines and `actuators`' legend numbers 9, 10, 11; `rates`'
-  levels, the root's three lines with `× 2` off `fast`'s wire, and a title; the nearest ancestor's scope
-  on a copy without `fast/outer`'s row; `wireTriple` on a continuous producer,
-  on `h_ctl`'s wire and from a root input. The continuous line, from the look
-  fixer's oracle (`continuous.py`): last and unnumbered on every closed_loop
-  level, `library`, `kinds` and the primitive root, from wires alone on `rates`'
+- `rates.test.ts`, from the oracle (`grammar.py`), the counts the assembly
+  rule of 2026-11-02 changed read by hand off the fixtures' timings:
+  `closed_loop`'s 10 triples by anchor, no block on the base grid, anchors 9
+  and 10 extra; `rates`' three triples with `fast/outer` at `× 2`; `library`'s
+  five, anchor 2 (1/50 s) before anchor 1 (1/10 s), with its `× 2` and `phase`
+  lines; `kinds` one, `aircraft` and `containers` none; on `closed_loop`
+  `sensing` and `lqr_controller` on their leaves' one triple, the other three
+  assemblies `mixed` with no triple, the clock counts 1, 4, 1, 2 and 2; the
+  root's legend, the continuous line, then steps 0 and 5 off the two colored
+  assemblies and 3, 4, 6 and 7 off the wires; `pid_controller`'s seven lines,
+  its controllers' steps 1 to 4 and selection's delays' 6 and 7 on its wires;
+  `selection`'s five lines with `command_δt` at step 7, and `actuators`' legend
+  numbers 9 and 10; `rates`' `fast` mixed with two clocks and `slow` on its
+  leaf's triple with one, each level's lines and a title; no `scopes` row read,
+  `fast`'s naming its inner clock and, on a copy, `slow`'s naming one its leaf
+  does not tick on; `wireTriple` on a continuous producer, on `h_ctl`'s wire
+  and from a root input. The continuous line, from the look fixer's oracle
+  (`continuous.py`): first and unnumbered on every closed_loop level,
+  `library`, `kinds` and the primitive root, from wires alone on `rates`'
   `fast`, `fast/outer` and `slow`, absent on an inline structure whose blocks
-  all take a triple and whose other wire leaves a root input.
-- `focus.test.ts`, the oracle's lit sets: on `closed_loop`'s root the base
-  grid lighting the five assemblies and no wire, anchor 4 `pid_controller` (a
-  leaf beneath) and `selection|in|δe_pid`, anchor 9 `actuators`, the continuous
-  color `plant`, every assembly and 17 wires, and below at `pid_controller`,
-  `selection` and `actuators`; on `rates` each triple at the root and the
-  continuous color on `fast`'s wires alone; `legendMarks` (the base grid's five
-  assemblies, `q_ctl`, 14 continuous leaves with `plant` and no assembly);
-  `rekeyFocus` keeping a triple and the continuous color across
-  `closed_loop_deployment`, dropping one `rates` lacks, following an anchor by
-  its key on a copy of `rates` with its anchors swapped.
+  all take a triple and whose other wire leaves a root input, and on one whose
+  one block without a triple is a mixed assembly.
+- `focus.test.ts`, the oracle's lit sets, those the assembly rule changed read
+  by hand: on `closed_loop`'s root anchor 1 lighting `sensing` and anchor 6
+  `lqr_controller`, each by its triple, and no wire; anchor 4 the mixed
+  `pid_controller` (a leaf beneath) and `selection|in|δe_pid`, anchor 9
+  `actuators`, the continuous color `plant`, every assembly and 17 wires, and
+  below at `pid_controller`, `selection` and `actuators`; on `rates` each
+  triple at the root lighting the mixed `fast` by its leaves, the continuous
+  color `src` but not `fast`, and on `fast` the wires alone; `legendMarks`
+  (`sensing` and `noise` on anchor 1, `q_ctl` alone on anchor 4, on `rates`
+  `fast/inner` and not the mixed `fast`, 14 continuous leaves with `plant` and
+  no assembly); `rekeyFocus` keeping a triple and the continuous color across
+  `closed_loop_deployment`, dropping one `rates` lacks, dropping the continuous
+  color on an inline structure whose one node without a triple is a mixed
+  assembly, following an anchor by its key on a copy of `rates` with its
+  anchors swapped.
 - `wires.test.ts`: `wireClass` over `kinds`' eleven faces and a vector of
   structs; `closed_loop`'s root 27 scalar and 3 flag, `lqr_controller` 13, 1
   and 7 vector; `descent`'s one flag wire and the `StopFlag` face's class;
@@ -378,8 +393,14 @@ Each file sits beside its module, loads fixtures by name through
 - `navigate.test.ts`: on a three-by-three grid of boxes at 100 px pitch, from
   the center `l`, `h`, `j`, `k` give the four neighbors and never a diagonal;
   from a corner the two outward directions give `undefined`; a closer box off
-  the axis wins inside the quadrant and loses to a farther one on the axis once
-  outside it; a tie goes to the lower id, an unknown origin gives `undefined`;
+  the row wins while twice its offset costs less than the farther box's gap,
+  then loses to it, `j` taking it; on boxes from `closed_loop`'s root and
+  `lqr_controller`, `selection` far above in the next layer and `tracker`
+  before `u_unpack`, a box in the origin's own layer never to its right; the
+  gap read between facing edges, a wide box starting close beating a narrow
+  one with the nearer center, and clamped at zero for a box reaching back past
+  the origin's edge; a tie goes to the lower id, an unknown origin gives
+  `undefined`;
   `follow` moves `x` by the shortfall exactly for a box left of the view, `y`
   for a box below, returns the view itself for a box inside, and aligns the
   near (top or left) edge of a box larger than the viewport.
@@ -448,7 +469,9 @@ Each file sits beside its module, loads fixtures by name through
   the root without a hash, `#level=` and other hashes naming none.
 - `src/canvas/palette.test.ts`: on `large`'s 43 triples `stepPair` gives the
   eight steps, then the four `extras`, then the shared `extra` from the
-  thirteenth on; the thirteen fills and the thirteen strokes all distinct.
+  thirteenth on; the thirteen fills and the thirteen strokes all distinct;
+  rate mode's fifteen wire colors, the thirteen fills, `continuousWire` and
+  the gray, all distinct.
 - `src/state/prefs.test.ts`: `parsePrefs` gives the defaults on `null`, garbage,
   another version and a missing version; reads a stored object back, `mode`
   `rate` and `labels` true included; keeps the defaults for mistyped fields, a
@@ -474,7 +497,16 @@ longest (`wires.test`); no leaf-beneath rule, the query cleared before the
 focus, a push dropping it (`focus.test`, `session.test`); no child selected on
 a climb (`session.test`); every membership "field" (`detail.test`); the
 extras back on the shared neutral, the colored extras reused past the twelfth
-(`palette.test`, the first also `colors.spec`).
+(`palette.test`, the first also `colors.spec`). Its second round's: the
+assembly taking its first leaf's triple, the `scopes` row read first, `mixed`
+never true, a mixed assembly counted continuous by the legend, the continuous
+line last, the badge only past one clock (`rates.test`); the mixed branch
+dropped from `legendLit` and from `rekeyFocus` (`focus.test`);
+`continuousWire` the gray (`palette.test`); `nearest` without the factor 2,
+without the far-edge filter, between centers and unclamped (`navigate.test`);
+a mixed assembly in the continuous pair, a wire in its producer's stroke, the
+continuous wire in the continuous fill or the gray, one badge title for every
+count, the badge only past one clock (`colors.spec`).
 
 ## The canvas
 
@@ -514,30 +546,34 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `blockTriple`'s step (`stepsOf`, the model's palette order), an extra past
   the eighth step with one of the four `extras` (steps 8 to 11) and past the
   twelfth with the shared `extra` (answer 6 as amended at core `e538e38`;
-  `stepPair` is the one reader, for fills, strokes, wire tints, the legend's
-  swatches and the tree's dots), no triple with the continuous pair, a closed
-  assembly with its scope's step and the double border in that stroke. The
-  eight steps keep a distance rule (increment 6's look pass): every pair of
-  fills and every pair of strokes lies at least CIEDE2000 10 apart under
-  normal vision and under Machado's simulated deutan, protan and tritan vision
-  at full severity, and as far from the continuous, extra and root-tag pairs
-  and the wires' gray; the fills take any hue at L* 72 and up (contrast 7.8 and
-  up with the text); the strokes, which tint the wires, L* 28 to 56, their HSV
-  hue outside the arc from 22° below `error`'s to 22° above `warning`'s and
-  25° or more from the highlight's, each within 60° of its fill's hue (a
-  neutral stroke would be free of both; none was chosen). The search's table
-  is under the traps. No check pins a value. In rate
-  mode a child may carry one pill, `g.badge-pill`, straddling its top edge at
-  the right (a `rect` in the background with the block's stroke and
-  `text.badge`): `#<n>` for an extra, `n` its legend number, `<k> clock(s)` for
-  an assembly whose discrete leaves do not all tick on its own clock
-  (`multiRate`), both joined by ` · `, its `<title>` explaining. The legend, an
-  HTML `div.legend` in the viewport's bottom-left corner, lists the triples
-  visible on the level in palette order: each drawn block's and each level
-  wire's `wireTriple`, so every tint a wire draws has its line, while a root
-  input's wires add none; last, the unnumbered `continuous` line when a drawn
-  block takes the continuous color (a continuous leaf, an assembly with no
-  discrete leaf) or a wire not from a root input takes its tint. Each line is a
+  `stepPair` is the one reader, for fills, strokes, wires, the legend's
+  swatches and the tree's dots), no triple with the continuous pair. A closed
+  assembly takes the one triple its discrete leaves share, its double border in
+  that step's stroke; a `mixed` one, whose leaves tick on several, the assembly
+  gray; one with no discrete leaf the continuous pair. Its `scopes` row colors
+  nothing (answer 6 as amended 2026-11-02, second round). The eight steps are
+  constructed (the same amendment): eight hues evenly spread round the OKLCh
+  hue circle at one chroma, the fills alternating two lightness bands by step
+  down to about L* 66 (AA contrast with the text, 4.5 and up), each stroke its
+  fill's hue darkened, step 0 a warm peach. Every pair of fills lies CIEDE2000
+  12.2 or more apart under normal vision and about 4 under Machado's simulated
+  deutan, protan and tritan vision, never identical, the legend's focus
+  telling any two apart. The four `extras` were re-picked at a lower chroma
+  from the hues left, distinct under normal vision only. The construction is
+  under the traps. No check pins a value. In rate mode a child may carry one
+  pill, `g.badge-pill`, straddling its top edge at the right (a `rect` in the
+  background with the block's stroke and `text.badge`): `#<n>` for an extra,
+  `n` its legend number, `<k> clock(s)` on every closed assembly with a
+  discrete leaf beneath (`clockCount`), both joined by ` · `. Its `<title>`
+  explains, "Every discrete leaf inside ticks on this one clock." for one
+  clock, "Multi-rate: …; open it to see which." for several. The legend, an
+  HTML `div.legend` in the viewport's bottom-left corner, lists first the
+  unnumbered `continuous` line, when a drawn block takes the continuous color
+  (a continuous leaf, an assembly with no discrete leaf, never a mixed one) or
+  a wire not from a root input takes `continuousWire`; then the triples
+  visible on the level in palette order, each drawn block's and each level
+  wire's `wireTriple`, so every color a wire draws has its line, while a root
+  input's wires add none. Each line is a
   `button.line` holding a `span.swatch` in the step's colors (the continuous
   pair's on the continuous line), for an extra a `span.number` `#<n>` in the
   shared neutral, after a swatch in its colors for the four colored extras,
@@ -548,8 +584,10 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `onlegend(key)`; the shell toggles the session's `legendFocus` and passes
   `lit = legendLit(model, level, key)` with the key, and no `hits` while a
   focus stands. `legendLit` lights the children whose color is the key's,
-  the closed assemblies with a leaf of it anywhere beneath and the wires its
-  tint draws; pins are never lit. While `lit` is defined `svg.canvas` carries
+  the closed assemblies with a leaf of it anywhere beneath and the wires drawn
+  in its color; a mixed assembly, gray, is lit only by a leaf beneath, so the
+  continuous color passes over one with no continuous leaf; pins are never
+  lit. While `lit` is defined `svg.canvas` carries
   `legend-focus` and `data-focus`, the lit block, wire, core, dot and type
   label `lit`, and CSS dims everything else to `--dim` as for a search. The
   focused line's button is `aria-pressed`. The tree takes `legendMarks` with
@@ -561,8 +599,9 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   background color, its arrowhead on the core. The struct thus draws as a
   double line, two bands round a background core, where answer 4 says a
   triple line. In tier mode a wire is `wire`
-  gray; in rate mode the `tint` of its terminal producer's step's stroke, the
-  continuous stroke's tint with no triple, the gray from a root input
+  gray; in rate mode its terminal producer's fill (`stepPair`), so a wire names
+  the block it leaves; `continuousWire` from a continuous producer, the
+  continuous fill being too pale for a line; the gray from a root input
   (`fromRootInput`). Each wire color gets its own `marker` (`arrow-<i>`, in
   user units so a thick wire's head keeps a thin one's size).
 - **Trunks.** ELK routes the wires leaving one port as a shared trunk and
@@ -684,9 +723,9 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
 - `svg.canvas[data-mode="tier" | "rate"]`, `[data-labels]` while the labels
   show, `[data-detail="full" | "no-faces" | "segments" | "frames"]`.
 - `g.block .shape[data-step]` in rate mode, the step index, absent on a block
-  with the continuous color; `g.block.extra` past the eighth step;
-  `g.badge-pill text.badge` reading `#<n>`, `<k> clocks` or both joined by
-  ` · `.
+  with the continuous color or the assembly gray; `g.block.extra` past the
+  eighth step; `g.badge-pill` holding its `title` and `text.badge` reading
+  `#<n>`, `1 clock`, `<k> clocks` or a number and a count joined by ` · `.
 - `path.wire[data-kind="scalar" | "flag" | "vector" | "struct" | "opaque"]`;
   `path.wire-core[data-wire]` over every struct wire; `circle.junction
   [data-wire]` at each junction point; `g.type-labels` after `g.blocks`
@@ -701,8 +740,8 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   icon, holding a `text` or a `use[href="#icon-<id>"]`; `symbol#icon-<id>` in
   `<defs>` for every glyph.
 - `text.face` for a face name.
-- `div.legend` in `.viewport`, holding `li[data-step]`, and last `li.continuous`
-  without `data-step`, each with `button.line[aria-pressed]` holding
+- `div.legend` in `.viewport`, holding first `li.continuous` without
+  `data-step`, then `li[data-step]`, each with `button.line[aria-pressed]` holding
   `span.swatch`, `span.number`, or both for a colored extra, then `span.text`.
 - `svg.canvas.legend-focus[data-focus="<key>"]` while a legend line is
   focused; `lit` on the lit `g.block`, `path.wire`, `path.wire-core`,
@@ -724,7 +763,7 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   (turned when expanded), a dot following the color mode (in tier mode the
   tier's stroke or the assembly gray; in rate mode the node's step's stroke,
   a colored extra's or the shared neutral's (`stepPair`), the continuous stroke with no triple, the assembly gray for an
-  assembly with no discrete leaf beneath),
+  assembly without a triple, a mixed one or one with no discrete leaf beneath),
   a folder glyph instead on a folder, the segment, the display name lighter; the
   root row the label alone. A click selects (a node on its parent's level, the
   root on the open level, a folder on its parent's); the open level's own node
@@ -900,7 +939,7 @@ is read from `e.key`, so an upper-case `N` without Shift is `N` too.
 | key | does |
 |---|---|
 | `h` `j` `k` `l`, focus in `nav.tree` | the tree's row keys (`treeStep`, see "The frame") |
-| `h` `j` `k` `l`, elsewhere | select the nearest block or pin in that direction on the drawn level (`nearest` over `boxes()`), from the selected block or pin, a selected port's block or a selected wire's consumer block; with nothing selected on the level, its first block; then `follow` |
+| `h` `j` `k` `l`, elsewhere | select the nearest block or pin in that direction on the drawn level (`nearest` over `boxes()`: among the boxes whose center lies beyond the origin's far edge, the least gap between facing edges, clamped at zero, plus twice the perpendicular offset between centers, ties by the lower id), from the selected block or pin, a selected port's block or a selected wire's consumer block; with nothing selected on the level, its first block; then `follow` |
 | the arrows | pan by 48 screen pixels; Right shows what lies right |
 | Shift-`h`, Shift-`l` | `history.back()` and `history.forward()` within this page load's level entries; nothing at the first or the last (`back`, `forward`) |
 | Shift-`j`, Enter | open the selected closed assembly; Enter with nothing to open keeps the browser's default, so it still presses a focused button |
@@ -1006,7 +1045,8 @@ the page's socket fails against `vite preview`, so every check but
   `lqr_controller` opened and fitted anew, its `viewBox` containing its blocks.
   Its helpers `viewBox` and `blockBoxes` now live in `fixtures.ts`.
 - `keys.spec.ts` (workspace 11, 3), on `closed_loop`'s root, with the check's
-  own `nearest` over `blockBoxes`: `plant` clicked, then `l`, `j`, `k`, `h`,
+  own `nearest` over `blockBoxes` (centers beyond the origin's far edge, the
+  least facing-edge gap plus twice the perpendicular center offset): `plant` clicked, then `l`, `j`, `k`, `h`,
   each selecting the block the check names (or staying when it names none),
   one `g.block.selected`, the pane's `data-id` following, the box inside the
   `viewBox`; after `+` four times, a child whose `l`-neighbor lies outside the
@@ -1238,34 +1278,43 @@ the page's socket fails against `vite preview`, so every check but
   first entry giving one dialog of type `beforeunload`, dismissed, the root
   still drawn and the title kept; `closed_loop` pushed over the live mock at
   `/`, `plant` clicked, `goBack` reaching `about:blank` with no dialog.
-- `colors.spec.ts` (grammar 6, workspace 7, 9, 11): on `closed_loop` at load
+- `colors.spec.ts` (grammar 6, workspace 7, 9, 11), the counts the assembly
+  rule of 2026-11-02 changed read by hand: on `closed_loop` at load
   `data-mode="tier"`, `tier colors`, the tier button pressed, no legend and no
-  `data-step`; `r` giving `rate`, `rate colors`, the rate button pressed, the
-  five assemblies at step 0 with the badges `1 clock`, `4 clocks`, `1 clock`,
-  `2 clocks`, `2 clocks`, `plant` with no step and no badge, the legend's six
-  lines with `base grid` at step 0, one `span.number` `#9` and last the one
-  `li.continuous` reading `continuous`, no `data-step`, its swatch's computed
-  fill and border `plant`'s; the tier gray
-  read off `sensing|in|h` before `r`, `V_ref`'s two root wires keeping it in
-  rate mode; `pid_controller` steps 2 to 5 in order, four distinct fills, the
-  legend's seven lines, steps 2 to 5, 7 and 8, then `continuous`; `h_ctl`'s tree dot equal to its
-  shape's computed stroke; an icon's computed color the same after `r` and
-  back; `actuators`' limiters `extra` with
-  `#10` and `#11`, the legend's `span.number`s, the two limiters' computed
-  fills unlike each other, the lags' and the shared neutral the number pill
-  keeps, each limiter's legend swatch (beside `#10`, `#11`) equal to its
-  block's fill and stroke, the lags with no step; the wires out of `δe_limiter` and `δe_lag` different,
-  neither gray, the former unlike the limiter's stroke, each arrowhead's fill
-  its wire's stroke; a reload and a drop keeping `rate`, the tier button back.
-  On `rates` the switch clicked, `fast` `2 clocks`, `slow` none, the legend
-  `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, `anchor 2 (1/10 s)`,
-  `continuous`; `fast` opened, `inner` step 0 and `outer` step 1, no
-  continuous block, the lines `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`,
-  `continuous`, the last from `src`'s wires alone.
+  `data-step`; `r` giving `rate`, `rate colors`, the rate button pressed,
+  `sensing` at step 0 and `lqr_controller` at step 5, `pid_controller`,
+  `selection` and `actuators` with no step and the computed fill and stroke
+  they had in tier mode, unlike `plant`'s; the badges `1 clock`, `4 clocks`,
+  `1 clock`, `2 clocks`, `2 clocks`, `sensing`'s title the one-clock sentence
+  and `pid_controller`'s starting `Multi-rate:`; `plant` with no step and no
+  badge; the legend's seven lines, first the one `li.continuous` reading
+  `continuous`, no `data-step`, its swatch's computed fill and border
+  `plant`'s, then anchors 1, 4, 5, 6, 7 and 8 at steps 0 and 3 to 7, no
+  `span.number`; the tree's dots of `sensing` and `pid_controller` their
+  shapes' computed strokes. The tier gray read off `sensing|in|h` before `r`,
+  `V_ref`'s two root wires keeping it in rate mode; `pid_controller` steps 1
+  to 4 in order, four distinct fills, the legend's seven lines, `continuous`,
+  then steps 1 to 4, 6 and 7; `h_ctl`'s tree dot equal to its shape's computed
+  stroke; an icon's computed color the same after `r` and back; `actuators`'
+  limiters `extra` with `#9` and `#10`, the legend's `span.number`s, the two
+  limiters' computed fills unlike each other, the lags' and the shared neutral
+  the number pill keeps, each limiter's legend swatch (beside `#9`, `#10`)
+  equal to its block's fill and stroke, the lags with no step; the wire out of
+  each limiter in that limiter's fill; the wires out of the two lags one
+  color, unlike the lag's fill and stroke, the gray and the limiters' colors;
+  each arrowhead's fill its wire's stroke; a reload and a drop keeping `rate`,
+  the tier button back. On `rates` the switch clicked, `fast`, whose `scopes`
+  row names anchor 1, with no step in its tier colors and `2 clocks`, `slow`
+  at step 2 with `1 clock`, each badge's title; the legend `continuous`,
+  `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, `anchor 2 (1/10 s)`; `fast`
+  opened, `inner` step 0 and `outer` step 1, no continuous block, the lines
+  `continuous`, `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, the first from
+  `src`'s wires alone.
 - `focus.spec.ts` (grammar 6, 9, workspace 11, as amended; the lit sets the
-  look fixer's oracle's): on `closed_loop` in rate mode anchor 4's line
-  clicked: `legend-focus`, `data-focus` `4,1,0`, its button pressed and the
-  base grid's not, `pid_controller` the one lit block and `selection|in|δe_pid`
+  look fixer's oracle's, the steps read by hand): on `closed_loop` in rate
+  mode anchor 4's line, step 3, clicked: `legend-focus`, `data-focus`
+  `4,1,0`, its button pressed and step 0's and the continuous line's not, the
+  gray `pid_controller` the one lit block and `selection|in|δe_pid`
   the one lit wire, `plant`'s and the `h_ref` tag's shapes and `sensing|in|h`
   at opacity 0.3, the lit at 1; `.hits` 1 on the collapsed `pid_controller`
   alone, `q_ctl` the one `hit` row once expanded; kept at `pid_controller`
@@ -1276,7 +1325,7 @@ the page's socket fails against `vite preview`, so every check but
   clicked giving `legend-focus` without `searching` or a `search-hit`, the
   tree's `.hits` the query's (1 on `sensing`, 2 on `selection`); Escape
   clearing the focus with the query kept and `searching` back, Escape again
-  the query; the base grid focused, `r` to tier and back with nothing focused;
+  the query; anchor 1's line focused, `r` to tier and back with nothing focused;
   anchor 4 focused, `closed_loop_deployment` dropped over keeping it and its
   lit `pid_controller`, `rates` dropped over clearing it.
 - `wires.spec.ts` (grammar 4, 10, workspace 7): on `kinds` the ten wires by
@@ -1606,56 +1655,24 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   top edge, clear of the wires, or the caption.
 - **Glyphs in the text color.** A glyph is a `<symbol>` whose path and text use
   `currentColor`, set by `.icon`'s `color`; a `<use>` inherits it.
-- **The palette's hue bans by the letter** (increment 6's look pass). With the
-  strokes kept 22° from the error's and the warning's HSV hues, the search put
-  a rust stroke, `#873309`, 24° from one and 22° from the other, between the
-  two; the ban is the whole arc from 22° below the error's to 22° above the
-  warning's. Neutral strokes, free of the hue rules, landed beside the root
-  inputs' gray wires (`#6b6564`); the wire gray `#6b6b6b` is one of the pairs
-  every stroke keeps clear of. ΔE76 had overstated the greens' differences:
-  the earlier palette's least fill pair read 13 in ΔE76 and 7.5 in CIEDE2000.
-  The search, `search.jl` in the look fixer's scratchpad, annealed eight LCh
-  steps on the least CIEDE2000 over every vision:
-
-  | run | fill L* floor | fill chroma cap | stroke ban | wire gray kept clear | least |
-  |---|---|---|---|---|---|
-  | a | 78 | 70 | 22° each side of error and warning | no | 9.34 |
-  | b70 | 78 | 70 | the same | yes | 8.73 |
-  | b50 | 78 | 50 | the same | yes | 8.47 |
-  | c78 | 78 | 70 | the arc 334° to 64° | yes | 9.20 |
-  | c72 | 72 | 60 | the arc 334° to 64° | yes | 10.06, landed |
-
-  | step | fill | stroke |
-  |---|---|---|
-  | 0 | `#c1b23d` mustard | `#709215` green |
-  | 1 | `#f793ad` pink | `#9c67f6` violet |
-  | 2 | `#fed665` yellow | `#2d4830` dark green |
-  | 3 | `#41c4b0` teal | `#2791a3` dark cyan |
-  | 4 | `#c0a0ff` violet | `#4c3675` dark purple |
-  | 5 | `#a3c587` sage | `#50674b` gray green |
-  | 6 | `#b7b6da` lavender | `#755074` plum |
-  | 7 | `#f5eeb1` cream | `#4c5512` olive |
-
-  The landed least CIEDE2000: fills 12.2 normal, 10.2 deutan, 10.1 protan,
-  10.1 tritan; strokes 10.9, 10.9, 10.8, 11.0; every fill and stroke at least
-  10.2 from the continuous, extra and root-tag pairs. The steps are ordered so
-  that neighbours differ most.
-
-  The four colored extras (core `e538e38`), from `search_extras.jl` with the
-  eight steps fixed: the least CIEDE2000 under normal vision only, among the
-  four and against the steps, the continuous, extra and root-tag pairs and,
-  for strokes, the wires' gray, under the steps' rules (fills L* 72 up and
-  any hue, strokes L* 28 to 56 off the red-amber arc and the highlight, near
-  their fill's hue); 24 restarts gave 16.6.
-
-  | step | badge | fill | stroke | nearest fill | nearest stroke |
-  |---|---|---|---|---|---|
-  | 8 | `#9` | `#ffd7eb` pale pink | `#d1278f` magenta | 16.6, step 6 | 17.9, `#12` |
-  | 9 | `#10` | `#61fdb9` mint | `#12977f` teal green | 16.7, step 3 | 16.8, step 3 |
-  | 10 | `#11` | `#5cc1f2` sky | `#0d6369` dark teal | 18.5, continuous | 17.5, step 5 |
-  | 11 | `#12` | `#efac94` salmon | `#a7798f` dusty mauve | 17.8, step 1 | 17.5, step 6 |
-
-  Past the twelfth, the shared `extra` pair; the badges tell every extra apart.
+- **The rate palette's construction** (increment 6's look pass, second round;
+  answer 6 as amended 2026-11-02). The first round's search annealed eight
+  LCh steps on the least CIEDE2000 over normal and Machado's simulated
+  deutan, protan and tritan vision, with hue bans on the strokes, which then
+  colored the wires; it reached 10.06 at fills L* 72 and up, and the capacity
+  search showed that eight light fills distinct under every simulation do not
+  exist. Its palette cleared the bar but read as no nameable hues, so the
+  steps are constructed instead: eight hues evenly spread round the OKLCh hue circle at one chroma,
+  the fills alternating two lightness bands by step, down to about L* 66 (AA
+  contrast with the text, 4.5 and up, no longer AAA), each stroke its fill's
+  hue darkened, the order putting a warm peach at step 0, opposite the
+  continuous blue. The least CIEDE2000 between fills is 12.2 under normal
+  vision and about 4 under the simulations, never identical; the legend's
+  focus tells any two apart. The fills color the wires, so they keep clear of
+  `error`, `warning`, the highlight and the wire gray. The four `extras` were
+  re-picked greedily at a lower chroma from the hues left. Measure in
+  CIEDE2000: ΔE76 had overstated the first palette's greens, its least fill
+  pair 13 in ΔE76 and 7.5 in CIEDE2000.
 - **The default pane is narrow.** The detail pane's default 360 px sits under
   the 420 px container query, so the stacked parameters and faces are what a
   first load shows; the table rows need a pane past 420.
@@ -1691,10 +1708,10 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
 - `large`'s root draws its two output pins in reverse declaration order. Only
   `forceNodeModelOrder` fixes it, at 663 to 699 crossings on `large`, so the
   order check was dropped.
-- The rate palette (the look pass's search, see the traps) still leans on
-  greens and olives among its strokes, which the bans on red, amber and blue
-  leave with the violets; its fills spread over pink, mustard, yellow, teal,
-  violet, sage, lavender and cream. The user's look judges it.
+- The type labels' placement and ELK's own edge labels are under discussion.
+- The base grid's peach is step 0 wherever a block ticks on the base grid;
+  `closed_loop` has no such block, so its palette order starts at anchor 1 and
+  the peach goes to `sensing`.
 - The rate badge straddles the block's top edge at the right, since inside the
   corner it covered the segment on `closed_loop`'s root and answer 10 never cuts
   a user name; reserving its width in `sizeBlock` would make a block's size

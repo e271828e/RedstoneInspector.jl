@@ -159,16 +159,17 @@ clears. A narrow detail pane stacks each parameter and each face's facts.
 The canvas draws the visual grammar. Blocks are colored by tier, or, after `r`
 or the switch at the right of the breadcrumb, by rate: each timing gets one of
 eight colors, fastest first with the base grid first, the rest a neutral fill
-with a numbered badge, an assembly the color of its rate scope with a badge
-counting the clocks inside when they differ, and a legend in the canvas's
-corner reading each rate on the level, then a line for the continuous color.
-A click on a legend line lights the blocks, assemblies and wires of that rate
-and dims the rest, marking the tree; a second click, Escape or tier colors
-clear it. The palette's colors stay apart under the three common kinds of
-weak color vision. Wires show their kind by weight and
+with a numbered badge; a closed assembly takes the color its discrete leaves
+share, gray when they tick on several, with a badge counting their clocks; and
+a legend in the canvas's corner reads first a line for the continuous color,
+then each rate on the level. A click on a legend line lights the blocks, assemblies and wires of
+that rate and dims the rest, marking the tree; a second click, Escape or tier
+colors clear it. The eight colors are evenly spaced hues, distinct under
+normal vision; under weak color vision a legend line's click tells any two
+apart. Wires show their kind by weight and
 pattern (thin for a scalar, dashed for a flag, thick for a vector, a double
-line for a struct, dotted for an opaque value), take their producer's color
-lighter in rate mode, and branch from a shared trunk with a dot at each split;
+line for a struct, dotted for an opaque value), take their producer's fill in
+rate mode, and branch from a shared trunk with a dot at each split;
 `y` or the toggle beside the switch writes each output's type, its module
 names dropped, on the longest straight run of its wires. Library blocks show an icon in place of their type's name, a glyph
 or a short formula, a `Constant` its value. A keyed container's elements sit
