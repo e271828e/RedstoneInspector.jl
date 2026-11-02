@@ -1,7 +1,8 @@
 // A block or a pin dragged to untangle a view (initial_design.md answer 12, the
 // spike's local router): the box moves by the drag in world units, only its wires
 // are re-routed, it is drawn last and selected; the place lasts across a level
-// change and a drop of the same structure, and not across a reload.
+// change and a drop of the same structure, and not across a reload; Shift keeps
+// the move to one axis (as amended in increment 6's look pass).
 import { test, type Page } from "@playwright/test";
 import { blockBoxes, drop, dropOver, expect, fixtureText, readyLevel, shot, viewBox } from "./fixtures";
 
@@ -150,4 +151,56 @@ test("descent: plant's wires take the router's forward and backward forms, stop'
   expect(Math.max(...ys)).toBeGreaterThan(bottom);
   expect(after["stop|in|u"]).toBe(before["stop|in|u"]);
   await shot(page, "descent", "", "drag");
+});
+
+/** The pointer at the block's header, pressed. */
+async function press(page: Page, id: string): Promise<{ x: number; y: number }> {
+  const r = (await page.locator(`g.block[data-id="${id}"] > .shape`).boundingBox())!;
+  const at = { x: r.x + r.width / 2, y: r.y + 10 };
+  await page.mouse.move(at.x, at.y);
+  await page.mouse.down();
+  return at;
+}
+
+test("closed_loop: Shift keeps a drag to its axis of greater travel, pressed at the start or midway, and releasing it frees the move", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const scale = await scaleOf(page);
+  const was = await boxOf(page, "plant");
+  const near = (a: number, b: number) => Math.abs(a - b) < 1;
+
+  // held from the press: (100, 30) moves along x alone
+  await page.keyboard.down("Shift");
+  let at = await press(page, "plant");
+  await page.mouse.move(at.x + 100, at.y + 30, { steps: 8 });
+  await page.mouse.up();
+  await page.keyboard.up("Shift");
+  let b = await boxOf(page, "plant");
+  expect([near(b.x, was.x + 100 / scale), near(b.y, was.y)]).toEqual([true, true]);
+
+  // pressed midway with no pointer move: the diagonal place snaps to the y axis, the greater travel
+  const from = await boxOf(page, "plant");
+  at = await press(page, "plant");
+  await page.mouse.move(at.x + 40, at.y + 120, { steps: 8 });
+  b = await boxOf(page, "plant");
+  expect([near(b.x, from.x + 40 / scale), near(b.y, from.y + 120 / scale)]).toEqual([true, true]);
+  await page.keyboard.down("Shift");
+  await expect.poll(async () => (await boxOf(page, "plant")).x).toBeCloseTo(from.x, 3);
+  b = await boxOf(page, "plant");
+  expect(near(b.y, from.y + 120 / scale)).toBe(true);
+  // released: free again at the pointer's place
+  await page.keyboard.up("Shift");
+  await expect.poll(async () => (await boxOf(page, "plant")).x).toBeCloseTo(from.x + 40 / scale, 3);
+  await page.mouse.up();
+  b = await boxOf(page, "plant");
+  expect([near(b.x, from.x + 40 / scale), near(b.y, from.y + 120 / scale)]).toEqual([true, true]);
+
+  // a root tag too: (-20, 90) with Shift keeps to y
+  const tag = await boxOf(page, "⟨in⟩h_ref");
+  await page.keyboard.down("Shift");
+  at = await press(page, "⟨in⟩h_ref");
+  await page.mouse.move(at.x - 20, at.y + 90, { steps: 8 });
+  await page.mouse.up();
+  await page.keyboard.up("Shift");
+  b = await boxOf(page, "⟨in⟩h_ref");
+  expect([near(b.x, tag.x), near(b.y, tag.y + 90 / scale)]).toEqual([true, true]);
 });

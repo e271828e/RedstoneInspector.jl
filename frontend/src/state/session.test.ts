@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fixtureJson, fixtureModel } from "../lib/fixtures";
 import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
-import { climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, select, session, setQuery, toggleLegendFocus } from "./session.svelte";
+import { climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery, toggleLegendFocus } from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
   it("a build carrying one warning and no diagnostic loads with the drawer closed, the warning counted", () => {
@@ -84,6 +84,32 @@ describe("load: a replacement rekeys, a refusal unloads", () => {
     load(undefined);
     load(fixtureModel("rates"));
     expect(session.legendFocus).toBeUndefined();
+  });
+});
+
+describe("climbing", () => {
+  it("a move to an ancestor of the level left selects the ancestor's child on the path, by climb, open and back", () => {
+    load(fixtureModel("closed_loop"));
+    open("sensing");
+    expect(session.selection).toBeUndefined();
+    climb();
+    expect([session.level, session.selection]).toEqual(["", { level: "", target: { kind: "block", id: "sensing" } }]);
+    load(fixtureModel("rates"));
+    open("fast");
+    open("fast/outer");
+    open("");
+    expect(session.selection).toEqual({ level: "", target: { kind: "block", id: "fast" } });
+    open("fast/outer");
+    openFromHistory("fast");
+    expect(session.selection).toEqual({ level: "fast", target: { kind: "block", id: "fast/outer" } });
+  });
+
+  it("a move down or across selects nothing", () => {
+    load(fixtureModel("rates"));
+    open("fast");
+    expect(session.selection).toBeUndefined();
+    open("slow");
+    expect(session.selection).toBeUndefined();
   });
 });
 

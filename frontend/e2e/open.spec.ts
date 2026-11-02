@@ -113,3 +113,42 @@ test("rates: the breadcrumb's links at fast/outer, the fast link, and Alt-Up cli
   await expect(crumb).toHaveAttribute("data-level-path", "");
   await expect(crumb.locator(".current")).toHaveText("rates");
 });
+
+/** The canvas's selected block, and the detail pane's id. */
+const chosen = async (page: import("@playwright/test").Page) =>
+  [await page.locator("svg.canvas g.block.selected").getAttribute("data-id"), await page.locator("aside.detail").getAttribute("data-id")];
+
+test("climbing selects the child left: Shift-k at sensing, Shift-j reopening it, back onto the root; rates' root link from fast/outer", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await page.locator('g.block[data-id="sensing"]').dblclick();
+  await page.locator(readyLevel("sensing")).waitFor();
+  await page.locator(".viewport").focus();
+  await page.keyboard.press("Shift+K");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await chosen(page)).toEqual(["sensing", "sensing"]);
+  await expect(page.locator('nav.tree .row.selected[data-path="sensing"]')).toHaveCount(1);
+  // the keyboard continues from it
+  await page.keyboard.press("Shift+J");
+  await page.locator(readyLevel("sensing")).waitFor();
+  await expect(page.locator("svg.canvas g.block.selected")).toHaveCount(0);
+  // back lands on the root, an ancestor of sensing: sensing selected again
+  await page.keyboard.press("Shift+H");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await chosen(page)).toEqual(["sensing", "sensing"]);
+  await page.keyboard.press("Backspace");
+  await expect(levelLine(page)).toHaveAttribute("data-level-path", "");
+
+  await drop(page, "rates");
+  await openPath(page, "fast/outer");
+  await page.locator('nav.breadcrumb a[data-path=""]').click();
+  await page.locator(readyLevel("")).waitFor();
+  expect(await chosen(page)).toEqual(["fast", "fast"]);
+  await openPath(page, "fast/outer");
+  await page.locator(".viewport").focus();
+  await page.keyboard.press("Alt+ArrowUp");
+  await page.locator(readyLevel("fast")).waitFor();
+  expect(await chosen(page)).toEqual(["fast/outer", "fast/outer"]);
+  await page.keyboard.press("Backspace");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await chosen(page)).toEqual(["fast", "fast"]);
+});

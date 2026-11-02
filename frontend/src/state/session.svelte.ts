@@ -9,6 +9,7 @@ import type { Model } from "../lib/model";
 import { rekeyFocus } from "../lib/focus";
 import { ancestors, defaultExpansion, folderOf } from "../lib/outline";
 import { isLevel, rekey } from "../lib/rekey";
+import type { Tree } from "../lib/tree";
 import type { View } from "../lib/view";
 
 export type Tab = "diagnostics" | "root-inputs" | "timing" | "order";
@@ -162,12 +163,24 @@ function expand(paths: string[]) {
   expanded = new Set([...expanded, ...paths]);
 }
 
-/** Shows a level without touching the history: the selection cleared, its row and its ancestors expanded, the note gone. */
+/** On a move up to an ancestor of the level left, the ancestor's child on the path, selected so the keyboard continues from it. */
+function childOnPath(tree: Tree, ancestor: string, left: string): Selection | undefined {
+  for (let p = left, q = tree.parent.get(left); q !== undefined; p = q, q = tree.parent.get(q)) {
+    if (q === ancestor) return { level: ancestor, target: { kind: "block", id: p } };
+  }
+  return undefined;
+}
+
+/**
+ * Shows a level without touching the history: its row and its ancestors expanded, the note gone; the selection
+ * cleared, or, on a move to an ancestor of the level left, its child on the path selected.
+ */
 function show(path: string): boolean {
   const tree = model?.tree;
   if (!tree || !isLevel(tree, path)) return false;
+  const left = level;
   level = path;
-  selection = undefined;
+  selection = childOnPath(tree, path, left);
   note = undefined;
   expand([...ancestors(tree, path), path]);
   return true;

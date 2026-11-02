@@ -295,7 +295,8 @@
 
   // Pan, zoom, the background click and the block drag.
   let drag: { start: Point; view: View; moved: boolean; id: number } | undefined;
-  let blockDrag: { block: string; el: Element; start: Point; box: Rect; moved: boolean; id: number } | undefined;
+  /** A block's drag: the press, the box at the press, the pointer's last place and whether Shift was held then. */
+  let blockDrag: { block: string; el: Element; start: Point; box: Rect; moved: boolean; id: number; last: Point; shift: boolean } | undefined;
   const local = (e: MouseEvent): Point => {
     const r = svg!.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -313,13 +314,25 @@
   function blockdown(e: PointerEvent, b: Block) {
     if (e.button !== 0 || !shown) return;
     const el = e.currentTarget as Element;
-    blockDrag = { block: b.id, el, start: local(e), box: shown.geometry.boxes.get(b.id)!, moved: false, id: e.pointerId };
+    const at = local(e);
+    blockDrag = { block: b.id, el, start: at, box: shown.geometry.boxes.get(b.id)!, moved: false, id: e.pointerId, last: at, shift: e.shiftKey };
   }
   function blockmove(e: PointerEvent) {
-    const d = blockDrag!;
-    const p = local(e);
-    const dx = p.x - d.start.x, dy = p.y - d.start.y;
+    blockDrag!.last = local(e);
+    blockDrag!.shift = e.shiftKey;
+    dragTo(blockDrag!);
+  }
+  /**
+   * Moves the dragged block to the pointer's last place. With Shift held the move keeps to the axis of greater
+   * travel since the press (initial_design.md answer 12 as amended); releasing Shift frees it.
+   */
+  function dragTo(d: NonNullable<typeof blockDrag>) {
+    let dx = d.last.x - d.start.x, dy = d.last.y - d.start.y;
     if (!d.moved && Math.hypot(dx, dy) < CLICK_SLOP) return;
+    if (d.shift) {
+      if (Math.abs(dx) >= Math.abs(dy)) dy = 0;
+      else dx = 0;
+    }
     if (!d.moved) {
       d.moved = true;
       dragged = new Set([...dragged].filter((id) => id !== d.block).concat(d.block));
@@ -329,6 +342,12 @@
     const box = { ...d.box, x: d.box.x + dx / view.scale, y: d.box.y + dy / view.scale };
     const g = { ...s.geometry, boxes: new Map(s.geometry.boxes).set(d.block, box) };
     shown = { ...s, geometry: { ...g, ...rerouteTouching(g, s.level, s.sizes, d.block) } };
+  }
+  /** Shift pressed or released during a drag re-applies the pointer's last place, so the constraint snaps on or off. */
+  function shiftKey(e: KeyboardEvent) {
+    if (e.key !== "Shift" || !blockDrag?.moved) return;
+    blockDrag.shift = e.type === "keydown";
+    dragTo(blockDrag);
   }
   function pointermove(e: PointerEvent) {
     if (blockDrag && e.pointerId === blockDrag.id) return blockmove(e);
@@ -442,6 +461,8 @@
     "search-hit": !!hits?.ports.has(id),
   });
 </script>
+
+<svelte:window onkeydown={shiftKey} onkeyup={shiftKey} />
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
