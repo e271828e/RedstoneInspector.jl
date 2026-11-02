@@ -4,7 +4,7 @@
 // a wire's clickable point, screenshots and the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { expect, type Page, type WebSocketRoute } from "@playwright/test";
+import { expect, test, type Page, type WebSocketRoute } from "@playwright/test";
 
 const fixtures = new URL("../fixtures/", import.meta.url);
 const screenshots = new URL("screenshots/", import.meta.url);
@@ -66,11 +66,14 @@ export const counts = (page: Page) => page.evaluate(() => {
 
 /**
  * Saves `e2e/screenshots/<fixture>__<level>.png`, the root as `root` and `/` in a path as `__`; a check
- * other than the drawing prefixes its name, `<check>.<fixture>__<level>.png`.
+ * other than the drawing prefixes its name, `<check>.<fixture>__<level>.png`. A run of a project other than
+ * Chromium saves under its own folder, `e2e/screenshots/<project>/`, so the two runs never overwrite each other.
  */
 export async function shot(page: Page, fixture: string, level: string, check?: string): Promise<void> {
   const name = `${check ? `${check}.` : ""}${fixture}__${level === "" ? "root" : level.replaceAll("/", "__")}.png`;
-  await page.screenshot({ path: fileURLToPath(new URL(name, screenshots)) });
+  const project = test.info().project.name;
+  const dir = project === "chromium" ? screenshots : new URL(`${project}/`, screenshots);
+  await page.screenshot({ path: fileURLToPath(new URL(name, dir)) });
 }
 
 /** The SVG's viewBox, the world rectangle it shows. */

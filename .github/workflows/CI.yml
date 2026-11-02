@@ -84,9 +84,16 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
-      - run: npm run e2e
+      - run: npx playwright install --with-deps chromium firefox
+      - name: Browser checks, Chromium
+        run: npm run e2e -- --project=chromium
+      # Firefox runs after Chromium and cannot fail the job until it has passed a few runs; it turns blocking
+      # before the release. Its screenshots land under e2e/screenshots/firefox/.
+      - name: Browser checks, Firefox (non-blocking)
+        continue-on-error: true
+        run: npm run e2e -- --project=firefox
       # Upload paths are repository-relative: the working-directory default applies to `run` steps only.
+      # The folder holds both runs' screenshots, Chromium's at its top and Firefox's under firefox/.
       - uses: actions/upload-artifact@v7
         if: always()
         with:

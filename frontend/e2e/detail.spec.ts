@@ -192,7 +192,8 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator(".facts")).toHaveText("port · stage 1 · not pinned");
   });
 
-  test("the copy button writes the path to the clipboard", async ({ page, context }) => {
+  test("the copy button writes the path to the clipboard", async ({ page, context, browserName }) => {
+    test.skip(browserName === "firefox", "clipboard permissions are Chromium's");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.locator('g.block[data-id="plant"]').click();
     await pane(page).locator("button.copy").click();
@@ -200,7 +201,8 @@ test.describe("closed_loop", () => {
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("plant");
   });
 
-  test("a location click writes its file label to the clipboard", async ({ page, context }) => {
+  test("a location click writes its file label to the clipboard", async ({ page, context, browserName }) => {
+    test.skip(browserName === "firefox", "clipboard permissions are Chromium's");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.locator('g.block[data-id="plant"]').click();
     const first = pane(page).locator(".locations li").first();

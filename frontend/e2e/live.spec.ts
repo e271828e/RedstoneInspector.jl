@@ -104,7 +104,8 @@ test("at / the hello names the default channel", async ({ page }) => {
   expect(JSON.parse(mock.sent[0])).toEqual({ type: "hello", channel: "", major: 1 });
 });
 
-test("the hosted copy: no connection, no download, and a location click copies", async ({ page, context }) => {
+test("the hosted copy: no connection, no download, and a location click copies", async ({ page, context, browserName }) => {
+  test.skip(browserName === "firefox", "clipboard permissions are Chromium's");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await drop(page, "closed_loop");
   await expect(status(page)).toHaveAttribute("data-kind", "build");
