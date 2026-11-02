@@ -86,9 +86,15 @@ export function tripleTitle(model: Model, t: Triple): string {
   return `${a.key} at ${a.scope === "" ? "the root" : a.scope}`;
 }
 
+/** The continuous line's key, beside the triples' keys. */
+export const CONTINUOUS = "continuous";
+
+/** A legend line: a triple's, or the continuous color's, which has no triple and no step. */
 export interface LegendLine {
-  triple: Triple;
-  step: number;
+  /** The triple's key, or `CONTINUOUS`. */
+  key: string;
+  triple?: Triple;
+  step?: number;
   text: string;
   title: string;
 }
@@ -99,20 +105,28 @@ function drawnPaths(model: Model, level: string): string[] {
   return n.class === "leaf" ? [level] : model.tree!.children.get(level)!;
 }
 
-/** The triples visible on a level, each drawn block's and each wire's tint, in palette order. */
+/**
+ * The triples visible on a level, each drawn block's and each wire's tint, in palette order; then the continuous
+ * line when a block takes the continuous color or a wire its tint, a root input's wires being neutral.
+ */
 export function legend(model: Model, level: string, steps = stepsOf(model)): LegendLine[] {
   const visible = new Map<string, Triple>();
+  let continuous = false;
   for (const p of drawnPaths(model, level)) {
     const t = blockTriple(model, p);
     if (t) visible.set(tripleKey(t), t);
+    else continuous = true;
   }
   for (const w of levelOf(model.tree!, model.resolution!, level).wires) {
     const t = wireTriple(model, level, w);
     if (t) visible.set(tripleKey(t), t);
+    else if (!fromRootInput(model, level, w)) continuous = true;
   }
-  return [...visible.values()]
-    .map((t) => ({ triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
-    .sort((a, b) => a.step - b.step);
+  const lines: LegendLine[] = [...visible.values()]
+    .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
+    .sort((a, b) => a.step! - b.step!);
+  if (continuous) lines.push({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous leaves, assemblies with no discrete leaf, and their wires" });
+  return lines;
 }
 
 /** The distinct triples of the discrete leaves under an assembly, in walk order. */

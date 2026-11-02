@@ -621,9 +621,11 @@
   {#if lines.length}
     <div class="legend" aria-label="the rates on this level">
       <ul>
-        {#each lines as l (l.step)}
-          <li data-step={l.step} title={l.title}>
-            {#if l.step < STEPS}
+        {#each lines as l (l.key)}
+          <li data-step={l.step} class:continuous={l.step === undefined} title={l.title}>
+            {#if l.step === undefined}
+              <span class="swatch" style:background={palette.continuous.fill} style:border-color={palette.continuous.stroke}></span>
+            {:else if l.step < STEPS}
               <span class="swatch" style:background={palette.rate[l.step].fill} style:border-color={palette.rate[l.step].stroke}></span>
             {:else}
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>

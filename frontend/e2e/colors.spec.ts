@@ -1,7 +1,8 @@
 // The color modes (visual_grammar.md answer 6, workspace.md answers 1, 7, 9 and
 // 11): tier by default, `r` and the breadcrumb's switch to rate mode, the steps
 // in the model's palette order, the badges, the legend, the tree's dots, the
-// mode kept per browser. Every count is the oracle's (`grammar.py`).
+// mode kept per browser. Every count is the oracle's (`grammar.py`), the continuous
+// line's the look fixer's (`continuous.py`).
 import { test, type Page } from "@playwright/test";
 import { drop, dropOver, expect, openPath, press, shot, status } from "./fixtures";
 
@@ -43,10 +44,18 @@ test("closed_loop: tier at load, r to rate mode with the base grid on every asse
   await expect(page.locator("text.badge")).toHaveCount(5);
   await expect(shape(page, "plant")).not.toHaveAttribute("data-step");
   await expect(badge(page, "plant")).toHaveCount(0);
-  // the base grid and the steps the wires' tints carry, the selection's delays' extra numbered #9
-  await expect(legendLines(page)).toHaveCount(5);
+  // the base grid and the steps the wires' tints carry, the selection's delays' extra numbered #9, then the
+  // continuous line last, unnumbered, in plant's colors (the look fixer's oracle, continuous.py)
+  await expect(legendLines(page)).toHaveCount(6);
   await expect(page.locator('.legend li[data-step="0"]')).toHaveText("base grid");
   await expect(page.locator(".legend li .number")).toHaveText(["#9"]);
+  const last = legendLines(page).last();
+  await expect(last).toHaveClass(/\bcontinuous\b/);
+  await expect(last).not.toHaveAttribute("data-step");
+  await expect(last.locator(".text")).toHaveText("continuous");
+  await expect(page.locator(".legend li.continuous")).toHaveCount(1);
+  const swatch = await last.locator(".swatch").evaluate((e) => [getComputedStyle(e).backgroundColor, getComputedStyle(e).borderTopColor]);
+  expect(swatch).toEqual(await shape(page, "plant").evaluate((e) => [getComputedStyle(e).fill, getComputedStyle(e).stroke]));
   await shot(page, "closed_loop", "", "colors");
 });
 
@@ -64,11 +73,12 @@ test("closed_loop: pid_controller's four steps and six lines, actuators' extras 
     fills.add(await shape(page, id).getAttribute("fill"));
   }
   expect(fills.size).toBe(4);
-  await expect(legendLines(page)).toHaveCount(6);
+  await expect(legendLines(page)).toHaveCount(7);
   for (const [i, a] of [2, 3, 4, 5, 7, 8].entries()) {
     await expect(legendLines(page).nth(i)).toHaveAttribute("data-step", String(a));
     await expect(legendLines(page).nth(i).locator(".text")).toHaveText(`anchor ${a} (1/50 s)`);
   }
+  await expect(legendLines(page).nth(6).locator(".text")).toHaveText("continuous");
   // the tree's dot follows the mode
   const colorsOf = (id: string) => page.evaluate((id) => ({
     dot: getComputedStyle(document.querySelector(`nav.tree .row[data-path="${id}"] .dot`)!).backgroundColor,
@@ -120,10 +130,12 @@ test("rates: fast badged with two clocks, slow not, the legend's lines at the ro
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
   await expect(badge(page, "fast")).toHaveText("2 clocks");
   await expect(badge(page, "slow")).toHaveCount(0);
-  await expect(legendLines(page).locator(".text")).toHaveText(["anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2", "anchor 2 (1/10 s)"]);
+  await expect(legendLines(page).locator(".text")).toHaveText(["anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2", "anchor 2 (1/10 s)", "continuous"]);
   await openPath(page, "fast");
   const inner = await shape(page, "fast/inner").getAttribute("data-step");
   const outer = await shape(page, "fast/outer").getAttribute("data-step");
   expect([inner, outer]).toEqual(["0", "1"]);
-  await expect(legendLines(page).nth(1).locator(".text")).toHaveText("anchor 1 (1/50 s) × 2");
+  // no continuous block on fast: its line comes from the wires src's output tints
+  await expect(page.locator("g.block:not(.pin) .shape:not([data-step])")).toHaveCount(0);
+  await expect(legendLines(page).locator(".text")).toHaveText(["anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2", "continuous"]);
 });

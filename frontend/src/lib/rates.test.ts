@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
 import type { Model } from "./model";
-import { blockTriple, clocksBeneath, fromRootInput, legend, multiRate, stepsOf, tripleKey, tripleOrder, wireTriple, type Triple } from "./rates";
+import type { LeafFace, StructureSection } from "./descriptor";
+import { buildResolution } from "./resolve";
+import { buildTree } from "./tree";
+import { blockTriple, clocksBeneath, CONTINUOUS, fromRootInput, legend, multiRate, stepsOf, tripleKey, tripleOrder, wireTriple, type Triple } from "./rates";
 
 const cl = fixtureModel("closed_loop");
 const rates = fixtureModel("rates");
@@ -25,7 +28,7 @@ describe("tripleOrder", () => {
     const lib = fixtureModel("library");
     expect(tripleOrder(lib)).toEqual([[0, 1, 0], [0, 2, 0], [0, 2, 1], [2, 1, 0], [1, 1, 0]]);
     expect(texts(lib, "")).toEqual([
-      [0, "base grid"], [1, "base grid × 2"], [2, "base grid × 2, phase 1"], [3, "anchor 2 (1/50 s)"], [4, "anchor 1 (1/10 s)"],
+      [0, "base grid"], [1, "base grid × 2"], [2, "base grid × 2, phase 1"], [3, "anchor 2 (1/50 s)"], [4, "anchor 1 (1/10 s)"], [undefined, "continuous"],
     ]);
   });
 
@@ -33,7 +36,7 @@ describe("tripleOrder", () => {
     const k = fixtureModel("kinds");
     expect(tripleOrder(k)).toEqual([[0, 1, 0]]);
     expect(step(k, "s")).toBe(0);
-    expect(texts(k, "")).toEqual([[0, "base grid"]]);
+    expect(texts(k, "")).toEqual([[0, "base grid"], [undefined, "continuous"]]);
     expect(tripleOrder(fixtureModel("aircraft"))).toEqual([]);
     expect(tripleOrder(fixtureModel("containers"))).toEqual([]);
   });
@@ -51,33 +54,73 @@ describe("blockTriple and the badge", () => {
   });
 
   it("reads closed_loop's root legend as the base grid and the steps its wires carry, extra 9 among them", () => {
-    expect(legend(cl, "")[0]).toEqual({ triple: [0, 1, 0], step: 0, text: "base grid", title: "the base grid" });
-    expect(texts(cl, "")).toEqual([[0, "base grid"], ...[4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`])]);
+    expect(legend(cl, "")[0]).toEqual({ key: "0,1,0", triple: [0, 1, 0], step: 0, text: "base grid", title: "the base grid" });
+    expect(texts(cl, "")).toEqual([[0, "base grid"], ...[4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]), [undefined, "continuous"]]);
   });
 
   it("lists pid_controller's four controllers at steps 2 to 5 and selection's delays on its wires, the constant continuous", () => {
-    expect(texts(cl, "pid_controller")).toEqual([2, 3, 4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]));
+    expect(texts(cl, "pid_controller")).toEqual([...[2, 3, 4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]), [undefined, "continuous"]]);
     expect(blockTriple(cl, "pid_controller/free")).toBeUndefined();
   });
 
   it("numbers selection's extra command_δt 9 and actuators' two limiters 10 and 11", () => {
-    expect(texts(cl, "selection")).toEqual([4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]));
+    expect(texts(cl, "selection")).toEqual([...[4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]), [undefined, "continuous"]]);
     expect(step(cl, "selection/command_δt")! + 1).toBe(9);
     expect([step(cl, "actuators/δe_limiter")! + 1, step(cl, "actuators/δt_limiter")! + 1]).toEqual([10, 11]);
     expect(blockTriple(cl, "actuators/δe_lag")).toBeUndefined();
   });
 
   it("badges rates' fast with two clocks and not slow, its scope rows and wires giving each level its lines", () => {
-    expect(texts(rates, "")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"], [2, "anchor 2 (1/10 s)"]]);
+    expect(texts(rates, "")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"], [2, "anchor 2 (1/10 s)"], [undefined, "continuous"]]);
     expect(legend(rates, "")[0].title).toBe("fast at the root");
     expect([multiRate(rates, "fast"), multiRate(rates, "slow")]).toEqual([2, 0]);
-    expect(texts(rates, "fast")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"]]);
-    expect(texts(rates, "fast/outer")).toEqual([[1, "anchor 1 (1/50 s) × 2"]]);
+    expect(texts(rates, "fast")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"], [undefined, "continuous"]]);
+    expect(texts(rates, "fast/outer")).toEqual([[1, "anchor 1 (1/50 s) × 2"], [undefined, "continuous"]]);
   });
 
   it("takes the nearest ancestor's scope row for an assembly without one", () => {
     const m = { ...rates, structure: { ...rates.structure!, scopes: rates.structure!.scopes.filter((s) => s.path !== "fast/outer") } } as Model;
     expect(blockTriple(m, "fast/outer")).toEqual([1, 1, 0]);
+  });
+});
+
+describe("the continuous line", () => {
+  const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+  const id = { type: "T", signature: "T", parameters: [] };
+  /** An inline model: the root input `x` into a discrete leaf `D`, and `D` into the root output `y`; `C` a continuous leaf when asked. */
+  function inline(withContinuous: boolean): Model {
+    const structure: StructureSection = {
+      nodes: [
+        { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
+          wires: [{ from: { path: "", port: "x" }, to: { path: "D", port: "u" } }, { from: { path: "D", port: "v" }, to: { path: "", port: "y" } }] },
+        { ...id, path: "D", field: "D", class: "leaf", tier: "discrete", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("u")], outputs: [f("v")] },
+        ...(withContinuous ? [{ ...id, path: "C", field: "C", class: "leaf" as const, tier: "continuous" as const, timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [] }] : []),
+      ],
+      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+    };
+    const tree = buildTree(structure);
+    return { tree, structure, resolution: buildResolution(tree, structure) } as Model;
+  }
+
+  it("is absent when every block has a triple and every other wire leaves a root input", () => {
+    expect(texts(inline(false), "")).toEqual([[0, "base grid"]]);
+  });
+
+  it("comes last, unnumbered, for a continuous leaf on the level", () => {
+    expect(legend(inline(true), "").at(-1)).toEqual({ key: CONTINUOUS, text: "continuous", title: expect.stringMatching(/^No rate/) });
+    expect(texts(inline(true), "")).toEqual([[0, "base grid"], [undefined, "continuous"]]);
+  });
+
+  it("comes from a continuous producer's wires alone on rates' fast, fast/outer and slow, which draw no continuous block", () => {
+    for (const lv of ["fast", "fast/outer", "slow"]) {
+      expect(rates.tree!.children.get(lv)!.every((c) => blockTriple(rates, c)), lv).toBe(true);
+      expect(legend(rates, lv).at(-1)!.key, lv).toBe(CONTINUOUS);
+    }
+  });
+
+  it("shows on every level of closed_loop, as the oracle reads it, and on a primitive root", () => {
+    for (const lv of ["", "sensing", "pid_controller", "lqr_controller", "selection", "actuators"]) expect(legend(cl, lv).at(-1)!.key, lv).toBe(CONTINUOUS);
+    expect(texts(fixtureModel("primitive"), "")).toEqual([[undefined, "continuous"]]);
   });
 });
 

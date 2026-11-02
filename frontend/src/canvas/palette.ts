@@ -35,19 +35,21 @@ export const palette = {
   dash: "4 3",
 
   /**
-   * Rate mode's eight steps, fastest first: light fills for black text, no red, no amber, no blue near the
-   * highlight. Spread by a search so that every pair of fills and of strokes lies at least ΔE76 11 apart under
-   * normal vision and simulated deutan, protan and tritan vision, lightness carrying what hue cannot.
+   * Rate mode's eight steps, fastest first. Spread by a search so that every pair of fills and of strokes lies at
+   * least CIEDE2000 10 apart under normal vision and simulated deutan, protan and tritan vision, and as far from
+   * the continuous, extra and root-tag pairs and the wires' gray. Fills free in hue, light enough for black text
+   * (L* 72 and up); strokes, which tint the wires, dark enough for borders and clear of red, amber and the
+   * highlight's blue, each near its fill's hue.
    */
   rate: [
-    { fill: "#85d8b0", stroke: "#138c59" }, // green
-    { fill: "#f7aef5", stroke: "#ae6fb5" }, // pink violet
-    { fill: "#c0d385", stroke: "#648a41" }, // yellow green
-    { fill: "#00deff", stroke: "#0e4a53" }, // cyan, dark teal
-    { fill: "#ddc0d1", stroke: "#8c1878" }, // mauve, magenta
-    { fill: "#a7fec7", stroke: "#436256" }, // mint, gray green
-    { fill: "#bff8ab", stroke: "#374826" }, // pale green, dark olive
-    { fill: "#a1d69b", stroke: "#256c18" }, // green, dark green
+    { fill: "#c1b23d", stroke: "#709215" }, // mustard, green
+    { fill: "#f793ad", stroke: "#9c67f6" }, // pink, violet
+    { fill: "#fed665", stroke: "#2d4830" }, // yellow, dark green
+    { fill: "#41c4b0", stroke: "#2791a3" }, // teal, dark cyan
+    { fill: "#c0a0ff", stroke: "#4c3675" }, // violet, dark purple
+    { fill: "#a3c587", stroke: "#50674b" }, // sage, gray green
+    { fill: "#b7b6da", stroke: "#755074" }, // lavender, plum
+    { fill: "#f5eeb1", stroke: "#4c5512" }, // cream, olive
   ] as readonly Pair[],
   /** A block past the eighth step: a light neutral, its legend number in a badge. */
   extra: { fill: "#f2f2f2", stroke: "#8c8c8c" },
