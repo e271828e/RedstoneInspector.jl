@@ -36,17 +36,18 @@ export const palette = {
 
   /**
    * Rate mode's eight steps, fastest first: light fills for black text, no red, no amber, no blue near the
-   * highlight. A first pass from Paul Tol's light and muted qualitative schemes and Okabe–Ito.
+   * highlight. Spread by a search so that every pair of fills and of strokes lies at least ΔE76 11 apart under
+   * normal vision and simulated deutan, protan and tritan vision, lightness carrying what hue cannot.
    */
   rate: [
-    { fill: "#c9ecdf", stroke: "#2e8b6f" }, // mint, Tol light
-    { fill: "#ffdbe3", stroke: "#b8506a" }, // pink, Tol light
-    { fill: "#e7efb3", stroke: "#75831a" }, // pear, Tol light
-    { fill: "#ecd2e8", stroke: "#8e3a80" }, // purple, Tol muted
-    { fill: "#f8efc6", stroke: "#977f12" }, // light yellow, Tol light
-    { fill: "#d2f0f7", stroke: "#2a8296" }, // light cyan, Tol light, kept off the highlight's blue
-    { fill: "#e4e4a3", stroke: "#6b6b00" }, // olive, Tol light
-    { fill: "#f1d5e5", stroke: "#a04b7d" }, // reddish purple, Okabe–Ito
+    { fill: "#85d8b0", stroke: "#138c59" }, // green
+    { fill: "#f7aef5", stroke: "#ae6fb5" }, // pink violet
+    { fill: "#c0d385", stroke: "#648a41" }, // yellow green
+    { fill: "#00deff", stroke: "#0e4a53" }, // cyan, dark teal
+    { fill: "#ddc0d1", stroke: "#8c1878" }, // mauve, magenta
+    { fill: "#a7fec7", stroke: "#436256" }, // mint, gray green
+    { fill: "#bff8ab", stroke: "#374826" }, // pale green, dark olive
+    { fill: "#a1d69b", stroke: "#256c18" }, // green, dark green
   ] as readonly Pair[],
   /** A block past the eighth step: a light neutral, its legend number in a badge. */
   extra: { fill: "#f2f2f2", stroke: "#8c8c8c" },

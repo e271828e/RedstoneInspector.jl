@@ -50,24 +50,25 @@ describe("blockTriple and the badge", () => {
     expect(blockTriple(cl, "plant")).toBeUndefined();
   });
 
-  it("reads closed_loop's root legend as the base grid alone", () => {
-    expect(legend(cl, "")).toEqual([{ triple: [0, 1, 0], step: 0, text: "base grid", title: "the base grid" }]);
+  it("reads closed_loop's root legend as the base grid and the steps its wires carry, extra 9 among them", () => {
+    expect(legend(cl, "")[0]).toEqual({ triple: [0, 1, 0], step: 0, text: "base grid", title: "the base grid" });
+    expect(texts(cl, "")).toEqual([[0, "base grid"], ...[4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`])]);
   });
 
-  it("lists pid_controller's four controllers at steps 2 to 5, the constant continuous", () => {
-    expect(texts(cl, "pid_controller")).toEqual([2, 3, 4, 5].map((a) => [a, `anchor ${a} (1/50 s)`]));
+  it("lists pid_controller's four controllers at steps 2 to 5 and selection's delays on its wires, the constant continuous", () => {
+    expect(texts(cl, "pid_controller")).toEqual([2, 3, 4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]));
     expect(blockTriple(cl, "pid_controller/free")).toBeUndefined();
   });
 
   it("numbers selection's extra command_δt 9 and actuators' two limiters 10 and 11", () => {
-    expect(texts(cl, "selection")).toEqual([[7, "anchor 7 (1/50 s)"], [8, "anchor 8 (1/50 s)"]]);
+    expect(texts(cl, "selection")).toEqual([4, 5, 7, 8].map((a) => [a, `anchor ${a} (1/50 s)`]));
     expect(step(cl, "selection/command_δt")! + 1).toBe(9);
     expect([step(cl, "actuators/δe_limiter")! + 1, step(cl, "actuators/δt_limiter")! + 1]).toEqual([10, 11]);
     expect(blockTriple(cl, "actuators/δe_lag")).toBeUndefined();
   });
 
-  it("badges rates' fast with two clocks and not slow, its scope rows giving each level its lines", () => {
-    expect(texts(rates, "")).toEqual([[0, "anchor 1 (1/50 s)"], [2, "anchor 2 (1/10 s)"]]);
+  it("badges rates' fast with two clocks and not slow, its scope rows and wires giving each level its lines", () => {
+    expect(texts(rates, "")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"], [2, "anchor 2 (1/10 s)"]]);
     expect(legend(rates, "")[0].title).toBe("fast at the root");
     expect([multiRate(rates, "fast"), multiRate(rates, "slow")]).toEqual([2, 0]);
     expect(texts(rates, "fast")).toEqual([[0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"]]);

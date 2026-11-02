@@ -43,12 +43,14 @@ test("closed_loop: tier at load, r to rate mode with the base grid on every asse
   await expect(page.locator("text.badge")).toHaveCount(5);
   await expect(shape(page, "plant")).not.toHaveAttribute("data-step");
   await expect(badge(page, "plant")).toHaveCount(0);
-  await expect(legendLines(page)).toHaveCount(1);
+  // the base grid and the steps the wires' tints carry, the selection's delays' extra numbered #9
+  await expect(legendLines(page)).toHaveCount(5);
   await expect(page.locator('.legend li[data-step="0"]')).toHaveText("base grid");
+  await expect(page.locator(".legend li .number")).toHaveText(["#9"]);
   await shot(page, "closed_loop", "", "colors");
 });
 
-test("closed_loop: pid_controller's four steps and lines, actuators' extras and wires, the tree's dot, the mode kept across a reload", async ({ page }) => {
+test("closed_loop: pid_controller's four steps and six lines, actuators' extras and wires, the tree's dot, the mode kept across a reload", async ({ page }) => {
   await drop(page, "closed_loop");
   const gray = await wireStroke(page, "sensing|in|h");
   await press(page, "r");
@@ -62,8 +64,8 @@ test("closed_loop: pid_controller's four steps and lines, actuators' extras and 
     fills.add(await shape(page, id).getAttribute("fill"));
   }
   expect(fills.size).toBe(4);
-  await expect(legendLines(page)).toHaveCount(4);
-  for (const [i, a] of [2, 3, 4, 5].entries()) {
+  await expect(legendLines(page)).toHaveCount(6);
+  for (const [i, a] of [2, 3, 4, 5, 7, 8].entries()) {
     await expect(legendLines(page).nth(i)).toHaveAttribute("data-step", String(a));
     await expect(legendLines(page).nth(i).locator(".text")).toHaveText(`anchor ${a} (1/50 s)`);
   }
@@ -75,6 +77,14 @@ test("closed_loop: pid_controller's four steps and lines, actuators' extras and 
   const h = await colorsOf("pid_controller/h_ctl");
   expect(h.dot).toBe(h.stroke);
   await shot(page, "closed_loop", "pid_controller", "colors");
+  // an icon's color never follows the mode
+  const iconColor = () => page.locator("g.icon").first().evaluate((e) => getComputedStyle(e).color);
+  const inRate = await iconColor();
+  await press(page, "r");
+  await expect(svg(page)).toHaveAttribute("data-mode", "tier");
+  expect(await iconColor()).toBe(inRate);
+  await press(page, "r");
+  await expect(svg(page)).toHaveAttribute("data-mode", "rate");
 
   await page.locator('nav.breadcrumb a[data-path=""]').click();
   await openPath(page, "actuators");
@@ -110,7 +120,7 @@ test("rates: fast badged with two clocks, slow not, the legend's lines at the ro
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
   await expect(badge(page, "fast")).toHaveText("2 clocks");
   await expect(badge(page, "slow")).toHaveCount(0);
-  await expect(legendLines(page).locator(".text")).toHaveText(["anchor 1 (1/50 s)", "anchor 2 (1/10 s)"]);
+  await expect(legendLines(page).locator(".text")).toHaveText(["anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2", "anchor 2 (1/10 s)"]);
   await openPath(page, "fast");
   const inner = await shape(page, "fast/inner").getAttribute("data-step");
   const outer = await shape(page, "fast/outer").getAttribute("data-step");

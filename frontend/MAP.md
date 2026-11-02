@@ -310,9 +310,11 @@ Each file sits beside its module, loads fixtures by name through
   triples with `fast/outer` at `× 2`; `library`'s five, anchor 2 (1/50 s)
   before anchor 1 (1/10 s), with its `× 2` and `phase` lines; `kinds` one,
   `aircraft` and `containers` none; the five assemblies' badges on
-  `closed_loop`'s root and its one legend line `base grid`; `pid_controller`'s
-  four lines, steps 2 to 5; `selection`'s and `actuators`' lines and legend
-  numbers 9, 10, 11; `rates`' levels and a title; the nearest ancestor's scope
+  `closed_loop`'s root and its legend's five lines, `base grid` and the steps
+  4, 5, 7 and 8 its wires carry; `pid_controller`'s six lines, its
+  controllers' steps 2 to 5 and selection's delays' 7 and 8 on its wires;
+  `selection`'s four lines and `actuators`' legend numbers 9, 10, 11; `rates`'
+  levels, the root's three lines with `× 2` off `fast`'s wire, and a title; the nearest ancestor's scope
   on a copy without `fast/outer`'s row; `wireTriple` on a continuous producer,
   on `h_ctl`'s wire and from a root input.
 - `wires.test.ts`: `wireClass` over `kinds`' eleven faces and a vector of
@@ -455,14 +457,24 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   assembly gray with its double border; `rate` fills a child by its
   `blockTriple`'s step (`stepsOf`, the model's palette order), an extra past
   the eighth step with `extra`, no triple with the continuous pair, a closed
-  assembly with its scope's step and the double border in that stroke. In rate
+  assembly with its scope's step and the double border in that stroke. The
+  eight steps keep a distance rule: every pair of fills and every pair of
+  strokes lies at least ΔE76 about 10 apart under normal vision and under
+  Machado's simulated deutan, protan and tritan vision at full severity, the
+  fills light enough for black text, no fill or stroke within about 20° of hue
+  of `error` or `warning`, none a blue near the highlight; lightness varies
+  with hue, since hue alone cannot give eight such steps. No check pins a
+  value. In rate
   mode a child may carry one pill, `g.badge-pill`, straddling its top edge at
   the right (a `rect` in the background with the block's stroke and
   `text.badge`): `#<n>` for an extra, `n` its legend number, `<k> clock(s)` for
   an assembly whose discrete leaves do not all tick on its own clock
   (`multiRate`), both joined by ` · `, its `<title>` explaining. The legend, an
-  HTML `div.legend` in the viewport's bottom-left corner, lists the level's
-  triples in palette order, a `span.swatch` in the step's colors or a
+  HTML `div.legend` in the viewport's bottom-left corner, lists the triples
+  visible on the level in palette order: each drawn block's and each level
+  wire's `wireTriple`, so every tint a wire draws has its line, while a root
+  input's and a continuous producer's wires add none. Each line has a
+  `span.swatch` in the step's colors or a
   `span.number` `#<n>` for an extra, then the text (`base grid`, `anchor 2
   (1/50 s) × 2, phase 1`), the anchor's key and scope in the line's title;
   rate mode only, absent with no line.
@@ -470,7 +482,9 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   over the terminal producer's kind, and CSS draws it: `scalar` thin solid,
   `flag` dashed `4 3`, `vector` 3 wide, `opaque` dotted `1 3` in `wireLight`,
   `struct` 5 wide under a `path.wire-core` of the same `d` at 1.6 in the
-  background color, its arrowhead on the core. In tier mode a wire is `wire`
+  background color, its arrowhead on the core. The struct thus draws as a
+  double line, two bands round a background core, where answer 4 says a
+  triple line. In tier mode a wire is `wire`
   gray; in rate mode the `tint` of its terminal producer's step's stroke, the
   continuous stroke's tint with no triple, the gray from a root input
   (`fromRootInput`). Each wire color gets its own `marker` (`arrow-<i>`, in
@@ -1111,22 +1125,26 @@ the page's socket fails against `vite preview`, so every check but
   `data-mode="tier"`, `tier colors`, the tier button pressed, no legend and no
   `data-step`; `r` giving `rate`, `rate colors`, the rate button pressed, the
   five assemblies at step 0 with the badges `1 clock`, `4 clocks`, `1 clock`,
-  `2 clocks`, `2 clocks`, `plant` with no step and no badge, the legend's one
-  line `base grid`; the tier gray read off `sensing|in|h` before `r`, `V_ref`'s
-  two root wires keeping it in rate mode; `pid_controller` steps 2 to 5 in
-  order, four distinct fills, the legend's four lines; `h_ctl`'s tree dot
-  equal to its shape's computed stroke; `actuators`' limiters `extra` with
+  `2 clocks`, `2 clocks`, `plant` with no step and no badge, the legend's five
+  lines with `base grid` at step 0 and one `span.number` `#9`; the tier gray
+  read off `sensing|in|h` before `r`, `V_ref`'s two root wires keeping it in
+  rate mode; `pid_controller` steps 2 to 5 in order, four distinct fills, the
+  legend's six lines, steps 2 to 5, 7 and 8; `h_ctl`'s tree dot equal to its
+  shape's computed stroke; an icon's computed color the same after `r` and
+  back; `actuators`' limiters `extra` with
   `#10` and `#11`, one fill unlike the lags', the legend's `span.number`s, the
   lags with no step; the wires out of `δe_limiter` and `δe_lag` different,
   neither gray, the former unlike the limiter's stroke, each arrowhead's fill
   its wire's stroke; a reload and a drop keeping `rate`, the tier button back.
   On `rates` the switch clicked, `fast` `2 clocks`, `slow` none, the legend
-  `anchor 1 (1/50 s)` then `anchor 2 (1/10 s)`; `fast` opened, `inner` step 0
+  `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, `anchor 2 (1/10 s)`; `fast`
+  opened, `inner` step 0
   and `outer` step 1, the second line `anchor 1 (1/50 s) × 2`.
 - `wires.spec.ts` (grammar 4, 10, workspace 7): on `kinds` the ten wires by
   class 3, 3, 2, 1, 1, the struct's one core with the same `d`, after the wire,
   narrower, carrying the arrowhead; the flag dashed, the scalar not, the opaque
-  dotted unlike the flag, the vector wider; no label at load; `y` giving
+  dotted unlike the flag and in a lighter gray than a scalar's computed
+  stroke, the vector wider; no label at load; `y` giving
   `data-labels` and ten labels with `aria-pressed`, `nt|out|y` cut with `…`
   and titled whole, `i|out|y` reading `Int8`; `y` off; the button on; a reload
   keeping them; the button off. On `closed_loop`'s root 19 labels each within
@@ -1142,8 +1160,9 @@ the page's socket fails against `vite preview`, so every check but
   `Redstone.Blocks.SumJunction`, `sensing/noise` `noise`. On `kinds` five
   `constant`, `fn` `constant-opaque` through its `use`, `nt` whole or cut with
   its title whole, every Constant's text within `CONSTANT_WIDTH`, `mat` cut,
-  `i` `0`. On `descent` `stop` and its symbol. On `library` the oracle's 26
-  ids, 31 icons, `fn` none, `delay` `z⁻³`, every `use` with its symbol,
+  `i` `0`. On `descent` `stop` and its symbol. On `library`, its fit below a
+  floor, `+` pressed until `full` and no icon's computed `display` `none`,
+  then the oracle's 26 ids, 31 icons, `fn` none, `delay` `z⁻³`, every `use` with its symbol,
   `zoh_tf` at the rule's width and narrower than its display name would make
   it.
 - `regions.spec.ts` (grammar 5, workspace 2): on `containers` two regions in
@@ -1162,7 +1181,7 @@ the page's socket fails against `vite preview`, so every check but
   segments, display names and pins' names, `segments` hiding the display names
   too, `frames` the segments too with the `path.wire` and `rect.port` counts
   unchanged and shown; `0` back to `full`. On `sensing` the icons kept at
-  `no-faces` and hidden at `segments`.
+  `no-faces` and hidden at `segments` and at `frames`.
 - `network.spec.ts`: every request while loading, dropping `closed_loop` and
   opening `sensing` has the preview server's origin, and the page makes
   exactly one WebSocket attempt, to the preview server's host at `/ws`. The
@@ -1464,10 +1483,10 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
 - `large`'s root draws its two output pins in reverse declaration order. Only
   `forceNodeModelOrder` fixes it, at 663 to 699 crossings on `large`, so the
   order check was dropped.
-- The palette's near pairs (the headed look of stage 3): pear and olive (steps
-  2 and 6), pink, purple and reddish purple (1, 3, 7), light cyan (5) near the
-  continuous blue. Eight light hues without red, amber or blue is tight;
-  lightness or a pattern may have to carry part. The look pass's.
+- The rate palette's values (increment 6's review fix) came from a search
+  under the distance rule (see the color modes), which leaves only greens,
+  cyan and the violets to magentas; five of the eight steps are greens told
+  apart by lightness. The look pass retunes them within the rule.
 - The rate badge straddles the block's top edge at the right, since inside the
   corner it covered the segment on `closed_loop`'s root and answer 10 never cuts
   a user name; reserving its width in `sizeBlock` would make a block's size
@@ -1475,6 +1494,10 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   question.
 - The legend can sit over the drawing's bottom-left corner; the fit does not
   reserve it.
+- A root whose fit scale falls below a floor loads without its names:
+  `library` fits at about 0.36, at `segments`, so no display name or icon
+  shows until a zoom in, and `large` fits below the first floor. The look pass
+  settles the floors or the fit.
 - On `kinds` the wires are short, so most type labels run across the output pin
   they lead to, and `Symbo…` is partly covered by the block drawn after it.
 - `CONSTANT_WIDTH` at 60 px cuts `kinds`' `a=1.0, b=2.0` (64 px on a Mac) to

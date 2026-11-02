@@ -55,6 +55,11 @@ test("kinds: one wire of every class, each drawn by its kind; the type labels by
   const opaqueDash = await style(page, 'path.wire[data-kind="opaque"]', "stroke-dasharray");
   expect(opaqueDash).not.toBe("none");
   expect(opaqueDash).not.toBe(await style(page, 'path.wire[data-kind="flag"]', "stroke-dasharray"));
+  // the opaque wire's gray is lighter than a scalar's
+  const channels = (c: string) => c.match(/[\d.]+/g)!.slice(0, 3).map(Number).reduce((a, b) => a + b, 0);
+  const opaqueStroke = await style(page, 'path.wire[data-kind="opaque"]', "stroke"), scalarStroke = await style(page, 'path.wire[data-kind="scalar"]', "stroke");
+  expect(opaqueStroke).not.toBe(scalarStroke);
+  expect(channels(opaqueStroke)).toBeGreaterThan(channels(scalarStroke));
   expect(parseFloat(await style(page, 'path.wire[data-kind="vector"]', "stroke-width")))
     .toBeGreaterThan(parseFloat(await style(page, 'path.wire[data-kind="scalar"]', "stroke-width")));
 

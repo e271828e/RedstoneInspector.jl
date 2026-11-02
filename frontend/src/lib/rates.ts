@@ -1,7 +1,7 @@
 // Rate mode's data (visual_grammar.md answer 6): each drawn block's timing
 // triple, the model's palette order, a level's legend and the multi-rate badge.
 import type { Node } from "./descriptor";
-import { producerFace, type LevelWire } from "./level";
+import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
 import { terminalProducer } from "./resolve";
 
@@ -99,11 +99,15 @@ function drawnPaths(model: Model, level: string): string[] {
   return n.class === "leaf" ? [level] : model.tree!.children.get(level)!;
 }
 
-/** The triples visible on a level, each drawn block's, in palette order. */
+/** The triples visible on a level, each drawn block's and each wire's tint, in palette order. */
 export function legend(model: Model, level: string, steps = stepsOf(model)): LegendLine[] {
   const visible = new Map<string, Triple>();
   for (const p of drawnPaths(model, level)) {
     const t = blockTriple(model, p);
+    if (t) visible.set(tripleKey(t), t);
+  }
+  for (const w of levelOf(model.tree!, model.resolution!, level).wires) {
+    const t = wireTriple(model, level, w);
     if (t) visible.set(tripleKey(t), t);
   }
   return [...visible.values()]

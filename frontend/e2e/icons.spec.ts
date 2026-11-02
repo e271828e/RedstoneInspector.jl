@@ -2,7 +2,7 @@
 // in place of the display name, keyed on the alias, then the type; the icon's
 // fixed width in the sizing rule. Ids from the oracle (`grammar.py`).
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, openPath, shot } from "./fixtures";
+import { drop, expect, fixtureText, openPath, press, shot } from "./fixtures";
 import { CONSTANT_WIDTH, FACE_FONT, GUTTER, ICON_WIDTH, MARK, MIN_WIDTH, NAME_FONT, PAD, SEGMENT_FONT, DISPLAY_NAME_WIDTH } from "../src/canvas/size";
 
 type Face = { name: string; pinned: boolean };
@@ -92,6 +92,11 @@ const LIBRARY_IDS = [
 
 test("library: every roster id drawn, Delay's K from its signature, a long display name's width given up", async ({ page }) => {
   await drop(page, "library");
+  // the root fits below a floor, so the icons show only zoomed in to the full detail
+  const svg = page.locator("svg.canvas");
+  for (let i = 0; i < 20 && (await svg.getAttribute("data-detail")) !== "full"; i++) await press(page, "+");
+  await expect(svg).toHaveAttribute("data-detail", "full");
+  expect(await page.locator("g.icon").evaluateAll((es) => es.filter((e) => getComputedStyle(e).display === "none").length)).toBe(0);
   for (const id of LIBRARY_IDS) await expect(page.locator(`g.icon[data-icon="${id}"]`), id).not.toHaveCount(0);
   await expect(page.locator("g.icon")).toHaveCount(31);
   await expect(icon(page, "fn")).toHaveCount(0);

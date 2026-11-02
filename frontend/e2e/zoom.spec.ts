@@ -57,12 +57,15 @@ test("closed_loop: the three floors drop the face names, then the display names 
   await allShown(page, "text.face");
 });
 
-test("closed_loop's sensing: the icons drop with the display names", async ({ page }) => {
+test("closed_loop's sensing: the icons drop with the display names and stay dropped at frames", async ({ page }) => {
   await drop(page, "closed_loop");
   await openPath(page, "sensing");
   await allShown(page, "g.icon");
   await zoomBelow(page, FLOOR_FACES);
   await allShown(page, "g.icon");
   await zoomBelow(page, FLOOR_NAMES);
+  await allHidden(page, "g.icon");
+  await zoomBelow(page, FLOOR_SEGMENTS);
+  await expect(svg(page)).toHaveAttribute("data-detail", "frames");
   await allHidden(page, "g.icon");
 });
