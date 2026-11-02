@@ -7,7 +7,11 @@ the frame around the canvas; increment 5 the interaction (the view and layout
 kept per level, the hash, the keyboard, focus, the drag, the rekeying on a push,
 search) and the live tab's socket client, then its look pass (the Shift row, `z`,
 `n` and `N`, the tree's keys, the ring for the keyboard only, draggable pins, the
-view kept only for an unchanged level, the leave prompt, the labelled facts).
+view kept only for an unchanged level, the leave prompt, the labelled facts);
+increment 6 the visual grammar's finish (the two color modes with the badges
+and the legend, wire styles by kind with the trunks' dots and the type labels,
+the library icons, the regions, the three text levels, an ELK tuning pass) and
+Firefox as a second, non-blocking browser project.
 
 ## Layout
 
@@ -25,42 +29,48 @@ view kept only for an unchanged level, the leave prompt, the labelled facts).
 | `src/lib/tree.ts` | the parent rule, segments, memberships, `displayName`, `buildTree` |
 | `src/lib/resolve.ts` | faces, the resolution, terminal producers and consumers, `faceInfo`, face routes |
 | `src/lib/feedthrough.ts` | the feedthrough edges, as the core's `_feedthrough` |
-| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes; `parsePortId` |
+| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes and the level's regions, `REGION_PADDING`, `regionNodeId`; `parsePortId`, `producerFace` |
 | `src/lib/view.ts` | the viewport math: `fitView`, `zoomAt`, `pan`, `centreOn`, `viewRect`, `toWorld` |
 | `src/lib/model.ts` | `loadModel`: everything above, built once |
 | `src/lib/outline.ts` | the tree pane's rows: `outlineRows`, `allRows`, `defaultExpansion`, `folderOf`, `ancestors`; `rowSelection`, what a row's click selects; `treeStep`, the tree's `h j k l` |
-| `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, `timingPhrase`, `ratePhrase`, `classPhrase`, `memberTitle`, `FACT_TITLES`, `detailOf`; the `Selection` type; `faceSelection` |
+| `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, `timingPhrase`, `ratePhrase`, `classPhrase`, `memberTitle`, `FACT_TITLES`, `detailOf`; the level's line `levelLine` and its `count`; the `Selection` type; `faceSelection` |
 | `src/lib/navigate.ts` | the keyboard's cursor: `nearest` by quadrant and center distance, `follow`'s least pan |
 | `src/lib/search.ts` | `parseQuery`, `searchModel` with its matched ranges and `CAP`, `marked`, `beneath`, `levelHits`; `hitSelection`, what picking a hit selects; `stepHit`, `n` and `N` |
 | `src/lib/rekey.ts` | the push: `rekey` of the per-tab state against a new model, `isLevel`, `fallback`, `sameBlocks` |
+| `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `tripleText`, `tripleTitle`, `legend`, `clocksBeneath`, `multiRate`, `fromRootInput`, `wireTriple` |
+| `src/lib/wires.ts` | the wire classes: `wireClass`, `levelWireClasses`, `labelledPorts`, `fanouts` |
+| `src/lib/icons.ts` | the library icons: `iconOf`, the roster keyed on the alias, then the type, `Delay`'s `K` from its signature, a `Constant`'s value |
+| `src/lib/regions.ts` | a level's keyed containers, `regionsOf`, and a child's canvas label, `label` |
 | `src/lib/protocol.ts` | the live session's messages: `helloMessage`, `openLocationMessage`, `classifyFrame`, `backoff`, `downloadName` |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
-| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `cutName` |
-| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes and routes; `LevelLayout`, the session's record of a level's geometry |
-| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires |
-| `src/canvas/palette.ts` | the placeholder colors, the canvas's and the frame's, the only file naming one, for increment 6 to replace; the search's `dim` opacity and `dash` array |
-| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, the view and the layout the session holds, opening, the selection it is given, hover, the drag, the search hits; the handle the shell's keys call |
+| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `cutName`, `cutType`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `TYPE_LABEL_WIDTH`; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
+| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates; `LevelLayout`, the session's record of a level's geometry |
+| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
+| `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, `extra`, `error` and `warning` (increment 7's), `wireLight`, `tint`; the search's `dim` opacity and `dash` array |
+| `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text |
+| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges and legend, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag, the search hits; the handle the shell's keys call |
 | `src/state/session.svelte.ts` | the per-tab state: the model, the open level and its hash, the history depth, the views and layouts per level, the selection, the expansion, the query, the drawer, the focused region, the fallback note; `load`'s rekeying; `back` and `forward` |
 | `src/state/live.svelte.ts` | the live connection's state, the raw descriptor text last received, the reconnect count; set only by the socket |
 | `src/live/socket.ts` | the one module touching `WebSocket`: `connect`, `sendOpenLocation` |
-| `src/state/prefs.svelte.ts` | the per-browser state: the splitters and the collapsed side panes, `parsePrefs` |
+| `src/state/prefs.svelte.ts` | the per-browser state: the splitters, the collapsed side panes, the color mode and the type labels, `parsePrefs`, `setMode`, `toggleLabels` |
 | `src/frame/Frame.svelte` | the grid: where the panes sit, the three splitters, the two collapse buttons |
-| `src/frame/Tree.svelte` | the model tree over `outlineRows`, the search's markers and counts, the search field at its top |
+| `src/frame/Tree.svelte` | the model tree over `outlineRows`, its dots in the color mode, the search's markers and counts, the search field at its top |
 | `src/frame/Search.svelte` | the search field, the clear button, the results list with its keys |
-| `src/frame/Breadcrumb.svelte` | the open level's path as links, the open control |
+| `src/frame/Breadcrumb.svelte` | the open level's path as links, the open control; at the right end the color mode's switch and the type labels' toggle |
 | `src/frame/Detail.svelte` | the detail pane: one layout per element kind over `detail.ts`, a node's facts as a labelled list |
 | `src/frame/Drawer.svelte` | the drawer's tab strip with its counts, placeholder bodies |
-| `src/frame/StatusBar.svelte` | the kind word, the model's totals, the loader's note, the fallback note, the connection's state, the download |
+| `src/frame/StatusBar.svelte` | the kind word, the model's totals, the color mode's word, the loader's note, the fallback note, the connection's state, the download |
 | `src/frame/Landing.svelte` | the privacy statement, the open control, the drop hint, a refusal |
-| `playwright.config.ts` | the browser checks' runner: Chromium, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, and `live`, the mock socket |
+| `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
 no DOM, no stores, nothing measured. DOM-touching code lives under
 `src/canvas/` and `src/frame/`: `size.ts` measures text, `Canvas.svelte` draws
 the level, the frame's components draw the panes; `layout.ts` is DOM-free but
-async and bound to ELK, `router.ts` DOM-free and synchronous. `src/live/socket.ts`
+async and bound to ELK, `router.ts` DOM-free and synchronous, `glyphs.ts` and
+`palette.ts` data. `src/live/socket.ts`
 alone touches `WebSocket`. The stores live under `src/state/`, Svelte runes in
 `.svelte.ts` modules; `prefs.svelte.ts` alone touches local storage, and its
 `parsePrefs` is pure; `session.svelte.ts` alone touches `history` and writes
@@ -95,11 +105,13 @@ them to the stores. The code imports the generated types by name from
   world rectangle the SVG shows, its `viewBox` (`viewRect`). `zoomAt` and `pan`
   take screen pixels relative to the SVG.
 - A **target** is what a click selects, `{kind, id}`: a block or pin by block
-  id, a wire by wire id, a port square by port id. `Canvas.svelte` exports the
-  type from its module script.
-- A **selection** is `{level, target}`, the target grown by the kind `folder`
-  (`Selected` in `detail.ts`); the level is where it was made, since pin and
-  wire ids repeat across levels. The canvas draws it only on that level.
+  id, a wire by wire id, a port square by port id, a canvas region by its
+  folder's path (kind `folder`). `Canvas.svelte` exports the type from its
+  module script.
+- A **selection** is `{level, target}` (`Selected` in `detail.ts`); the level
+  is where it was made, since pin and wire ids repeat across levels, a folder's
+  its parent's. The canvas draws it only on that level, a folder as its
+  region's halo.
 - A **row** is the tree's: a node or a **folder**, `{kind, path, parent, depth,
   label, segment, displayName, class, expandable}`. A folder row stands for a
   keyed container's field: its path is `parent/field`, the field alone under the
@@ -113,7 +125,13 @@ them to the stores. The code imports the generated types by name from
   face hit; a closed assembly is **under** when it is not a hit and has marked
   nodes beneath it.
 - A **region** is one of the four keyboard stops: `tree`, `canvas`, `detail`,
-  `drawer`, each rooted at one focusable element.
+  `drawer`, each rooted at one focusable element. A **canvas region**
+  (`Region` in `regions.ts`) is a keyed container's frame on the canvas,
+  `{path, field, members}`, the path its folder's; the text says which.
+- A **triple** is a timing `[anchor, m, c]`; a model's triples in palette
+  order give each a **step**, 0 to 7 colored, 8 on an **extra**. A wire's
+  **class** is `scalar`, `flag`, `vector`, `struct` or `opaque`, from its
+  terminal producer's kind, the outer kind winning.
 
 ## Built once on load
 
@@ -195,19 +213,23 @@ The three lifetimes of `workspace.md` answer 9.
   `src/live/socket.ts` sets them.
 - **Per browser, in local storage** (`prefs.svelte.ts`): one key,
   `redstone-inspector/prefs`, holding `{version: 1, sizes: {tree, detail,
-  drawer}, collapsed: {tree, detail}}`, read once at load through `parsePrefs`,
-  which gives the defaults (280, 360, 200, nothing collapsed) on a missing,
-  malformed or other-version entry and clamps a size to its bounds (tree 160 to
-  640, detail 240 to 800, drawer 80 to 640); written on every change, each move
-  of a drag included. The prefs are never rekeyed.
+  drawer}, collapsed: {tree, detail}, mode, labels}`, read once at load through
+  `parsePrefs`, which gives the defaults (280, 360, 200, nothing collapsed,
+  `mode` `"tier"`, `labels` false) on a missing, malformed or other-version
+  entry, keeps the default for a missing or mistyped field, so the two fields
+  increment 6 added needed no version bump, and clamps a size to its bounds
+  (tree 160 to 640, detail 240 to 800, drawer 80 to 640); written on every
+  change, each move of a drag included. `setMode(mode)` and `toggleLabels()`
+  change the color mode and the type labels (workspace.md answers 7 and 9);
+  both survive a push and a reload. The prefs are never rekeyed.
 
 ## The tests
 
 Each file sits beside its module, loads fixtures by name through
 `fixtures.ts` and pins:
 
-- `fixtures.test.ts`: ajv at default strictness over all eleven fixtures,
-  one test per file; on the ten structures, every wire endpoint names a node
+- `fixtures.test.ts`: ajv at default strictness over all twelve fixtures,
+  one test per file; on the eleven structures, every wire endpoint names a node
   or the level's own path and a face it declares, every node type has a
   `types` row, and the consumer endpoint is unique within each level.
 - `loader.test.ts`: every fixture loads; the label order (envelope `name`,
@@ -239,7 +261,11 @@ Each file sits beside its module, loads fixtures by name through
   with sides, edges port to port, the root options with components packed in
   model order and cycles broken greedily with model order as the tie-break;
   on `containers`' root the `in` and `out` pins' layer constraints and every
-  port's side.
+  port's side. With regions: `containers`' root nesting `gains/a`, `gains/b`
+  and `pair/1` in `region:gains` and `region:pair` at their first member's
+  place, the padding option and `INCLUDE_CHILDREN` on the root;
+  `closed_loop`'s root, with no region, equal to the two-argument graph, its
+  options pinned whole and its children flat.
 - `model.test.ts`: the model's fields, and a structureless failure's left
   undefined.
 - `view.test.ts`: `zoomAt` keeps the world point under the pointer to within
@@ -276,7 +302,36 @@ Each file sits beside its module, loads fixtures by name through
   `pid_controller/q_ctl` "every tick of q_ctl, 1/50 s" with the full timing as
   its title, `kinds`' discrete leaf at anchor 0 "every base tick"; `plant`, a
   continuous leaf, with no rate and the class "leaf, continuous"; the member
-  title naming transparent and keyed.
+  title naming transparent and keyed. `levelLine` in the singular on an inline
+  one-wire structure (`open level · 1 child · 1 wire`) and the plural on
+  `rates`' `fast` (`2 children · 4 wires`).
+- `rates.test.ts`, from the oracle (`grammar.py`): `closed_loop`'s 11 triples
+  in palette order, the base grid first, anchors 8 to 10 extra; `rates`' three
+  triples with `fast/outer` at `× 2`; `library`'s five, anchor 2 (1/50 s)
+  before anchor 1 (1/10 s), with its `× 2` and `phase` lines; `kinds` one,
+  `aircraft` and `containers` none; the five assemblies' badges on
+  `closed_loop`'s root and its one legend line `base grid`; `pid_controller`'s
+  four lines, steps 2 to 5; `selection`'s and `actuators`' lines and legend
+  numbers 9, 10, 11; `rates`' levels and a title; the nearest ancestor's scope
+  on a copy without `fast/outer`'s row; `wireTriple` on a continuous producer,
+  on `h_ctl`'s wire and from a root input.
+- `wires.test.ts`: `wireClass` over `kinds`' eleven faces and a vector of
+  structs; `closed_loop`'s root 27 scalar and 3 flag, `lqr_controller` 13, 1
+  and 7 vector; `descent`'s one flag wire and the `StopFlag` face's class;
+  `kinds`' root 3, 3, 2, 1, 1; 19 and 20 labelled ports, `mode`'s label `Bool`
+  on its first wire, a label typed through `sensing`'s face; ten fan-outs at the
+  root, `mode` 3, none on `kinds`.
+- `icons.test.ts`: all 31 roster keys on inline nodes, their ids and kinds, the
+  text icons' texts; `sensing/altimeter` `sum` by alias over the type
+  `Junction`, `lqr_controller/engaged`, `plant`, `Group`, a user `Pack` and
+  `library`'s `fn` none; `state_pack` `pack`; the Constants `0`,
+  `Int8[0, 0]`, `a=1.0, b=2.0` and `kinds`' `fn` `constant-opaque`; `Delay`'s
+  `K` from `{3, Float64}`, `{Float64, 12}`, a nested parameter, none for a
+  symbol `K`, and `library`'s `z⁻³`; `descent`'s `stop`.
+- `regions.test.ts`: `containers`' root, `gains` with `a` and `b`, `pair` with
+  `1`, the labels `a`, `b`, `1`, `s1`, `s2`, `scale`; `closed_loop`'s root
+  none; an inline keyed container under `ctl` giving `ctl/loops`, a transparent
+  member labelled by its segment and in no region.
 - `level.test.ts` also: `parsePortId` reads a child's port id and a pin's back.
 - `navigate.test.ts`: on a three-by-three grid of boxes at 100 px pitch, from
   the center `l`, `h`, `j`, `k` give the four neighbors and never a diagonal;
@@ -327,7 +382,15 @@ Each file sits beside its module, loads fixtures by name through
   midpoint, backward in six running 12 below the taller box; `rerouteTouching`
   on `descent`'s root with `plant` moved 200 down changing `plant`'s three wires
   (`gear|in|h`, `plant|in|δe`, `plant|in|δt`), each ending on its consumer's
-  port, and keeping `stop|in|u` the same array.
+  port, and keeping `stop|in|u` the same array; on `closed_loop`'s root `plant`
+  moved 200 down dropping its wires' junction points and keeping every other
+  wire's array.
+- `src/canvas/layout.test.ts`: `containers`' root laid out with its regions,
+  each region box exactly its members' union grown by the padding, every route
+  starting and ending on its ports in the level's coordinates (the one inside
+  `gains` included); a level with no region keeping no region box.
+- `src/canvas/size.test.ts`: `detailAt` at and either side of each floor, the
+  floors in order.
 - `src/state/session.test.ts`: `load` keeps the drawer closed on a build whose
   body carries one warning and no diagnostic, the count 1, and opens it on
   `diagnostics` for `failure_cycle`'s one diagnostic; a replacement rekeys
@@ -337,8 +400,9 @@ Each file sits beside its module, loads fixtures by name through
   `escape` clears the query, then the selection; `hashOf` and `levelOfHash`,
   the root without a hash, `#level=` and other hashes naming none.
 - `src/state/prefs.test.ts`: `parsePrefs` gives the defaults on `null`, garbage,
-  another version and a missing version; reads a stored object back; keeps the
-  defaults for mistyped fields; clamps an out-of-range size.
+  another version and a missing version; reads a stored object back, `mode`
+  `rate` and `labels` true included; keeps the defaults for mistyped fields, a
+  `mode` of `rates` among them; clamps an out-of-range size.
 
 The ten mutants of increment 2's brief each turn at least one test red.
 Increment 5's brief aims its unit mutants at these tests: `rekey` falling to
@@ -348,15 +412,21 @@ backoff fixed at 1 s. The look pass's unit mutants: a prefix-only term kept
 (`search.test`), `stepHit` clamping instead of wrapping and walking `rows`
 (`search.test`), `h` on a leaf doing nothing (`outline.test`), a view kept on a
 changed level (`rekey.test`), a rate on a continuous leaf (`detail.test`).
+Increment 6's unit mutants: `wireClass` reading a vector's element
+(`wires.test`), `INCLUDE_CHILDREN` on every level (`level.test`), the palette
+order by anchor index before period and anchor 0 not first (`rates.test`, on
+`rates` and `library`), the assembly taking its first leaf's triple
+(`rates.test`), `Delay`'s `K` ignored (`icons.test`), the dropped container
+translation (`layout.test`), the thresholds swapped (`size.test`).
 
 ## The canvas
 
-`Canvas.svelte` takes `model`, `path`, `selected`, `view`, `layout`, `hits`
-and `focused`, and calls `onopen(path)`, `onselect(target)` (`undefined` for a
+`Canvas.svelte` takes `model`, `path`, `mode`, `labels`, `selected`, `view`,
+`layout`, `hits` and `focused`, and calls `onopen(path)`, `onselect(target)` (`undefined` for a
 background click), `onview(view)` and `onlayout(geometry, dragged)`. The caller
 decides what a click selects and passes back the target to draw, only when the
 selection was made on the drawn level. On each `path` it builds the level and
-sizes it; when the session holds a layout for the level that is not `stale`,
+sizes it, with its regions (`regionsOf`); when the session holds a layout for the level that is not `stale`,
 it draws that geometry at once, so `data-ready` never goes absent and no ELK
 run happens; otherwise it clears `data-ready`, runs ELK, puts a stale layout's
 dragged blocks back at their dragged places with their wires re-routed
@@ -365,17 +435,82 @@ then restores the session's view for the level, or fits. `view` and `layout`
 are read with `untrack`, only when a level is drawn. The hover is cleared, the
 selection left to the caller. The shell keys the canvas on the model
 (`{#key model}`), so each model gets a fresh one. It draws, bottom
-to top, the casings, the wires, then the blocks and pins with their ports and
-halos, so a halo or casing composes as answer 9 orders it.
+to top, the regions, the casings, the wires with the struct cores, the trunks'
+dots, the type labels, then the blocks and pins with their ports and halos, so
+a halo or casing composes as answer 9 orders it. `<defs>` holds one arrowhead
+marker per wire color on the level and one `<symbol>` per glyph icon.
 
 - **Sizes** (`size.ts`): the segment `600 12px`, face names `11px`, the display
-  name `11px` in the lighter color, a pin's label `12px`, all in one system
-  sans stack. The display name is cut with an ellipsis at **120 px**
-  (`DISPLAY_NAME_WIDTH`), its qualified form in the block's hover title. A
-  child's width fits its segment, its cut display name and, row by row, an
-  input name and the output name beside it with a pinned mark's 8 px; header
-  36, row 16, foot 6. A pin is 22 high; a root tag adds its 9 px point and a
-  9 px empty slot at its outer end.
+  name `11px` in the lighter color, a pin's label `12px`, a type label `10px`,
+  the badge `9px`, all in one system sans stack. The display name is cut with an
+  ellipsis at **120 px** (`DISPLAY_NAME_WIDTH`), its qualified form in the
+  block's hover title. A child's width fits its first line (`label`: a keyed
+  member's key, else its segment), its second line and, row by row, an input
+  name and the output name beside it with a pinned mark's 8 px; header 36, row
+  16, foot 6; at least 60. The second line's term is the cut display name, or,
+  with an icon, `ICON_WIDTH` (44 px), a `Constant`'s text cut at
+  `CONSTANT_WIDTH` (60 px) when wider (`iconWidth`). A pin is 22 high; a root
+  tag adds its 9 px point and a 9 px empty slot at its outer end.
+- **The color modes** (answer 6). `mode` `tier` fills a child by its tier, an
+  assembly gray with its double border; `rate` fills a child by its
+  `blockTriple`'s step (`stepsOf`, the model's palette order), an extra past
+  the eighth step with `extra`, no triple with the continuous pair, a closed
+  assembly with its scope's step and the double border in that stroke. In rate
+  mode a child may carry one pill, `g.badge-pill`, straddling its top edge at
+  the right (a `rect` in the background with the block's stroke and
+  `text.badge`): `#<n>` for an extra, `n` its legend number, `<k> clock(s)` for
+  an assembly whose discrete leaves do not all tick on its own clock
+  (`multiRate`), both joined by ` · `, its `<title>` explaining. The legend, an
+  HTML `div.legend` in the viewport's bottom-left corner, lists the level's
+  triples in palette order, a `span.swatch` in the step's colors or a
+  `span.number` `#<n>` for an extra, then the text (`base grid`, `anchor 2
+  (1/50 s) × 2, phase 1`), the anchor's key and scope in the line's title;
+  rate mode only, absent with no line.
+- **Wires** (answer 4). Each `path.wire` carries its class, `levelWireClasses`
+  over the terminal producer's kind, and CSS draws it: `scalar` thin solid,
+  `flag` dashed `4 3`, `vector` 3 wide, `opaque` dotted `1 3` in `wireLight`,
+  `struct` 5 wide under a `path.wire-core` of the same `d` at 1.6 in the
+  background color, its arrowhead on the core. In tier mode a wire is `wire`
+  gray; in rate mode the `tint` of its terminal producer's step's stroke, the
+  continuous stroke's tint with no triple, the gray from a root input
+  (`fromRootInput`). Each wire color gets its own `marker` (`arrow-<i>`, in
+  user units so a thick wire's head keeps a thin one's size).
+- **Trunks.** ELK routes the wires leaving one port as a shared trunk and
+  reports each split as an edge's `junctionPoints`; `layoutLevel` keeps them as
+  `Geometry.junctions` by wire id and the canvas draws a `circle.junction` of
+  radius 2.5 in the wire's color at each. `rerouteTouching` drops the junction
+  points of the wires it re-routes, so a dragged block's wires lose their dots.
+- **Type labels.** With `labels` on, one `text.type-label` per producer port
+  with a wire on the level (`labelledPorts`), 6 px along its first wire's first
+  segment and 3 px above it, `cutType` at `TYPE_LABEL_WIDTH` (140 px), the whole
+  type in its `<title>`; `labels` off draws none.
+- **Regions** (answer 5). `regionsOf` gives the level's keyed containers;
+  `elkGraph` nests each one's members in a compound node `region:<path>` with
+  the padding 28, 12, 12, 12 and sets `elk.hierarchyHandling:
+  INCLUDE_CHILDREN`, only on a level with a region, so every other level's
+  graph is the flat one. `layoutLevel` translates a member's box by its
+  region's position and each edge's points and junction points by its
+  `container`'s, and keeps ELK's region boxes as `Geometry.regions`. The canvas
+  draws each region's frame from its members' current boxes grown by the
+  padding (`frames`), so a dragged member carries the frame, equal to ELK's box
+  until a drag: a `g.region` before everything else, a dashed `rect.shape` with
+  `rx` 6, a `rect.halo`, `text.caption` with the field. The frame's stroke, its
+  invisible 5 px halo band and the caption take a click, which selects the
+  folder; the interior passes clicks through. A keyed member's first line reads
+  its key. The fit covers the frames; `centre` on a folder centres its frame.
+- **Icons** (answer 7). A child whose `iconOf` gives an icon draws `g.icon` in
+  place of `text.display` at the second line's place: a text icon in the
+  display name's font (a `Constant`'s value cut by `cutConstant`; another text
+  wider than `ICON_WIDTH` squeezed to it with `textLength`), or a glyph as a
+  `<use>` of `#icon-<id>`, 12 high, in the text color. The icon's `<title>` is
+  the display name, a `Constant`'s with its whole value, and the icon takes the
+  hover (`pointer-events: bounding-box`); the block's title stays the path and
+  the qualified name.
+- **Text levels** (answer 10). `svg.canvas[data-detail]` is `detailAt(view.scale)`:
+  `full` from 0.6, `no-faces` from 0.4, `segments` from 0.25, `frames` below.
+  CSS hides the face names (`text.face`) below `full`, the display names and
+  icons from `segments`, the segments at `frames`; wires, ports, pins' names,
+  captions, badges and type labels stay.
 - **The view**: the fit leaves 24 screen pixels clear and stops at scale 2, so a
   small level is not blown up, and covers the union of the layout's extent and
   every box, so a block dragged outside is fitted too; the wheel zooms by
@@ -409,7 +544,7 @@ halos, so a halo or casing composes as answer 9 orders it.
   children's face hits. While `hits` is defined `svg.canvas` carries
   `searching`; a hit's halo and a hit port's halo are `dashed` unless that
   element is selected, whose halo stays solid. CSS dims to `--dim` (the
-  palette's 0.3) the wires and every child of a non-hit block except its halos
+  palette's 0.3) the wires with their cores, dots and type labels, and every child of a non-hit block, its badge included, except its halos
   and its hit ports, so a hit port in a dimmed block stays opaque.
 - **Selection** lives in the session; a background click reports `undefined`,
   and the shell's Escape clears it. The keys are the shell's.
@@ -443,6 +578,27 @@ halos, so a halo or casing composes as answer 9 orders it.
   with `dashed`.
 - `g.blocks` holds the `g.block` children; the most recently dragged block is
   its last child.
+- `svg.canvas[data-mode="tier" | "rate"]`, `[data-labels]` while the labels
+  show, `[data-detail="full" | "no-faces" | "segments" | "frames"]`.
+- `g.block .shape[data-step]` in rate mode, the step index, absent on a block
+  with the continuous color; `g.block.extra` past the eighth step;
+  `g.badge-pill text.badge` reading `#<n>`, `<k> clocks` or both joined by
+  ` · `.
+- `path.wire[data-kind="scalar" | "flag" | "vector" | "struct" | "opaque"]`;
+  `path.wire-core[data-wire]` over every struct wire; `circle.junction
+  [data-wire]` at each junction point; `text.type-label[data-port]`, the
+  producer port's id, with a `<title>` holding the whole type, present only
+  while `data-labels`.
+- `g.regions` first in the svg, holding `g.region[data-path]` with `rect.halo`,
+  `rect.shape` and `text.caption`, `selected` when the selection is that
+  folder; a keyed member's `g.block[data-region]` names its region; its
+  `text.segment` reads the key.
+- `g.block g.icon[data-icon]` in place of `text.display` on a block with an
+  icon, holding a `text` or a `use[href="#icon-<id>"]`; `symbol#icon-<id>` in
+  `<defs>` for every glyph.
+- `text.face` for a face name.
+- `div.legend` in `.viewport`, holding `li[data-step]` with `span.swatch` or
+  `span.number`, then `span.text`.
 
 ## The frame
 
@@ -457,7 +613,10 @@ landing has a status bar under it holding the connection alone, while the
 connection is `connected` or `lost`; the hosted copy's landing has none.
 
 - **The tree.** A row: indent by depth, a chevron button on an expandable row
-  (turned when expanded), a dot in the tier's stroke color or the assembly gray,
+  (turned when expanded), a dot following the color mode (in tier mode the
+  tier's stroke or the assembly gray; in rate mode the node's step's stroke,
+  the extra's, the continuous stroke with no triple, the assembly gray for an
+  assembly with no discrete leaf beneath),
   a folder glyph instead on a folder, the segment, the display name lighter; the
   root row the label alone. A click selects (a node on its parent's level, the
   root on the open level, a folder on its parent's); the open level's own node
@@ -501,7 +660,10 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   selection when it is a hit, else at the first or the last, and wraps.
 - **The breadcrumb.** The open control, a button over a hidden file input, then
   each ancestor as a link and the open level as `.current`, the root by the
-  label, others by their segment.
+  label, others by their segment. At the right end `div.controls`: the color
+  mode's segmented switch, `tier` and `rate`, titled "Color by tier" and "Color
+  by rate", and the type labels' toggle `types`, titled "Show the type of every
+  wire" (workspace.md answer 7).
 - **The detail pane.** `detailOf(model, level, selection)` gives the facts; the
   pane renders one layout per kind. A leaf's and an assembly's: the header with
   segment, display name, and the path line holding the path, the copy button
@@ -536,7 +698,8 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   a body is one sentence until increments 7 and 8; its height is the prefs'
   splitter while open, its strip alone while closed.
 - **The status bar.** The kind word, the totals over the whole model (leaves,
-  assemblies, the sum of every assembly's wires), the note; the fallback note
+  assemblies, the sum of every assembly's wires), the color mode's word, `tier
+  colors` or `rate colors`, the note; the fallback note
   while one stands, until the next open or push; in the live tab the
   connection's state at the right end and, for a model that came over the
   socket, the download. The download saves `live.text`, the frame's own bytes,
@@ -567,7 +730,9 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   `open`; `button.chevron` in an expandable row; `.segment` in every row,
   `.name` in a node row but the root's.
 - `nav.breadcrumb[data-level-path]` holding `a[data-path]` for each ancestor and
-  `.current` for the open level; `button.open-file` and its `input[type=file]`.
+  `.current` for the open level; `button.open-file` and its `input[type=file]`;
+  `.controls` holding `.mode button[data-mode="tier" | "rate"]` with
+  `aria-pressed` on the current one and `button.type-labels[aria-pressed]`.
 - `aside.detail[data-kind="level" | "leaf" | "assembly" | "folder" | "wire" |
   "pin" | "port"][data-id]`, the id a path for a level, node or folder and the
   element's id otherwise, holding `h2 .segment`, `h2 .name`, `.path-line`
@@ -590,7 +755,7 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
 - `section.drawer[data-open="true" | "false"][data-tab]` holding
   `button.tab[data-tab="diagnostics" | "root-inputs" | "timing" | "order"]`,
   `.count` on a tab that has one, and `.tab-body` while open.
-- `footer.status[data-kind]` holding `.counts`, `.note`, `.fallback`,
+- `footer.status[data-kind]` holding `.counts`, `.mode[data-mode]`, `.note`, `.fallback`,
   `.connection[data-state="connected" | "lost"]` and `button.download`; under
   the landing it has no `data-kind` and holds `.connection` alone.
 - `nav.tree`, `.viewport`, `aside.detail` and `section.drawer` carry
@@ -633,8 +798,10 @@ is read from `e.key`, so an upper-case `N` without Shift is `N` too.
 | `-` | zoom out by 1.25 |
 | `/`, Cmd-K | focus the search field with its text selected, expanding a collapsed tree pane first |
 | `d` | toggle the drawer on its current tab; Shift-`d` does nothing |
+| `r` | the color mode to the other one, kept per browser |
+| `y` | the type labels on or off, kept per browser |
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
-| `t`, `r`, `y`, `o`, `?` | swallowed (`preventDefault`) until increments 7, 6 and 8 give them their objects |
+| `t`, `o`, `?` | swallowed (`preventDefault`) until increments 7 and 8 give them their objects |
 
 Dragging has no keyboard form. Every control is a real button or link.
 
@@ -673,7 +840,17 @@ text it came as.
 ## The browser checks
 
 `npm run e2e` runs `playwright test` over `e2e/`, against `vite preview` on
-port 4319 serving `dist/`, so `npm run build` runs first. Each test opens `/`,
+port 4319 serving `dist/`, so `npm run build` runs first. Two projects:
+`chromium` and `firefox`. Plain `npm run e2e` runs both; on this machine
+Firefox cannot start inside the command sandbox, so a local run is `npm run
+e2e -- --project=chromium`. CI runs the Chromium project as the blocking step
+"Browser checks, Chromium", then the Firefox project as "Browser checks,
+Firefox (non-blocking)" with `continue-on-error: true`, after `npx playwright
+install --with-deps chromium firefox`; Firefox turns blocking once it has
+passed a few runs, before the release. The checks that read the clipboard
+back skip under Firefox (`test.skip(browserName === "firefox", ...)`):
+`detail.spec.ts`'s copy button and location click and `live.spec.ts`'s hosted
+copy. Each test opens `/`,
 or the path given as `at`, and loads a fixture through `drop` in
 `e2e/fixtures.ts`, which builds a `File` in a `DataTransfer` and dispatches a
 `drop` event on the window, the shell's own handler, then waits for
@@ -688,7 +865,10 @@ the page's socket fails against `vite preview`, so every check but
   closed assemblies, stage 1 squares and pinned marks; every root `in` pin a
   `root-input` drawn as the tag's `path`, every other pin a capsule `rect`.
   `failure_structure` says "no structure to draw" and has no canvas. `large`'s
-  root logs its time, dropped to drawn.
+  root logs its time, dropped to drawn. The rows carry increment 6's `kinds`
+  (18 blocks, 10 wires, 9 output pins) and `library` (34 blocks, 40 wires).
+  The `large` output pins' order check the brief asked for is dropped, its
+  reason in a comment (see the traps' ELK pass).
 - `open.spec.ts`: on `closed_loop`, `sensing` by double-click (4 blocks), back
   by Backspace (9), `actuators` by click then Enter, a double-click on `plant`
   and Enter on a selected `plant` each leaving the root; at `actuators` the
@@ -736,8 +916,9 @@ the page's socket fails against `vite preview`, so every check but
   outline `none`; Tab from the
   body focusing `nav.tree`, `.viewport`, `aside.detail`, `section.drawer`,
   `nav.tree`, and Shift-Tab back, each the one `.focused` and the active
-  element; `t`, `r`, `y`, `o`, `?` leaving the selection, the `viewBox`, the
-  drawer and the level; with `h` in the search and `plant` selected, Escape
+  element; `t`, `o`, `?` leaving the selection, the `viewBox`, the drawer and
+  the level; `r` toggling `data-mode` and `y` `data-labels`, each leaving the
+  other's attribute, the selection and the `viewBox`; with `h` in the search and `plant` selected, Escape
   emptying the field and `searching` with `plant` still selected, Escape
   again clearing the selection.
 - `state.spec.ts` (workspace 3, 9): on `closed_loop` no hash at load,
@@ -852,7 +1033,8 @@ the page's socket fails against `vite preview`, so every check but
   `expanded`; the
   chevron collapsing `sensing` by its two rows. On `containers` 9 rows in walk
   order, the folders at depth 1 and their members at depth 2, a folder click
-  giving the folder layout with nothing selected on the canvas. On `rates`
+  giving the folder layout and, on the canvas, the `gains` region alone
+  `selected`. On `rates`
   `fast/outer` opened by double-clicks and `hold` clicked: `fast` and
   `fast/outer` expanded, `hold` selected at depth 3, `fast/outer` open; again with `fast` collapsed by
   its chevron before the click, `fast` and `fast/outer` expanded anew and `hold`
@@ -902,8 +1084,10 @@ the page's socket fails against `vite preview`, so every check but
   s"; on
   `containers` the folder's keys `a` and `b`, `a` selecting `gains/a` in the
   pane, the tree and the canvas, its pane without a signature. The level facts
-  in the singular: `aircraft` `open level · 1 child · 2 wires`, `kinds` `open
-  level · 9 children · 1 wire`.
+  in the singular and the plural: `aircraft` `open level · 1 child · 2 wires`,
+  `kinds` `open level · 9 children · 10 wires`; the singular `1 wire` is
+  `detail.test.ts`'s, on an inline structure, since no fixture level has one
+  wire after increment 6.
 - `frame.spec.ts`: on `closed_loop` the status bar `build` with 24 leaves, 6
   assemblies, 94 wires and no note; the drawer closed with counts 3 on root
   inputs, 24 on order, 0 on diagnostics and none on timing, a tab opening it and
@@ -923,6 +1107,62 @@ the page's socket fails against `vite preview`, so every check but
   first entry giving one dialog of type `beforeunload`, dismissed, the root
   still drawn and the title kept; `closed_loop` pushed over the live mock at
   `/`, `plant` clicked, `goBack` reaching `about:blank` with no dialog.
+- `colors.spec.ts` (grammar 6, workspace 7, 9, 11): on `closed_loop` at load
+  `data-mode="tier"`, `tier colors`, the tier button pressed, no legend and no
+  `data-step`; `r` giving `rate`, `rate colors`, the rate button pressed, the
+  five assemblies at step 0 with the badges `1 clock`, `4 clocks`, `1 clock`,
+  `2 clocks`, `2 clocks`, `plant` with no step and no badge, the legend's one
+  line `base grid`; the tier gray read off `sensing|in|h` before `r`, `V_ref`'s
+  two root wires keeping it in rate mode; `pid_controller` steps 2 to 5 in
+  order, four distinct fills, the legend's four lines; `h_ctl`'s tree dot
+  equal to its shape's computed stroke; `actuators`' limiters `extra` with
+  `#10` and `#11`, one fill unlike the lags', the legend's `span.number`s, the
+  lags with no step; the wires out of `δe_limiter` and `δe_lag` different,
+  neither gray, the former unlike the limiter's stroke, each arrowhead's fill
+  its wire's stroke; a reload and a drop keeping `rate`, the tier button back.
+  On `rates` the switch clicked, `fast` `2 clocks`, `slow` none, the legend
+  `anchor 1 (1/50 s)` then `anchor 2 (1/10 s)`; `fast` opened, `inner` step 0
+  and `outer` step 1, the second line `anchor 1 (1/50 s) × 2`.
+- `wires.spec.ts` (grammar 4, 10, workspace 7): on `kinds` the ten wires by
+  class 3, 3, 2, 1, 1, the struct's one core with the same `d`, after the wire,
+  narrower, carrying the arrowhead; the flag dashed, the scalar not, the opaque
+  dotted unlike the flag, the vector wider; no label at load; `y` giving
+  `data-labels` and ten labels with `aria-pressed`, `nt|out|y` cut with `…`
+  and titled whole, `i|out|y` reading `Int8`; `y` off; the button on; a reload
+  keeping them; the button off. On `closed_loop`'s root 19 labels each within
+  8 px of its port's first wire's start; `mode`'s one or two dots each on at
+  least two of its three wires; `plant` dragged 120 down, its wires' dots gone
+  and every other dot in place.
+- `icons.spec.ts` (grammar 7, 1): on `closed_loop`'s `lqr_controller` four
+  `pack`, one `unpack`, one `lqr`, one `constant`, seven in all, `free_pair`'s
+  text `Int8[0, 0]` whole or cut with its title whole, `engaged` with
+  `text.display` `Junction` and no icon, `state_pack` with no display name and
+  its width equal to the sizing rule with `ICON_WIDTH` recomputed in the page;
+  `sensing/altimeter` `sum` with its block title naming
+  `Redstone.Blocks.SumJunction`, `sensing/noise` `noise`. On `kinds` five
+  `constant`, `fn` `constant-opaque` through its `use`, `nt` whole or cut with
+  its title whole, every Constant's text within `CONSTANT_WIDTH`, `mat` cut,
+  `i` `0`. On `descent` `stop` and its symbol. On `library` the oracle's 26
+  ids, 31 icons, `fn` none, `delay` `z⁻³`, every `use` with its symbol,
+  `zoh_tf` at the rule's width and narrower than its display name would make
+  it.
+- `regions.spec.ts` (grammar 5, workspace 2): on `containers` two regions in
+  order, `gains` and `pair`, their captions; `gains/a`, `gains/b` and `pair/1`
+  with `data-region` and their keys; `s1`, `s2`, `scale` in none; the frame
+  dashed with `rx` 6; every member inside its frame and the others clear of
+  both; `g.regions` before `g.blocks`. The `gains` folder row clicked: its
+  region `selected`, `pair`'s not, the pane `folder`; `pair`'s caption clicked:
+  its region and its tree row `selected`, the pane `field pair`; a click on
+  `gains`' top edge selecting it; `gains/b` dragged 100 down, `gains`' frame
+  taller and holding it, `pair`'s unchanged; Escape clearing. `closed_loop`'s
+  root without a region.
+- `zoom.spec.ts` (grammar 10): on `closed_loop`'s root `full` at the fit; `-`
+  until the scale, the svg's width over the `viewBox`'s, is below each floor
+  read from `size.ts`, `no-faces` hiding every `text.face` and keeping the
+  segments, display names and pins' names, `segments` hiding the display names
+  too, `frames` the segments too with the `path.wire` and `rect.port` counts
+  unchanged and shown; `0` back to `full`. On `sensing` the icons kept at
+  `no-faces` and hidden at `segments`.
 - `network.spec.ts`: every request while loading, dropping `closed_loop` and
   opening `sensing` has the preview server's origin, and the page makes
   exactly one WebSocket attempt, to the preview server's host at `/ws`. The
@@ -934,8 +1174,14 @@ the page's socket fails against `vite preview`, so every check but
 checks' as `<check>.<fixture>__<level>.png`, `open`, `select`, `view`, `major2`,
 `minor1`, `network`, `landing` (`none` before a drop), `tree`, `detail-leaf`,
 `detail-wire`, `frame-collapsed`, `keys` (the drawer opened by `d`),
-`fallback`, `drag`, `search`, `search-markers` and `live` (`none` while
-waiting, then `closed_loop`).
+`fallback`, `drag`, `search`, `search-markers`, `live` (`none` while
+waiting, then `closed_loop`), `colors` (`closed_loop`'s root and
+`pid_controller` in rate mode), `wires` (`kinds` with labels), `icons`
+(`lqr_controller`, `library`), `regions` (`containers`) and `zoom`
+(`closed_loop`'s root at `frames`). A run of another project writes the same
+names under `e2e/screenshots/<project>/`, so CI's artifact holds Chromium's at
+the top and Firefox's under `firefox/`; `shot` reads the project from
+`test.info()`.
 
 ## The generated types and the scripts
 
@@ -945,7 +1191,7 @@ object, `NodeIdentity`, gets no index signature. The file is ignored and
 regenerated by the `predev`, `prebuild`, `precheck` and `pretest` hooks, so it
 never lags the copy. `npm run check` runs svelte-check over `src/`, `e2e/` and
 `playwright.config.ts`, tests included; `npm test` runs Vitest once; `npm run
-e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
+e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` and `preview` are Vite's.
 
 ## Traps
 
@@ -1131,11 +1377,77 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
 - **The status bar before a model.** The frame, and so its status bar, exists
   only with a model; the live tab's "waiting for `inspect`" needs a status bar
   under the landing, which the shell renders while the connection shows.
+- **ELK's trunks and regions, probed 2026-11-02.** The orthogonal router
+  already routes the wires leaving one port as a shared trunk and marks each
+  split in one edge's `junctionPoints`; `elk.layered.mergeEdges` changes
+  nothing. A fan-out of n wires has between 1 and n − 1 junction points.
+  Compound nodes need `elk.hierarchyHandling: INCLUDE_CHILDREN`: without it the
+  edges crossing a region's border come back with no sections and the level
+  breaks into two rows. Every edge stays in the root's `edges` with a
+  `container`, the node whose coordinates its sections and junction points use
+  (`region:gains` for `gains/b|in|e`), so `layoutLevel` translates by it.
+- **ELK's pass, 2026-11-02** (increment 6, stage 7). Crossings (a horizontal
+  and a vertical segment of wires from different producer ports crossing
+  strictly inside both) and bends (route points minus two) per option set,
+  counted by a scratch script through `layoutLevel` and, for the candidates,
+  from the drawn `d`s with real text widths, which agreed:
+
+  | option set | `closed_loop` root | `large` root | `lqr_controller` | `large` outputs |
+  |---|---|---|---|---|
+  | increment 5's | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
+  | `feedbackEdges` | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
+  | `forceNodeModelOrder` | 61 / 60 | 699 / 634 | 6 / 26 | declared |
+  | `NETWORK_SIMPLEX` | 62 / 76 | 667 / 902 | 6 / 30 | reversed |
+  | `LINEAR_SEGMENTS` | 62 / 88 | 655 / 784 | 6 / 34 | reversed |
+  | `thoroughness` 20 | 60 / 82 | 622 / 612 | 6 / 26 | reversed |
+  | `edgeNodeBetweenLayers` doubled | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
+  | `edgeEdge` doubled, or both | 64 / 82 | 663 / 634 | 6 / 26 | reversed |
+  | `unnecessaryBendpoints` | 62 / 117 | 663 / 1014 | 6 / 26 | reversed |
+  | `greedySwitch` `TWO_SIDED` | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
+  | thoroughness 20 and `forceNodeModelOrder` | 77 / 72 | 671 / 626 | 6 / 26 | declared |
+  | thoroughness 20 and `NETWORK_SIMPLEX` | 58 / 76 | 626 / 836 | 6 / 30 | reversed |
+  | thoroughness 20 and `LINEAR_SEGMENTS` | 60 / 92 | 636 / 776 | 6 / 36 | reversed |
+  | `forceNodeModelOrder` and `NETWORK_SIMPLEX` | 61 / 88 | 687 / 844 | 6 / 30 | declared |
+
+  Each cell is crossings / bends; thoroughness 20 with `feedbackEdges`,
+  `greedySwitch`, either spacing or `unnecessaryBendpoints` kept its own
+  crossings. Two sets met the criterion (fewer
+  crossings on `closed_loop`'s root, none more on the other two, `open.spec.ts`
+  green): thoroughness 20 alone, which landed, and with `NETWORK_SIMPLEX`,
+  which buys two crossings for 222 more bends on `large` and doubles its layout
+  time. `large`'s root went from about 360 to 460 ms, drop to drawn, under
+  thoroughness 20. No option fixes the tangle: it is the model's five feedback
+  loops. The root under the landed set is the drawing check's screenshot
+  `closed_loop__root.png`. `elkGraph` hands out the shared
+  `ROOT_OPTIONS` object, so a scratch script can mutate it before
+  `layoutLevel`; nothing in `src/` does.
+- **Arrowheads on thick wires.** A `marker` in the default `strokeWidth` units
+  grew three- and fivefold on the vector and struct wires; the markers are
+  `markerUnits="userSpaceOnUse"`. `fill="context-stroke"` works in Chromium,
+  but on the struct's core it would take the core's background color, so the
+  canvas keeps one marker per wire color and puts the struct's on its core.
+- **A label's text.** A `text.type-label`'s or `g.icon text`'s parent holds a
+  `<title>`; `textContent` of a type label includes its title, so the checks
+  read its text nodes alone, and an icon's `text` is read apart from the
+  title.
+- **`Delay`'s `K`.** The pinned core prints `Redstone.Blocks.Delay{Float64,
+  3}`, the integer second; `iconOf` takes the first top-level type parameter
+  that is an integer, which reads both orders.
+- **Wires above a region.** The regions draw first, so a wire crossing a frame
+  takes the click there through its 8 px hit path; a check clicks the frame's
+  top edge, clear of the wires, or the caption.
+- **Glyphs in the text color.** A glyph is a `<symbol>` whose path and text use
+  `currentColor`, set by `.icon`'s `color`; a `<use>` inherits it.
+- **Firefox locally.** Firefox cannot run inside this machine's command
+  sandbox ("Could not find profile folder"), and plain `npm run e2e` now starts
+  it; run `npm run e2e -- --project=chromium`. `npx playwright test --list
+  --project=firefox` verifies the configuration without launching it.
 
 ## Open items
 
-- ELK in a web worker: `large`'s root takes about 320 ms from drop to drawn on
-  an M4, sizing and layout on the main thread.
+- ELK in a web worker: `large`'s root takes about 460 ms from drop to drawn on
+  an M4 under thoroughness 20 (320 to 360 ms before), sizing and layout on the
+  main thread.
 - A primitive root's leaf has an empty segment, so its bold first line on the
   canvas is blank; the tree's row, the breadcrumb and the pane carry the label.
 - A folder under a node other than the root starts collapsed when that node is
@@ -1143,9 +1455,41 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
 - The tree's `▸` chevron reads small in the system font.
 - The console shows one 404, the favicon's.
 - The layout of `closed_loop`'s root is tangled, feedback wires looping over and
-  under the level, as the spike found; greedy cycle breaking left it as it
-  was and nothing else was tuned. Increment 6's look, with `large`'s output
-  pins drawn in reverse.
+  under the level, as the spike found; increment 6's ELK pass (see the traps)
+  took it from 62 crossings to 60 with thoroughness 20, which also moves its
+  root input pins out of declaration order (`h_ref`, `mode`, `V_ref` top to
+  bottom; no check pins the root's pin order). The look pass judges it.
+  Already out of order before the pass: `pid_controller`'s and `selection`'s
+  input pins, `selection`'s and `kinds`' output pins.
+- `large`'s root draws its two output pins in reverse declaration order. Only
+  `forceNodeModelOrder` fixes it, at 663 to 699 crossings on `large`, so the
+  order check was dropped.
+- The palette's near pairs (the headed look of stage 3): pear and olive (steps
+  2 and 6), pink, purple and reddish purple (1, 3, 7), light cyan (5) near the
+  continuous blue. Eight light hues without red, amber or blue is tight;
+  lightness or a pattern may have to carry part. The look pass's.
+- The rate badge straddles the block's top edge at the right, since inside the
+  corner it covered the segment on `closed_loop`'s root and answer 10 never cuts
+  a user name; reserving its width in `sizeBlock` would make a block's size
+  depend on the mode. Increment 8's order badge, top-left, meets the same
+  question.
+- The legend can sit over the drawing's bottom-left corner; the fit does not
+  reserve it.
+- On `kinds` the wires are short, so most type labels run across the output pin
+  they lead to, and `Symbo…` is partly covered by the block drawn after it.
+- `CONSTANT_WIDTH` at 60 px cuts `kinds`' `a=1.0, b=2.0` (64 px on a Mac) to
+  `a=1.0, b=…`; `Int8[0, 0]` (49 px) may cut under CI's fonts. The checks read
+  whole or cut.
+- The text icons wider than `ICON_WIDTH` on a Mac (`ẋ=Ax+Bu` 46 px,
+  `N(s)/D(s)` 48, `N(z)/D(z)` 49) are squeezed to 44 by `textLength`. The
+  discrete integrators draw their staircase beside the `1/s`, not under it,
+  where in 12 px the two overlapped. The glyphs are a first pass.
+- The text levels' floors look low (the headed look of stage 7): at 0.52, past
+  the first floor, the display names show at about 6 px, hard to read; the
+  look pass may raise them, something like 0.8, 0.6 and 0.4.
+- The Firefox project has never run here; its first run is CI's. Its clipboard
+  skip takes `live.spec.ts`'s whole hosted-copy check, so the no-connection and
+  no-download pins do not run under Firefox either.
 - A selected row does not scroll into view when a collapsed tree expands.
 - A mouse press on a canvas that already holds keyboard focus keeps the ring
   (see the traps); a blur and refocus on the press would drop it.
@@ -1164,8 +1508,9 @@ e2e` runs Playwright; `npm run dev`, `build` and `preview` are Vite's.
   shows no type.
 - The download is offered only for a model that came over the socket; a file
   dropped in the live tab offers none.
-- Acceptable survivors among the brief's mutants: the five swallowed keys'
-  `preventDefault`, since headless Chromium has no find bar to open; `popstate`
+- Acceptable survivors among the brief's mutants: the swallowed keys'
+  `preventDefault` (`t`, `o`, `?` since increment 6), the exact palette values
+  and the icons' artwork, which no check pins by design, since headless Chromium has no find bar to open; `popstate`
   pushing again, a no-op while `pushHash` skips a hash already standing. The
   backoff's 30 s cap is pinned by `protocol.test.ts` at attempt 10.
 - The live tab's look, through `inspect` with `bundle_dir` at `frontend/dist`,

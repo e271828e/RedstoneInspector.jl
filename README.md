@@ -98,7 +98,12 @@ could read the files anyway.
 
 `frontend/fixtures/` holds descriptors of the examples' models and of the
 synthetic models in `scripts/synthetic.jl`, and `frontend/schema/` a copy of
-the pinned Redstone's `src/descriptor.json`. Both are committed, so the
+the pinned Redstone's `src/descriptor.json`. Among the synthetic models,
+`kinds` declares a face of every kind marker and wires each of its outputs to a
+root output of the same name, so its root draws a wire of every style, and
+`library` holds one instance of every shipped block, plus a `Junction` over a
+user function, on two anchors with a relative and a phased rate, so every icon
+and every legend form has something to show. Both are committed, so the
 frontend builds and tests without Julia. To regenerate them, from the
 repository root:
 
@@ -121,15 +126,18 @@ root:
     npm test
     npm run check
     npm run build
-    npm run e2e
+    npm run e2e -- --project=chromium
     npm run dev
 
 `npm test` validates every fixture against the schema copy with ajv, then runs
 the unit tests of the pure modules over the fixtures. `npm run check` type-checks
 the sources and the browser checks. `npm run e2e` runs the browser checks:
-Playwright drives headless Chromium against the built bundle, served by `vite
-preview`, so `npm run build` comes first, and `npx playwright install chromium`
-once on a new machine. Each check drops fixtures on the page and saves
+Playwright drives headless Chromium and Firefox against the built bundle,
+served by `vite preview`, so `npm run build` comes first, and `npx playwright
+install chromium firefox` once on a new machine; `--project=chromium` or
+`--project=firefox` runs one browser. In CI the Chromium run blocks and the
+Firefox run is non-blocking until it has passed a few runs, to be made blocking
+before the release; the checks that read the clipboard back skip under Firefox. Each check drops fixtures on the page and saves
 screenshots to `frontend/e2e/screenshots/`, which CI keeps as a job output. The
 TypeScript types are generated from the schema copy into
 `frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
@@ -146,6 +154,24 @@ opens a closed assembly, from the canvas or the tree, and Backspace, Alt-Up or
 the breadcrumb returns; a click selects a block, pin, wire or port square, or a
 row in the tree, the tree and the canvas following each other and the detail
 pane showing what is selected; Escape clears.
+
+The canvas draws the visual grammar. Blocks are colored by tier, or, after `r`
+or the switch at the right of the breadcrumb, by rate: each timing gets one of
+eight colors, fastest first with the base grid first, the rest a neutral fill
+with a numbered badge, an assembly the color of its rate scope with a badge
+counting the clocks inside when they differ, and a legend in the canvas's
+corner reading each rate on the level. Wires show their kind by weight and
+pattern (thin for a scalar, dashed for a flag, thick for a vector, a double
+line for a struct, dotted for an opaque value), take their producer's color
+lighter in rate mode, and branch from a shared trunk with a dot at each split;
+`y` or the toggle beside the switch writes each output's type at the start of
+its wires. Library blocks show an icon in place of their type's name, a glyph
+or a short formula, a `Constant` its value. A keyed container's elements sit
+inside a dashed region captioned with the field, each labelled by its key; a
+click on the region's frame selects the container as the tree's folder row
+does. Zoomed out, the text drops in three steps, face names first, then the
+type names and icons, the block names last; wires and ports always show. The
+color mode and the labels are kept per browser.
 
 The open level is the URL's hash, `#level=sensing`, none at the root, so back
 and forward move between levels and a reload or a link reopens one. Each
@@ -164,8 +190,8 @@ Shift-`h` and Shift-`l` go back and forward between the levels this page load
 opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
 or Alt-Up climbs; `z` centres the selection; `0` fits, `+` and `-` zoom; `d`
 toggles the drawer; Tab moves between the tree, the canvas, the detail pane
-and the drawer, the focus ring showing for the keyboard only; `t`, `r`, `y`,
-`o` and `?` are reserved. Search, in the field at the top of the tree, opened
+and the drawer, the focus ring showing for the keyboard only; `r` switches the
+color mode and `y` the type labels; `t`, `o` and `?` are reserved. Search, in the field at the top of the tree, opened
 by `/` or Cmd-K, matches paths, types and face names as case-insensitive
 substrings, `path:`, `type:` and `face:` narrowing a term to one field, a
 prefix alone matching nothing yet; the hits list while the field has focus,
