@@ -1,9 +1,13 @@
-// The lit sets and marks from the look fixer's oracle (`continuous.py <fixtures> <key> <fixture>`).
+// The lit sets and marks from the look fixer's oracle (`continuous.py <fixtures> <key> <fixture>`); those the
+// assembly rule of 2026-11-02 changed, read by hand off the fixtures' timings.
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
 import { legendLit, legendMarks, rekeyFocus } from "./focus";
+import type { LeafFace, StructureSection } from "./descriptor";
 import type { Model } from "./model";
 import { CONTINUOUS } from "./rates";
+import { buildResolution } from "./resolve";
+import { buildTree } from "./tree";
 
 const cl = fixtureModel("closed_loop");
 const rates = fixtureModel("rates");
@@ -13,8 +17,9 @@ const lit = (m: Model, level: string, key: string) => {
 };
 
 describe("legendLit", () => {
-  it("lights closed_loop's five assemblies on the base grid at the root, no wire, no pin", () => {
-    expect(lit(cl, "", "0,1,0")).toEqual({ blocks: ["actuators", "lqr_controller", "pid_controller", "selection", "sensing"], wires: [] });
+  it("lights each of closed_loop's two single-clock assemblies by its triple at the root, no wire, no pin", () => {
+    expect(lit(cl, "", "1,1,0")).toEqual({ blocks: ["sensing"], wires: [] });
+    expect(lit(cl, "", "6,1,0")).toEqual({ blocks: ["lqr_controller"], wires: [] });
   });
 
   it("lights an assembly with a leaf of anchor 4 beneath and the wire its tint draws", () => {
@@ -40,7 +45,7 @@ describe("legendLit", () => {
     });
   });
 
-  it("on rates lights fast by its scope and by its leaf beneath, and the continuous wires on levels with no continuous block", () => {
+  it("on rates lights the mixed fast by its leaves beneath, never by the continuous color, and the continuous wires on levels with no continuous block", () => {
     expect(lit(rates, "", "1,1,0")).toEqual({ blocks: ["fast"], wires: ["⟨out⟩inner|in|inner"] });
     expect(lit(rates, "", "1,2,0")).toEqual({ blocks: ["fast"], wires: ["⟨out⟩outer|in|outer"] });
     expect(lit(rates, "fast", "1,2,0")).toEqual({ blocks: ["fast/outer"], wires: ["⟨out⟩outer|in|outer"] });
@@ -52,8 +57,9 @@ describe("legendLit", () => {
 
 describe("legendMarks", () => {
   it("marks the rows whose dot takes the color", () => {
-    expect([...legendMarks(cl, "0,1,0")].sort()).toEqual(["actuators", "lqr_controller", "pid_controller", "selection", "sensing"]);
+    expect([...legendMarks(cl, "1,1,0")].sort()).toEqual(["sensing", "sensing/noise"]);
     expect([...legendMarks(cl, "4,1,0")]).toEqual(["pid_controller/q_ctl"]);
+    expect([...legendMarks(rates, "1,1,0")]).toEqual(["fast/inner"]);
     expect(legendMarks(cl, CONTINUOUS).size).toBe(14);
     expect(legendMarks(cl, CONTINUOUS).has("plant")).toBe(true);
     expect(legendMarks(cl, CONTINUOUS).has("sensing")).toBe(false);
@@ -68,6 +74,26 @@ describe("rekeyFocus", () => {
     expect(rekeyFocus("4,1,0", cl, dep)).toBe("4,1,0");
     expect(rekeyFocus(CONTINUOUS, cl, dep)).toBe(CONTINUOUS);
     expect(rekeyFocus("9,1,0", cl, rates)).toBeUndefined();
+  });
+
+  it("drops the continuous color when the one node without a triple is a mixed assembly", () => {
+    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const id = { type: "T", signature: "T", parameters: [] };
+    const leaf = (name: string, m: number) =>
+      ({ ...id, path: `A/${name}`, field: name, class: "leaf" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
+    // an assembly `A` of the discrete leaves `D1` and `D2` on two clocks, alone under the root
+    const structure: StructureSection = {
+      nodes: [
+        { ...id, path: "", class: "assembly", inputs: [], outputs: [], wires: [] },
+        { ...id, path: "A", field: "A", class: "assembly", inputs: [], outputs: [], wires: [{ from: { path: "A/D1", port: "v" }, to: { path: "A/D2", port: "u" } }] },
+        leaf("D1", 1), leaf("D2", 2),
+      ],
+      root_inputs: [], anchors: [], scopes: [], types: [],
+    };
+    const tree = buildTree(structure);
+    const next = { tree, structure, resolution: buildResolution(tree, structure) } as Model;
+    expect(rekeyFocus(CONTINUOUS, cl, next)).toBeUndefined();
+    expect(rekeyFocus("0,2,0", cl, next)).toBe("0,2,0");
   });
 
   it("follows an anchor by its key, not its index", () => {

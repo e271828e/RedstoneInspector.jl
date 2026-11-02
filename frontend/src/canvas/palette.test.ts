@@ -21,4 +21,9 @@ describe("stepPair", () => {
     expect(new Set(fills).size).toBe(13);
     expect(new Set(strokes).size).toBe(13);
   });
+
+  it("keeps rate mode's wire colors apart: the thirteen fills, the continuous wire's and the root inputs' gray", () => {
+    const fills = [...palette.rate, ...palette.extras, palette.extra].map((p) => p.fill);
+    expect(new Set([...fills, palette.continuousWire, palette.wire]).size).toBe(15);
+  });
 });

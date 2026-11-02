@@ -5,7 +5,7 @@
 import type { Node } from "./descriptor";
 import { levelOf } from "./level";
 import type { Model } from "./model";
-import { blockTriple, CONTINUOUS, fromRootInput, stepsOf, tripleKey, wireTriple, type Triple } from "./rates";
+import { blockTriple, CONTINUOUS, fromRootInput, mixed, stepsOf, tripleKey, wireTriple, type Triple } from "./rates";
 
 const keyOf = (t: Triple | undefined): string => (t ? tripleKey(t) : CONTINUOUS);
 /** A leaf's own key: a discrete leaf's timing, else the continuous color. */
@@ -29,23 +29,25 @@ export interface Lit {
 
 /**
  * On a level, the blocks whose color is the key's, the closed assemblies with a leaf of the key beneath, and the
- * wires its tint draws, a root input's wires never; the pins are never lit.
+ * wires drawn in its color, a root input's wires never; the pins are never lit. A mixed assembly, gray, is lit
+ * only by a leaf beneath.
  */
 export function legendLit(model: Model, level: string, key: string): Lit {
   const lv = levelOf(model.tree!, model.resolution!, level);
   const blocks = new Set<string>();
   for (const b of lv.blocks) {
     if (b.role !== "leaf" && b.role !== "assembly") continue;
-    if (keyOf(blockTriple(model, b.path)) === key || (b.role === "assembly" && leafBeneath(model, b.path, key))) blocks.add(b.id);
+    if (b.role === "assembly" && mixed(model, b.path)) { if (leafBeneath(model, b.path, key)) blocks.add(b.id); }
+    else if (keyOf(blockTriple(model, b.path)) === key || (b.role === "assembly" && leafBeneath(model, b.path, key))) blocks.add(b.id);
   }
   const wires = new Set(lv.wires.filter((w) => !fromRootInput(model, level, w) && keyOf(wireTriple(model, level, w)) === key).map((w) => w.id));
   return { blocks, wires };
 }
 
 /**
- * The tree's rows on the key, the rows whose dot takes its color: a leaf by its own color, an assembly by its scope
- * triple when a discrete leaf lies beneath it, never for the continuous color (its dot is the assembly gray); not
- * the root assembly, which no level draws.
+ * The tree's rows on the key, the rows whose dot takes its color: a leaf by its own color, an assembly by the one
+ * triple its discrete leaves share, never a mixed one nor for the continuous color (its dot is the assembly gray);
+ * not the root assembly, which no level draws.
  */
 export function legendMarks(model: Model, key: string): Set<string> {
   const out = new Set<string>();
@@ -62,7 +64,7 @@ export function legendMarks(model: Model, key: string): Set<string> {
 export function rekeyFocus(key: string, old: Model, next: Model): string | undefined {
   if (!next.structure) return undefined;
   if (key === CONTINUOUS) {
-    return next.structure.nodes.some((n) => (n.path !== "" || n.class === "leaf") && !blockTriple(next, n.path)) ? key : undefined;
+    return next.structure.nodes.some((n) => (n.path !== "" || n.class === "leaf") && !blockTriple(next, n.path) && !(n.class === "assembly" && mixed(next, n.path))) ? key : undefined;
   }
   const [a, m, c] = key.split(",").map(Number);
   let anchor = 0;

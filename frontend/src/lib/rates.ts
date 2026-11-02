@@ -1,5 +1,5 @@
 // Rate mode's data (visual_grammar.md answer 6): each drawn block's timing
-// triple, the model's palette order, a level's legend and the multi-rate badge.
+// triple, the model's palette order, a level's legend and the clock badge.
 import type { Node } from "./descriptor";
 import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
@@ -27,26 +27,23 @@ function leafTriples(model: Model, path: string): Triple[] {
   return out;
 }
 
-/** An assembly's scope triple: its `scopes` row, else the nearest ancestor's, else the base grid. */
-function scopeTriple(model: Model, path: string): Triple {
-  const rows = model.structure!.scopes;
-  for (let p: string | undefined = path; p !== undefined; p = model.tree!.parent.get(p)) {
-    const row = rows.find((r) => r.path === p);
-    if (row) return triple(row.timing);
-  }
-  return [0, 1, 0];
-}
-
 /**
- * A block's triple in rate mode: a discrete leaf's own timing, a closed assembly's scope triple when a discrete
- * leaf lies beneath it; `undefined` for a continuous leaf and an assembly with none, which take the continuous color.
+ * A block's triple in rate mode (visual_grammar.md answer 6, amended 2026-11-02): a discrete leaf's own timing; a
+ * closed assembly's the one triple its discrete leaves share, since an assembly ticks on nothing itself and its
+ * `scopes` row, a frame for its `Relative` children, plays no part; `undefined` for a continuous leaf and an
+ * assembly with no discrete leaf, which take the continuous color, and for a mixed assembly, which takes the
+ * assembly gray (`mixed`).
  */
 export function blockTriple(model: Model, path: string): Triple | undefined {
   const n = model.tree!.byPath.get(path);
   if (!n) return undefined;
   if (n.class === "leaf") return isDiscreteLeaf(n) ? triple(n.timing) : undefined;
-  return leafTriples(model, path).length > 0 ? scopeTriple(model, path) : undefined;
+  const clocks = clocksBeneath(model, path);
+  return clocks.length === 1 ? clocks[0] : undefined;
 }
+
+/** Whether an assembly's discrete leaves tick on several triples, the assembly gray's case. */
+export const mixed = (model: Model, path: string): boolean => clocksBeneath(model, path).length > 1;
 
 /** A triple's period in seconds, the anchor's `T` times `m`; the base grid before every anchor. */
 function period(model: Model, t: Triple): number {
@@ -106,8 +103,9 @@ function drawnPaths(model: Model, level: string): string[] {
 }
 
 /**
- * The triples visible on a level, each drawn block's and each wire's tint, in palette order; then the continuous
- * line when a block takes the continuous color or a wire its tint, a root input's wires being neutral.
+ * The continuous line first (visual_grammar.md answer 6, amended 2026-11-02), when a block takes the continuous
+ * color or a wire the continuous wire color, a root input's wires being neutral; then the triples visible on the
+ * level, each drawn block's and each wire's, in palette order.
  */
 export function legend(model: Model, level: string, steps = stepsOf(model)): LegendLine[] {
   const visible = new Map<string, Triple>();
@@ -115,7 +113,7 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
   for (const p of drawnPaths(model, level)) {
     const t = blockTriple(model, p);
     if (t) visible.set(tripleKey(t), t);
-    else continuous = true;
+    else if (!mixed(model, p)) continuous = true;
   }
   for (const w of levelOf(model.tree!, model.resolution!, level).wires) {
     const t = wireTriple(model, level, w);
@@ -125,7 +123,7 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
   const lines: LegendLine[] = [...visible.values()]
     .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
     .sort((a, b) => a.step! - b.step!);
-  if (continuous) lines.push({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous leaves, assemblies with no discrete leaf, and their wires" });
+  if (continuous) lines.unshift({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous leaves, assemblies with no discrete leaf, and their wires" });
   return lines;
 }
 
@@ -134,19 +132,15 @@ export function clocksBeneath(model: Model, path: string): Triple[] {
   return [...new Map(leafTriples(model, path).map((t) => [tripleKey(t), t])).values()];
 }
 
-/** The multi-rate badge's count: the clocks beneath when any differs from the block's own triple, else 0. */
-export function multiRate(model: Model, path: string): number {
-  const own = blockTriple(model, path);
-  const clocks = clocksBeneath(model, path);
-  return own && clocks.some((t) => tripleKey(t) !== tripleKey(own)) ? clocks.length : 0;
-}
+/** The clock badge's count: the distinct triples of the discrete leaves beneath an assembly, 0 with none. */
+export const clockCount = (model: Model, path: string): number => clocksBeneath(model, path).length;
 
 /** Whether a level wire's terminal producer is a root input, whose wires stay neutral. */
 export function fromRootInput(model: Model, level: string, w: LevelWire): boolean {
   return terminalProducer(model.resolution!, producerFace(level, w))?.end === "root-input";
 }
 
-/** A wire's terminal producer's triple; `undefined` from a root input (neutral) and from a continuous producer (the continuous tint). */
+/** A wire's terminal producer's triple; `undefined` from a root input (neutral) and from a continuous producer (the continuous wire color). */
 export function wireTriple(model: Model, level: string, w: LevelWire): Triple | undefined {
   const t = terminalProducer(model.resolution!, producerFace(level, w));
   return t?.end === "leaf-output" ? blockTriple(model, t.face.path) : undefined;

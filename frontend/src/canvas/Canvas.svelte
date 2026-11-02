@@ -16,7 +16,7 @@
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
-  import { blockTriple, fromRootInput, legend, multiRate, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
+  import { blockTriple, clockCount, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
   import { labelledPorts, levelWireClasses, longestHorizontal, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
@@ -27,7 +27,7 @@
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
-  import { palette, stepPair, tint, type Pair } from "./palette";
+  import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
     BADGE_FONT, cutConstant, cutLabel, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
@@ -102,9 +102,9 @@
   /** Each wire's class by wire id, the drawn level's. */
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
   /**
-   * Each wire's color: in tier mode gray, an opaque wire the lighter gray; in rate mode the tint of its terminal
-   * producer's step's stroke (a colored extra's, or the shared neutral's past them), the continuous tint with no
-   * triple, the neutral gray from a root input.
+   * Each wire's color: in tier mode gray, an opaque wire the lighter gray; in rate mode its terminal producer's
+   * fill (a step's, a colored extra's, or the shared neutral's past them), so a wire names the block it leaves,
+   * the continuous wire blue with no triple, the neutral gray from a root input.
    */
   const strokes = $derived.by(() => {
     const out = new Map<string, string>();
@@ -115,7 +115,7 @@
       else {
         const t = wireTriple(model, shown.level.path, w);
         const step = t && steps.get(tripleKey(t));
-        out.set(w.id, tint(step === undefined ? palette.continuous.stroke : stepPair(step).stroke));
+        out.set(w.id, step === undefined ? palette.continuousWire : stepPair(step).fill);
       }
     }
     return out;
@@ -402,15 +402,16 @@
   const isStage1 = (b: ChildBlock, name: string) => b.role === "leaf" && !!stage1.get(b.path)?.has(name);
   const tierColors = (b: ChildBlock) =>
     b.role === "assembly" ? palette.assembly : b.tier === "discrete" ? palette.discrete : palette.continuous;
-  /** A child's colors in the mode, and in rate mode its step: a palette step's, a colored extra's, the shared neutral past them, or the continuous pair with no triple. */
+  /** A child's colors in the mode, and in rate mode its step: a palette step's, a colored extra's, the shared neutral past them, the assembly gray for a mixed assembly, or the continuous pair with no triple. */
   function colorsOf(b: ChildBlock): { c: Pair; step?: number } {
     if (mode === "tier") return { c: tierColors(b) };
+    if (b.role === "assembly" && mixed(model, b.path)) return { c: palette.assembly };
     const t = blockTriple(model, b.path);
     const step = t && steps.get(tripleKey(t));
     if (step === undefined) return { c: palette.continuous };
     return { c: stepPair(step), step };
   }
-  /** Rate mode's badge: the legend number of an extra, the clock count of a multi-rate assembly, joined when both. */
+  /** Rate mode's badge: the legend number of an extra, the clock count of an assembly with a discrete leaf beneath, joined when both. */
   function badgeOf(b: ChildBlock, step: number | undefined): { text: string; title: string } | undefined {
     if (mode !== "rate") return undefined;
     const text: string[] = [], title: string[] = [];
@@ -418,11 +419,11 @@
       text.push(`#${step + 1}`);
       title.push(`Rate ${step + 1} of the legend, past the palette's ${STEPS} colors.`);
     }
-    const k = b.role === "assembly" ? multiRate(model, b.path) : 0;
+    const k = b.role === "assembly" ? clockCount(model, b.path) : 0;
     if (k > 0) {
       const clocks = `${k} ${k === 1 ? "clock" : "clocks"}`;
       text.push(clocks);
-      title.push(`Multi-rate: the discrete leaves inside tick on ${clocks}, not all on this assembly's own.`);
+      title.push(k === 1 ? "Every discrete leaf inside ticks on this one clock." : `Multi-rate: the discrete leaves inside tick on ${clocks}; open it to see which.`);
     }
     return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
   }
