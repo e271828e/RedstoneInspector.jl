@@ -3,7 +3,7 @@ import type { KindMarker, LeafNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
 import type { Model } from "./model";
-import { fanouts, labelledPorts, levelWireClasses, wireClass, type WireClass } from "./wires";
+import { fanouts, labelledPorts, levelWireClasses, longestHorizontal, shortType, wireClass, type WireClass } from "./wires";
 
 const level = (m: Model, path: string) => levelOf(m.tree!, m.resolution!, path);
 /** The classes' counts on a level, as the oracle prints them. */
@@ -60,7 +60,7 @@ describe("labelledPorts and fanouts", () => {
     expect(labelledPorts(cl, level(cl, ""))).toHaveLength(19);
     expect(labelledPorts(cl, level(cl, "lqr_controller"))).toHaveLength(20);
     const mode = labelledPorts(cl, level(cl, "")).find((p) => p.port === "⟨in⟩mode|out|mode");
-    expect(mode).toEqual({ port: "⟨in⟩mode|out|mode", type: "Bool", wire: "pid_controller|in|mode" });
+    expect(mode).toEqual({ port: "⟨in⟩mode|out|mode", type: "Bool", wires: ["pid_controller|in|mode", "lqr_controller|in|mode", "selection|in|mode"] });
   });
 
   it("types a label by the producer face, through an assembly's face to its terminal producer", () => {
@@ -76,5 +76,45 @@ describe("labelledPorts and fanouts", () => {
     expect(f.get("⟨in⟩mode|out|mode")).toBe(3);
     expect(f.get("plant|out|h")).toBe(2);
     expect(fanouts(level(fixtureModel("kinds"), "")).size).toBe(0);
+  });
+});
+
+describe("shortType", () => {
+  it.each([
+    ["StaticArraysCore.SVector{5, Float64}", "SVector{5, Float64}"],
+    ["Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}", "Junction{Float64, Float64, 2, typeof(+)}"],
+    ["Main.Synthetic.Pt", "Pt"],
+    ["@NamedTuple{a::Float64, b::Main.M.T}", "@NamedTuple{a::Float64, b::T}"],
+    ["Tuple{Core.Int64, Base.RefValue{Main.δ.Ω}}", "Tuple{Int64, RefValue{Ω}}"],
+    ["typeof(Main.var\"#f#3\")", "typeof(var\"#f#3\")"],
+    ["Main.var\"#a.b\"", "var\"#a.b\""],
+    ["Val{\"x.y\"}", "Val{\"x.y\"}"],
+    ["Val{1.5}", "Val{1.5}"],
+    ["Float64", "Float64"],
+    ["Vector{Bool}", "Vector{Bool}"],
+  ])("reads %s as %s", (full, short) => {
+    expect(shortType(full)).toBe(short);
+  });
+
+  it("leaves no qualifier in any closed_loop or kinds label", () => {
+    for (const m of [cl, fixtureModel("kinds")]) {
+      for (const p of labelledPorts(m, level(m, ""))) expect(shortType(p.type), p.type).not.toMatch(/[\p{L}_][\p{L}\p{N}_]*\.[\p{L}_]/u);
+    }
+  });
+});
+
+describe("longestHorizontal", () => {
+  const P = (x: number, y: number) => ({ x, y });
+  it("picks the longest horizontal stretch over every route, either direction, skipping the vertical ones", () => {
+    expect(longestHorizontal([
+      ["a", [P(0, 0), P(30, 0), P(30, 50), P(40, 50)]],
+      ["b", [P(0, 0), P(10, 0), P(10, 80), P(-50, 80)]],
+    ])).toEqual({ wire: "b", x0: -50, x1: 10, y: 80 });
+  });
+
+  it("keeps the first of two equal stretches and gives none for vertical routes alone", () => {
+    expect(longestHorizontal([["a", [P(0, 0), P(20, 0)]], ["b", [P(5, 9), P(25, 9)]]])?.wire).toBe("a");
+    expect(longestHorizontal([["a", [P(0, 0), P(0, 40)]]])).toBeUndefined();
+    expect(longestHorizontal([])).toBeUndefined();
   });
 });

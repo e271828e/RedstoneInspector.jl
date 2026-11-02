@@ -30,10 +30,72 @@ const style = (page: Page, sel: string, prop: string) =>
   page.locator(sel).first().evaluate((el, prop) => getComputedStyle(el).getPropertyValue(prop), prop);
 const dots = (page: Page) => page.locator("circle.junction").evaluateAll((cs) =>
   cs.map((c) => ({ wire: c.getAttribute("data-wire")!, x: Number(c.getAttribute("cx")), y: Number(c.getAttribute("cy")) })));
-/** A type label's own text, its `<title>` left out. */
-const labelText = (page: Page, port: string) => page.locator(`text.type-label[data-port="${port}"]`).evaluate((t) =>
-  [...t.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join(""));
 const labelButton = (page: Page) => page.locator("nav.breadcrumb .controls button.type-labels");
+/** A module qualifier: a name, a dot, a name. */
+const QUALIFIED = /[\p{L}_][\p{L}\p{N}_!]*\.[\p{L}_]/u;
+
+/**
+ * The root's type labels against the rule (visual_grammar.md answer 4 as amended): a producer port whose longest
+ * horizontal segment, less the 6 px margins, surely fits three characters and an ellipsis has one label, one where
+ * surely not none; each label sits on that segment,
+ * its text box inside the segment's horizontal extent and just above it, unqualified, the full type in its title;
+ * the labels' group after the blocks. Returns the labels drawn, by port.
+ */
+async function expectLabels(page: Page, fixture: string): Promise<Map<string, string>> {
+  const byPort = new Map<string, string[]>();
+  for (const w of rootWires(fixture)) byPort.set(w.port, [...(byPort.get(w.port) ?? []), w.id]);
+  const drawn = await page.evaluate((ports) => {
+    const font = getComputedStyle(document.querySelector("text.type-label") ?? document.body).font;
+    const ctx = document.createElement("canvas").getContext("2d")!;
+    ctx.font = font;
+    const out: Record<string, unknown> = {};
+    for (const [port, ids] of ports) {
+      let best: { wire: string; x0: number; x1: number; y: number } | undefined;
+      for (const id of ids) {
+        const pts = document.querySelector(`path.wire[data-wire="${CSS.escape(id)}"]`)!.getAttribute("d")!
+          .split(/[ML]/).filter((s) => s.trim()).map((s) => s.split(",").map(Number));
+        for (let i = 1; i < pts.length; i++) {
+          const [ax, ay] = pts[i - 1], [bx, by] = pts[i];
+          if (Math.abs(ay - by) > 0.5 || ax === bx) continue;
+          const s = { wire: id, x0: Math.min(ax, bx), x1: Math.max(ax, bx), y: ay };
+          if (!best || s.x1 - s.x0 > best.x1 - best.x0) best = s;
+        }
+      }
+      const t = document.querySelector<SVGTextElement>(`text.type-label[data-port="${CSS.escape(port)}"]`);
+      const text = t ? [...t.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("") : undefined;
+      const box = t?.getBBox();
+      out[port] = {
+        best, text, wire: t?.getAttribute("data-wire"), title: t?.querySelector("title")?.textContent,
+        box: box && { x0: box.x, x1: box.x + box.width, bottom: box.y + box.height },
+        // sure to fit three characters and the ellipsis, or sure not to
+        sure: !!best && ctx.measureText("MMM…").width <= best.x1 - best.x0 - 12,
+        never: !best || ctx.measureText("iii…").width > best.x1 - best.x0 - 12,
+        afterBlocks: t ? !!(document.querySelector("g.blocks")!.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING) : undefined,
+      };
+    }
+    return out;
+  }, [...byPort]);
+  const labels = new Map<string, string>();
+  for (const [port, v] of Object.entries(drawn) as [string, {
+    best?: { wire: string; x0: number; x1: number; y: number }; text?: string; wire?: string; title?: string;
+    box?: { x0: number; x1: number; bottom: number }; sure: boolean; never: boolean; afterBlocks?: boolean;
+  }][]) {
+    if (v.sure) expect(v.text, `${port} labelled`).toBeTruthy();
+    if (v.never) expect(v.text, `${port} not labelled`).toBeUndefined();
+    if (v.text === undefined) continue;
+    labels.set(port, v.text!);
+    expect(v.wire, port).toBe(v.best!.wire);
+    expect(v.box!.x0, `${port} left`).toBeGreaterThanOrEqual(v.best!.x0);
+    expect(v.box!.x1, `${port} right`).toBeLessThanOrEqual(v.best!.x1);
+    expect(v.best!.y - v.box!.bottom, `${port} above its segment`).toBeGreaterThanOrEqual(-1);
+    expect(v.best!.y - v.box!.bottom, `${port} just above`).toBeLessThanOrEqual(6);
+    expect(v.text, port).not.toMatch(QUALIFIED);
+    expect(v.title!.startsWith(v.text!.replace(/…$/, "")) || QUALIFIED.test(v.title!), port).toBe(true);
+    expect(v.afterBlocks, port).toBe(true);
+  }
+  await expect(page.locator("text.type-label")).toHaveCount(labels.size);
+  return labels;
+}
 
 test("kinds: one wire of every class, each drawn by its kind; the type labels by y and the toggle, kept across a reload", async ({ page }) => {
   await drop(page, "kinds");
@@ -67,46 +129,44 @@ test("kinds: one wire of every class, each drawn by its kind; the type labels by
   await expect(labelButton(page)).toHaveAttribute("aria-pressed", "false");
   await press(page, "y");
   await expect(page.locator("svg.canvas")).toHaveAttribute("data-labels", "");
-  await expect(page.locator("text.type-label")).toHaveCount(10);
   await expect(labelButton(page)).toHaveAttribute("aria-pressed", "true");
-  // nt's NamedTuple type is cut with an ellipsis, its title the whole string; i's Int8 whole
-  const full = "@NamedTuple{a::Float64, b::Float64}";
-  await expect(page.locator('text.type-label[data-port="nt|out|y"] > title')).toHaveText(full);
-  const cut = await labelText(page, "nt|out|y");
-  expect(cut.endsWith("…")).toBe(true);
-  expect(full.startsWith(cut.slice(0, -1))).toBe(true);
-  expect(await labelText(page, "i|out|y")).toBe("Int8");
+  const labels = await expectLabels(page, "kinds");
+  const n = labels.size;
+  expect(n).toBeGreaterThan(5);
+  // the module dropped from the text, kept in the title: v's StaticArraysCore.SVector
+  expect(labels.get("i|out|y")).toBe("Int8");
+  expect(labels.get("v|out|y")).toMatch(/^SVe/);
+  await expect(page.locator('text.type-label[data-port="v|out|y"] > title')).toHaveText(/^StaticArraysCore\.SVector\{/);
+  // 9 px, on a halo of the background painted under the text
+  const look = await page.locator('text.type-label[data-port="i|out|y"]').evaluate((t) => {
+    const c = getComputedStyle(t);
+    return { size: c.fontSize, order: c.paintOrder, stroke: c.stroke, bg: getComputedStyle(document.querySelector(".viewport")!).backgroundColor };
+  });
+  expect([look.size, look.order.split(" ")[0], look.stroke]).toEqual(["9px", "stroke", look.bg]);
   await shot(page, "kinds", "", "wires");
   await press(page, "y");
   await expect(page.locator("svg.canvas")).not.toHaveAttribute("data-labels");
   await expect(page.locator("text.type-label")).toHaveCount(0);
   await labelButton(page).click();
-  await expect(page.locator("text.type-label")).toHaveCount(10);
+  await expect(page.locator("text.type-label")).toHaveCount(n);
   await expect(labelButton(page)).toHaveAttribute("aria-pressed", "true");
   await page.reload();
   await dropOver(page, "kinds");
-  await expect(page.locator("text.type-label")).toHaveCount(10);
+  await expect(page.locator("text.type-label")).toHaveCount(n);
   await labelButton(page).click();
   await expect(page.locator("text.type-label")).toHaveCount(0);
   await expect(labelButton(page)).toHaveAttribute("aria-pressed", "false");
 });
 
-test("closed_loop: 19 labels at their wires' starts; mode's trunk dots on its branches; a dragged block's wires lose theirs", async ({ page }) => {
+test("closed_loop: the labels on their ports' longest segments; mode's trunk dots on its branches; a dragged block's wires lose theirs", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "y");
-  await expect(page.locator("text.type-label")).toHaveCount(19);
   const wires = rootWires("closed_loop");
-  const first = new Map<string, string>();
-  for (const w of wires) if (!first.has(w.port)) first.set(w.port, w.id);
-  expect(first.size).toBe(19);
-  for (const [port, id] of first) {
-    const [x0, y0] = pointsOf((await page.locator(`path.wire[data-wire="${id}"]`).getAttribute("d"))!)[0];
-    const b = await page.locator(`text.type-label[data-port="${port}"]`).evaluate((t) => {
-      const r = (t as SVGTextElement).getBBox();
-      return { x: r.x, y: r.y, height: r.height };
-    });
-    expect(Math.hypot(b.x - x0, b.y + b.height - y0), port).toBeLessThanOrEqual(8);
-  }
+  // 19 producer ports; mode's Bool whole on its longest segment
+  expect(new Set(wires.map((w) => w.port)).size).toBe(19);
+  const labels = await expectLabels(page, "closed_loop");
+  expect(labels.size).toBeGreaterThan(9);
+  expect(labels.get("⟨in⟩mode|out|mode")).toBe("Bool");
   await press(page, "y");
 
   // mode's three wires share one trunk: one or two dots, each on at least two of the three

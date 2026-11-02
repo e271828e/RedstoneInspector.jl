@@ -8,7 +8,7 @@
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9), the
   // tier or rate colors with the badge and the legend (answer 6), wire styles by
-  // kind with the trunks' dots and the type labels (answer 4).
+  // kind with the trunks' dots and the type labels above the blocks (answer 4).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -17,7 +17,7 @@
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { blockTriple, fromRootInput, legend, multiRate, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
-  import { labelledPorts, levelWireClasses } from "../lib/wires";
+  import { labelledPorts, levelWireClasses, longestHorizontal, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
   import { GLYPHS } from "./glyphs";
@@ -29,7 +29,7 @@
   import { palette, tint, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutConstant, detailAt, FONT_STACK, cutName, cutType, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, cutConstant, cutLabel, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
@@ -112,7 +112,21 @@
   /** One arrowhead marker per wire color on the level, by color. */
   const arrows = $derived(new Map([...new Set(strokes.values())].map((c, i) => [c, `arrow-${i}`])));
   const arrowOf = (id: string) => `url(#${arrows.get(strokes.get(id)!)})`;
-  const typeLabels = $derived(labels && shown ? labelledPorts(model, shown.level) : []);
+  /** The type labels' clear space on their segment, each side, so the text keeps off the corners and the arrowhead. */
+  const LABEL_MARGIN = 6;
+  /**
+   * One type label per producer port: its unqualified type on the longest horizontal segment among the port's
+   * wires, cut to the segment less the margins, none when too few characters fit; the whole type in its title.
+   */
+  const typeLabels = $derived.by(() => {
+    if (!labels || !shown) return [];
+    const g = shown.geometry;
+    return labelledPorts(model, shown.level).flatMap((t) => {
+      const seg = longestHorizontal(t.wires.flatMap((w) => (g.routes.has(w) ? [[w, g.routes.get(w)!] as [string, Point[]]] : [])));
+      const text = seg && cutLabel(shortType(t.type), seg.x1 - seg.x0 - 2 * LABEL_MARGIN);
+      return seg && text ? [{ port: t.port, type: t.type, text, wire: seg.wire, x: (seg.x0 + seg.x1) / 2, y: seg.y - 5 }] : [];
+    });
+  });
   /** The drawn level's regions, and each keyed member's region path. */
   const regions = $derived(shown ? regionsOf(tree, shown.level.path) : []);
   const regionOf = $derived(new Map(regions.flatMap((r) => r.members.map((m) => [m, r.path] as const))));
@@ -135,11 +149,6 @@
     }
     return out;
   });
-  /** A type label's anchor: 6 px along its wire's first segment from the port, 3 px above it. */
-  function labelAt(route: Point[]): Point {
-    const [a, b] = route, len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-    return { x: a.x + (6 * (b.x - a.x)) / len, y: a.y + (6 * (b.y - a.y)) / len - 3 };
-  }
 
   /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
   function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
@@ -514,17 +523,6 @@
           {/each}
         {/each}
       </g>
-      {#if labels}
-        <g class="type-labels">
-          {#each typeLabels as t (t.port)}
-            {@const route = g.routes.get(t.wire)}
-            {#if route}
-              {@const at = labelAt(route)}
-              <text class="type-label" data-port={t.port} x={at.x} y={at.y} style="font:{LABEL_FONT}"><title>{t.type}</title>{cutType(t.type)}</text>
-            {/if}
-          {/each}
-        </g>
-      {/if}
       <g class="blocks">
         {#each ordered as b (b.id)}
           {@const box = g.boxes.get(b.id)!}
@@ -615,6 +613,14 @@
           {/if}
         {/each}
       </g>
+      {#if labels}
+        <!-- above the blocks, each on a halo of the background -->
+        <g class="type-labels">
+          {#each typeLabels as t (t.port)}
+            <text class="type-label" data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} text-anchor="middle" style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
+          {/each}
+        </g>
+      {/if}
     {/if}
   </svg>
   <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
@@ -675,7 +681,7 @@
   .wire[data-kind="struct"] { stroke-width: 5; }
   .wire-core { fill: none; stroke: var(--bg); stroke-width: 1.6; pointer-events: none; }
   .junction { pointer-events: none; }
-  text.type-label { fill: var(--text-light); pointer-events: visiblePainted; }
+  text.type-label { fill: var(--text-light); stroke: var(--bg); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; pointer-events: visiblePainted; }
   .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }
   .casing { fill: none; stroke: var(--highlight); stroke-linejoin: round; pointer-events: none; }
   .casing.selected { stroke-width: 7; opacity: 0.4; }

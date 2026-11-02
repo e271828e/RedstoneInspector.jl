@@ -12,7 +12,7 @@ export const FACE_FONT = `11px ${FONT_STACK}`;
 export const NAME_FONT = `11px ${FONT_STACK}`;
 export const PIN_FONT = `12px ${FONT_STACK}`;
 /** A wire's type label. */
-export const LABEL_FONT = `10px ${FONT_STACK}`;
+export const LABEL_FONT = `9px ${FONT_STACK}`;
 /** Rate mode's badge in a block's top-right corner. */
 export const BADGE_FONT = `9px ${FONT_STACK}`;
 
@@ -24,8 +24,8 @@ export const ICON_WIDTH = 44;
 export const ICON_HEIGHT = 12;
 /** A `Constant`'s value text's width, past which it is cut, shorter than a display name (answer 10). */
 export const CONSTANT_WIDTH = 60;
-/** A wire type label's fixed width, past which it is cut with an ellipsis (visual_grammar.md answer 4). */
-export const TYPE_LABEL_WIDTH = 140;
+/** The fewest characters a cut type label keeps before its ellipsis; below it the label is omitted. */
+export const LABEL_MIN_CHARS = 3;
 /**
  * The legibility floor (visual_grammar.md answer 10): the scales, screen pixels per world unit, below which a
  * text level drops, face names first, then the display name with its icon, the segment last. A first pass.
@@ -76,11 +76,25 @@ function cutText(cuts: Map<string, string>, s: string, font: string, width: numb
   cuts.set(s, cut);
   return cut;
 }
-const names = new Map<string, string>(), types = new Map<string, string>(), constants = new Map<string, string>();
+const names = new Map<string, string>(), constants = new Map<string, string>(), labels = new Map<string, string | undefined>();
 /** The display name as drawn: whole when it fits the fixed width, else cut with an ellipsis. */
 export const cutName = (name: string): string => cutText(names, name, NAME_FONT, DISPLAY_NAME_WIDTH);
-/** A wire's type label as drawn, cut at `TYPE_LABEL_WIDTH`. */
-export const cutType = (type: string): string => cutText(types, type, LABEL_FONT, TYPE_LABEL_WIDTH);
+/**
+ * A wire's type label as drawn in a width, its segment's less the margin (visual_grammar.md answer 4 as amended):
+ * whole when it fits, else cut with an ellipsis; `undefined` when fewer than `LABEL_MIN_CHARS` would stay.
+ */
+export function cutLabel(type: string, width: number): string | undefined {
+  const key = `${Math.floor(width)}|${type}`;
+  if (labels.has(key)) return labels.get(key);
+  let cut: string | undefined = type;
+  if (textWidth(type, LABEL_FONT) > width) {
+    let n = type.length;
+    while (n > 0 && textWidth(type.slice(0, n) + "…", LABEL_FONT) > width) n--;
+    cut = n >= LABEL_MIN_CHARS ? type.slice(0, n) + "…" : undefined;
+  }
+  labels.set(key, cut);
+  return cut;
+}
 /** A `Constant`'s value as drawn, cut at `CONSTANT_WIDTH`. */
 export const cutConstant = (value: string): string => cutText(constants, value, NAME_FONT, CONSTANT_WIDTH);
 /** An icon's width in the head term: `ICON_WIDTH`, or a wider `Constant`'s cut text's. */
