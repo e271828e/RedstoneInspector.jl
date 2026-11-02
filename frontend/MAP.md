@@ -51,7 +51,7 @@ docstring's bare title, the narrow pane's stacked rows).
 | `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `cutName`, `cutLabel`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_MIN_CHARS`; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
 | `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates; `LevelLayout`, the session's record of a level's geometry |
 | `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
-| `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, `extra`, `error` and `warning` (increment 7's), `wireLight`, `tint`; the search's `dim` opacity and `dash` array |
+| `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (increment 7's), `wireLight`, `tint`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text |
 | `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges and legend with its buttons, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the handle the shell's keys call |
 | `src/state/session.svelte.ts` | the per-tab state: the model, the open level and its hash, the history depth, the views and layouts per level, the selection, the expansion, the query, the legend's focus, the drawer, the focused region, the fallback note; `load`'s rekeying; `back` and `forward` |
@@ -134,7 +134,9 @@ them to the stores. The code imports the generated types by name from
   (`Region` in `regions.ts`) is a keyed container's frame on the canvas,
   `{path, field, members}`, the path its folder's; the text says which.
 - A **triple** is a timing `[anchor, m, c]`; a model's triples in palette
-  order give each a **step**, 0 to 7 colored, 8 on an **extra**. A legend
+  order give each a **step**, 0 to 7 colored, 8 on an **extra**: 8 to 11
+  (`#9` to `#12`) in the four colored extras, 12 on in the shared neutral
+  (`stepPair`). A legend
   line's **key** is its triple's `tripleKey`, `"4,1,0"`, or `continuous`; the
   **legend's focus** is one key, and what it **lights** on a level its `Lit`
   blocks and wires. A wire's
@@ -444,6 +446,9 @@ Each file sits beside its module, loads fixtures by name through
   `fast/outer`, back from `fast/outer` to `fast`), a move down or across
   selecting nothing; `hashOf` and `levelOfHash`,
   the root without a hash, `#level=` and other hashes naming none.
+- `src/canvas/palette.test.ts`: on `large`'s 43 triples `stepPair` gives the
+  eight steps, then the four `extras`, then the shared `extra` from the
+  thirteenth on; the thirteen fills and the thirteen strokes all distinct.
 - `src/state/prefs.test.ts`: `parsePrefs` gives the defaults on `null`, garbage,
   another version and a missing version; reads a stored object back, `mode`
   `rate` and `labels` true included; keeps the defaults for mistyped fields, a
@@ -467,7 +472,9 @@ pass's: the continuous line's wire rule dropped, the line always shown, a root
 input's wire counted (`rates.test`); no shortening, the first segment for the
 longest (`wires.test`); no leaf-beneath rule, the query cleared before the
 focus, a push dropping it (`focus.test`, `session.test`); no child selected on
-a climb (`session.test`); every membership "field" (`detail.test`).
+a climb (`session.test`); every membership "field" (`detail.test`); the
+extras back on the shared neutral, the colored extras reused past the twelfth
+(`palette.test`, the first also `colors.spec`).
 
 ## The canvas
 
@@ -505,7 +512,10 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
 - **The color modes** (answer 6). `mode` `tier` fills a child by its tier, an
   assembly gray with its double border; `rate` fills a child by its
   `blockTriple`'s step (`stepsOf`, the model's palette order), an extra past
-  the eighth step with `extra`, no triple with the continuous pair, a closed
+  the eighth step with one of the four `extras` (steps 8 to 11) and past the
+  twelfth with the shared `extra` (answer 6 as amended at core `e538e38`;
+  `stepPair` is the one reader, for fills, strokes, wire tints, the legend's
+  swatches and the tree's dots), no triple with the continuous pair, a closed
   assembly with its scope's step and the double border in that stroke. The
   eight steps keep a distance rule (increment 6's look pass): every pair of
   fills and every pair of strokes lies at least CIEDE2000 10 apart under
@@ -529,8 +539,9 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   block takes the continuous color (a continuous leaf, an assembly with no
   discrete leaf) or a wire not from a root input takes its tint. Each line is a
   `button.line` holding a `span.swatch` in the step's colors (the continuous
-  pair's on the continuous line) or a
-  `span.number` `#<n>` for an extra, then the text (`base grid`, `anchor 2
+  pair's on the continuous line), for an extra a `span.number` `#<n>` in the
+  shared neutral, after a swatch in its colors for the four colored extras,
+  then the text (`base grid`, `anchor 2
   (1/50 s) × 2, phase 1`, `continuous`), the anchor's key and scope in the
   line's title; rate mode only, absent with no line.
 - **The legend's focus** (answers 6 and 9 as amended). A click on a line calls
@@ -692,7 +703,7 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
 - `text.face` for a face name.
 - `div.legend` in `.viewport`, holding `li[data-step]`, and last `li.continuous`
   without `data-step`, each with `button.line[aria-pressed]` holding
-  `span.swatch` or `span.number`, then `span.text`.
+  `span.swatch`, `span.number`, or both for a colored extra, then `span.text`.
 - `svg.canvas.legend-focus[data-focus="<key>"]` while a legend line is
   focused; `lit` on the lit `g.block`, `path.wire`, `path.wire-core`,
   `circle.junction` and `text.type-label`.
@@ -712,7 +723,7 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
 - **The tree.** A row: indent by depth, a chevron button on an expandable row
   (turned when expanded), a dot following the color mode (in tier mode the
   tier's stroke or the assembly gray; in rate mode the node's step's stroke,
-  the extra's, the continuous stroke with no triple, the assembly gray for an
+  a colored extra's or the shared neutral's (`stepPair`), the continuous stroke with no triple, the assembly gray for an
   assembly with no discrete leaf beneath),
   a folder glyph instead on a folder, the segment, the display name lighter; the
   root row the label alone. A click selects (a node on its parent's level, the
@@ -1240,8 +1251,10 @@ the page's socket fails against `vite preview`, so every check but
   legend's seven lines, steps 2 to 5, 7 and 8, then `continuous`; `h_ctl`'s tree dot equal to its
   shape's computed stroke; an icon's computed color the same after `r` and
   back; `actuators`' limiters `extra` with
-  `#10` and `#11`, one fill unlike the lags', the legend's `span.number`s, the
-  lags with no step; the wires out of `δe_limiter` and `δe_lag` different,
+  `#10` and `#11`, the legend's `span.number`s, the two limiters' computed
+  fills unlike each other, the lags' and the shared neutral the number pill
+  keeps, each limiter's legend swatch (beside `#10`, `#11`) equal to its
+  block's fill and stroke, the lags with no step; the wires out of `δe_limiter` and `δe_lag` different,
   neither gray, the former unlike the limiter's stroke, each arrowhead's fill
   its wire's stroke; a reload and a drop keeping `rate`, the tier button back.
   On `rates` the switch clicked, `fast` `2 clocks`, `slow` none, the legend
@@ -1627,6 +1640,22 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   10.1 tritan; strokes 10.9, 10.9, 10.8, 11.0; every fill and stroke at least
   10.2 from the continuous, extra and root-tag pairs. The steps are ordered so
   that neighbours differ most.
+
+  The four colored extras (core `e538e38`), from `search_extras.jl` with the
+  eight steps fixed: the least CIEDE2000 under normal vision only, among the
+  four and against the steps, the continuous, extra and root-tag pairs and,
+  for strokes, the wires' gray, under the steps' rules (fills L* 72 up and
+  any hue, strokes L* 28 to 56 off the red-amber arc and the highlight, near
+  their fill's hue); 24 restarts gave 16.6.
+
+  | step | badge | fill | stroke | nearest fill | nearest stroke |
+  |---|---|---|---|---|---|
+  | 8 | `#9` | `#ffd7eb` pale pink | `#d1278f` magenta | 16.6, step 6 | 17.9, `#12` |
+  | 9 | `#10` | `#61fdb9` mint | `#12977f` teal green | 16.7, step 3 | 16.8, step 3 |
+  | 10 | `#11` | `#5cc1f2` sky | `#0d6369` dark teal | 18.5, continuous | 17.5, step 5 |
+  | 11 | `#12` | `#efac94` salmon | `#a7798f` dusty mauve | 17.8, step 1 | 17.5, step 6 |
+
+  Past the twelfth, the shared `extra` pair; the badges tell every extra apart.
 - **The default pane is narrow.** The detail pane's default 360 px sits under
   the 420 px container query, so the stacked parameters and faces are what a
   first load shows; the table rows need a pane past 420.

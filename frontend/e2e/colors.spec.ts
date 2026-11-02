@@ -103,10 +103,21 @@ test("closed_loop: pid_controller's four steps and six lines, actuators' extras 
     await expect(badge(page, id)).toHaveText(n);
   }
   await expect(page.locator(".legend li .number")).toHaveText(["#10", "#11"]);
-  // the extras share the neutral fill, never a palette step's again
-  const extraFill = await shape(page, "actuators/δe_limiter").getAttribute("fill");
-  await expect(shape(page, "actuators/δt_limiter")).toHaveAttribute("fill", extraFill!);
-  expect(extraFill).not.toBe(await shape(page, "actuators/δe_lag").getAttribute("fill"));
+  // the first four extras take their own colors (answer 6 as amended): the two limiters' fills differ from each
+  // other, from the lags' and from the shared neutral the number pills keep; each legend swatch matches its block
+  const look = (sel: string) => page.locator(sel).first().evaluate((e) => {
+    const c = getComputedStyle(e);
+    return e instanceof SVGElement ? [c.fill, c.stroke] : [c.backgroundColor, c.borderTopColor];
+  });
+  const shared = (await look(".legend li .number"))[0];
+  const limiters = [await look('g.block[data-id="actuators/δe_limiter"] > .shape'), await look('g.block[data-id="actuators/δt_limiter"] > .shape')];
+  expect(limiters[0][0]).not.toBe(limiters[1][0]);
+  for (const [fill] of limiters) expect([shared, (await look('g.block[data-id="actuators/δe_lag"] > .shape'))[0]]).not.toContain(fill);
+  for (const [i, n] of ["10", "11"].entries()) {
+    const li = `.legend li[data-step="${Number(n) - 1}"]`;
+    await expect(page.locator(`${li} .number`)).toHaveText(`#${n}`);
+    expect(await look(`${li} .swatch`), `#${n}`).toEqual(limiters[i]);
+  }
   for (const id of ["actuators/δe_lag", "actuators/δt_lag"]) await expect(shape(page, id)).not.toHaveAttribute("data-step");
   // the wires take their producer's tint, the extra's out of the limiter, the continuous one out of the lag
   const fromLimiter = await wireStroke(page, "actuators/δe_lag|in|u"), fromLag = await wireStroke(page, "⟨out⟩δe|in|δe");

@@ -51,7 +51,18 @@ export const palette = {
     { fill: "#b7b6da", stroke: "#755074" }, // lavender, plum
     { fill: "#f5eeb1", stroke: "#4c5512" }, // cream, olive
   ] as readonly Pair[],
-  /** A block past the eighth step: a light neutral, its legend number in a badge. */
+  /**
+   * The first four extras, steps 8 to 11, numbered #9 to #12 (visual_grammar.md answer 6 as amended): distinct
+   * under normal vision only, at least CIEDE2000 16.6 apart and from the steps, the continuous, extra and root-tag
+   * pairs and the wires' gray, their badges telling them apart for every reader. Same rules as the steps.
+   */
+  extras: [
+    { fill: "#ffd7eb", stroke: "#d1278f" }, // pale pink, magenta
+    { fill: "#61fdb9", stroke: "#12977f" }, // mint, teal green
+    { fill: "#5cc1f2", stroke: "#0d6369" }, // sky, dark teal
+    { fill: "#efac94", stroke: "#a7798f" }, // salmon, dusty mauve
+  ] as readonly Pair[],
+  /** A block past the twelfth step: a light neutral shared by all, its legend number in a badge. */
   extra: { fill: "#f2f2f2", stroke: "#8c8c8c" },
   /** Increment 7's diagnostics overlay: errors and warnings. */
   error: "#cf222e",
@@ -70,3 +81,9 @@ export const palette = {
 
 /** A wire's lighter tint of a step's stroke. */
 export const tint = (stroke: string): string => `color-mix(in srgb, ${stroke} 55%, white)`;
+
+/** A step's colors: a palette step's, one of the four colored extras', or the shared neutral past them. */
+export const stepPair = (step: number): Pair =>
+  step < palette.rate.length ? palette.rate[step]
+  : step < palette.rate.length + palette.extras.length ? palette.extras[step - palette.rate.length]
+  : palette.extra;

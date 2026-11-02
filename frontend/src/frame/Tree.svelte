@@ -4,10 +4,10 @@
   // the search field on top, its results in the outline's place while listing,
   // the hits' dashed markers on the rows otherwise. The tree never filters.
   import { tick, type Snippet } from "svelte";
-  import { palette } from "../canvas/palette";
+  import { palette, stepPair } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
   import type { Model } from "../lib/model";
-  import { blockTriple, STEPS, stepsOf, tripleKey } from "../lib/rates";
+  import { blockTriple, stepsOf, tripleKey } from "../lib/rates";
   import type { Mode } from "../state/prefs.svelte";
   import { folderOf, outlineRows, rowSelection, type Row } from "../lib/outline";
 
@@ -63,13 +63,13 @@
     return (folderOf(model.tree!, r.path)?.members ?? []).reduce((n, m) => n + (marks.has(m) ? 1 : 0) + (counts.get(m) ?? 0), 0);
   }
   const steps = $derived(stepsOf(model));
-  /** A row's dot: the tier's color, or in rate mode the triple's step, an extra, the continuous color, an assembly with no discrete leaf gray. */
+  /** A row's dot: the tier's color, or in rate mode the triple's step, a colored extra or the shared neutral past them, the continuous color, an assembly with no discrete leaf gray. */
   const dot = (r: Row) => {
     const n = model.tree!.byPath.get(r.path)!;
     if (mode === "tier") return n.class === "assembly" ? palette.assembly : n.tier === "discrete" ? palette.discrete : palette.continuous;
     const t = blockTriple(model, r.path);
     const step = t && steps.get(tripleKey(t));
-    if (step !== undefined) return step < STEPS ? palette.rate[step] : palette.extra;
+    if (step !== undefined) return stepPair(step);
     return n.class === "assembly" ? palette.assembly : palette.continuous;
   };
 </script>

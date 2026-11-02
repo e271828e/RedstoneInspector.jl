@@ -27,7 +27,7 @@
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
-  import { palette, tint, type Pair } from "./palette";
+  import { palette, stepPair, tint, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
     BADGE_FONT, cutConstant, cutLabel, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
@@ -103,7 +103,8 @@
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
   /**
    * Each wire's color: in tier mode gray, an opaque wire the lighter gray; in rate mode the tint of its terminal
-   * producer's step, the continuous tint with no triple, the neutral gray from a root input.
+   * producer's step's stroke (a colored extra's, or the shared neutral's past them), the continuous tint with no
+   * triple, the neutral gray from a root input.
    */
   const strokes = $derived.by(() => {
     const out = new Map<string, string>();
@@ -114,7 +115,7 @@
       else {
         const t = wireTriple(model, shown.level.path, w);
         const step = t && steps.get(tripleKey(t));
-        out.set(w.id, tint(step === undefined ? palette.continuous.stroke : step < STEPS ? palette.rate[step].stroke : palette.extra.stroke));
+        out.set(w.id, tint(step === undefined ? palette.continuous.stroke : stepPair(step).stroke));
       }
     }
     return out;
@@ -401,13 +402,13 @@
   const isStage1 = (b: ChildBlock, name: string) => b.role === "leaf" && !!stage1.get(b.path)?.has(name);
   const tierColors = (b: ChildBlock) =>
     b.role === "assembly" ? palette.assembly : b.tier === "discrete" ? palette.discrete : palette.continuous;
-  /** A child's colors in the mode, and in rate mode its step: a palette step's, an extra's, or the continuous pair with no triple. */
+  /** A child's colors in the mode, and in rate mode its step: a palette step's, a colored extra's, the shared neutral past them, or the continuous pair with no triple. */
   function colorsOf(b: ChildBlock): { c: Pair; step?: number } {
     if (mode === "tier") return { c: tierColors(b) };
     const t = blockTriple(model, b.path);
     const step = t && steps.get(tripleKey(t));
     if (step === undefined) return { c: palette.continuous };
-    return { c: step < STEPS ? palette.rate[step] : palette.extra, step };
+    return { c: stepPair(step), step };
   }
   /** Rate mode's badge: the legend number of an extra, the clock count of a multi-rate assembly, joined when both. */
   function badgeOf(b: ChildBlock, step: number | undefined): { text: string; title: string } | undefined {
@@ -668,6 +669,9 @@
             {:else if l.step < STEPS}
               <span class="swatch" style:background={palette.rate[l.step].fill} style:border-color={palette.rate[l.step].stroke}></span>
             {:else}
+              {#if stepPair(l.step) !== palette.extra}
+                <span class="swatch" style:background={stepPair(l.step).fill} style:border-color={stepPair(l.step).stroke}></span>
+              {/if}
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
             {/if}
             <span class="text">{l.text}</span>
