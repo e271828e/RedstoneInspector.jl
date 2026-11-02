@@ -11,17 +11,18 @@ import { blockBoxes, clickWire, drop, expect, hash, press, readyLevel, shot, vie
 type Box = { id: string; x: number; y: number; width: number; height: number };
 type Dir = "h" | "j" | "k" | "l";
 
-/** The check's own reading of `nearest`: the quadrant of the direction, the least center distance, ties by the lower id. */
+/** The check's own reading of `nearest`: centers beyond the origin's far edge, the least edge gap plus twice the perpendicular center offset, ties by the lower id. */
 function nearest(boxes: Box[], from: string, dir: Dir): string | undefined {
   const c = (b: Box) => [b.x + b.width / 2, b.y + b.height / 2];
-  const [ox, oy] = c(boxes.find((b) => b.id === from)!);
-  const unit = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] }[dir];
+  const o = boxes.find((b) => b.id === from)!;
+  const [ox, oy] = c(o);
   const ranked = boxes.filter((b) => b.id !== from).map((b) => {
     const [x, y] = c(b);
-    const along = (x - ox) * unit[0] + (y - oy) * unit[1];
-    const across = unit[0] !== 0 ? y - oy : x - ox;
-    return { id: b.id, inQuadrant: along > Math.abs(across), d: Math.hypot(x - ox, y - oy) };
-  }).filter((r) => r.inQuadrant).sort((a, b) => a.d - b.d || (a.id < b.id ? -1 : 1));
+    const beyond = dir === "l" ? x >= o.x + o.width : dir === "h" ? x <= o.x : dir === "j" ? y >= o.y + o.height : y <= o.y;
+    const along = dir === "l" ? b.x - (o.x + o.width) : dir === "h" ? o.x - (b.x + b.width) : dir === "j" ? b.y - (o.y + o.height) : o.y - (b.y + b.height);
+    const across = dir === "h" || dir === "l" ? Math.abs(y - oy) : Math.abs(x - ox);
+    return { id: b.id, beyond, score: Math.max(along, 0) + 2 * across };
+  }).filter((r) => r.beyond).sort((a, b) => a.score - b.score || (a.id < b.id ? -1 : 1));
   return ranked[0]?.id;
 }
 

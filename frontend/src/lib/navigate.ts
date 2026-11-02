@@ -11,24 +11,33 @@ export type Direction = "h" | "j" | "k" | "l";
 const center = (b: Rect) => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 });
 
 /**
- * The box nearest to `from` in a direction: among the boxes whose center lies in that direction's quadrant of
- * the origin's center, the component along the direction exceeding the perpendicular one, the least distance
- * between centers, ties by the lower id; undefined when none.
+ * The box nearest to `from` in a direction (workspace.md answer 11, as settled 2026-11-02): among the boxes whose
+ * center lies beyond the origin's far edge in that direction, so a box in the origin's own layer never counts, the
+ * least score, the gap between the facing edges (clamped at zero) plus twice the perpendicular offset between
+ * centers; ties by the lower id; undefined when none. Edges along the direction, since that is how far the eye
+ * travels to the next box; centers across it, so a tall box barely overlapping the origin's row does not beat one
+ * level with it.
  */
 export function nearest(boxes: readonly Box[], from: string, direction: Direction): string | undefined {
   const origin = boxes.find((b) => b.id === from);
   if (!origin) return undefined;
   const o = center(origin);
-  let best: { id: string; d: number } | undefined;
+  const horizontal = direction === "h" || direction === "l";
+  let best: { id: string; score: number } | undefined;
   for (const b of boxes) {
     if (b.id === from) continue;
     const c = center(b);
-    const dx = c.x - o.x, dy = c.y - o.y;
-    const along = direction === "l" ? dx : direction === "h" ? -dx : direction === "j" ? dy : -dy;
-    const across = direction === "h" || direction === "l" ? dy : dx;
-    if (!(along > Math.abs(across))) continue;
-    const d = Math.hypot(dx, dy);
-    if (!best || d < best.d || (d === best.d && b.id < best.id)) best = { id: b.id, d };
+    let beyond: boolean, along: number;
+    switch (direction) {
+      case "l": beyond = c.x >= origin.x + origin.width; along = b.x - (origin.x + origin.width); break;
+      case "h": beyond = c.x <= origin.x; along = origin.x - (b.x + b.width); break;
+      case "j": beyond = c.y >= origin.y + origin.height; along = b.y - (origin.y + origin.height); break;
+      case "k": beyond = c.y <= origin.y; along = origin.y - (b.y + b.height); break;
+    }
+    if (!beyond) continue;
+    const across = horizontal ? Math.abs(c.y - o.y) : Math.abs(c.x - o.x);
+    const score = Math.max(along, 0) + 2 * across;
+    if (!best || score < best.score || (score === best.score && b.id < best.id)) best = { id: b.id, score };
   }
   return best?.id;
 }
