@@ -24,7 +24,7 @@
     search?: Snippet;
     /** The search results stand in the outline's place. */
     listing?: boolean;
-    /** The node paths a standing query marks. */
+    /** The node paths a standing query marks, else those the legend's focus marks. */
     marks?: ReadonlySet<string>;
     /** Each assembly's count of marked nodes beneath it. */
     counts?: ReadonlyMap<string, number>;

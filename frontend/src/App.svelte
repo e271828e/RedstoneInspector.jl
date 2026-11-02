@@ -21,9 +21,10 @@
   import { nearest, type Direction } from "./lib/navigate";
   import { outlineRows, rowSelection, treeStep } from "./lib/outline";
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
+  import { legendLit, legendMarks } from "./lib/focus";
   import {
-    back, climb, escape, forward, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery,
-    setView, toggleDrawer, toggleExpanded, type Region,
+    back, clearLegendFocus, climb, escape, forward, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery,
+    setView, toggleDrawer, toggleExpanded, toggleLegendFocus, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels } from "./state/prefs.svelte";
@@ -57,9 +58,16 @@
     const terms = parseQuery(session.query);
     return model?.tree && terms.length ? searchModel(model, terms) : undefined;
   });
-  const marks = $derived(found && marked(found));
-  const counts = $derived(model?.tree && marks ? beneath(model.tree, marks) : undefined);
   const hits = $derived(model?.tree && found ? levelHits(model.tree, session.level, found) : undefined);
+  // The legend's focus, rate mode's alone: tier mode clears it. The canvas shows it over a standing query's hits,
+  // the tree the query's marks over its own.
+  $effect(() => {
+    if (prefs.mode === "tier") clearLegendFocus();
+  });
+  const legendFocus = $derived(prefs.mode === "rate" ? session.legendFocus : undefined);
+  const lit = $derived(model?.tree && legendFocus !== undefined ? legendLit(model, session.level, legendFocus) : undefined);
+  const marks = $derived(found ? marked(found) : model?.tree && legendFocus !== undefined ? legendMarks(model, legendFocus) : undefined);
+  const counts = $derived(model?.tree && marks ? beneath(model.tree, marks) : undefined);
 
   $effect(() => {
     document.title = model ? `${model.label} – Redstone inspector` : "Redstone inspector";
@@ -274,12 +282,13 @@
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} {hits}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {legendFocus}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
               onview={(v) => setView(session.level, v)}
               onlayout={(g, d) => setLayout(session.level, g, d)}
+              onlegend={toggleLegendFocus}
             />
           {/key}
         {:else}

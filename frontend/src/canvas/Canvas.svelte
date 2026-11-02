@@ -23,6 +23,7 @@
   import { GLYPHS } from "./glyphs";
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
+  import type { Lit } from "../lib/focus";
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
@@ -33,7 +34,10 @@
     sizeLevel, textWidth,
   } from "./size";
 
-  let { model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, focused = false, onopen, onselect, onview, onlayout }: {
+  let {
+    model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, lit, legendFocus, focused = false,
+    onopen, onselect, onview, onlayout, onlegend,
+  }: {
     model: Model;
     path: string;
     /** The color mode: by tier, or by rate with the badges and the legend. */
@@ -48,6 +52,10 @@
     layout?: LevelLayout;
     /** A standing query's hits on this level: drawn with the dashed halo, the rest dimmed. */
     hits?: LevelHits;
+    /** The legend's focus on this level: its blocks and wires lit, the rest dimmed as for a search. */
+    lit?: Lit;
+    /** The focused legend line's key, its button pressed. */
+    legendFocus?: string;
     /** The keyboard's focus is in the canvas region. */
     focused?: boolean;
     onopen?: (path: string) => void;
@@ -57,6 +65,8 @@
     onview?: (view: View) => void;
     /** A level laid out, or a drag released: the geometry and the dragged block ids in drag order. */
     onlayout?: (geometry: Geometry, dragged: ReadonlySet<string>) => void;
+    /** A click on a legend line, with its key. */
+    onlegend?: (key: string) => void;
   } = $props();
 
   const FIT_PADDING = 24;
@@ -419,7 +429,9 @@
     hover: same(hovered, "block", b.id) && !same(selected, "block", b.id),
     "search-hit": !!hits?.blocks.has(b.id),
     "search-under": !!hits?.under.has(b.id),
+    lit: !!lit?.blocks.has(b.id),
   });
+  const wireLit = (id: string) => !!lit?.wires.has(id);
   /** A hit's halo is dashed, the selected hit's solid. */
   const dashed = (b: Block) => (!!hits?.blocks.has(b.id) || !!hits?.under.has(b.id)) && !same(selected, "block", b.id);
   const portClass = (id: string) => ({
@@ -437,7 +449,7 @@
   style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight};--dim:{palette.dim};--dash:{palette.dash}"
 >
   <svg
-    bind:this={svg} class="canvas" class:searching={!!hits} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
+    bind:this={svg} class="canvas" class:searching={!!hits} class:legend-focus={!!lit} data-focus={lit ? legendFocus : undefined} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
     data-mode={mode} data-labels={labels ? "" : undefined} data-detail={detailAt(view.scale)}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
@@ -499,13 +511,13 @@
           {#if route}
             {@const struct = classes.get(w.id) === "struct"}
             <path
-              class="wire" class:selected={same(selected, "wire", w.id)}
+              class="wire" class:selected={same(selected, "wire", w.id)} class:lit={wireLit(w.id)}
               class:hover={same(hovered, "wire", w.id) && !same(selected, "wire", w.id)}
               data-wire={w.id} data-kind={classes.get(w.id)} d={pathD(route)} style:stroke={strokes.get(w.id)}
               marker-end={struct ? undefined : arrowOf(w.id)}
             />
             {#if struct}
-              <path class="wire-core" data-wire={w.id} d={pathD(route)} marker-end={arrowOf(w.id)} />
+              <path class="wire-core" class:lit={wireLit(w.id)} data-wire={w.id} d={pathD(route)} marker-end={arrowOf(w.id)} />
             {/if}
             <path
               class="wire-hit" data-hit={w.id} d={pathD(route)} role="none"
@@ -519,7 +531,7 @@
       <g class="junctions">
         {#each g.junctions as [id, points] (id)}
           {#each points as p, k (k)}
-            <circle class="junction" data-wire={id} cx={p.x} cy={p.y} r="2.5" fill={strokes.get(id)} />
+            <circle class="junction" class:lit={wireLit(id)} data-wire={id} cx={p.x} cy={p.y} r="2.5" fill={strokes.get(id)} />
           {/each}
         {/each}
       </g>
@@ -617,7 +629,7 @@
         <!-- above the blocks, each on a halo of the background -->
         <g class="type-labels">
           {#each typeLabels as t (t.port)}
-            <text class="type-label" data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} text-anchor="middle" style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
+            <text class="type-label" class:lit={wireLit(t.wire)} data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} text-anchor="middle" style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
           {/each}
         </g>
       {/if}
@@ -629,6 +641,7 @@
       <ul>
         {#each lines as l (l.key)}
           <li data-step={l.step} class:continuous={l.step === undefined} title={l.title}>
+            <button class="line" aria-pressed={legendFocus === l.key} onclick={() => onlegend?.(l.key)}>
             {#if l.step === undefined}
               <span class="swatch" style:background={palette.continuous.fill} style:border-color={palette.continuous.stroke}></span>
             {:else if l.step < STEPS}
@@ -637,6 +650,7 @@
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
             {/if}
             <span class="text">{l.text}</span>
+            </button>
           </li>
         {/each}
       </ul>
@@ -664,11 +678,18 @@
   svg { display: block; touch-action: none; cursor: grab; }
   .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
   .legend {
-    position: absolute; bottom: 8px; left: 8px; padding: 4px 8px; font: 11px system-ui, sans-serif;
+    position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
   }
   .legend ul { list-style: none; margin: 0; padding: 0; }
-  .legend li { display: flex; align-items: center; gap: 6px; line-height: 16px; }
+  .legend li { line-height: 16px; }
+  .legend .line {
+    all: unset; display: flex; align-items: center; gap: 6px; box-sizing: border-box; width: 100%; padding: 0 4px; white-space: nowrap;
+    border-radius: 3px; cursor: pointer;
+  }
+  .legend .line:hover { background: color-mix(in srgb, var(--highlight) 10%, transparent); }
+  .legend .line[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 18%, transparent); }
+  .legend .line:focus-visible { outline: 2px solid var(--highlight); }
   .legend .swatch { width: 12px; height: 10px; border: 1px solid; border-radius: 2px; }
   .legend .number { min-width: 20px; padding: 0 2px; border: 1px solid; border-radius: 6px; font-size: 9px; line-height: 10px; text-align: center; }
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
@@ -715,6 +736,9 @@
   .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
   .searching :is(.wire, .wire-core, .junction, .type-label) { opacity: var(--dim); }
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
+  /* The legend's focus (answer 6 as amended): the same dimming, its blocks and the wires it tints lit. */
+  .legend-focus :is(.wire, .wire-core, .junction, .type-label):not(.lit) { opacity: var(--dim); }
+  .legend-focus .block:not(.lit) > :not(.halo):not(.port-halo) { opacity: var(--dim); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }
   /* The text levels (visual_grammar.md answer 10): below each floor one level drops; wires, ports, pins' labels and captions stay. */

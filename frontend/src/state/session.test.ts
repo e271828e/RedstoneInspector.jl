@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fixtureJson, fixtureModel } from "../lib/fixtures";
 import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
-import { climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, select, session, setQuery } from "./session.svelte";
+import { climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, select, session, setQuery, toggleLegendFocus } from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
   it("a build carrying one warning and no diagnostic loads with the drawer closed, the warning counted", () => {
@@ -54,6 +54,36 @@ describe("load: a replacement rekeys, a refusal unloads", () => {
     expect([session.query, session.selection?.target.id]).toEqual(["", "plant"]);
     escape();
     expect(session.selection).toBeUndefined();
+  });
+
+  it("Escape clears the legend's focus before the query and the selection; a second click on the line clears it too", () => {
+    load(fixtureModel("closed_loop"));
+    select({ level: "", target: { kind: "block", id: "plant" } });
+    setQuery("h");
+    toggleLegendFocus("0,1,0");
+    expect(session.legendFocus).toBe("0,1,0");
+    escape();
+    expect([session.legendFocus, session.query, session.selection?.target.id]).toEqual([undefined, "h", "plant"]);
+    toggleLegendFocus("continuous");
+    toggleLegendFocus("4,1,0");
+    expect(session.legendFocus).toBe("4,1,0");
+    toggleLegendFocus("4,1,0");
+    expect(session.legendFocus).toBeUndefined();
+  });
+
+  it("the legend's focus holds across levels and a push that keeps the triple, and goes with one that does not or a fresh load", () => {
+    load(fixtureModel("closed_loop"));
+    toggleLegendFocus("4,1,0");
+    open("pid_controller");
+    expect(session.legendFocus).toBe("4,1,0");
+    load(fixtureModel("closed_loop_deployment"));
+    expect(session.legendFocus).toBe("4,1,0");
+    load(fixtureModel("rates"));
+    expect(session.legendFocus).toBeUndefined();
+    toggleLegendFocus("continuous");
+    load(undefined);
+    load(fixtureModel("rates"));
+    expect(session.legendFocus).toBeUndefined();
   });
 });
 
