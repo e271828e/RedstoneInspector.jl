@@ -3,7 +3,7 @@
   // detail.ts's facts, the open level's when nothing is selected. Links select
   // through the session; nothing here is truncated, the pane scrolls.
   import {
-    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberTitle, type FaceFacts, type Facts, type Selection,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type Selection,
   } from "../lib/detail";
   import type { Model } from "../lib/model";
   import { inPinId, outPinId, portId } from "../lib/level";
@@ -39,7 +39,6 @@
   const pick = (f: Face) => onselect(faceSelection(model.tree!, f));
   const faceText = (f: Face) => (f.path === "" ? `${f.port} (root ${f.side === "in" ? "input" : "output"})` : `${f.path}/${f.port}`);
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
-  const firstLine = (doc: string) => doc.split("\n").find((l) => l.trim())!.trimStart();
   /** A face row selects its port, or on the level's layout the level's pin. */
   const rowSelection = (f: Face): Selection => facts?.kind === "level"
     ? { level, target: { kind: "block", id: f.side === "in" ? inPinId(f.port) : outPinId(f.port) } }
@@ -129,7 +128,7 @@
         {#if facts.membership}
           <dt title={FACT_TITLES.member}>member</dt>
           <dd data-fact="member" title={memberTitle(facts.membership)}>
-            field <code>{facts.membership.field}</code>, key <code>{facts.membership.key}</code>
+            {memberKind(facts.membership.how)} <code>{facts.membership.field}</code>, key <code>{facts.membership.key}</code>
           </dd>
         {/if}
       </dl>
@@ -137,7 +136,7 @@
       {#if facts.docstring}
         {#key facts.path}
           <details class="docstring">
-            <summary><span class="title">docstring</span><span class="first">{firstLine(facts.docstring)}</span></summary>
+            <summary><span class="title">docstring</span></summary>
             <pre class="docstring">{facts.docstring}</pre>
           </details>
         {/key}
@@ -159,7 +158,7 @@
       {/if}
       {#if facts.parameters.length}
         <h3>Parameters</h3>
-        <table class="parameters"><tbody>{#each facts.parameters as p (p.name)}<tr><td><code>{p.name}</code></td><td><code>{p.value}</code></td></tr>{/each}</tbody></table>
+        <table class="parameters"><tbody>{#each facts.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
       {/if}
       {#if facts.inputs.length + facts.outputs.length}<h3>Faces</h3>{/if}
       {@render faces(facts.inputs, facts.outputs, facts.kind === "leaf", true)}
@@ -198,7 +197,7 @@
 {/if}
 
 <style>
-  .detail { padding: 2px 10px 16px; font-size: 13px; overflow-wrap: break-word; }
+  .detail { padding: 2px 10px 16px; font-size: 13px; overflow-wrap: break-word; container-type: inline-size; }
   h2 { font-size: 15px; margin: 4px 0 2px; font-weight: 400; }
   h2 .segment { font-weight: 600; }
   h2 .name { color: var(--text-light); }
@@ -218,12 +217,6 @@
   .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
   .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
   details.docstring { margin: 8px 0; }
-  details.docstring summary { white-space: nowrap; overflow: hidden; }
-  details.docstring summary .first {
-    display: inline-block; vertical-align: bottom; max-width: calc(100% - 90px); margin-left: 8px; overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 12px; opacity: 0.8;
-  }
   pre.docstring { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 8px 0; border-radius: 3px; }
   ul { margin: 0; padding-left: 16px; }
   .locations { list-style: none; padding: 0; }
@@ -245,6 +238,27 @@
   .faces .face-name { font-weight: 600; }
   .faces .face-type { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; min-width: 8ch; }
   .face-kind { color: var(--text-light); }
+  /* A narrow pane (workspace.md answer 4 as amended): each parameter's summary under its name, each face a small block. */
+  @container (max-width: 420px) {
+    .parameters, .parameters tbody, .parameters tr, .parameters td { display: block; }
+    .parameters tr { padding: 2px 0; }
+    .parameters td { padding: 0; }
+    .faces, .faces tbody { display: block; }
+    .faces thead { display: none; }
+    .faces tbody tr {
+      display: grid; grid-template-columns: max-content max-content minmax(0, 1fr); column-gap: 6px; padding: 3px 0;
+      grid-template-areas: "side name kind" "type type type" "pinned stage links"; border-top: 1px solid var(--strip);
+    }
+    .faces td { padding: 0; }
+    .faces .side { grid-area: side; }
+    .faces .face-name { grid-area: name; }
+    .faces .face-kind { grid-area: kind; }
+    .faces .face-type { grid-area: type; min-width: 0; }
+    .faces .pinned { grid-area: pinned; }
+    .faces .stage { grid-area: stage; }
+    .faces .stage[title]::before { content: "stage "; color: var(--text-light); }
+    .faces .links { grid-area: links; }
+  }
   a { color: var(--highlight); text-decoration: none; }
   a:hover { text-decoration: underline; }
 </style>

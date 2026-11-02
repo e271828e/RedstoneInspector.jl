@@ -64,6 +64,10 @@ export function ratePhrase(t: Timing, anchors: Anchor[]): string {
 /** The class and, on a leaf, the tier: "leaf, continuous", "assembly". */
 export const classPhrase = (kind: "leaf" | "assembly", tier?: string): string => (tier ? `${kind}, ${tier}` : kind);
 
+/** The member row's lead before the field: the container's kind, or "field" for a membership of neither form. */
+export const memberKind = (how: Membership | undefined): string =>
+  how === "transparent" ? "transparent container" : how === "keyed" ? "keyed container" : "field";
+
 /** The membership kind explained, the member row's hover title. */
 export function memberTitle(m: { how: Membership | undefined; field: string; key: string }): string {
   if (m.how === "keyed") return `Keyed: an element of the container in field ${m.field}, its path segment ${m.field}/${m.key}.`;

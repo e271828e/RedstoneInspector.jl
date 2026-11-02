@@ -1,7 +1,7 @@
 // The detail pane (workspace.md answer 4): each layout read field by field on
 // closed_loop, the labelled facts with their titles, the open button beside the copy
 // button, the links and face rows that select, the copy button; rates' scope line and
-// rate row, and containers' folder keys.
+// rate row, containers' folder keys and keyed member; the narrow pane's stacked rows.
 import { test, type Page } from "@playwright/test";
 import { clickWire, drop, expect, openPath, readyLevel, shot } from "./fixtures";
 
@@ -45,7 +45,7 @@ test.describe("closed_loop", () => {
     await expectLabels(page, ["type", "class", "member"]);
     await expect(fact(page, "class")).toHaveText("leaf, continuous");
     await expect(fact(page, "rate")).toHaveCount(0);
-    await expect(fact(page, "member")).toHaveText("field children, key plant");
+    await expect(fact(page, "member")).toHaveText("transparent container children, key plant");
     await expect(fact(page, "member")).toHaveAttribute("title", /^Transparent: /);
     await expect(pane(page).locator(".alias")).toHaveCount(0);
     await expect(fact(page, "type").locator(".type")).toHaveText("RedstoneExamples.Longitudinal");
@@ -56,17 +56,10 @@ test.describe("closed_loop", () => {
     const docstring = pane(page).locator("details.docstring");
     await expect(docstring).toHaveCount(1);
     await expect(docstring).not.toHaveAttribute("open");
-    // the summary: the title, then the first non-empty line without its leading spaces, on one line
-    const doc = (await docstring.locator("pre.docstring").textContent())!;
+    // the summary: the title alone, the call form left to the body
+    await expect(docstring.locator("summary")).toHaveText("docstring");
     await expect(docstring.locator("summary .title")).toHaveText("docstring");
-    const first = (await docstring.locator("summary .first").textContent())!;
-    expect(first).toMatch(/^Longitudinal\(/);
-    expect(first).toBe(doc.split("\n").find((l) => l.trim())!.trimStart());
-    const line = await docstring.locator("summary .first").evaluate((e) => ({
-      height: e.getBoundingClientRect().height, overflow: getComputedStyle(e).textOverflow, wrap: getComputedStyle(e).whiteSpace,
-    }));
-    expect(line.height).toBeLessThan(20);
-    expect([line.overflow, line.wrap]).toEqual(["ellipsis", "nowrap"]);
+    await expect(docstring.locator("pre.docstring")).toContainText("Longitudinal(");
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["δe", "δt"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["V", "γ", "θ", "q", "h", "α"]);
     await expect(pane(page).locator("table.faces tr[data-port] .face-type")).toHaveText(Array(8).fill("Float64"));
@@ -258,6 +251,48 @@ test("containers: the folder's keys select their nodes", async ({ page }) => {
   await expect(pane(page).locator("details.signature")).toHaveCount(0);
   await expect(page.locator('nav.tree .row.selected[data-path="gains/a"]')).toHaveCount(1);
   await expect(page.locator('g.block.selected[data-id="gains/a"]')).toHaveCount(1);
+  await expect(fact(page, "member")).toHaveText("keyed container gains, key a");
+  await expect(fact(page, "member")).toHaveAttribute("title", /^Keyed: /);
+});
+
+/** The client boxes of a row's cells, by class. */
+const cells = (page: Page, row: string, classes: string[]) => pane(page).locator(row).first().evaluate((tr, classes) =>
+  Object.fromEntries(classes.map((c) => {
+    const r = tr.querySelector(`.${c}`)!.getBoundingClientRect();
+    return [c, { left: r.left, top: r.top, bottom: r.bottom, width: r.width }];
+  })), classes);
+/** Stores the detail pane's width in the prefs and drops closed_loop with plant selected. */
+async function plantAt(page: Page, detail: number) {
+  await drop(page, "closed_loop");
+  await page.evaluate((detail) => localStorage.setItem("redstone-inspector/prefs",
+    JSON.stringify({ version: 1, sizes: { tree: 280, detail, drawer: 200 }, collapsed: { tree: false, detail: false } })), detail);
+  await drop(page, "closed_loop");
+  await page.locator('g.block[data-id="plant"]').click();
+  await expect(pane(page)).toHaveAttribute("data-id", "plant");
+}
+
+test("a narrow pane stacks each parameter's summary under its name and each face's facts; a wide one keeps the rows", async ({ page }) => {
+  await plantAt(page, 240);
+  const width = await pane(page).locator("table.parameters").evaluate((t) => t.getBoundingClientRect().width);
+  const p = await cells(page, "table.parameters tr", ["param-name", "param-value"]);
+  expect(p["param-value"].top).toBeGreaterThanOrEqual(p["param-name"].bottom - 1);
+  for (const c of ["param-name", "param-value"]) expect(p[c].width, c).toBeGreaterThan(width - 2);
+  const f = await cells(page, 'table.faces tr[data-port="plant|out|V"]', ["face-name", "face-kind", "face-type", "stage", "links"]);
+  expect(Math.abs(f["face-kind"].top - f["face-name"].top)).toBeLessThan(2);
+  expect(f["face-kind"].left).toBeGreaterThan(f["face-name"].left);
+  expect(f["face-type"].top).toBeGreaterThanOrEqual(f["face-name"].bottom - 1);
+  for (const c of ["stage", "links"]) expect(f[c].top, c).toBeGreaterThanOrEqual(f["face-type"].bottom - 1);
+  await expect(pane(page).locator("table.faces thead")).toBeHidden();
+  await expect(pane(page).locator(".parameters tr")).toHaveCount(14);
+  await shot(page, "closed_loop", "", "detail-narrow");
+
+  await plantAt(page, 600);
+  const q = await cells(page, "table.parameters tr", ["param-name", "param-value"]);
+  expect(Math.abs(q["param-value"].top - q["param-name"].top)).toBeLessThan(2);
+  const g = await cells(page, 'table.faces tr[data-port="plant|out|V"]', ["face-name", "face-type", "stage"]);
+  expect(Math.abs(g["face-type"].top - g["face-name"].top)).toBeLessThan(2);
+  expect(Math.abs(g.stage.top - g["face-name"].top)).toBeLessThan(2);
+  await expect(pane(page).locator("table.faces thead")).toBeVisible();
 });
 
 test("the level facts count in the singular and the plural: aircraft's one child, kinds' ten wires", async ({ page }) => {

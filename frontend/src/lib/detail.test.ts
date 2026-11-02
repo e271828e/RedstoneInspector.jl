@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { KindMarker, LeafFace, StructureSection } from "./descriptor";
 import {
-  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, levelLine, memberTitle, nodeFacts, pinFacts, portFacts,
+  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, levelLine, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
   ratePhrase, timingPhrase, wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
@@ -83,6 +83,10 @@ describe("ratePhrase", () => {
     expect(classPhrase(p.kind, p.tier)).toBe("leaf, continuous");
     expect(classPhrase("assembly")).toBe("assembly");
   });
+  it("the member row names the container's kind, the field alone for neither form", () => {
+    expect([memberKind("transparent"), memberKind("keyed"), memberKind(undefined)]).toEqual(["transparent container", "keyed container", "field"]);
+  });
+
   it("the member title explains the kind", () => {
     expect(memberTitle({ how: "transparent", field: "children", key: "plant" })).toMatch(/^Transparent: .*children.*plant/);
     expect(memberTitle({ how: "keyed", field: "gains", key: "a" })).toMatch(/^Keyed: .*gains\/a/);
