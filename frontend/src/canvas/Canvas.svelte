@@ -29,7 +29,7 @@
   import { palette, tint, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutConstant, FONT_STACK, cutName, cutType, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, cutConstant, detailAt, FONT_STACK, cutName, cutType, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLevel, textWidth,
   } from "./size";
 
@@ -429,7 +429,7 @@
 >
   <svg
     bind:this={svg} class="canvas" class:searching={!!hits} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
-    data-mode={mode} data-labels={labels ? "" : undefined}
+    data-mode={mode} data-labels={labels ? "" : undefined} data-detail={detailAt(view.scale)}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
   >
@@ -603,7 +603,7 @@
                 {@const west = p.side === "in"}
                 {@const nameX = west ? PAD : box.width - PAD}
                 {@render port(b.id, id, p.x, p.y, p.name, !west && isStage1(b, p.name))}
-                <text x={nameX} y={p.y + 4} text-anchor={west ? "start" : "end"} style="font:{FACE_FONT}">{p.name}</text>
+                <text class="face" x={nameX} y={p.y + 4} text-anchor={west ? "start" : "end"} style="font:{FACE_FONT}">{p.name}</text>
                 {#if isPinned(tree, b, p.side, p.name)}
                   {@const w = textWidth(p.name, FACE_FONT)}
                   <path class="pinned" data-port={id} d={markD(west ? nameX + w + MARK / 2 : nameX - w - MARK / 2, p.y)}>
@@ -709,6 +709,10 @@
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }
+  /* The text levels (visual_grammar.md answer 10): below each floor one level drops; wires, ports, pins' labels and captions stay. */
+  svg:not([data-detail="full"]) text.face { display: none; }
+  svg:is([data-detail="segments"], [data-detail="frames"]) :is(text.display, .icon) { display: none; }
+  svg[data-detail="frames"] text.segment { display: none; }
   /* An icon's glyph takes the text color; its title shows on hover. */
   .icon { color: var(--text); pointer-events: bounding-box; }
 </style>

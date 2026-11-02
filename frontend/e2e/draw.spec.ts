@@ -16,6 +16,9 @@ const CLOSED_LOOP: Record<string, Pins> = {
   selection: row(13, 12, 5, 4, 0, 2, 0),
   actuators: row(8, 6, 2, 2, 0, 2, 0),
 };
+// large's root draws its two output pins in reverse declaration order. Increment 6's ELK pass found one option
+// that fixes it, forceNodeModelOrder, and it raises large's crossings (663 to 699), so the order check was
+// dropped (MAP.md's open items).
 const LARGE_INNER = ["b008", "b023", "b038", "b053", "b068", "b083", "b098", "b113", "b128", "b143"];
 const TABLE: Record<string, Record<string, Pins>> = {
   aircraft: { "": row(3, 2, 2, 0, 0, 6, 0) },

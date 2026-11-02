@@ -211,7 +211,7 @@ describe("elkGraph's regions", () => {
     expect(g.edges).toHaveLength(7);
   });
 
-  it("closed_loop's root, with no region, builds increment 5's flat graph", () => {
+  it("closed_loop's root, with no region, builds the flat graph with increment 5's options and the ELK pass's thoroughness", () => {
     const m = fixtureModel("closed_loop");
     const l = level("closed_loop");
     const g = elkGraph(l, sized(l), regionsOf(m.tree!, ""));
@@ -228,6 +228,7 @@ describe("elkGraph's regions", () => {
       "elk.layered.spacing.edgeNodeBetweenLayers": "14",
       "elk.spacing.edgeEdge": "6",
       "elk.padding": "[top=20,left=20,bottom=20,right=20]",
+      "elk.layered.thoroughness": "20",
     });
     expect(g.children!.map((c) => c.id)).toEqual(l.blocks.map((b) => b.id));
     expect(g.children!.every((c) => c.children === undefined)).toBe(true);

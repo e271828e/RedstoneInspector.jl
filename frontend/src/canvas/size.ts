@@ -26,6 +26,17 @@ export const ICON_HEIGHT = 12;
 export const CONSTANT_WIDTH = 60;
 /** A wire type label's fixed width, past which it is cut with an ellipsis (visual_grammar.md answer 4). */
 export const TYPE_LABEL_WIDTH = 140;
+/**
+ * The legibility floor (visual_grammar.md answer 10): the scales, screen pixels per world unit, below which a
+ * text level drops, face names first, then the display name with its icon, the segment last. A first pass.
+ */
+export const FLOOR_FACES = 0.6;
+export const FLOOR_NAMES = 0.4;
+export const FLOOR_SEGMENTS = 0.25;
+export type Detail = "full" | "no-faces" | "segments" | "frames";
+/** The text levels drawn at a scale. */
+export const detailAt = (scale: number): Detail =>
+  scale >= FLOOR_FACES ? "full" : scale >= FLOOR_NAMES ? "no-faces" : scale >= FLOOR_SEGMENTS ? "segments" : "frames";
 export const PAD = 8;
 /** The two header lines: the segment, then the display name. */
 export const HEADER = 36;

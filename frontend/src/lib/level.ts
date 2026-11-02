@@ -114,7 +114,8 @@ export interface BlockSize {
   ports: PortPosition[];
 }
 
-// Greedy cycle breaking, with declaration order as the tie-break.
+// Greedy cycle breaking, with declaration order as the tie-break. The thoroughness is increment 6's ELK pass:
+// fewer crossings on closed_loop's root without more on large's or lqr_controller's (MAP.md's traps hold the table).
 const ROOT_OPTIONS = {
   "elk.algorithm": "layered",
   "elk.direction": "RIGHT",
@@ -127,6 +128,7 @@ const ROOT_OPTIONS = {
   "elk.layered.spacing.edgeNodeBetweenLayers": "14",
   "elk.spacing.edgeEdge": "6",
   "elk.padding": "[top=20,left=20,bottom=20,right=20]",
+  "elk.layered.thoroughness": "20",
 };
 
 /** A region's compound node id. */
