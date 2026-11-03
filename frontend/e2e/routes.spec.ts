@@ -6,7 +6,7 @@
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
 // read off the DOM.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, dropOver, expect, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { blockBoxes, drop, dropOver, effectiveOpacity, expect, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
@@ -47,7 +47,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   expect(await opacity(page, 'g.block[data-id="pid_controller"] > .shape')).toBe("1");
   expect(await opacity(page, 'path.wire[data-wire="pid_controller|in|h_ref"]')).toBe("1");
   expect(await opacity(page, 'path.wire[data-wire="sensing|in|h"]')).toBe("0.3");
-  expect(await opacity(page, 'g.badge[data-id="pid_controller"]')).toBe("1");
+  expect(await effectiveOpacity(page, 'g.badge[data-id="pid_controller"]')).toBe(1);
   await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
   await expect(statusRoute(page).locator("code")).toHaveText("h_ref");
   await expect(statusRoute(page).locator("button.clear-route")).toHaveText("clear");

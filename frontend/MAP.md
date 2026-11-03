@@ -78,7 +78,7 @@ drawn across levels, named in the status bar, kept across a push).
 | `src/frame/StatusBar.svelte` | the kind word, the model's totals, the color mode's word, the loader's note, the fallback note, the standing route with its clear control, the connection's state, the download |
 | `src/frame/Landing.svelte` | the privacy statement, the open control, the drop hint, a refusal |
 | `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
@@ -430,7 +430,7 @@ Each file sits beside its module, loads fixtures by name through
   at `plant`), the error winning on one block, nothing for a diagnostic at the
   root, on the level's own node or on a structureless model; `treeMarks`
   counting diagnostics, not rows, propagated to the root, `own` for the
-  ", beneath" title; `diagnosticTarget` (a port mark before a wire mark, a
+  ", beneath" title, the root's own for a diagnostic at the root; `diagnosticTarget` (a port mark before a wire mark, a
   pin's port for an endpoint on the root's path, a loop's first member, a node
   on its parent's level, every fixture row a target exactly when it has a
   structure and a node); `litBy` on `failure_nested` at both levels, the
@@ -962,7 +962,9 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   or beneath (`diagnosticMarks`, `treeMarks`) shows after its name a 7 px
   `span.mark` dot, red while its error count is positive, else amber, titled
   with the counts in words ("1 error", "2 warnings", "1 error, 1 warning")
-  and ", beneath" when the row's own node carries none; a row on a level the
+  and ", beneath" when the row's own node carries none, the root's row
+  included (a diagnostic at the root marks its row, though the canvas draws
+  nothing for it); a row on a level the
   standing route crosses (`routeMarks`, `routeLevels`, the root included,
   never propagated) a blue `span.mark` titled "on the route". Folder rows
   carry no mark. The tree never filters. Rows have `tabindex="-1"`, so a row click focuses the row and the
@@ -1050,12 +1052,13 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   `ondiagnostic(index)` and `onlocation`: `input.filter`, placeholder "Filter
   by kind, path or message", a case-insensitive substring over the kind, the
   raw path and the whole message, the component's own state, kept across a tab
-  switch and a push; then one `li.diagnostic` per row in the list's order, its
-  head the kind in the row's hue, the path (`/` for the root) and, when the
-  attributed node's type has a location, `a.location` reading `file:line` for
-  the first, which calls `onlocation` and on false copies with a `copied` mark
-  as the pane does; under it the whole message. A click on a row calls
-  `ondiagnostic`; the shell toggles the focus and, once focused, selects
+  switch and a push; then one `li.diagnostic` per row in the list's order
+  holding `button.row`, which wraps the head, the kind in the row's hue and
+  the path (`/` for the root), and under it the whole message; beside the
+  button, outside it, when the attributed node's type has a location,
+  `a.location` reading `file:line` for the first, which calls `onlocation` and
+  on false copies with a `copied` mark as the pane does. A click on the row's
+  button calls `ondiagnostic`; the shell toggles the focus and, once focused, selects
   `diagnosticTarget`'s selection, which shows its level; a structureless
   failure's rows focus alone. The focused row is `current` and scrolls into
   view whenever `current` changes while the drawer is open. With no row at all
@@ -1129,9 +1132,9 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   `button.tab[data-tab="diagnostics" | "root-inputs" | "timing" | "order"]`,
   `.count` on a tab that has one, and `.tab-body` while open; the diagnostics
   tab's body `div.diagnostics` holding `input.filter`, `ul.diagnostics >
-  li.diagnostic[data-index][data-severity]` with `.kind`, `.path`,
-  `a.location` and `pre.message`, `current` on the focused row, and
-  `p.empty`.
+  li.diagnostic[data-index][data-severity]` holding `button.row` with
+  `.kind`, `.path` and `pre.message`, and `a.location` beside the button,
+  `current` on the focused row, and `p.empty`.
 - `footer.status[data-kind]` holding `.counts`, `.mode[data-mode]`, `.note`, `.fallback`,
   `span.route` with its `code` and `button.clear-route`,
   `.connection[data-state="connected" | "lost"]` and `button.download`; under
@@ -1631,7 +1634,9 @@ the page's socket fails against `vite preview`, so every check but
   at the root, count 2; at `s` the amber halo and badge `EmptyFaceSelection`,
   the two badges' fills unlike; back at the root with the drawer closed by
   `d`, `t`'s badge opening the drawer with row 0 `current`, `diagnostic-focus`
-  with `data-focus="0"`, `s` at 0.3 and `t` at 1, the overlay undimmed, Escape
+  with `data-focus="0"`, `s` at 0.3 and `t` at 1, the overlay undimmed by its
+  own opacity or a group's (`effectiveOpacity`, the product of the computed
+  opacities up to `svg.canvas`: `t`'s mark halo 0.5, its badge 1), Escape
   clearing it. `warning`: the drawer closed, count 1, `g` amber, nothing in the
   error hue. The synthetic descriptor (`failure_cycle` with an unfed input at
   `ctl` and a warning at `plant`, dropped as text): `rect.mark-port` on
@@ -1649,7 +1654,10 @@ the page's socket fails against `vite preview`, so every check but
   `failure_structure`: two rows without a location, a click giving `current`.
   `closed_loop`: the tab by its button, "No diagnostics or warnings.", no
   filter. `warning`: one amber row, the tree's `g` "1 warning", the root "1
-  warning, beneath". `failure_probe`'s tree counts. A push of `closed_loop`
+  warning, beneath". `failure_probe`'s tree counts. `failure_probe` with its
+  error at the root, dropped as text: the root's row red, "1 error, 1
+  warning" with no ", beneath", `t`'s row without a mark, `s` "1 warning,
+  beneath". A push of `closed_loop`
   over a focused row: no `current`, no focus class, the drawer kept open on
   `diagnostics`, count 0.
 - `routes.spec.ts` (workspace 8, 11, 9, 3; grammar 9; counts from
@@ -1657,7 +1665,8 @@ the page's socket fails against `vite preview`, so every check but
   `route-focus`, the tag `route-origin`, the oracle's two `path.casing.route`,
   `route` badges on `pid_controller` and `lqr_controller` alone, the one
   terminal `⟨in⟩h_ref|out|h_ref`, `plant` at 0.3 and `pid_controller` at 1,
-  the wires dimmed but the route's, the badge undimmed, `span.route` "tracing
+  the wires dimmed but the route's, the badge's effective opacity 1,
+  `span.route` "tracing
   h_ref: 2 consumers across 3 levels" with `code` and "clear", the child's
   badge straddling its bottom edge at the right, the pane's button pressed and
   titled "Clear the route", the tree's route marks on the root,
@@ -2172,3 +2181,6 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   increment 8's execution-order tab.
 - The drawer's filter shows only when rows exist, the empty state alone with
   none; the brief's contract lists the filter in the body.
+- The drawer's rows and its filter have no keyboard path from the regions'
+  Tab cycle yet: Tab moves between the four region roots alone, so a row's
+  button and the filter take focus by a click.

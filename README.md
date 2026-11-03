@@ -224,8 +224,8 @@ pill opening the closed assembly it continues into, and a dead hop draws as a
 dashed chord with a cross across its block. The tree carries a red or amber
 dot on every row with a diagnostic at it or beneath, its counts on hover. A
 click on a row, or on a pill, focuses that diagnostic: what it involves stays,
-the rest dims, and the row's element is selected on its level. A face route
-starts from the detail pane's Trace button on a pin, a port or a wire, from
+the rest dims; a row's click also selects its element on its level. A face
+route starts from the detail pane's Trace button on a pin, a port or a wire, from
 the Trace entry of their right-click menu, or by `t`: the value's whole path
 from its producer through every fan-out to every consumer, cased in the
 highlight hue on each level, the face traced from haloed, the consumers' ports

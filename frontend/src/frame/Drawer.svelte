@@ -95,19 +95,20 @@
             <ul class="diagnostics">
               {#each shown as d (d.index)}
                 {@const loc = locationOf(d)}
-                <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions (a row selects as a tree row does) -->
-                <li class="diagnostic" class:current={d.index === current} data-index={d.index} data-severity={d.severity} onclick={() => ondiagnostic(d.index)}>
-                  <div class="head">
-                    <span class="kind">{d.kind}</span>
-                    <span class="path">{d.path || "/"}</span>
-                    {#if loc}
-                      <a
-                        class="location" class:editor href={"#"} title={editor ? "Open in the editor" : "Copy the file label"}
-                        onclick={(e) => { e.preventDefault(); e.stopPropagation(); if (!onlocation(loc.file, loc.line)) copy(fileLabel(loc.file, loc.line)); }}
-                      >{fileLabel(loc.file, loc.line)}</a>{#if copied === fileLabel(loc.file, loc.line)} <span class="copied">copied</span>{/if}
-                    {/if}
-                  </div>
-                  <pre class="message">{d.message}</pre>
+                <li class="diagnostic" class:current={d.index === current} data-index={d.index} data-severity={d.severity}>
+                  <button class="row" onclick={() => ondiagnostic(d.index)}>
+                    <span class="head">
+                      <span class="kind">{d.kind}</span>
+                      <span class="path">{d.path || "/"}</span>
+                    </span>
+                    <pre class="message">{d.message}</pre>
+                  </button>
+                  {#if loc}
+                    <a
+                      class="location" class:editor href={"#"} title={editor ? "Open in the editor" : "Copy the file label"}
+                      onclick={(e) => { e.preventDefault(); e.stopPropagation(); if (!onlocation(loc.file, loc.line)) copy(fileLabel(loc.file, loc.line)); }}
+                    >{fileLabel(loc.file, loc.line)}</a>{#if copied === fileLabel(loc.file, loc.line)} <span class="copied">copied</span>{/if}
+                  {/if}
                 </li>
               {/each}
             </ul>
@@ -138,7 +139,11 @@
   .diagnostics { color: var(--text); }
   .filter { box-sizing: border-box; width: 100%; max-width: 360px; margin-bottom: 6px; font: 12px system-ui, sans-serif; }
   ul.diagnostics { list-style: none; margin: 0; padding: 0; }
-  .diagnostic { padding: 4px 8px; border-left: 3px solid var(--hue); cursor: pointer; }
+  .diagnostic { display: flex; align-items: baseline; gap: 10px; padding-right: 8px; border-left: 3px solid var(--hue); }
+  .row {
+    flex: 1; min-width: 0; display: block; padding: 4px 8px; border: 0; background: none; font: inherit; color: inherit;
+    text-align: left; cursor: pointer;
+  }
   .diagnostic + .diagnostic { margin-top: 4px; }
   .diagnostic[data-severity="error"] { --hue: var(--error); }
   .diagnostic[data-severity="warning"] { --hue: var(--warning); }
@@ -147,7 +152,7 @@
   .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
   .kind { font-weight: 600; color: var(--hue); }
   .path { font-family: ui-monospace, monospace; font-size: 12px; }
-  .location { margin-left: auto; font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-light); text-decoration: none; cursor: copy; }
+  .location { font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-light); text-decoration: none; cursor: copy; }
   .location.editor { cursor: pointer; }
   .location:hover { text-decoration: underline; }
   .copied { font-size: 11px; color: var(--text-light); }

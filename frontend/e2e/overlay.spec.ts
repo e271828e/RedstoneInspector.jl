@@ -5,7 +5,7 @@
 // wire marks on a synthetic descriptor, no dimming until a badge focuses its
 // diagnostic. Counts from the oracle (`overlay.py`); geometry read off the DOM.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, openPath, press, readyLevel, shot } from "./fixtures";
+import { drop, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const drawer = (page: Page) => page.locator("section.drawer");
@@ -142,9 +142,9 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   await expect(page.locator('li.diagnostic[data-index="0"]')).toHaveClass(/\bcurrent\b/);
   expect(await opacity(page, 'g.block[data-id="s"] > .shape')).toBe("0.3");
   expect(await opacity(page, 'g.block[data-id="t"] > .shape')).toBe("1");
-  // the overlay never dims
-  expect(await opacity(page, 'rect.mark-halo[data-id="t"]')).toBe("0.5");
-  expect(await opacity(page, 'g.badge[data-id="t"]')).toBe("1");
+  // the overlay never dims, by its own opacity or a group's
+  expect(await effectiveOpacity(page, 'rect.mark-halo[data-id="t"]')).toBe(0.5);
+  expect(await effectiveOpacity(page, 'g.badge[data-id="t"]')).toBe(1);
   await press(page, "Escape");
   await expect(svg(page)).not.toHaveClass(/diagnostic-focus/);
 });

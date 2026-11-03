@@ -1,7 +1,8 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
 // the wait for the drawn level or the outcome text, counts, the frame's locators,
-// a wire's clickable point, screenshots and the live tab's mock socket.
+// a wire's clickable point, an element's effective opacity, screenshots and
+// the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page, type WebSocketRoute } from "@playwright/test";
@@ -105,6 +106,16 @@ export const rows = (page: Page) => page.locator("nav.tree .row");
 
 /** The status bar, read with `toContainText` or `toHaveAttribute("data-kind", ...)`. */
 export const status = (page: Page) => page.locator("footer.status");
+
+/**
+ * The first match's effective opacity: the product of the computed opacities from the element up to
+ * `svg.canvas`, so a group's dim counts as well as the element's own.
+ */
+export const effectiveOpacity = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => {
+  let o = 1;
+  for (let n: Element | null = e; n; n = n.matches("svg.canvas") ? null : n.parentElement) o *= Number(getComputedStyle(n).opacity);
+  return o;
+});
 
 /** A client point of a wire's line where the wire's own hit path is on top. */
 export async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {

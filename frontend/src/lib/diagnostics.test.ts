@@ -127,7 +127,7 @@ describe("overlayOf", () => {
     expect([t.severity, t.badge?.text, t.badge?.severity]).toEqual(["error", "y_state", "error"]);
   });
 
-  it("a diagnostic at the root marks nothing, nor one on the level's own node; a structureless model draws nothing", () => {
+  it("a diagnostic at the root marks nothing on the canvas but its own row in the tree, nor one on the level's own node; a structureless model draws nothing", () => {
     const d = fixtureJson("failure_probe") as any;
     d.failure.diagnostics[0].path = "";
     d.failure.warnings[0].path = "s";
@@ -137,7 +137,7 @@ describe("overlayOf", () => {
     expect(overlayOf(m, "").blocks.has("")).toBe(false);
     expect(overlayOf(m, "s").blocks.size).toBe(0);
     expect(overlayOf(m, "").blocks.has("s")).toBe(true);
-    expect(treeMarks(m).get("")).toEqual({ errors: 0, warnings: 1, own: false });
+    expect(treeMarks(m).get("")).toEqual({ errors: 1, warnings: 1, own: true });
     expect(diagnosticTarget(m, diagnosticsOf(m)[0])).toBeUndefined();
     expect(overlayOf(fixtureModel("failure_structure"), "").blocks.size).toBe(0);
   });

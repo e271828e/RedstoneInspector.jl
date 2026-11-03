@@ -131,6 +131,15 @@ test("failure_probe: the tree's counts, red on the root for one error and one wa
   await expect(treeRow(page, "s/src").locator("span.mark")).toHaveCount(0);
 });
 
+test("failure_probe with its error at the root: the root's row red for its own error and the warning, t's row bare", async ({ page }) => {
+  const d = JSON.parse(fixtureText("failure_probe"));
+  d.failure.diagnostics[0].path = "";
+  await drop(page, "failure_probe", JSON.stringify(d));
+  await expect(treeRow(page, "").locator('span.mark[data-mark="error"]')).toHaveAttribute("title", "1 error, 1 warning");
+  await expect(treeRow(page, "t").locator("span.mark")).toHaveCount(0);
+  await expect(treeRow(page, "s").locator('span.mark[data-mark="warning"]')).toHaveAttribute("title", "1 warning, beneath");
+});
+
 test("a push drops the focused diagnostic and keeps the drawer open on diagnostics", async ({ page }) => {
   await drop(page, "failure_probe");
   await row(page, 0).click();

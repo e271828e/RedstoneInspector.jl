@@ -200,7 +200,7 @@ export function treeMarks(model: Model): Map<string, TreeMark> {
   };
   for (const d of diagnosticsOf(model)) {
     const marked = new Set<string>();
-    if (d.path !== "" && tree.byPath.has(d.path)) marked.add(d.path);
+    if (tree.byPath.has(d.path)) marked.add(d.path);
     if (d.cycle) {
       for (const m of d.cycle.members) if (tree.byPath.has(m)) marked.add(m);
       for (const h of chainOf(model, d.cycle)) if (h.level !== "") marked.add(h.level);
