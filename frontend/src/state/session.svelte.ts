@@ -1,8 +1,9 @@
 // The per-tab state in memory (workspace.md answer 9's second lifetime): the
 // model, the open level and its hash, each visited level's view and layout, the
 // selection, the tree's expansion, the query, the legend's focus, the focused
-// diagnostic, the drawer and the keyboard's region. Keyed by path and name,
-// never by index; a push rekeys it (`rekey`) and drops the focused diagnostic.
+// diagnostic, the standing route, the drawer and the keyboard's region. Keyed by
+// path and name, never by index; a push rekeys it (`rekey`) and drops the focused
+// diagnostic.
 // Nothing here touches local storage; the open level is the URL's hash.
 import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
@@ -10,6 +11,8 @@ import type { Model } from "../lib/model";
 import { rekeyFocus } from "../lib/focus";
 import { ancestors, defaultExpansion, folderOf } from "../lib/outline";
 import { isLevel, rekey } from "../lib/rekey";
+import type { Face } from "../lib/resolve";
+import { sameFace } from "../lib/routes";
 import type { Tree } from "../lib/tree";
 import type { View } from "../lib/view";
 
@@ -28,6 +31,7 @@ let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
 let query = $state("");
 let legendFocus = $state<string | undefined>();
 let diagnosticFocus = $state<number | undefined>();
+let route = $state.raw<Face | undefined>();
 let focus = $state<Region | undefined>();
 let note = $state<string | undefined>();
 
@@ -49,6 +53,8 @@ export const session = {
   get legendFocus() { return legendFocus; },
   /** The focused diagnostic's index in the drawer's list. */
   get diagnosticFocus() { return diagnosticFocus; },
+  /** The standing route's origin, the face traced from. */
+  get route() { return route; },
   /** The region holding the keyboard's focus. */
   get focus() { return focus; },
   /** The fallback note, while it stands. */
@@ -129,6 +135,7 @@ export function load(m: Model | undefined) {
   const hashed = browser ? levelOfHash(location.hash) : undefined;
   const replacing = !!model && !!m;
   diagnosticFocus = undefined; // a diagnostic has no key to rekey by
+  route = undefined;
   if (m && replacing) {
     const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
     level = r.level;
@@ -272,9 +279,19 @@ export function clearDiagnosticFocus() {
   diagnosticFocus = undefined;
 }
 
-/** Escape's chain: the focused diagnostic, then the legend's focus, then a standing query, then the selection. */
+/** The trace action: the route from the face, or none when it is the standing route's origin. */
+export function trace(origin: Face) {
+  route = sameFace(route, origin) ? undefined : origin;
+}
+
+export function clearRoute() {
+  route = undefined;
+}
+
+/** Escape's chain: the route, then the focused diagnostic, then the legend's focus, then a standing query, then the selection. */
 export function escape() {
-  if (diagnosticFocus !== undefined) diagnosticFocus = undefined;
+  if (route !== undefined) route = undefined;
+  else if (diagnosticFocus !== undefined) diagnosticFocus = undefined;
   else if (legendFocus !== undefined) legendFocus = undefined;
   else if (query !== "") query = "";
   else select(undefined);

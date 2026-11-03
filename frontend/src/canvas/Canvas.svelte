@@ -10,7 +10,9 @@
   // tier or rate colors with the badge and the legend (answer 6), wire styles by
   // kind with the trunks' dots and the type labels above the blocks (answer 4),
   // the diagnostics overlay above everything in the error and warning hues
-  // (answer 8), and one dimming for whichever focus stands.
+  // (answer 8), a standing route's casings, origin, terminals and badges with the
+  // right-click menu that traces one (answer 9, workspace.md answer 8), and one
+  // dimming for whichever focus stands.
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -27,6 +29,8 @@
   import type { LevelHits } from "../lib/search";
   import type { Lit } from "../lib/focus";
   import type { Overlay, Severity } from "../lib/diagnostics";
+  import type { Face } from "../lib/resolve";
+  import { originOf, type RouteDrawing } from "../lib/routes";
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
@@ -39,7 +43,7 @@
 
   let {
     model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, lit, focus, focusKey, legendFocus,
-    overlay, focused = false, onopen, onselect, onview, onlayout, onlegend, onbadge,
+    overlay, routeDrawn, focused = false, onopen, onselect, onview, onlayout, onlegend, onbadge, ontrace,
   }: {
     model: Model;
     path: string;
@@ -65,6 +69,8 @@
     legendFocus?: string;
     /** What the diagnostics and warnings draw on this level. */
     overlay?: Overlay;
+    /** What the standing route draws on this level. */
+    routeDrawn?: RouteDrawing;
     /** The keyboard's focus is in the canvas region. */
     focused?: boolean;
     onopen?: (path: string) => void;
@@ -78,6 +84,8 @@
     onlegend?: (key: string) => void;
     /** A click on a diagnostic's badge, with its index. */
     onbadge?: (index: number) => void;
+    /** The menu's trace, with the right-clicked target's origin face. */
+    ontrace?: (face: Face) => void;
   } = $props();
 
   const FIT_PADDING = 24;
@@ -103,6 +111,8 @@
   let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
   let hovered = $state<Target | undefined>();
+  /** The right-click menu: where it opened in the viewport and the target it traces. */
+  let menu = $state<{ x: number; y: number; target: Target } | undefined>();
   /** A block `follow` was asked for while the level was being laid out, followed once it is drawn. */
   let pending: string | undefined;
 
@@ -206,6 +216,7 @@
     let stale = false;
     hovered = undefined;
     blockDrag = undefined;
+    menu = undefined;
     if (saved && !saved.stale) {
       untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
       return;
@@ -393,6 +404,7 @@
     // Added by hand: the wheel must not scroll the page, so the listener cannot be passive.
     const wheel = (e: WheelEvent) => {
       e.preventDefault();
+      menu = undefined;
       setView(zoomAt(view, local(e), Math.exp(-e.deltaY * WHEEL_RATE)));
     };
     el.addEventListener("wheel", wheel, { passive: false });
@@ -459,12 +471,21 @@
     if (b?.role === "out") return `${e.port} (level output)`;
     return `${e.block || "/"} ${e.port}`;
   }
+  /** The route's origin on this level: a pin's block id, or a child's port id. */
+  const originBlock = $derived(routeDrawn?.origin === undefined ? undefined : parsePortId(routeDrawn.origin).block);
+  const originOnPin = $derived.by(() => {
+    const role = originBlock === undefined ? undefined : shown?.level.blocks.find((b) => b.id === originBlock)?.role;
+    return role === "in" || role === "out";
+  });
+  const originPin = $derived(originOnPin ? originBlock : undefined);
+  const originPort = $derived(originOnPin ? undefined : routeDrawn?.origin);
   const blockClass = (b: Block) => ({
     selected: same(selected, "block", b.id),
     hover: same(hovered, "block", b.id) && !same(selected, "block", b.id),
     "search-hit": !!hits?.blocks.has(b.id),
     "search-under": !!hits?.under.has(b.id),
     lit: !!lit?.blocks.has(b.id),
+    "route-origin": b.id === originPin,
   });
   const wireLit = (id: string) => !!lit?.wires.has(id);
   /** A hit's halo is dashed, the selected hit's solid. */
@@ -476,6 +497,8 @@
     "marked-hover": markedPorts.get(id) === "hover",
     "search-hit": !!hits?.ports.has(id),
     lit: !!lit?.ports.has(id),
+    "route-origin": id === originPort,
+    "route-terminal": !!routeDrawn?.terminals.has(id),
   });
 
   // The diagnostics overlay (answer 8), in the level's coordinates.
@@ -486,31 +509,77 @@
     const box = shown?.geometry.boxes.get(block), p = shown?.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
     return box && p ? { x: box.x + p.x, y: box.y + p.y } : undefined;
   }
-  /** The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a continuation's. */
+  /**
+   * The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a
+   * continuation's, then the route's on a child it enters; on a pin the route crosses, off the root, one pill
+   * straddling its top edge at its outer end.
+   */
   const overlayBadges = $derived.by(() => {
-    const out: { block: string; role: "diagnostic" | "continues"; text: string; title: string; severity: Severity; index: number; x: number; y: number; w: number }[] = [];
-    if (!overlay || !shown) return out;
+    type Pill = { block: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
+    const out: (Pill & { x: number; y: number; w: number })[] = [];
+    if (!shown) return out;
+    const width = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
     for (const b of shown.level.blocks) {
       const box = shown.geometry.boxes.get(b.id);
       if (!box) continue;
-      const pills: Omit<(typeof out)[number], "x" | "y" | "w">[] = [];
-      const badge = overlay.blocks.get(b.id)?.badge;
+      if (b.role === "in" || b.role === "out") {
+        if (!routeDrawn?.pins.has(b.id) || shown.level.path === "") continue;
+        const w = width("route");
+        const x = b.role === "in" ? box.x + BADGE_INSET : box.x + box.width - BADGE_INSET - w;
+        out.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it.", x, y: box.y + BADGE_TOP, w });
+        continue;
+      }
+      const pills: Pill[] = [];
+      const badge = overlay?.blocks.get(b.id)?.badge;
       if (badge) pills.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index });
-      const c = overlay.continues.get(b.id);
+      const c = overlay?.continues.get(b.id);
       if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
+      if (routeDrawn?.entered.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route continues inside; open it to follow it." });
       let right = box.x + box.width - BADGE_INSET;
       for (const q of pills) {
-        const w = Math.ceil(textWidth(q.text, BADGE_FONT)) + 2 * BADGE_PAD;
+        const w = width(q.text);
         out.push({ ...q, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
         right -= w + BADGE_GAP;
       }
     }
     return out;
   });
-  const badgeClick = (q: (typeof overlayBadges)[number]) => (q.role === "diagnostic" ? onbadge?.(q.index) : onopen?.(q.block));
+  /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, a route's on a pin the parent. */
+  function badgeClick(q: (typeof overlayBadges)[number]) {
+    if (q.role === "diagnostic") onbadge?.(q.index!);
+    else if (tree.byPath.has(q.block)) onopen?.(q.block);
+    else {
+      const parent = tree.parent.get(shown!.level.path);
+      if (parent !== undefined) onopen?.(parent);
+    }
+  }
+
+  /** The right-click menu, on a pin, a port square or a wire alone; elsewhere the browser's own. */
+  function contextmenu(e: MouseEvent, target: Target) {
+    e.preventDefault();
+    e.stopPropagation();
+    menu = { ...local(e), target };
+  }
+  function traceMenu() {
+    const face = menu && shown ? originOf(model, { level: shown.level.path, target: menu.target }) : undefined;
+    menu = undefined;
+    if (face) ontrace?.(face);
+  }
+  /** A press anywhere outside the open menu closes it. */
+  function menuPress(e: PointerEvent) {
+    if (menu && !(e.target instanceof Element && e.target.closest(".viewport .menu"))) menu = undefined;
+  }
+  /** Escape closes the open menu alone, before the shell's Escape chain sees it. */
+  function menuKey(e: KeyboardEvent) {
+    if (menu && e.key === "Escape") {
+      menu = undefined;
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
 </script>
 
-<svelte:window onkeydown={shiftKey} onkeyup={shiftKey} />
+<svelte:window onkeydown={shiftKey} onkeyup={shiftKey} onkeydowncapture={menuKey} onpointerdowncapture={menuPress} />
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
@@ -561,6 +630,10 @@
       </g>
       <g class="casings">
         {#each shown.level.wires as w (w.id)}
+          {@const route = routeDrawn?.wires.has(w.id) ? g.routes.get(w.id) : undefined}
+          {#if route}<path class="casing route" data-wire={w.id} d={pathD(route)} />{/if}
+        {/each}
+        {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
           {#if route}
             {#if same(selected, "wire", w.id)}
@@ -592,6 +665,7 @@
             <path
               class="wire-hit" data-hit={w.id} d={pathD(route)} role="none"
               onclick={() => select({ kind: "wire", id: w.id })}
+              oncontextmenu={(e) => contextmenu(e, { kind: "wire", id: w.id })}
               onpointerenter={() => (hovered = { kind: "wire", id: w.id })}
               onpointerleave={() => (hovered = undefined)}
             ><title>{endText(w.from)} → {endText(w.to)}</title></path>
@@ -618,6 +692,7 @@
               transform="translate({box.x},{box.y})" role="none"
               onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
+              oncontextmenu={(e) => contextmenu(e, { kind: "block", id: b.id })}
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
               onpointerleave={() => (hovered = undefined)}
             >
@@ -703,14 +778,14 @@
           {/each}
         </g>
       {/if}
-      {#if overlay && shown.level.path === path}
+      {#if (overlay || routeDrawn) && shown.level.path === path}
         <!-- last, so the error hue composes over every halo and casing (answer 9); never dimmed -->
         <g class="overlay">
-          {#each overlay.wires as [id, severity] (id)}
+          {#each overlay?.wires ?? [] as [id, severity] (id)}
             {@const route = g.routes.get(id)}
             {#if route}<path class="mark-wire" data-wire={id} data-severity={severity} d={pathD(route)} />{/if}
           {/each}
-          {#each overlay.blocks as [id, m] (id)}
+          {#each overlay?.blocks ?? [] as [id, m] (id)}
             {@const box = g.boxes.get(id)}
             {@const b = byId.get(id)}
             {#if box && b}
@@ -724,11 +799,11 @@
               {/if}
             {/if}
           {/each}
-          {#each overlay.ports as [id, severity] (id)}
+          {#each overlay?.ports ?? [] as [id, severity] (id)}
             {@const c = portAt(id)}
             {#if c}<rect class="mark-port" data-port={id} data-severity={severity} x={c.x - PORT / 2 - 2} y={c.y - PORT / 2 - 2} width={PORT + 4} height={PORT + 4} />{/if}
           {/each}
-          {#each overlay.chords as c (c.block + c.from + c.to)}
+          {#each overlay?.chords ?? [] as c (c.block + c.from + c.to)}
             {@const a = portAt(c.from)}
             {@const z = portAt(c.to)}
             {#if a && z}
@@ -750,6 +825,11 @@
     {/if}
   </svg>
   <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
+  {#if menu}
+    <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px">
+      <button class="trace" role="menuitem" onclick={traceMenu}>Trace</button>
+    </div>
+  {/if}
   {#if lines.length}
     <div class="legend" aria-label="the rates on this level">
       <ul>
@@ -777,13 +857,14 @@
 
 {#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
   {@const c = portClass(id)}
-  <rect class="port-halo" class:on={c.selected || c.marked} class:half={c.hover || c["marked-hover"]}
+  <rect class="port-halo" class:on={c.selected || c.marked || c["route-origin"]} class:half={c.hover || c["marked-hover"]}
         class:dashed={c["search-hit"] && !c.selected && !c.marked}
         x={x - PORT} y={y - PORT} width={2 * PORT} height={2 * PORT} rx="2" />
   <rect
     class={["port", { stage1: open }, portClass(id)]} data-port={id} role="none"
     x={x - PORT / 2} y={y - PORT / 2} width={PORT} height={PORT}
     onclick={(e) => { e.stopPropagation(); select({ kind: "port", id }); }}
+    oncontextmenu={(e) => contextmenu(e, { kind: "port", id })}
     onpointerenter={() => (hovered = { kind: "port", id })}
     onpointerleave={() => (hovered = { kind: "block", id: block })}
   ><title>{name}</title></rect>
@@ -794,6 +875,12 @@
   .viewport { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
   svg { display: block; touch-action: none; cursor: grab; }
   .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
+  .menu {
+    position: absolute; z-index: 1; display: flex; flex-direction: column; padding: 2px; font: 12px system-ui, sans-serif;
+    background: var(--bg); border: 1px solid var(--wire); border-radius: 4px; box-shadow: 0 2px 6px color-mix(in srgb, var(--text) 20%, transparent);
+  }
+  .menu button { all: unset; padding: 2px 12px; border-radius: 3px; cursor: pointer; }
+  .menu button:hover, .menu button:focus-visible { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
   .legend {
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
@@ -826,6 +913,8 @@
   .casing.hover { stroke-width: 7; opacity: 0.2; }
   .casing.incident { stroke-width: 5; opacity: 0.22; }
   .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
+  /* A route's casing at the selected casing's width and opacity, under the selection's. */
+  .casing.route { stroke-width: 7; opacity: 0.4; }
 
   /* A region (visual_grammar.md answer 5): a thin dashed frame captioned with the field; its frame and caption select the folder. */
   .region > .shape { fill: none; stroke: var(--wire); stroke-width: 1; stroke-dasharray: 3 3; pointer-events: stroke; cursor: pointer; }
@@ -838,10 +927,11 @@
   .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: none; }
   .block.selected > .halo { opacity: 0.5; }
   .block.hover > .halo { opacity: 0.25; }
+  .block.route-origin > .halo { opacity: 0.5; }
 
   .port { fill: var(--port); stroke: var(--port); stroke-width: 1; cursor: pointer; }
   .port.stage1 { fill: var(--bg); }
-  .port.selected, .port.marked { stroke: var(--highlight); }
+  .port.selected, .port.marked, .port.route-terminal { stroke: var(--highlight); }
   .port.marked-hover { stroke: color-mix(in srgb, var(--highlight) 50%, var(--port)); }
   .port-halo { fill: var(--highlight); opacity: 0; pointer-events: none; }
   .port-halo.half { opacity: 0.25; }
@@ -860,6 +950,7 @@
   /* The diagnostics overlay (answer 8): the error hue, amber for a warning, above everything. */
   .overlay [data-severity="error"] { --hue: var(--error); }
   .overlay [data-severity="warning"] { --hue: var(--warning); }
+  .overlay [data-role="route"] { --hue: var(--highlight); }
   .mark-wire { fill: none; stroke: var(--hue); stroke-width: 3; stroke-linejoin: round; pointer-events: none; }
   .mark-halo { fill: none; stroke: var(--hue); stroke-width: 5; opacity: 0.5; pointer-events: none; }
   .mark-port { fill: none; stroke: var(--hue); stroke-width: 1.5; pointer-events: none; }

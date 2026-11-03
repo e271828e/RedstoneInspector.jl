@@ -3,8 +3,9 @@
 // the arrows pan, Shift-h and Shift-l walk the levels back and forward, Shift-j and
 // Shift-k open and climb, z centres the selection, 0 + - fit and zoom, d toggles
 // the drawer, Tab cycles the four regions with the ring for the keyboard only, the
-// reserved keys do nothing, Escape clears the query before the selection. The
-// geometric pins are recomputed here from the DOM, by the brief's rules.
+// reserved keys do nothing, t with nothing selected does nothing, Escape clears
+// the query before the selection. The geometric pins are recomputed here from the
+// DOM, by the brief's rules.
 import { test, type Page } from "@playwright/test";
 import { blockBoxes, clickWire, drop, expect, hash, press, readyLevel, shot, viewBox } from "./fixtures";
 
@@ -269,11 +270,14 @@ test("Tab and Shift-Tab cycle the four regions, each the one focused", async ({ 
   }
 });
 
-test("t o and ? leave the selection, the view and the drawer as they were", async ({ page }) => {
-  await page.locator('g.block[data-id="plant"]').click();
+test("t with nothing selected, o and ? leave the selection, the view and the drawer as they were", async ({ page }) => {
   await press(page, "+");
   const before = { view: await viewBox(page), drawer: await page.locator("section.drawer").getAttribute("data-open") };
-  for (const key of ["t", "o", "?"]) await press(page, key);
+  await press(page, "t");
+  await expect(page.locator("svg.canvas")).not.toHaveClass(/route-focus/);
+  await expect(page.locator("footer.status span.route")).toHaveCount(0);
+  await page.locator('g.block[data-id="plant"]').click();
+  for (const key of ["o", "?"]) await press(page, key);
   await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
   expect(await viewBox(page)).toEqual(before.view);
   expect(await page.locator("section.drawer").getAttribute("data-open")).toBe(before.drawer);

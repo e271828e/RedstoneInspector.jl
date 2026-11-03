@@ -3,8 +3,8 @@ import { fixtureJson, fixtureModel } from "../lib/fixtures";
 import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
 import {
-  clearDiagnosticFocus, climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery,
-  toggleDiagnosticFocus, toggleLegendFocus,
+  clearDiagnosticFocus, clearRoute, climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery,
+  toggleDiagnosticFocus, toggleLegendFocus, trace,
 } from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
@@ -128,6 +128,45 @@ describe("the focused diagnostic", () => {
     expect([session.diagnosticFocus, session.legendFocus, session.query, session.selection?.target.id]).toEqual([undefined, "continuous", "s", "t"]);
     escape();
     expect([session.legendFocus, session.query]).toEqual([undefined, "s"]);
+  });
+});
+
+describe("the standing route", () => {
+  const hRef = { path: "", side: "in" as const, port: "h_ref" };
+  const plantV = { path: "plant", side: "out" as const, port: "V" };
+
+  it("is set, cleared by the same trace, replaced by another and cleared", () => {
+    load(fixtureModel("closed_loop"));
+    expect(session.route).toBeUndefined();
+    trace(hRef);
+    expect(session.route).toEqual(hRef);
+    trace({ ...hRef });
+    expect(session.route).toBeUndefined();
+    trace(hRef);
+    trace(plantV);
+    expect(session.route).toEqual(plantV);
+    clearRoute();
+    expect(session.route).toBeUndefined();
+  });
+
+  it("holds across a level change, a climb and a selection", () => {
+    load(fixtureModel("closed_loop"));
+    trace(hRef);
+    open("pid_controller");
+    climb();
+    select({ level: "", target: { kind: "block", id: "plant" } });
+    expect(session.route).toEqual(hRef);
+  });
+
+  it("Escape clears it ahead of the focused diagnostic", () => {
+    load(fixtureModel("failure_cycle"));
+    select({ level: "", target: { kind: "block", id: "plant" } });
+    toggleDiagnosticFocus(0);
+    trace({ path: "", side: "in", port: "ref" });
+    escape();
+    expect([session.route, session.diagnosticFocus, session.selection?.target.id]).toEqual([undefined, 0, "plant"]);
+    escape();
+    expect(session.diagnosticFocus).toBeUndefined();
   });
 });
 

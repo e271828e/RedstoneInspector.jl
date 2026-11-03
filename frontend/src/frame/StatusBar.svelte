@@ -1,25 +1,32 @@
 <script lang="ts">
   // One line (workspace.md answers 1, 3 and 10; live_session.md answer 4): the
-  // kind word, the model's totals, the loader's note, the push's fallback note;
-  // in the live tab the connection's state and the descriptor's download. Under
+  // kind word, the model's totals, the loader's note, the push's fallback note,
+  // the standing route with its clear control (workspace.md answer 8); in the
+  // live tab the connection's state and the descriptor's download. Under
   // the landing panel it shows the connection alone.
   import type { Model } from "../lib/model";
   import { downloadName } from "../lib/protocol";
   import type { LiveState } from "../state/live.svelte";
   import type { Mode } from "../state/prefs.svelte";
 
-  let { model, mode = "tier", fallback, connection, received = false, download }: {
+  let { model, mode = "tier", fallback, route, connection, received = false, download, onclear }: {
     model?: Model;
     /** The canvas's color mode, shown after the counts. */
     mode?: Mode;
     fallback?: string;
+    /** The standing route's status, its face in backquotes: "tracing `h_ref`: 2 consumers across 3 levels". */
+    route?: string;
     /** The live connection's state; nothing shows in the hosted copy or before the handshake resolves. */
     connection?: LiveState;
     /** A descriptor has arrived over the socket. */
     received?: boolean;
     /** The raw descriptor text the model was pushed as, saved by the download button. */
     download?: string;
+    /** The route's clear control. */
+    onclear?: () => void;
   } = $props();
+  /** The status split around its backquoted face. */
+  const routeParts = $derived(route?.split("`"));
 
   const totals = $derived.by(() => {
     const nodes = model?.structure?.nodes;
@@ -61,6 +68,9 @@
     <span class="mode" data-mode={mode}>{mode} colors</span>
     {#if model.note}<span class="note">{model.note}</span>{/if}
     {#if fallback}<span class="fallback">{fallback}</span>{/if}
+    {#if routeParts}
+      <span class="route">{routeParts[0]}<code>{routeParts[1]}</code>{routeParts[2]} <button class="clear-route" title="Clear the route" onclick={() => onclear?.()}>clear</button></span>
+    {/if}
   {/if}
   {#if connection === "connected" || connection === "lost"}
     <span class="connection" data-state={connection}>
@@ -83,5 +93,7 @@
   .fallback { font-weight: 600; }
   .connection { margin-left: auto; color: var(--text-light); }
   .connection[data-state="lost"] { font-weight: 600; }
-  .download { font: 11px system-ui, sans-serif; padding: 0 6px; }
+  .download, .clear-route { font: 11px system-ui, sans-serif; padding: 0 6px; }
+  .route { color: var(--highlight); }
+  .route code { font-size: 11px; }
 </style>

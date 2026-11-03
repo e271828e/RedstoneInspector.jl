@@ -1,7 +1,8 @@
 <script lang="ts">
   // The detail pane (workspace.md answer 4): one layout per element kind over
   // detail.ts's facts, the open level's when nothing is selected. Links select
-  // through the session; nothing here is truncated, the pane scrolls.
+  // through the session; nothing here is truncated, the pane scrolls. A pin, a
+  // port and a wire carry the trace button.
   import {
     classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type Selection,
   } from "../lib/detail";
@@ -9,7 +10,7 @@
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
 
-  let { model, level, selection, focused = false, editor = false, onselect, onopen, onlocation }: {
+  let { model, level, selection, focused = false, editor = false, origin, tracing = false, onselect, onopen, onlocation, ontrace }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
@@ -21,6 +22,11 @@
     onopen: (path: string) => void;
     /** A location clicked: true when the shell sent it to the editor, false to copy it here. */
     onlocation: (file: string, line: number) => boolean;
+    /** The face the selection traces, when it has a route: the trace button shows. */
+    origin?: Face;
+    /** The origin's route stands: the button clears it. */
+    tracing?: boolean;
+    ontrace?: (face: Face) => void;
   } = $props();
 
   const facts = $derived<Facts | undefined>(model.tree ? detailOf(model, level, selection) : undefined);
@@ -45,13 +51,21 @@
     : faceSelection(model.tree!, f);
 </script>
 
-{#snippet header(segment: string, name: string, path: string, opens = false)}
+{#snippet header(segment: string, name: string, path: string, opens = false, traces = false)}
   <h2><span class="segment">{segment}</span> <span class="name">{name}</span></h2>
   <div class="path-line">
     <code class="path" title={path || "/"}>{path || "/"}</code>
     <button class="copy" title="Copy the path" onclick={() => copy(path)}>{copied === path ? "Copied" : "Copy"}</button>
     {#if opens}<button class="open-level" title={`Open ${segment} as the level`} onclick={() => onopen(path)}>Open</button>{/if}
+    {#if traces}{@render traceButton()}{/if}
   </div>
+{/snippet}
+
+{#snippet traceButton()}
+  {#if origin}
+    {@const face = origin}
+    <button class="trace" aria-pressed={tracing} title={tracing ? "Clear the route" : "Trace this value's route"} onclick={() => ontrace?.(face)}>Trace</button>
+  {/if}
 {/snippet}
 
 {#snippet faceLink(cls: "producer" | "consumer", f: Face)}
@@ -172,6 +186,7 @@
       </ul>
     {:else if facts.kind === "wire"}
       <h2><span class="segment">wire</span> <span class="name">at {facts.level || "/"}</span></h2>
+      <div class="path-line">{@render traceButton()}</div>
       <p class="endpoints"><code>{facts.from.path || "/"}{facts.from.path ? "/" : ""}{facts.from.port}</code> → <code>{facts.to.path || "/"}{facts.to.path ? "/" : ""}{facts.to.port}</code></p>
       <p class="facts">level <code>{facts.level || "/"}</code></p>
       <p class="type"><code>{facts.type ?? "?"}</code> <span class="face-kind">{facts.phrase ?? ""}</span></p>
@@ -180,7 +195,7 @@
       <h3>Terminal consumers</h3>
       <ul class="consumers">{#each facts.consumers as c, i (i)}<li>{@render faceLink("consumer", c)}</li>{:else}<li>none</li>{/each}</ul>
     {:else}
-      {@render header(facts.name, facts.kind === "pin" ? `${facts.face.side === "in" ? "input" : "output"} pin of ${facts.level || model.label}` : `${facts.face.side === "in" ? "input" : "output"} of ${facts.face.path || model.label}`, facts.face.path)}
+      {@render header(facts.name, facts.kind === "pin" ? `${facts.face.side === "in" ? "input" : "output"} pin of ${facts.level || model.label}` : `${facts.face.side === "in" ? "input" : "output"} of ${facts.face.path || model.label}`, facts.face.path, false, true)}
       <p class="facts">{[facts.kind, facts.stage && `stage ${facts.stage}`, facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}</p>
       <p class="type"><code>{facts.type ?? "?"}</code> <span class="face-kind">{facts.phrase ?? ""}</span></p>
       {#if facts.rootInput}
@@ -211,7 +226,8 @@
   dl.facts dd { margin: 0; overflow-wrap: break-word; }
   dl.facts dd[title] { cursor: help; }
   dl.facts .aside { color: var(--text-light); font-size: 11px; margin: 0 4px 0 8px; }
-  .open-level { font: 11px system-ui, sans-serif; padding: 0 6px; }
+  .open-level, .trace { font: 11px system-ui, sans-serif; padding: 0 6px; }
+  .trace[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 20%, transparent); }
   p { margin: 6px 0; }
   code, pre, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }

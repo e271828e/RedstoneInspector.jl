@@ -23,9 +23,11 @@
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import { legendLit, legendMarks } from "./lib/focus";
   import { diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./lib/diagnostics";
+  import type { Face } from "./lib/resolve";
+  import { faceText, originOf, routeDrawing, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
-    back, clearLegendFocus, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus, setLayout,
-    setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, type Region,
+    back, clearLegendFocus, clearRoute, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus,
+    setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels } from "./state/prefs.svelte";
@@ -44,8 +46,8 @@
   const ZOOM_STEP = 1.25;
   /** The four regions in Tab's order, by their roots. */
   const REGIONS: [Region, string][] = [["tree", "nav.tree"], ["canvas", ".viewport"], ["detail", "aside.detail"], ["drawer", "section.drawer"]];
-  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: trace, order badges, help. */
-  const RESERVED = new Set(["t", "o", "?"]);
+  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: order badges, help. */
+  const RESERVED = new Set(["o", "?"]);
 
   const model = $derived(session.model);
   /** The selection the canvas draws: one made on the open level, a folder as its region. */
@@ -71,12 +73,26 @@
   const overlay = $derived(model?.tree ? overlayOf(model, session.level) : undefined);
   const diagnosticMarks = $derived(model ? treeMarks(model) : undefined);
   const focusedDiagnostic = $derived(session.diagnosticFocus === undefined ? undefined : diagnostics[session.diagnosticFocus]);
-  // One dimming focus at a time: the focused diagnostic, else the legend line; the legend's button stays pressed.
-  const focus = $derived(!model?.tree ? undefined : focusedDiagnostic ? "diagnostic" as const : legendFocus !== undefined ? "legend" as const : undefined);
-  const lit = $derived(
-    focus === "diagnostic" ? litBy(model!, session.level, focusedDiagnostic!) : focus === "legend" ? legendLit(model!, session.level, legendFocus!) : undefined,
+  // The standing route, what the open level draws of it and its status line.
+  const traced = $derived(model?.tree && session.route ? routeOf(model, session.route) : undefined);
+  const routeDrawn = $derived(traced ? routeDrawing(model!, traced, session.level) : undefined);
+  /** The selection's face when it has a route: the pane's trace button. */
+  const selectionOrigin = $derived.by(() => {
+    const o = model?.tree ? originOf(model, session.selection) : undefined;
+    return o && routeOf(model!, o) ? o : undefined;
+  });
+  // One dimming focus at a time: the route, else the focused diagnostic, else the legend line; the legend's button stays pressed.
+  const focus = $derived(
+    !model?.tree ? undefined : traced ? "route" as const : focusedDiagnostic ? "diagnostic" as const : legendFocus !== undefined ? "legend" as const : undefined,
   );
-  const focusKey = $derived(focus === "diagnostic" ? String(focusedDiagnostic!.index) : focus === "legend" ? legendFocus : undefined);
+  const lit = $derived(
+    focus === "route" ? routeLit(model!, traced!, session.level)
+    : focus === "diagnostic" ? litBy(model!, session.level, focusedDiagnostic!)
+    : focus === "legend" ? legendLit(model!, session.level, legendFocus!) : undefined,
+  );
+  const focusKey = $derived(
+    focus === "route" ? faceText(traced!.origin) : focus === "diagnostic" ? String(focusedDiagnostic!.index) : focus === "legend" ? legendFocus : undefined,
+  );
   const marks = $derived(found ? marked(found) : model?.tree && legendFocus !== undefined ? legendMarks(model, legendFocus) : undefined);
   const counts = $derived(model?.tree && marks ? beneath(model.tree, marks) : undefined);
 
@@ -130,6 +146,11 @@
     toggleDiagnosticFocus(index);
     const s = session.diagnosticFocus === index ? diagnosticTarget(model!, diagnostics[index]) : undefined;
     if (s) select(s);
+  }
+
+  /** The trace action from the pane, the menu or `t`: a face with a route traced, or its standing route cleared. */
+  function traceFrom(face: Face | undefined) {
+    if (face && (sameFace(face, session.route) || routeOf(model!, face))) trace(face);
   }
 
   /** A location click: sent to the editor while connected, else false and the pane copies it. */
@@ -251,6 +272,7 @@
     else if (e.key === "/") focusSearch();
     else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
     else if (key === "y" && !e.shiftKey) toggleLabels();
+    else if (e.key === "t") traceFrom(model?.tree ? originOf(model, session.selection) : undefined);
     else handled = RESERVED.has(e.key); // swallowed until their increments
     if (handled) e.preventDefault();
   }
@@ -306,7 +328,7 @@
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay} {routeDrawn}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
@@ -314,6 +336,7 @@
               onlayout={(g, d) => setLayout(session.level, g, d)}
               onlegend={toggleLegendFocus}
               onbadge={badge}
+              ontrace={traceFrom}
             />
           {/key}
         {:else}
@@ -324,6 +347,7 @@
         <Detail
           {model} level={session.level} selection={session.selection} focused={session.focus === "detail"}
           editor={live.state === "connected"} onselect={select} onopen={open} {onlocation}
+          origin={selectionOrigin} tracing={sameFace(selectionOrigin, session.route)} ontrace={traceFrom}
         />
       {/snippet}
       {#snippet drawer()}
@@ -335,7 +359,7 @@
       {#snippet status()}
         <StatusBar
           {model} mode={prefs.mode} fallback={session.note} connection={live.state} received={live.text !== undefined}
-          download={pushed ? live.text : undefined}
+          download={pushed ? live.text : undefined} route={traced && routeStatus(traced.origin, traced)} onclear={clearRoute}
         />
       {/snippet}
     </Frame>
