@@ -204,13 +204,39 @@ opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
 or Alt-Up climbs; `z` centres the selection; `0` fits, `+` and `-` zoom; `d`
 toggles the drawer; Tab moves between the tree, the canvas, the detail pane
 and the drawer, the focus ring showing for the keyboard only; `r` switches the
-color mode and `y` the type labels; `t`, `o` and `?` are reserved. Search, in the field at the top of the tree, opened
+color mode and `y` the type labels; `t` traces the selected pin, port or
+wire; `o` and `?` are reserved. Search, in the field at the top of the tree, opened
 by `/` or Cmd-K, matches paths, types and face names as case-insensitive
 substrings, `path:`, `type:` and `face:` narrowing a term to one field, a
 prefix alone matching nothing yet; the hits list while the field has focus,
 take a dashed halo on the canvas with the rest dimmed, and mark the tree's rows
 with counts up collapsed ones; `n` and `N` select the next and the previous hit
 of the whole list, opening its level.
+
+A failed build explains itself on the diagram. A failure opens with the drawer
+on its diagnostics tab, one row per diagnostic and warning with its kind, path,
+message and source location, a filter over the three, and the count on the
+tab. On the canvas a diagnostic halos the block it names in red, a warning in
+amber, with a pill reading the kind or the function that threw; a marked port
+square and a heavier wire show an unfed input. A loop halos its members and
+draws its chain over the declared wires on every level it crosses, a `loop`
+pill opening the closed assembly it continues into, and a dead hop draws as a
+dashed chord with a cross across its block. The tree carries a red or amber
+dot on every row with a diagnostic at it or beneath, its counts on hover. A
+click on a row, or on a pill, focuses that diagnostic: what it involves stays,
+the rest dims, and the row's element is selected on its level. A face route
+starts from the detail pane's Trace button on a pin, a port or a wire, from
+the Trace entry of their right-click menu, or by `t`: the value's whole path
+from its producer through every fan-out to every consumer, cased in the
+highlight hue on each level, the face traced from haloed, the consumers' ports
+marked, a `route` pill on each closed assembly it enters and on each pin it
+leaves a level by, a click on a pill following it in or out, and a blue dot on
+each level's row in the tree. The status bar names it, "tracing `h_ref`: 2
+consumers across 3 levels", with a clear control. The route survives
+navigation, selection and a push that still declares its face; the trace
+repeated, the clear control or Escape clears it. Escape clears the route
+first, then a focused diagnostic, then a legend line's focus, then the search,
+then the selection.
 
 In the live session the page connects to the server's socket on load and
 greets with its tab's channel. The status bar reads "connected, waiting for
