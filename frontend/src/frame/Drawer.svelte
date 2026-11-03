@@ -101,7 +101,7 @@
                       <span class="kind">{d.kind}</span>
                       <span class="path">{d.path || "/"}</span>
                     </span>
-                    <pre class="message">{d.message}</pre>
+                    <span class="message">{d.message}</span>
                   </button>
                   {#if loc}
                     <a
@@ -156,6 +156,6 @@
   .location.editor { cursor: pointer; }
   .location:hover { text-decoration: underline; }
   .copied { font-size: 11px; color: var(--text-light); }
-  .message { margin: 2px 0 0; font: 12px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .message { display: block; margin: 2px 0 0; font: 12px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
   .empty { margin: 0; color: var(--text-light); }
 </style>

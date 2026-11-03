@@ -1133,7 +1133,7 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   `.count` on a tab that has one, and `.tab-body` while open; the diagnostics
   tab's body `div.diagnostics` holding `input.filter`, `ul.diagnostics >
   li.diagnostic[data-index][data-severity]` holding `button.row` with
-  `.kind`, `.path` and `pre.message`, and `a.location` beside the button,
+  `.kind`, `.path` and `span.message`, and `a.location` beside the button,
   `current` on the focused row, and `p.empty`.
 - `footer.status[data-kind]` holding `.counts`, `.mode[data-mode]`, `.note`, `.fallback`,
   `span.route` with its `code` and `button.clear-route`,

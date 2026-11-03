@@ -22,7 +22,7 @@ test("failure_probe: two rows, error first, the filter, a click focusing and sel
   ]);
   await expect(row(page, 0).locator(".kind")).toHaveText("UserCodeFraming");
   await expect(row(page, 0).locator(".path")).toHaveText("t");
-  await expect(row(page, 0).locator("pre.message")).toContainText("cause: boom");
+  await expect(row(page, 0).locator("span.message")).toContainText("cause: boom");
   expect(await row(page, 0).locator("a.location").textContent()).toMatch(new RegExp(`:${line}$`));
   await expect(row(page, 1).locator(".path")).toHaveText("s/g");
   await shot(page, "failure_probe", "", "drawer");
@@ -46,7 +46,7 @@ test("failure_probe: two rows, error first, the filter, a click focusing and sel
   await filter.fill("");
 
   // a click focuses the row and selects its node on its level
-  await row(page, 0).locator("pre.message").click();
+  await row(page, 0).locator("span.message").click();
   await expect(row(page, 0)).toHaveClass(/\bcurrent\b/);
   await expect(page.locator('g.block.selected[data-id="t"]')).toHaveCount(1);
   await expect(page.locator('aside.detail[data-kind="leaf"]')).toHaveAttribute("data-id", "t");
