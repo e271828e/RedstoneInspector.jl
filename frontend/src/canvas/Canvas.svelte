@@ -11,8 +11,9 @@
   // kind with the trunks' dots and the type labels above the blocks (answer 4),
   // the diagnostics overlay above everything in the error and warning hues
   // (answer 8), a standing route's casings, origin, terminals and badges with the
-  // right-click menu that traces one (answer 9, workspace.md answer 8), and one
-  // dimming for whichever focus stands.
+  // right-click menu that traces one (answer 9, workspace.md answer 8), one
+  // dimming for whichever focus stands, and the execution-order badges
+  // (workspace.md answer 7).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -20,6 +21,7 @@
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
+  import { orderBadge } from "../lib/analysis";
   import { blockTriple, clockCount, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
   import { labelledPorts, levelWireClasses, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
@@ -42,7 +44,7 @@
   } from "./size";
 
   let {
-    model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, lit, focus, focusKey, legendFocus,
+    model, path, mode = "tier", labels = false, order = false, selected, view: savedView, layout: savedLayout, hits, lit, focus, focusKey, legendFocus,
     overlay, routeDrawn, focused = false, onopen, onselect, onview, onlayout, onlegend, onbadge, ontrace,
   }: {
     model: Model;
@@ -51,6 +53,8 @@
     mode?: Mode;
     /** The type labels shown, one per producer port. */
     labels?: boolean;
+    /** The execution-order badges shown, on every child block with a position. */
+    order?: boolean;
     /** The target drawn as selected; the caller passes it only on the level it was selected on. */
     selected?: Target;
     /** The level's view the session holds, restored instead of fitting; read when the level is drawn. */
@@ -92,7 +96,9 @@
   /**
    * The badge pill: its inset from the block's right edge, its height and its text's side padding. The rate pill
    * straddles the top edge, so it never covers the segment, which answer 10 never truncates; the overlay's pills
-   * straddle the bottom edge as far below as the rate pill rises above, `BADGE_GAP` apart.
+   * straddle the bottom edge as far below as the rate pill rises above, `BADGE_GAP` apart. The order badge is the
+   * rate pill mirrored, `BADGE_INSET` from the left edge; on a block too narrow for both side by side the rate pill rides
+   * one row higher, above the badge's row (reading 19), so no block's size depends on the toggles.
    */
   const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
   /** A fitted small level stops at twice its natural size. */
@@ -120,6 +126,18 @@
   const stage1 = $derived(new Map((model.outputs?.components ?? []).map((c) => [c.path, new Set(c.stage1)])));
   /** Each rate triple's palette step, over the whole model. */
   const steps = $derived(stepsOf(model));
+  /** Each child block's order badge text, while the badges are on; a block without a position has none. */
+  const orders = $derived.by(() => {
+    const out = new Map<string, string>();
+    if (!order || !shown) return out;
+    for (const b of shown.level.blocks) {
+      if (b.role !== "leaf" && b.role !== "assembly") continue;
+      const text = orderBadge(model, b.path);
+      if (text !== undefined) out.set(b.id, text);
+    }
+    return out;
+  });
+  const orderWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
   /** Each wire's class by wire id, the drawn level's. */
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
@@ -589,7 +607,7 @@
   <svg
     bind:this={svg} class="canvas" class:searching={!!hits} class:legend-focus={focus === "legend"} class:diagnostic-focus={focus === "diagnostic"}
     class:route-focus={focus === "route"} data-focus={focus ? focusKey : undefined} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
-    data-mode={mode} data-labels={labels ? "" : undefined} data-detail={detailAt(view.scale)}
+    data-mode={mode} data-labels={labels ? "" : undefined} data-order={order ? "" : undefined} data-detail={detailAt(view.scale)}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
   >
@@ -750,10 +768,20 @@
               {/if}
               {#if badge}
                 {@const w = Math.ceil(textWidth(badge.text, BADGE_FONT)) + 2 * BADGE_PAD}
+                {@const top = orders.has(b.id) && orderWidth(orders.get(b.id)!) + w + 2 * BADGE_INSET > box.width ? BADGE_TOP - BADGE_HEIGHT - BADGE_GAP : BADGE_TOP}
                 <g class="badge-pill">
                   <title>{badge.title}</title>
-                  <rect x={box.width - BADGE_INSET - w} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
-                  <text class="badge" x={box.width - BADGE_INSET - BADGE_PAD} y={BADGE_TOP + 9} text-anchor="end" style="font:{BADGE_FONT}">{badge.text}</text>
+                  <rect x={box.width - BADGE_INSET - w} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
+                  <text class="badge" x={box.width - BADGE_INSET - BADGE_PAD} y={top + 9} text-anchor="end" style="font:{BADGE_FONT}">{badge.text}</text>
+                </g>
+              {/if}
+              {#if orders.has(b.id)}
+                {@const text = orders.get(b.id)!}
+                {@const w = orderWidth(text)}
+                <g class="order-badge" data-id={b.id}>
+                  <title>{b.role === "leaf" ? `Position ${text} in the execution order` : `Positions ${text} in the execution order: the leaves inside`}</title>
+                  <rect x={BADGE_INSET} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                  <text class="order" x={BADGE_INSET + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{text}</text>
                 </g>
               {/if}
               {#each size.ports as p (p.side + p.name)}
@@ -900,6 +928,9 @@
   .legend .swatch { width: 12px; height: 10px; border: 1px solid; border-radius: 2px; }
   .legend .number { min-width: 20px; padding: 0 2px; border: 1px solid; border-radius: 6px; font-size: 9px; line-height: 10px; text-align: center; }
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
+  /* The order badge (workspace.md answer 7): the text color on the background; it never takes the pointer. */
+  .order-badge { pointer-events: none; }
+  .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
   /* The kind as line weight and pattern (visual_grammar.md answer 4); the struct's triple line is a wide stroke under a core in the background color. */

@@ -30,7 +30,7 @@
     setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
-  import { prefs, setMode, toggleCollapsed, toggleLabels } from "./state/prefs.svelte";
+  import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder } from "./state/prefs.svelte";
   import { onMount, tick } from "svelte";
 
   let refusal = $state<string | undefined>();
@@ -46,8 +46,8 @@
   const ZOOM_STEP = 1.25;
   /** The four regions in Tab's order, by their roots. */
   const REGIONS: [Region, string][] = [["tree", "nav.tree"], ["canvas", ".viewport"], ["detail", "aside.detail"], ["drawer", "section.drawer"]];
-  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: order badges, help. */
-  const RESERVED = new Set(["o", "?"]);
+  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: help. */
+  const RESERVED = new Set(["?"]);
 
   const model = $derived(session.model);
   /** The selection the canvas draws: one made on the open level, a folder as its region. */
@@ -273,6 +273,7 @@
     else if (e.key === "/") focusSearch();
     else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
     else if (key === "y" && !e.shiftKey) toggleLabels();
+    else if (key === "o" && !e.shiftKey) toggleOrder();
     else if (e.key === "t") traceFrom(model?.tree ? originOf(model, session.selection) : undefined);
     else handled = RESERVED.has(e.key); // swallowed until their increments
     if (handled) e.preventDefault();
@@ -323,13 +324,13 @@
         </Tree>
       {/snippet}
       {#snippet breadcrumb()}
-        <Breadcrumb {model} level={session.level} mode={prefs.mode} labels={prefs.labels} onopen={open} onfile={openFile} onmode={setMode} onlabels={toggleLabels} />
+        <Breadcrumb {model} level={session.level} mode={prefs.mode} labels={prefs.labels} order={prefs.order} onopen={open} onfile={openFile} onmode={setMode} onlabels={toggleLabels} onorder={toggleOrder} />
       {/snippet}
       {#snippet canvas()}
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay} {routeDrawn}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} order={prefs.order} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay} {routeDrawn}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}

@@ -1,0 +1,131 @@
+// The execution-order badges (workspace.md answers 7, 9 and 11): off at load, `o`
+// and the breadcrumb's toggle turning them on, a leaf's position and a closed
+// assembly's ranges over the whole model, straddling the top edge at the left
+// with the rate pill at the right, kept per browser across a reload and a drop,
+// none on a pin or a tag or on a model without an order. The texts are the
+// oracle's (`analysis.py`); the geometric pins are recomputed here from the DOM.
+import { test, type Page } from "@playwright/test";
+import { drop, dropOver, expect, openPath, press, shot } from "./fixtures";
+
+const svg = (page: Page) => page.locator("svg.canvas");
+const toggle = (page: Page) => page.locator("nav.breadcrumb .controls button.order-badges");
+const badges = (page: Page) => page.locator("svg.canvas g.order-badge");
+const badge = (page: Page, id: string) => page.locator(`svg.canvas g.block[data-id="${id}"] g.order-badge[data-id="${id}"] text.order`);
+type Rect = { left: number; right: number; top: number; bottom: number };
+/** The screen boxes of each badged block's shape, its order badge's rect and, when present, its rate pill's rect. */
+const boxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block:has(> g.order-badge)")].map((g) => {
+  const r = (e: Element | null) => {
+    if (!e) return undefined;
+    const b = e.getBoundingClientRect();
+    return { left: b.left, right: b.right, top: b.top, bottom: b.bottom };
+  };
+  return { id: g.dataset.id!, block: r(g.querySelector(":scope > .shape"))!, order: r(g.querySelector(":scope > g.order-badge > rect"))!, pill: r(g.querySelector(":scope > g.badge-pill > rect")) };
+}));
+const overlaps = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+test("closed_loop: o shows the badges at the root and inside pid_controller, on the top edge at the left, kept across a reload and a drop", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await expect(badges(page)).toHaveCount(0);
+  await expect(svg(page)).not.toHaveAttribute("data-order");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(toggle(page)).toHaveText("order");
+  await expect(toggle(page)).toHaveAttribute("title", "Number every leaf by its position in the execution order");
+
+  await press(page, "o");
+  await expect(svg(page)).toHaveAttribute("data-order", "");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  const texts = {
+    plant: "1", sensing: "2–3", pid_controller: "4–5, 15, 17, 19", lqr_controller: "6–10, 16, 18, 20",
+    selection: "11–12, 21–22", actuators: "13–14, 23–24",
+  };
+  for (const [id, text] of Object.entries(texts)) await expect(badge(page, id), id).toHaveText(text);
+  await expect(badges(page)).toHaveCount(6);
+  await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
+  await expect(page.locator('g.order-badge[data-id="plant"] > title')).toHaveText("Position 1 in the execution order");
+  await expect(page.locator('g.order-badge[data-id="sensing"] > title')).toHaveText("Positions 2–3 in the execution order: the leaves inside");
+  // the badge straddles the block's top edge, its left edge by the block's
+  for (const b of await boxes(page)) {
+    expect(b.order.top, b.id).toBeLessThan(b.block.top);
+    expect(b.order.bottom, b.id).toBeGreaterThan(b.block.top);
+    expect(Math.abs(b.order.left - b.block.left), b.id).toBeLessThanOrEqual(6);
+  }
+  // the background fill and the text color, compared with the page's elements
+  const bg = await page.locator(".viewport").evaluate((e) => getComputedStyle(e).backgroundColor);
+  expect(await page.locator('g.order-badge[data-id="plant"] > rect').evaluate((e) => getComputedStyle(e).fill)).toBe(bg);
+  const segment = await page.locator('g.block[data-id="plant"] text.segment').evaluate((e) => getComputedStyle(e).fill);
+  expect(await badge(page, "plant").evaluate((e) => getComputedStyle(e).fill)).toBe(segment);
+  expect(await page.locator('g.order-badge[data-id="plant"] > rect').evaluate((e) => getComputedStyle(e).stroke)).toBe(segment);
+  // a click on the badge's lower half, inside the block, selects the block: the badge takes no pointer
+  const sensing = (await boxes(page)).find((b) => b.id === "sensing")!;
+  await page.mouse.click((sensing.order.left + sensing.order.right) / 2, (sensing.block.top + sensing.order.bottom) / 2);
+  await expect(page.locator("svg.canvas g.block.selected")).toHaveAttribute("data-id", "sensing");
+  await page.keyboard.press("Escape");
+  await shot(page, "closed_loop", "", "order");
+
+  // in rate mode the rate pill keeps the right, the two apart
+  await press(page, "r");
+  const withPills = (await boxes(page)).filter((b) => b.pill);
+  expect(withPills.map((b) => b.id).sort()).toEqual(["actuators", "lqr_controller", "pid_controller", "selection", "sensing"]);
+  // on the four assemblies too narrow for both side by side the pill rides above the badge's row; sensing's straddles
+  const raised = ["actuators", "lqr_controller", "pid_controller", "selection"];
+  for (const b of withPills) {
+    expect(Math.abs(b.pill!.right - b.block.right), b.id).toBeLessThanOrEqual(6);
+    expect(overlaps(b.order, b.pill!), b.id).toBe(false);
+    if (raised.includes(b.id)) expect(b.pill!.bottom, b.id).toBeLessThanOrEqual(b.order.top);
+    else {
+      expect(b.pill!.top, b.id).toBeLessThan(b.block.top);
+      expect(b.pill!.bottom, b.id).toBeGreaterThan(b.block.top);
+      expect(b.pill!.left, b.id).toBeGreaterThan(b.order.right);
+    }
+  }
+  await press(page, "r");
+
+  await openPath(page, "pid_controller");
+  await expect(svg(page)).toHaveAttribute("data-order", "");
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
+  await expect(badge(page, "pid_controller/free")).toHaveText("5");
+  await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
+  await expect(page.locator('g.order-badge[data-id="pid_controller/h_ctl"] > title')).toHaveText("Position 15 in the execution order");
+
+  await page.reload();
+  await dropOver(page, "closed_loop");
+  await expect(svg(page)).toHaveAttribute("data-order", "");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  // the hash keeps the level across the reload
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
+
+  await toggle(page).click();
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(svg(page)).not.toHaveAttribute("data-order");
+  await expect(badges(page)).toHaveCount(0);
+  await press(page, "o");
+  await expect(badge(page, "pid_controller/free")).toHaveText("5");
+
+  await dropOver(page, "closed_loop_deployment");
+  await expect(svg(page)).toHaveAttribute("data-order", "");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
+});
+
+test("primitive, rates and failure_cycle: the root's own leaf badged, the scopes' ranges, no badge without an order", async ({ page }) => {
+  await drop(page, "primitive");
+  await press(page, "o");
+  await expect(badges(page)).toHaveCount(1);
+  await expect(badge(page, "")).toHaveText("1");
+
+  await dropOver(page, "rates");
+  await expect(badge(page, "fast")).toHaveText("2–3");
+  await expect(badge(page, "slow")).toHaveText("4");
+  await openPath(page, "fast");
+  await expect(badge(page, "fast/outer")).toHaveText("3");
+
+  await dropOver(page, "failure_cycle");
+  await expect(svg(page)).toHaveAttribute("data-order", "");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(badges(page)).toHaveCount(0);
+  await press(page, "o");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await press(page, "o");
+  await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(badges(page)).toHaveCount(0);
+});
