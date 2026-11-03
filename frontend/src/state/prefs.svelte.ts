@@ -1,6 +1,6 @@
 // The per-browser presentation state (workspace.md answers 1, 7 and 9): the
-// splitters, the collapsed side panes, the color mode and the type labels, one
-// versioned key in local storage.
+// splitters, the collapsed side panes, the color mode, the type labels and the
+// order badges, one versioned key in local storage.
 
 export type Side = "tree" | "detail";
 export type Splitter = Side | "drawer";
@@ -15,12 +15,14 @@ export interface Prefs {
   mode: Mode;
   /** The wires' type labels shown. */
   labels: boolean;
+  /** The execution-order badges shown. */
+  order: boolean;
 }
 
 export const KEY = "redstone-inspector/prefs";
 /** Each splitter's minimum and maximum. */
 export const BOUNDS: Record<Splitter, [number, number]> = { tree: [160, 640], detail: [240, 800], drawer: [80, 640] };
-const DEFAULTS: Prefs = { version: 1, sizes: { tree: 280, detail: 360, drawer: 200 }, collapsed: { tree: false, detail: false }, mode: "tier", labels: false };
+const DEFAULTS: Prefs = { version: 1, sizes: { tree: 280, detail: 360, drawer: 200 }, collapsed: { tree: false, detail: false }, mode: "tier", labels: false, order: false };
 
 export const clamp = (s: Splitter, px: number): number => Math.min(BOUNDS[s][1], Math.max(BOUNDS[s][0], Math.round(px)));
 
@@ -40,6 +42,7 @@ export function parsePrefs(text: string | null): Prefs {
   for (const s of ["tree", "detail"] as const) if (typeof d.collapsed?.[s] === "boolean") p.collapsed[s] = d.collapsed[s];
   if (d.mode === "tier" || d.mode === "rate") p.mode = d.mode;
   if (typeof d.labels === "boolean") p.labels = d.labels;
+  if (typeof d.order === "boolean") p.order = d.order;
   return p;
 }
 
@@ -77,5 +80,10 @@ export function setMode(mode: Mode) {
 
 export function toggleLabels() {
   prefs.labels = !prefs.labels;
+  write($state.snapshot(prefs));
+}
+
+export function toggleOrder() {
+  prefs.order = !prefs.order;
   write($state.snapshot(prefs));
 }
