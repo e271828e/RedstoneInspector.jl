@@ -798,7 +798,7 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   children's face hits. While `hits` is defined `svg.canvas` carries
   `searching`; a hit's halo and a hit port's halo are `dashed` unless that
   element is selected, whose halo stays solid. CSS dims to `--dim` (the
-  palette's 0.3) the wires with their cores, dots and type labels, and every child of a non-hit block, its badge included, except its halos
+  palette's 0.35) the wires with their cores, dots and type labels, and every child of a non-hit block, its badge included, except its halos
   and its hit ports, so a hit port in a dimmed block stays opaque.
 - **Selection** lives in the session; a background click reports `undefined`,
   and the shell's Escape clears it. The keys are the shell's.
@@ -1364,7 +1364,7 @@ the page's socket fails against `vite preview`, so every check but
   `searching` with no child `search-hit`, `search-under` on `sensing`,
   `pid_controller` and `selection`, 8 hit ports and their 8 dashed port halos,
   the `⟨in⟩h_ref` pin a hit with a dashed halo, `sensing`'s shape at opacity 1,
-  `plant`'s at 0.3 and its hit port `plant|out|h` at 1; Down twice and Enter
+  `plant`'s at 0.35 and its hit port `plant|out|h` at 1; Down twice and Enter
   selecting `selection/select_δe` at level `selection`, the pane `leaf`, focus
   on `.viewport`, no `.results`, `selection` expanded with both selects `hit`,
   `.hits` 1 on `sensing` and `pid_controller`, none on `lqr_controller` (a
@@ -1552,7 +1552,7 @@ the page's socket fails against `vite preview`, so every check but
   `4,1,0`, its button pressed and step 0's and the continuous line's not, the
   gray `pid_controller` the one lit block and `selection|in|δe_pid`
   the one lit wire, `plant`'s and the `h_ref` tag's shapes and `sensing|in|h`
-  at opacity 0.3, the lit at 1; `.hits` 1 on the collapsed `pid_controller`
+  at opacity 0.35, the lit at 1; `.hits` 1 on the collapsed `pid_controller`
   alone, `q_ctl` the one `hit` row once expanded; kept at `pid_controller`
   with `q_ctl` and two wires lit; a second click clearing it, no `lit`, no
   `hit` row. The continuous line lighting `plant` and the five assemblies, 17
@@ -1635,7 +1635,7 @@ the page's socket fails against `vite preview`, so every check but
   at the root, count 2; at `s` the amber halo and badge `EmptyFaceSelection`,
   the two badges' fills unlike; back at the root with the drawer closed by
   `d`, `t`'s badge opening the drawer with row 0 `current`, `diagnostic-focus`
-  with `data-focus="0"`, `s` at 0.3 and `t` at 1, the overlay undimmed by its
+  with `data-focus="0"`, `s` at 0.35 and `t` at 1, the overlay undimmed by its
   own opacity or a group's (`effectiveOpacity`, the product of the computed
   opacities up to `svg.canvas`: `t`'s mark halo 0.5, its badge 1), Escape
   clearing it. `warning`: the drawer closed, count 1, `g` amber, nothing in the
@@ -1665,7 +1665,7 @@ the page's socket fails against `vite preview`, so every check but
   `overlay.py`'s `routes`): `closed_loop`'s `⟨in⟩h_ref` tag clicked and `t`:
   `route-focus`, the tag `route-origin`, the oracle's two `path.casing.route`,
   `route` badges on `pid_controller` and `lqr_controller` alone, the one
-  terminal `⟨in⟩h_ref|out|h_ref`, `plant` at 0.3 and `pid_controller` at 1,
+  terminal `⟨in⟩h_ref|out|h_ref`, `plant` at 0.35 and `pid_controller` at 1,
   the wires dimmed but the route's, the badge's effective opacity 1,
   `span.route` "tracing
   h_ref: 2 consumers across 3 levels" with `code` and "clear", the child's

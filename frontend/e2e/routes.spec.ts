@@ -43,10 +43,10 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   for (const id of ["pid_controller", "lqr_controller"]) await expect(routeBadge(page, id).locator("text.badge-text")).toHaveText("route");
   await expect(page.locator('rect.port.route-terminal')).toHaveCount(1);
   await expect(page.locator('rect.port.route-terminal[data-port="⟨in⟩h_ref|out|h_ref"]')).toHaveCount(1);
-  expect(await opacity(page, 'g.block[data-id="plant"] > .shape')).toBe("0.3");
+  expect(await opacity(page, 'g.block[data-id="plant"] > .shape')).toBe("0.35");
   expect(await opacity(page, 'g.block[data-id="pid_controller"] > .shape')).toBe("1");
   expect(await opacity(page, 'path.wire[data-wire="pid_controller|in|h_ref"]')).toBe("1");
-  expect(await opacity(page, 'path.wire[data-wire="sensing|in|h"]')).toBe("0.3");
+  expect(await opacity(page, 'path.wire[data-wire="sensing|in|h"]')).toBe("0.35");
   expect(await effectiveOpacity(page, 'g.badge[data-id="pid_controller"]')).toBe(1);
   await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
   await expect(statusRoute(page).locator("code")).toHaveText("h_ref");

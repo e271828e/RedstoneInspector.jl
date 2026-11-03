@@ -31,8 +31,8 @@ export const palette = {
   background: "#ffffff",
   /** The one highlight hue: halos, casings, marked ports. */
   highlight: "#1f6feb",
-  /** The opacity of what is not a search hit while a query stands. */
-  dim: 0.3,
+  /** The opacity of what a standing query or focus leaves uninvolved. */
+  dim: 0.35,
   /** The search hit's dashed halo, as a dash array. */
   dash: "4 3",
 

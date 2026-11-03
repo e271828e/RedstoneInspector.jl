@@ -52,7 +52,7 @@ test("closed_loop: h listed, walked and picked; the markers; the other queries; 
   // a hit stays opaque, the rest dims by opacity
   const opacity = (sel: string) => page.locator(sel).evaluate((el) => getComputedStyle(el).opacity);
   expect(await opacity('g.block[data-id="sensing"] > .shape')).toBe("1");
-  expect(await opacity('g.block[data-id="plant"] > .shape')).toBe("0.3");
+  expect(await opacity('g.block[data-id="plant"] > .shape')).toBe("0.35");
   expect(await opacity('rect.port[data-port="plant|out|h"]')).toBe("1");
   await shot(page, "closed_loop", "", "search");
 

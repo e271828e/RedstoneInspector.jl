@@ -28,12 +28,12 @@ test("closed_loop: anchor 4's line lights the gray pid_controller and its wire, 
   await expect(line(page, ".continuous")).toHaveAttribute("aria-pressed", "false");
   expect(await litBlocks(page)).toEqual(["pid_controller"]);
   expect(await litWires(page)).toEqual(["selection|in|δe_pid"]);
-  // the search's dimming: the rest at the palette's 0.3, the lit at 1; no pin lit
-  expect(await opacity(page, 'g.block[data-id="plant"] > .shape')).toBe("0.3");
-  expect(await opacity(page, 'g.block[data-id="⟨in⟩h_ref"] > .shape')).toBe("0.3");
+  // the search's dimming: the rest at the palette's 0.35, the lit at 1; no pin lit
+  expect(await opacity(page, 'g.block[data-id="plant"] > .shape')).toBe("0.35");
+  expect(await opacity(page, 'g.block[data-id="⟨in⟩h_ref"] > .shape')).toBe("0.35");
   expect(await opacity(page, 'g.block[data-id="pid_controller"] > .shape')).toBe("1");
   expect(await opacity(page, 'path.wire[data-wire="selection|in|δe_pid"]')).toBe("1");
-  expect(await opacity(page, 'path.wire[data-wire="sensing|in|h"]')).toBe("0.3");
+  expect(await opacity(page, 'path.wire[data-wire="sensing|in|h"]')).toBe("0.35");
   // the tree: q_ctl, the one row on anchor 4, counted up its collapsed parent, marked once expanded
   await expect(row(page, "pid_controller").locator(".hits")).toHaveText("1");
   await expect(page.locator("nav.tree .row .hits")).toHaveCount(1);

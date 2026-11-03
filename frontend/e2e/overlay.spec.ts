@@ -140,7 +140,7 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   await expect(svg(page)).toHaveClass(/\bdiagnostic-focus\b/);
   await expect(svg(page)).toHaveAttribute("data-focus", "0");
   await expect(page.locator('li.diagnostic[data-index="0"]')).toHaveClass(/\bcurrent\b/);
-  expect(await opacity(page, 'g.block[data-id="s"] > .shape')).toBe("0.3");
+  expect(await opacity(page, 'g.block[data-id="s"] > .shape')).toBe("0.35");
   expect(await opacity(page, 'g.block[data-id="t"] > .shape')).toBe("1");
   // the overlay never dims, by its own opacity or a group's
   expect(await effectiveOpacity(page, 'rect.mark-halo[data-id="t"]')).toBe(0.5);
