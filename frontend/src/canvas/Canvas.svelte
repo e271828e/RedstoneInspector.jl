@@ -8,7 +8,9 @@
   // to 4), the view as the SVG's viewBox, opening and selection (workspace.md
   // answers 3 and 4), halos and casings in the one highlight hue (answer 9), the
   // tier or rate colors with the badge and the legend (answer 6), wire styles by
-  // kind with the trunks' dots and the type labels above the blocks (answer 4).
+  // kind with the trunks' dots and the type labels above the blocks (answer 4),
+  // the diagnostics overlay above everything in the error and warning hues
+  // (answer 8), and one dimming for whichever focus stands.
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12).
@@ -24,6 +26,7 @@
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
   import type { Lit } from "../lib/focus";
+  import type { Overlay, Severity } from "../lib/diagnostics";
   import { follow as followView, type Box } from "../lib/navigate";
   import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
@@ -35,8 +38,8 @@
   } from "./size";
 
   let {
-    model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, lit, legendFocus, focused = false,
-    onopen, onselect, onview, onlayout, onlegend,
+    model, path, mode = "tier", labels = false, selected, view: savedView, layout: savedLayout, hits, lit, focus, focusKey, legendFocus,
+    overlay, focused = false, onopen, onselect, onview, onlayout, onlegend, onbadge,
   }: {
     model: Model;
     path: string;
@@ -52,10 +55,16 @@
     layout?: LevelLayout;
     /** A standing query's hits on this level: drawn with the dashed halo, the rest dimmed. */
     hits?: LevelHits;
-    /** The legend's focus on this level: its blocks and wires lit, the rest dimmed as for a search. */
+    /** The standing focus's sets on this level: its blocks, wires and ports lit, the rest dimmed as for a search. */
     lit?: Lit;
+    /** Which standing focus `lit` belongs to, one at a time. */
+    focus?: "route" | "diagnostic" | "legend";
+    /** The focus's key, `data-focus`: the legend line's key, the diagnostic's index. */
+    focusKey?: string;
     /** The focused legend line's key, its button pressed. */
     legendFocus?: string;
+    /** What the diagnostics and warnings draw on this level. */
+    overlay?: Overlay;
     /** The keyboard's focus is in the canvas region. */
     focused?: boolean;
     onopen?: (path: string) => void;
@@ -67,14 +76,17 @@
     onlayout?: (geometry: Geometry, dragged: ReadonlySet<string>) => void;
     /** A click on a legend line, with its key. */
     onlegend?: (key: string) => void;
+    /** A click on a diagnostic's badge, with its index. */
+    onbadge?: (index: number) => void;
   } = $props();
 
   const FIT_PADDING = 24;
   /**
-   * The badge pill: its inset from the block's right edge, its height and its text's side padding. It straddles
-   * the top edge, so it never covers the segment, which answer 10 never truncates.
+   * The badge pill: its inset from the block's right edge, its height and its text's side padding. The rate pill
+   * straddles the top edge, so it never covers the segment, which answer 10 never truncates; the overlay's pills
+   * straddle the bottom edge as far below as the rate pill rises above, `BADGE_GAP` apart.
    */
-  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7;
+  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
   /** The wheel's zoom per pixel of scroll. */
@@ -463,7 +475,39 @@
     marked: markedPorts.get(id) === "selected",
     "marked-hover": markedPorts.get(id) === "hover",
     "search-hit": !!hits?.ports.has(id),
+    lit: !!lit?.ports.has(id),
   });
+
+  // The diagnostics overlay (answer 8), in the level's coordinates.
+  const byId = $derived(new Map((shown?.level.blocks ?? []).map((b) => [b.id, b])));
+  /** A port square's center, by port id. */
+  function portAt(id: string): Point | undefined {
+    const { block, side, name } = parsePortId(id);
+    const box = shown?.geometry.boxes.get(block), p = shown?.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
+    return box && p ? { x: box.x + p.x, y: box.y + p.y } : undefined;
+  }
+  /** The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a continuation's. */
+  const overlayBadges = $derived.by(() => {
+    const out: { block: string; role: "diagnostic" | "continues"; text: string; title: string; severity: Severity; index: number; x: number; y: number; w: number }[] = [];
+    if (!overlay || !shown) return out;
+    for (const b of shown.level.blocks) {
+      const box = shown.geometry.boxes.get(b.id);
+      if (!box) continue;
+      const pills: Omit<(typeof out)[number], "x" | "y" | "w">[] = [];
+      const badge = overlay.blocks.get(b.id)?.badge;
+      if (badge) pills.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index });
+      const c = overlay.continues.get(b.id);
+      if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
+      let right = box.x + box.width - BADGE_INSET;
+      for (const q of pills) {
+        const w = Math.ceil(textWidth(q.text, BADGE_FONT)) + 2 * BADGE_PAD;
+        out.push({ ...q, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
+        right -= w + BADGE_GAP;
+      }
+    }
+    return out;
+  });
+  const badgeClick = (q: (typeof overlayBadges)[number]) => (q.role === "diagnostic" ? onbadge?.(q.index) : onopen?.(q.block));
 </script>
 
 <svelte:window onkeydown={shiftKey} onkeyup={shiftKey} />
@@ -471,10 +515,11 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
   class="viewport" class:focused tabindex="0" role="region" aria-label="the canvas" bind:clientWidth={width} bind:clientHeight={height}
-  style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight};--dim:{palette.dim};--dash:{palette.dash}"
+  style="--wire:{palette.wire};--text:{palette.text};--text-light:{palette.textLight};--port:{palette.port};--bg:{palette.background};--highlight:{palette.highlight};--dim:{palette.dim};--dash:{palette.dash};--error:{palette.error};--warning:{palette.warning}"
 >
   <svg
-    bind:this={svg} class="canvas" class:searching={!!hits} class:legend-focus={!!lit} data-focus={lit ? legendFocus : undefined} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
+    bind:this={svg} class="canvas" class:searching={!!hits} class:legend-focus={focus === "legend"} class:diagnostic-focus={focus === "diagnostic"}
+    class:route-focus={focus === "route"} data-focus={focus ? focusKey : undefined} data-level={shown?.level.path} data-ready={ready ? "" : undefined}
     data-mode={mode} data-labels={labels ? "" : undefined} data-detail={detailAt(view.scale)}
     {viewBox} {width} {height} role="application" aria-label="the open level"
     onpointerdown={pointerdown} onpointermove={pointermove} onpointerup={pointerup} onpointercancel={pointerup}
@@ -658,6 +703,50 @@
           {/each}
         </g>
       {/if}
+      {#if overlay && shown.level.path === path}
+        <!-- last, so the error hue composes over every halo and casing (answer 9); never dimmed -->
+        <g class="overlay">
+          {#each overlay.wires as [id, severity] (id)}
+            {@const route = g.routes.get(id)}
+            {#if route}<path class="mark-wire" data-wire={id} data-severity={severity} d={pathD(route)} />{/if}
+          {/each}
+          {#each overlay.blocks as [id, m] (id)}
+            {@const box = g.boxes.get(id)}
+            {@const b = byId.get(id)}
+            {#if box && b}
+              {#if b.role === "in" && b.rootInput}
+                <path class="mark-halo" data-id={id} data-severity={m.severity} d={tagD(box.width, 3)} transform="translate({box.x},{box.y})" />
+              {:else}
+                <rect
+                  class="mark-halo" data-id={id} data-severity={m.severity} x={box.x - 3} y={box.y - 3} width={box.width + 6} height={box.height + 6}
+                  rx={b.role === "in" || b.role === "out" ? PIN_HEIGHT / 2 + 3 : 7}
+                />
+              {/if}
+            {/if}
+          {/each}
+          {#each overlay.ports as [id, severity] (id)}
+            {@const c = portAt(id)}
+            {#if c}<rect class="mark-port" data-port={id} data-severity={severity} x={c.x - PORT / 2 - 2} y={c.y - PORT / 2 - 2} width={PORT + 4} height={PORT + 4} />{/if}
+          {/each}
+          {#each overlay.chords as c (c.block + c.from + c.to)}
+            {@const a = portAt(c.from)}
+            {@const z = portAt(c.to)}
+            {#if a && z}
+              {@const mx = (a.x + z.x) / 2}
+              {@const my = (a.y + z.y) / 2}
+              <path class="chord" data-id={c.block} data-from={c.from} data-to={c.to} data-severity={c.severity} d="M{a.x},{a.y} L{z.x},{z.y}" />
+              <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - 3},{my - 3} L{mx + 3},{my + 3} M{mx - 3},{my + 3} L{mx + 3},{my - 3}" />
+            {/if}
+          {/each}
+          {#each overlayBadges as q (q.block + q.role)}
+            <g class="badge" data-id={q.block} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
+              <title>{q.title}</title>
+              <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+              <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>
+            </g>
+          {/each}
+        </g>
+      {/if}
     {/if}
   </svg>
   <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
@@ -764,9 +853,21 @@
   .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
   .searching :is(.wire, .wire-core, .junction, .type-label) { opacity: var(--dim); }
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
-  /* The legend's focus (answer 6 as amended): the same dimming, its blocks and the wires it tints lit. */
-  .legend-focus :is(.wire, .wire-core, .junction, .type-label):not(.lit) { opacity: var(--dim); }
-  .legend-focus .block:not(.lit) > :not(.halo):not(.port-halo) { opacity: var(--dim); }
+  /* A focus, a legend line's (answer 6 as amended), a diagnostic's or a route's (answer 9): the same dimming, what it lights kept. */
+  :is(.legend-focus, .diagnostic-focus, .route-focus) :is(.wire, .wire-core, .junction, .type-label):not(.lit) { opacity: var(--dim); }
+  :is(.legend-focus, .diagnostic-focus, .route-focus) .block:not(.lit) > :not(.halo):not(.port-halo):not(.port.lit) { opacity: var(--dim); }
+
+  /* The diagnostics overlay (answer 8): the error hue, amber for a warning, above everything. */
+  .overlay [data-severity="error"] { --hue: var(--error); }
+  .overlay [data-severity="warning"] { --hue: var(--warning); }
+  .mark-wire { fill: none; stroke: var(--hue); stroke-width: 3; stroke-linejoin: round; pointer-events: none; }
+  .mark-halo { fill: none; stroke: var(--hue); stroke-width: 5; opacity: 0.5; pointer-events: none; }
+  .mark-port { fill: none; stroke: var(--hue); stroke-width: 1.5; pointer-events: none; }
+  .chord { fill: none; stroke: var(--hue); stroke-width: 1.5; stroke-dasharray: var(--dash); pointer-events: none; }
+  .cross { fill: none; stroke: var(--hue); stroke-width: 1.5; pointer-events: none; }
+  .badge { cursor: pointer; }
+  .badge rect { fill: var(--hue); }
+  text.badge-text { fill: var(--bg); }
   text { fill: var(--text); user-select: none; pointer-events: none; }
   text.display { fill: var(--text-light); }
   /* The text levels (visual_grammar.md answer 10): below each floor one level drops; wires, ports, pins' labels and captions stay. */

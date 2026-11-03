@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { fixtureJson, fixtureModel } from "../lib/fixtures";
 import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
-import { climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery, toggleLegendFocus } from "./session.svelte";
+import {
+  clearDiagnosticFocus, climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery,
+  toggleDiagnosticFocus, toggleLegendFocus,
+} from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
   it("a build carrying one warning and no diagnostic loads with the drawer closed, the warning counted", () => {
@@ -84,6 +87,47 @@ describe("load: a replacement rekeys, a refusal unloads", () => {
     load(undefined);
     load(fixtureModel("rates"));
     expect(session.legendFocus).toBeUndefined();
+  });
+});
+
+describe("the focused diagnostic", () => {
+  it("is set, toggled off by a second click, replaced by another and cleared", () => {
+    load(fixtureModel("failure_probe"));
+    expect(session.diagnosticFocus).toBeUndefined();
+    toggleDiagnosticFocus(0);
+    expect(session.diagnosticFocus).toBe(0);
+    toggleDiagnosticFocus(0);
+    expect(session.diagnosticFocus).toBeUndefined();
+    toggleDiagnosticFocus(0);
+    toggleDiagnosticFocus(1);
+    expect(session.diagnosticFocus).toBe(1);
+    clearDiagnosticFocus();
+    expect(session.diagnosticFocus).toBeUndefined();
+  });
+
+  it("is cleared by a push and by a fresh load, and holds across a level change", () => {
+    load(fixtureModel("failure_probe"));
+    toggleDiagnosticFocus(1);
+    open("s");
+    expect(session.diagnosticFocus).toBe(1);
+    load(fixtureModel("failure_probe"));
+    expect(session.diagnosticFocus).toBeUndefined();
+    toggleDiagnosticFocus(0);
+    load(undefined);
+    load(fixtureModel("failure_probe"));
+    expect(session.diagnosticFocus).toBeUndefined();
+  });
+
+  it("Escape clears it ahead of the legend's focus, the query and the selection", () => {
+    load(fixtureModel("failure_probe"));
+    select({ level: "", target: { kind: "block", id: "t" } });
+    setQuery("s");
+    toggleLegendFocus("continuous");
+    toggleDiagnosticFocus(0);
+    escape();
+    expect([session.diagnosticFocus, session.legendFocus, session.query, session.selection?.target.id]).toEqual([undefined, "continuous", "s", "t"]);
+    escape();
+    expect([session.legendFocus, session.query]).toEqual([undefined, "s"]);
   });
 });
 

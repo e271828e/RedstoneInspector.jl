@@ -21,10 +21,11 @@ function leafBeneath(model: Model, path: string, key: string): boolean {
   });
 }
 
-/** What a focused key lights on a level: block ids and wire ids. */
+/** What a focus lights on a level: block ids, wire ids and port ids. */
 export interface Lit {
   blocks: Set<string>;
   wires: Set<string>;
+  ports: Set<string>;
 }
 
 /**
@@ -41,7 +42,7 @@ export function legendLit(model: Model, level: string, key: string): Lit {
     else if (keyOf(blockTriple(model, b.path)) === key || (b.role === "assembly" && leafBeneath(model, b.path, key))) blocks.add(b.id);
   }
   const wires = new Set(lv.wires.filter((w) => !fromRootInput(model, level, w) && keyOf(wireTriple(model, level, w)) === key).map((w) => w.id));
-  return { blocks, wires };
+  return { blocks, wires, ports: new Set() };
 }
 
 /**

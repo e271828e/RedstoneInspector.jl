@@ -22,9 +22,10 @@
   import { outlineRows, rowSelection, treeStep } from "./lib/outline";
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import { legendLit, legendMarks } from "./lib/focus";
+  import { diagnosticsOf, litBy, overlayOf } from "./lib/diagnostics";
   import {
-    back, clearLegendFocus, climb, escape, forward, levelOfHash, load, open, openFromHistory, select, session, setFocus, setLayout, setQuery,
-    setView, toggleDrawer, toggleExpanded, toggleLegendFocus, type Region,
+    back, clearLegendFocus, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus, setLayout,
+    setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels } from "./state/prefs.svelte";
@@ -65,7 +66,16 @@
     if (prefs.mode === "tier") clearLegendFocus();
   });
   const legendFocus = $derived(prefs.mode === "rate" ? session.legendFocus : undefined);
-  const lit = $derived(model?.tree && legendFocus !== undefined ? legendLit(model, session.level, legendFocus) : undefined);
+  // The diagnostics and warnings, what the open level draws of them, and the focused one.
+  const diagnostics = $derived(model ? diagnosticsOf(model) : []);
+  const overlay = $derived(model?.tree ? overlayOf(model, session.level) : undefined);
+  const focusedDiagnostic = $derived(session.diagnosticFocus === undefined ? undefined : diagnostics[session.diagnosticFocus]);
+  // One dimming focus at a time: the focused diagnostic, else the legend line; the legend's button stays pressed.
+  const focus = $derived(!model?.tree ? undefined : focusedDiagnostic ? "diagnostic" as const : legendFocus !== undefined ? "legend" as const : undefined);
+  const lit = $derived(
+    focus === "diagnostic" ? litBy(model!, session.level, focusedDiagnostic!) : focus === "legend" ? legendLit(model!, session.level, legendFocus!) : undefined,
+  );
+  const focusKey = $derived(focus === "diagnostic" ? String(focusedDiagnostic!.index) : focus === "legend" ? legendFocus : undefined);
   const marks = $derived(found ? marked(found) : model?.tree && legendFocus !== undefined ? legendMarks(model, legendFocus) : undefined);
   const counts = $derived(model?.tree && marks ? beneath(model.tree, marks) : undefined);
 
@@ -107,6 +117,12 @@
   }
 
   onMount(() => connect((text) => accept(parseDescriptor(text), true)));
+
+  /** A diagnostic's badge: the drawer open on diagnostics with its row focused. */
+  function badge(index: number) {
+    openDrawer("diagnostics");
+    if (session.diagnosticFocus !== index) toggleDiagnosticFocus(index);
+  }
 
   /** A location click: sent to the editor while connected, else false and the pane copies it. */
   const onlocation = (file: string, line: number) => sendOpenLocation(file, line);
@@ -282,13 +298,14 @@
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {legendFocus}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
               onview={(v) => setView(session.level, v)}
               onlayout={(g, d) => setLayout(session.level, g, d)}
               onlegend={toggleLegendFocus}
+              onbadge={badge}
             />
           {/key}
         {:else}

@@ -1,7 +1,8 @@
 // The per-tab state in memory (workspace.md answer 9's second lifetime): the
 // model, the open level and its hash, each visited level's view and layout, the
-// selection, the tree's expansion, the query, the legend's focus, the drawer and
-// the keyboard's region. Keyed by path and name, never by index; a push rekeys it (`rekey`).
+// selection, the tree's expansion, the query, the legend's focus, the focused
+// diagnostic, the drawer and the keyboard's region. Keyed by path and name,
+// never by index; a push rekeys it (`rekey`) and drops the focused diagnostic.
 // Nothing here touches local storage; the open level is the URL's hash.
 import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
@@ -26,6 +27,7 @@ let views = $state.raw<ReadonlyMap<string, View>>(new Map());
 let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
 let query = $state("");
 let legendFocus = $state<string | undefined>();
+let diagnosticFocus = $state<number | undefined>();
 let focus = $state<Region | undefined>();
 let note = $state<string | undefined>();
 
@@ -45,6 +47,8 @@ export const session = {
   get query() { return query; },
   /** The legend line focused: a triple's key or `continuous`. */
   get legendFocus() { return legendFocus; },
+  /** The focused diagnostic's index in the drawer's list. */
+  get diagnosticFocus() { return diagnosticFocus; },
   /** The region holding the keyboard's focus. */
   get focus() { return focus; },
   /** The fallback note, while it stands. */
@@ -119,11 +123,12 @@ function opensDrawer(m: Model): boolean {
  * A new model. The first, or one after a refusal, resets everything: the root open, its row expanded one level,
  * nothing selected, the drawer open on diagnostics only when one exists. A replacement rekeys the per-tab state
  * and notes a fallen level; the drawer stays, opening on diagnostics when the new model carries one. In both, a
- * hash naming a level of the new model wins.
+ * hash naming a level of the new model wins and the focused diagnostic is dropped.
  */
 export function load(m: Model | undefined) {
   const hashed = browser ? levelOfHash(location.hash) : undefined;
   const replacing = !!model && !!m;
+  diagnosticFocus = undefined; // a diagnostic has no key to rekey by
   if (m && replacing) {
     const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
     level = r.level;
@@ -258,9 +263,19 @@ export function clearLegendFocus() {
   legendFocus = undefined;
 }
 
-/** Escape's chain: the legend's focus, then a standing query, then the selection. The route's step, first, waits for increment 7. */
+/** A click on a drawer row or a badge's: focuses the diagnostic, or clears the focus when it is the focused one. */
+export function toggleDiagnosticFocus(index: number) {
+  diagnosticFocus = diagnosticFocus === index ? undefined : index;
+}
+
+export function clearDiagnosticFocus() {
+  diagnosticFocus = undefined;
+}
+
+/** Escape's chain: the focused diagnostic, then the legend's focus, then a standing query, then the selection. */
 export function escape() {
-  if (legendFocus !== undefined) legendFocus = undefined;
+  if (diagnosticFocus !== undefined) diagnosticFocus = undefined;
+  else if (legendFocus !== undefined) legendFocus = undefined;
   else if (query !== "") query = "";
   else select(undefined);
 }
