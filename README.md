@@ -215,7 +215,8 @@ of the whole list, opening its level.
 
 A failed build explains itself on the diagram. A failure opens with the drawer
 on its diagnostics tab, one row per diagnostic and warning with its kind, path,
-message and source location, a filter over the three, and the count on the
+message and, but for a loop, source location, a filter over the three, and
+the count on the
 tab. On the canvas a diagnostic halos the block it names in red, a warning in
 amber, with a pill reading the kind or the function that threw; a marked port
 square and a heavier wire show an unfed input. A loop halos its members and

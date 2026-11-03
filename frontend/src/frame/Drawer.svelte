@@ -46,8 +46,9 @@
     const q = filter.toLowerCase();
     return diagnostics.filter((d) => [d.kind, d.path, d.message].some((s) => s.toLowerCase().includes(q)));
   });
-  /** The attributed node's type's first location. */
+  /** The attributed node's type's first location; none for a loop, whose members' `y_direct` the format does not locate. */
   const locationOf = (d: Indexed) => {
+    if (d.cycle) return undefined;
     const n = model.tree?.byPath.get(d.path);
     return n && model.structure!.types.find((t) => t.name === n.type)?.locations[0];
   };

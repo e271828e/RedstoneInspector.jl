@@ -75,8 +75,9 @@ test("failure_probe: two rows, error first, the filter, a click focusing and sel
   await expect(page.locator("input.query")).toHaveValue("h");
 });
 
-test("failure_nested: the loop's row selects its first member, plant, on the root", async ({ page }) => {
+test("failure_nested: the loop's row carries no location and selects its first member, plant, on the root", async ({ page }) => {
   await drop(page, "failure_nested");
+  await expect(row(page, 0).locator("a.location")).toHaveCount(0);
   await page.locator('g.block[data-id="ctl"]').dblclick();
   await page.locator(readyLevel("ctl")).waitFor();
   await row(page, 0).locator(".kind").click();

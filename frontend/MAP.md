@@ -1055,8 +1055,9 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   switch and a push; then one `li.diagnostic` per row in the list's order
   holding `button.row`, which wraps the head, the kind in the row's hue and
   the path (`/` for the root), and under it the whole message; beside the
-  button, outside it, when the attributed node's type has a location,
-  `a.location` reading `file:line` for the first, which calls `onlocation` and
+  button, outside it, when the attributed node's type has a location and
+  the row is no loop, `a.location` reading `file:line` for the first, which
+  calls `onlocation` and
   on false copies with a `copied` mark as the pane does. A click on the row's
   button calls `ondiagnostic`; the shell toggles the focus and, once focused, selects
   `diagnosticTarget`'s selection, which shows its level; a structureless
@@ -2153,9 +2154,9 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   incident casings, which stay full. `failure_probe`'s `EmptyFaceSelection`
   pill is about 190 px on a 130 px block, running past its left corner, and
   white on amber is the page's lowest-contrast text. The dead hop's cross, ±3
-  px, is small at the fit. A loop's drawer row carries its attributed node's
-  type's location, `plant`'s `u_types` line on `failure_nested`, which says
-  little about a loop (reading 16). A loop's chain leaving a level through a
+  px, is small at the fit. A loop's drawer row carries no location (the look
+  pass on reading 16): its feedthrough is in its members' `y_direct`, which
+  the format does not locate yet. A loop's chain leaving a level through a
   pin has no badge there (answer 8 gives the loop none), so the reader climbs
   by the breadcrumb.
 - Increment 7's route look. Casings sharing a trunk compound their opacity,
