@@ -2,14 +2,19 @@
   // The drawer (workspace.md answer 6): four tabs with their counts, open on load
   // only when a diagnostic exists. The diagnostics tab lists every diagnostic and
   // warning with a text filter, a row's click focusing it and selecting what it
-  // names; the other bodies are placeholders until increment 8.
+  // names; the other three tabs are components of their own, a row's click
+  // selecting what it names.
   import { tick } from "svelte";
   import { palette } from "../canvas/palette";
+  import type { Selection } from "../lib/detail";
   import type { Indexed } from "../lib/diagnostics";
   import type { Model } from "../lib/model";
   import { diagnosticCount, type Tab } from "../state/session.svelte";
+  import Order from "./tabs/Order.svelte";
+  import RootInputs from "./tabs/RootInputs.svelte";
+  import Timing from "./tabs/Timing.svelte";
 
-  let { model, open, tab, focused = false, diagnostics, current, editor = false, ontab, ondiagnostic, onlocation }: {
+  let { model, open, tab, focused = false, diagnostics, current, editor = false, ontab, ondiagnostic, onlocation, onrow }: {
     model: Model;
     open: boolean;
     tab: Tab;
@@ -26,13 +31,15 @@
     ondiagnostic: (index: number) => void;
     /** A location clicked: true when the shell sent it to the editor, false to copy it here. */
     onlocation: (file: string, line: number) => boolean;
+    /** A row of the root inputs, timing or order tab clicked, with the selection it makes. */
+    onrow: (s: Selection) => void;
   } = $props();
 
-  const TABS: { tab: Tab; label: string; body: string }[] = [
-    { tab: "diagnostics", label: "Diagnostics", body: "" },
-    { tab: "root-inputs", label: "Root inputs", body: "The root inputs, with their types and terminal consumers, land with increment 8." },
-    { tab: "timing", label: "Timing", body: "The anchors, the rate scopes and every discrete leaf's timing land with increment 8." },
-    { tab: "order", label: "Execution order", body: "The execution order, numbered, with each leaf's stage 1 and stage 2 ports, lands with increment 8." },
+  const TABS: { tab: Tab; label: string }[] = [
+    { tab: "diagnostics", label: "Diagnostics" },
+    { tab: "root-inputs", label: "Root inputs" },
+    { tab: "timing", label: "Timing" },
+    { tab: "order", label: "Execution order" },
   ];
   const counts = $derived<Partial<Record<Tab, number>>>({
     diagnostics: diagnosticCount(model),
@@ -41,6 +48,8 @@
   });
 
   let filter = $state("");
+  /** The timing tab's sort, held here so a tab switch keeps it. */
+  let byPeriod = $state(false);
   /** The rows the filter keeps: a case-insensitive substring of the kind, the path or the message. */
   const shown = $derived.by(() => {
     const q = filter.toLowerCase();
@@ -54,6 +63,11 @@
   };
 
   let body = $state<HTMLElement>();
+  // The tabs share one scrolling body: a tab opens at its top. A push keeps the place, a live rebuild's rows mostly standing.
+  $effect(() => {
+    void tab;
+    if (body) body.scrollTop = 0;
+  });
   // The focused row scrolls into view, a badge's included.
   $effect(() => {
     const i = current;
@@ -118,8 +132,12 @@
             <p class="empty">No diagnostics or warnings.</p>
           {/if}
         </div>
+      {:else if tab === "root-inputs"}
+        <RootInputs {model} {onrow} />
+      {:else if tab === "timing"}
+        <Timing {model} {onrow} bind:byPeriod />
       {:else}
-        {TABS.find((t) => t.tab === tab)!.body}
+        <Order {model} {onrow} />
       {/if}
     </div>
   {/if}

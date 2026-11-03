@@ -29,7 +29,7 @@ test("closed_loop: the drawer stays closed with its counts readable, and a tab o
   await tab(page, "root-inputs").click();
   await expect(drawer(page)).toHaveAttribute("data-open", "true");
   await expect(drawer(page)).toHaveAttribute("data-tab", "root-inputs");
-  await expect(drawer(page).locator(".tab-body")).toContainText("increment 8");
+  await expect(drawer(page).locator(".tab-body table.root-inputs tr.root-input")).toHaveCount(3);
   await tab(page, "root-inputs").click();
   await expect(drawer(page)).toHaveAttribute("data-open", "false");
 });

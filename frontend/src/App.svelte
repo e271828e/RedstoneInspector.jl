@@ -355,6 +355,7 @@
         <Drawer
           {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} {diagnostics}
           current={session.diagnosticFocus} editor={live.state === "connected"} ontab={toggleDrawer} ondiagnostic={diagnostic} {onlocation}
+          onrow={select}
         />
       {/snippet}
       {#snippet status()}
