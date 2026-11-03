@@ -22,7 +22,7 @@
   import { outlineRows, rowSelection, treeStep } from "./lib/outline";
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import { legendLit, legendMarks } from "./lib/focus";
-  import { diagnosticsOf, litBy, overlayOf } from "./lib/diagnostics";
+  import { diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./lib/diagnostics";
   import {
     back, clearLegendFocus, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus, setLayout,
     setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, type Region,
@@ -69,6 +69,7 @@
   // The diagnostics and warnings, what the open level draws of them, and the focused one.
   const diagnostics = $derived(model ? diagnosticsOf(model) : []);
   const overlay = $derived(model?.tree ? overlayOf(model, session.level) : undefined);
+  const diagnosticMarks = $derived(model ? treeMarks(model) : undefined);
   const focusedDiagnostic = $derived(session.diagnosticFocus === undefined ? undefined : diagnostics[session.diagnosticFocus]);
   // One dimming focus at a time: the focused diagnostic, else the legend line; the legend's button stays pressed.
   const focus = $derived(!model?.tree ? undefined : focusedDiagnostic ? "diagnostic" as const : legendFocus !== undefined ? "legend" as const : undefined);
@@ -122,6 +123,13 @@
   function badge(index: number) {
     openDrawer("diagnostics");
     if (session.diagnosticFocus !== index) toggleDiagnosticFocus(index);
+  }
+
+  /** A drawer row: its focus toggled and, once focused, what it names selected, which shows its level. */
+  function diagnostic(index: number) {
+    toggleDiagnosticFocus(index);
+    const s = session.diagnosticFocus === index ? diagnosticTarget(model!, diagnostics[index]) : undefined;
+    if (s) select(s);
   }
 
   /** A location click: sent to the editor while connected, else false and the pane copies it. */
@@ -281,7 +289,7 @@
       {#snippet tree()}
         <Tree
           {model} level={session.level} mode={prefs.mode} selection={session.selection} expanded={session.expanded}
-          focused={session.focus === "tree"} {listing} {marks} {counts} onselect={select} onopen={open} ontoggle={toggleExpanded}
+          focused={session.focus === "tree"} {listing} {marks} {counts} {diagnosticMarks} onselect={select} onopen={open} ontoggle={toggleExpanded}
         >
           {#snippet search()}
             <Search
@@ -319,7 +327,10 @@
         />
       {/snippet}
       {#snippet drawer()}
-        <Drawer {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} ontab={toggleDrawer} />
+        <Drawer
+          {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} {diagnostics}
+          current={session.diagnosticFocus} editor={live.state === "connected"} ontab={toggleDrawer} ondiagnostic={diagnostic} {onlocation}
+        />
       {/snippet}
       {#snippet status()}
         <StatusBar

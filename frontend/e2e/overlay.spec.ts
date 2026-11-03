@@ -72,6 +72,10 @@ test("failure_nested: plant and the root's two hops, ctl's loop badge opening ct
   expect(await markWires(page)).toEqual(["ctl/pi|in|y", "⟨out⟩u|in|u"]);
   await expect(page.locator("g.badge")).toHaveCount(0);
   await shot(page, "failure_nested", "ctl", "overlay");
+  // the tree: a red mark on the members, on ctl (a level the chain touches) and on the root, which holds them beneath
+  const mark = (path: string) => page.locator(`nav.tree .row[data-path="${path}"] span.mark[data-mark="error"]`);
+  for (const p of ["plant", "ctl", "ctl/pi"]) await expect(mark(p)).toHaveAttribute("title", "1 error");
+  await expect(mark("")).toHaveAttribute("title", "1 error, beneath");
 });
 
 test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle", async ({ page }) => {
@@ -135,6 +139,7 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   await expect(drawer(page)).toHaveAttribute("data-tab", "diagnostics");
   await expect(svg(page)).toHaveClass(/\bdiagnostic-focus\b/);
   await expect(svg(page)).toHaveAttribute("data-focus", "0");
+  await expect(page.locator('li.diagnostic[data-index="0"]')).toHaveClass(/\bcurrent\b/);
   expect(await opacity(page, 'g.block[data-id="s"] > .shape')).toBe("0.3");
   expect(await opacity(page, 'g.block[data-id="t"] > .shape')).toBe("1");
   // the overlay never dims
@@ -169,9 +174,10 @@ test("a synthetic unfed input marks ctl's port and its wire in the error hue, a 
   await expect(drawer(page).locator('button.tab[data-tab="diagnostics"] .count')).toHaveText("2");
 });
 
-test("failure_structure: no canvas to draw on", async ({ page }) => {
+test("failure_structure: no canvas, the drawer's two rows", async ({ page }) => {
   await drop(page, "failure_structure");
   await expect(svg(page)).toHaveCount(0);
   await expect(drawer(page)).toHaveAttribute("data-open", "true");
   await expect(drawer(page).locator('button.tab[data-tab="diagnostics"] .count')).toHaveText("2");
+  await expect(page.locator("li.diagnostic")).toHaveCount(2);
 });

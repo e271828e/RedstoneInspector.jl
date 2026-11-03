@@ -2,16 +2,21 @@
   // The model tree (workspace.md answers 2 and 5): the outline's rows, selection
   // shared with the canvas, the chevron expanding and the double-click opening;
   // the search field on top, its results in the outline's place while listing,
-  // the hits' dashed markers on the rows otherwise. The tree never filters.
+  // the hits' dashed markers on the rows otherwise; a red or amber dot on a row
+  // whose subtree holds a diagnostic or a warning. The tree never filters.
   import { tick, type Snippet } from "svelte";
   import { palette, stepPair } from "../canvas/palette";
-  import type { Selection } from "../lib/detail";
+  import { count, type Selection } from "../lib/detail";
+  import type { TreeMark } from "../lib/diagnostics";
   import type { Model } from "../lib/model";
   import { blockTriple, stepsOf, tripleKey } from "../lib/rates";
   import type { Mode } from "../state/prefs.svelte";
   import { folderOf, outlineRows, rowSelection, type Row } from "../lib/outline";
 
-  let { model, level, mode = "tier", selection, expanded, focused = false, search, listing = false, marks, counts, onselect, onopen, ontoggle }: {
+  let {
+    model, level, mode = "tier", selection, expanded, focused = false, search, listing = false, marks, counts, diagnosticMarks, onselect, onopen,
+    ontoggle,
+  }: {
     model: Model;
     level: string;
     /** The canvas's color mode, which the dots follow. */
@@ -28,6 +33,8 @@
     marks?: ReadonlySet<string>;
     /** Each assembly's count of marked nodes beneath it. */
     counts?: ReadonlyMap<string, number>;
+    /** Each node's diagnostics and warnings, at it or beneath it. */
+    diagnosticMarks?: ReadonlyMap<string, TreeMark>;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
     ontoggle: (path: string) => void;
@@ -72,6 +79,10 @@
     if (step !== undefined) return stepPair(step);
     return n.class === "assembly" ? palette.assembly : palette.continuous;
   };
+  /** A diagnostic mark's title: the counts in words, ", beneath" when the row's own node carries none. */
+  const markTitle = (m: TreeMark) =>
+    [m.errors && count(m.errors, "error", "errors"), m.warnings && count(m.warnings, "warning", "warnings")].filter(Boolean).join(", ")
+    + (m.own ? "" : ", beneath");
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
@@ -102,9 +113,16 @@
         <span class="segment">{r.label}</span>
       {:else}
         {@const c = dot(r)}
+        {@const dm = diagnosticMarks?.get(r.path)}
         <span class="dot" style:background={c.stroke}></span>
         <span class="segment">{r.label}</span>
         {#if r.parent !== undefined}<span class="name">{r.displayName}</span>{/if}
+        {#if dm}
+          <span
+            class="mark" data-mark={dm.errors ? "error" : "warning"} title={markTitle(dm)}
+            style:background={dm.errors ? palette.error : palette.warning}
+          ></span>
+        {/if}
       {/if}
       {#if under > 0}<span class="hits" title={`${under} marked beneath`}>{under}</span>{/if}
     </div>
@@ -127,6 +145,7 @@
   .row.expanded > .chevron { transform: rotate(90deg); }
   .gap { width: 14px; flex: none; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .mark { width: 7px; height: 7px; border-radius: 50%; flex: none; }
   .glyph { width: 10px; font-size: 11px; color: var(--text-light); flex: none; text-align: center; }
   .name { color: var(--text-light); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
   .row.hit .dot { outline: 1.5px dashed var(--highlight); outline-offset: 1.5px; }
