@@ -6,6 +6,7 @@
   import {
     classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type Selection,
   } from "../lib/detail";
+  import { renderDocstring } from "../lib/docstring";
   import type { Model } from "../lib/model";
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
@@ -151,7 +152,8 @@
         {#key facts.path}
           <details class="docstring">
             <summary><span class="title">docstring</span></summary>
-            <pre class="docstring">{facts.docstring}</pre>
+            <!-- renderDocstring escapes raw HTML and keeps only http links, so the HTML is safe to insert -->
+            <div class="docstring">{@html renderDocstring(facts.docstring, facts.type)}</div>
           </details>
         {/key}
       {/if}
@@ -229,11 +231,19 @@
   .open-level, .trace { font: 11px system-ui, sans-serif; padding: 0 6px; }
   .trace[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 20%, transparent); }
   p { margin: 6px 0; }
-  code, pre, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  code, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
   .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
   details.docstring { margin: 8px 0; }
-  pre.docstring { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 8px 0; border-radius: 3px; }
+  /* The rendered docstring keeps the pane's font; code blocks in monospace on the strip, links in the highlight. */
+  div.docstring { margin: 4px 0 8px; }
+  div.docstring :global(p), div.docstring :global(ul), div.docstring :global(ol) { margin: 6px 0; }
+  div.docstring :global(ul), div.docstring :global(ol) { padding-left: 18px; }
+  div.docstring :global(:is(h1, h2, h3, h4, h5, h6)) { font-size: 13px; margin: 10px 0 4px; }
+  div.docstring :global(pre) { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 6px 0; border-radius: 3px; }
+  div.docstring :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  div.docstring :global(a) { color: var(--highlight); text-decoration: none; }
+  div.docstring :global(a:hover) { text-decoration: underline; }
   ul { margin: 0; padding-left: 16px; }
   .locations { list-style: none; padding: 0; }
   .locations li { margin: 2px 0; }

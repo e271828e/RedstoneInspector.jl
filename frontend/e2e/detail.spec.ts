@@ -1,9 +1,14 @@
 // The detail pane (workspace.md answer 4): each layout read field by field on
 // closed_loop, the labelled facts with their titles, the open button beside the copy
 // button, the links and face rows that select, the copy button; rates' scope line and
-// rate row, containers' folder keys and keyed member; the narrow pane's stacked rows.
+// rate row, containers' folder keys and keyed member; the narrow pane's stacked rows;
+// the docstring rendered from Markdown with the `@ref` link rule (build_release.md
+// answer 7), a hostile source's HTML, image and script link inert.
 import { test, type Page } from "@playwright/test";
-import { clickWire, drop, expect, openPath, readyLevel, shot } from "./fixtures";
+import { clickWire, drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
+
+/** The docs constant of `src/lib/docstring.ts`, read back by the check. */
+const DOCS_URL = "https://e271828e.github.io/Redstone.jl/dev/";
 
 const pane = (page: Page) => page.locator("aside.detail");
 const faceRow = (page: Page, port: string) => pane(page).locator(`table.faces tr[data-port="${port}"]`);
@@ -59,7 +64,8 @@ test.describe("closed_loop", () => {
     // the summary: the title alone, the call form left to the body
     await expect(docstring.locator("summary")).toHaveText("docstring");
     await expect(docstring.locator("summary .title")).toHaveText("docstring");
-    await expect(docstring.locator("pre.docstring")).toContainText("Longitudinal(");
+    await expect(docstring.locator("div.docstring")).toContainText("Longitudinal(");
+    await expect(docstring.locator("div.docstring a")).toHaveCount(0);
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["δe", "δt"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["V", "γ", "θ", "q", "h", "α"]);
     await expect(pane(page).locator("table.faces tr[data-port] .face-type")).toHaveText(Array(8).fill("Float64"));
@@ -77,7 +83,7 @@ test.describe("closed_loop", () => {
     await shot(page, "closed_loop", "", "detail-leaf");
     await docstring.locator("summary").click();
     await expect(docstring).toHaveAttribute("open");
-    await expect(docstring.locator("pre.docstring")).toBeVisible();
+    await expect(docstring.locator("div.docstring")).toBeVisible();
   });
 
   test("a consumer link selects that port on its level", async ({ page }) => {
@@ -300,4 +306,33 @@ test("the level facts count in the singular and the plural: aircraft's one child
   await expect(pane(page).locator(".facts")).toHaveText("open level · 1 child · 2 wires");
   await drop(page, "kinds");
   await expect(pane(page).locator(".facts")).toHaveText("open level · 9 children · 10 wires");
+});
+
+test("library: integrator's docstring rendered, the signature a code block, seven @ref links opening the core's docs in a new tab", async ({ page }) => {
+  await drop(page, "library");
+  await page.locator('g.block[data-id="integrator"]').click();
+  const docstring = pane(page).locator("details.docstring");
+  await docstring.locator("summary").click();
+  await expect(docstring).toHaveAttribute("open");
+  const body = docstring.locator("div.docstring");
+  await expect(body.locator('a[target="_blank"][rel="noopener"]')).toHaveCount(7);
+  await expect(body.locator("a")).toHaveCount(7);
+  await expect(body.locator(`a[href^="${DOCS_URL}glossary/#g-"]`)).toHaveCount(5);
+  await expect(body.locator('a[href$="api/#Redstone.Blocks.LimitedIntegrator"]')).toHaveCount(1);
+  await expect(body.locator("pre code").first()).toHaveText("Integrator(; x0 = 0.0) -> Integrator");
+  await expect(body).not.toContainText("@ref");
+});
+
+test("a hostile docstring: raw HTML shown as text, the image as its text, the script link as text", async ({ page }) => {
+  const d = JSON.parse(fixtureText("primitive"));
+  d.build.structure.types[0].docstring = "a <b>x</b> and <script>alert(1)</script>\n\n![alt](https://x/y.png) [x](javascript:alert(1))";
+  await drop(page, "primitive", JSON.stringify(d));
+  await page.locator('g.block[data-id=""]').click();
+  const docstring = pane(page).locator("details.docstring");
+  await docstring.locator("summary").click();
+  const body = docstring.locator("div.docstring");
+  await expect(body).toContainText("<b>x</b>");
+  await expect(body).toContainText("<script>alert(1)</script>");
+  await expect(body.locator("code")).toHaveText("alt");
+  for (const tag of ["b", "img", "script", "a"]) await expect(body.locator(tag), tag).toHaveCount(0);
 });
