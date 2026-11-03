@@ -629,10 +629,13 @@
         {/each}
       </g>
       <g class="casings">
-        {#each shown.level.wires as w (w.id)}
-          {@const route = routeDrawn?.wires.has(w.id) ? g.routes.get(w.id) : undefined}
-          {#if route}<path class="casing route" data-wire={w.id} d={pathD(route)} />{/if}
-        {/each}
+        <!-- faded as one group, so casings sharing a trunk merge instead of adding up -->
+        <g class="route-casings">
+          {#each shown.level.wires as w (w.id)}
+            {@const route = routeDrawn?.wires.has(w.id) ? g.routes.get(w.id) : undefined}
+            {#if route}<path class="casing route" data-wire={w.id} d={pathD(route)} />{/if}
+          {/each}
+        </g>
         {#each shown.level.wires as w (w.id)}
           {@const route = g.routes.get(w.id)}
           {#if route}
@@ -914,7 +917,8 @@
   .casing.incident { stroke-width: 5; opacity: 0.22; }
   .casing.incident-hover { stroke-width: 5; opacity: 0.11; }
   /* A route's casing at the selected casing's width and opacity, under the selection's. */
-  .casing.route { stroke-width: 7; opacity: 0.4; }
+  .route-casings { opacity: 0.4; }
+  .casing.route { stroke-width: 7; }
 
   /* A region (visual_grammar.md answer 5): a thin dashed frame captioned with the field; its frame and caption select the folder. */
   .region > .shape { fill: none; stroke: var(--wire); stroke-width: 1; stroke-dasharray: 3 3; pointer-events: stroke; cursor: pointer; }

@@ -39,6 +39,9 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(tag(page, "⟨in⟩h_ref")).toHaveClass(/\broute-origin\b/);
   // the tag is selected too; the origin's halo stands without the selection, below
   expect(await casings(page)).toEqual(["lqr_controller|in|h_ref", "pid_controller|in|h_ref"]);
+  // the casings opaque in a group faded once, so a shared trunk reads as the branches do
+  expect(await opacity(page, 'path.casing.route[data-wire="pid_controller|in|h_ref"]')).toBe("1");
+  expect(await effectiveOpacity(page, 'path.casing.route[data-wire="pid_controller|in|h_ref"]')).toBe(0.4);
   await expect(page.locator('g.badge[data-role="route"]')).toHaveCount(2);
   for (const id of ["pid_controller", "lqr_controller"]) await expect(routeBadge(page, id).locator("text.badge-text")).toHaveText("route");
   await expect(page.locator('rect.port.route-terminal')).toHaveCount(1);

@@ -834,8 +834,10 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `onopen(child)`.
 - **A route** (answer 9, workspace.md answer 8). `routeDrawn` is
   `routeDrawing(model, traced, level)`. Under each route wire a
-  `path.casing.route[data-wire]` at the selected casing's width and opacity (7,
-  0.4), drawn before the selection's casings. The origin: on a pin, `g.block`
+  `path.casing.route[data-wire]` at the selected casing's width, 7, opaque in
+  `g.route-casings`, which takes the selected casing's opacity, 0.4, as one
+  group, so casings sharing a trunk merge rather than add up; drawn before the
+  selection's casings. The origin: on a pin, `g.block`
   takes `route-origin` with its `.halo` at 0.5; on a child's port square,
   `rect.port` takes `route-origin` and its `.port-halo` is `on`. Every
   terminal port square takes `route-terminal`, stroked in the highlight hue as
@@ -925,7 +927,7 @@ marker per wire color on the level and one `<symbol>` per glyph icon.
   `path.cross[data-id]`, and `g.badge[data-id][data-role="diagnostic" |
   "continues" | "route"]`, `[data-severity]` on the first two, holding its
   `title`, a `rect` and `text.badge-text`.
-- `path.casing.route[data-wire]` in `g.casings`; `route-origin` on a `g.block`
+- `path.casing.route[data-wire]` in `g.casings > g.route-casings`; `route-origin` on a `g.block`
   (a pin) or a `rect.port`; `rect.port.route-terminal`.
 - `div.menu` in `.viewport` holding `button.trace`, while a right-click menu
   is open.
@@ -1664,6 +1666,7 @@ the page's socket fails against `vite preview`, so every check but
 - `routes.spec.ts` (workspace 8, 11, 9, 3; grammar 9; counts from
   `overlay.py`'s `routes`): `closed_loop`'s `⟨in⟩h_ref` tag clicked and `t`:
   `route-focus`, the tag `route-origin`, the oracle's two `path.casing.route`,
+  each at opacity 1 and 0.4 in effect,
   `route` badges on `pid_controller` and `lqr_controller` alone, the one
   terminal `⟨in⟩h_ref|out|h_ref`, `plant` at 0.35 and `pid_controller` at 1,
   the wires dimmed but the route's, the badge's effective opacity 1,
@@ -2159,9 +2162,7 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   the format does not locate yet. A loop's chain leaving a level through a
   pin has no badge there (answer 8 gives the loop none), so the reader climbs
   by the breadcrumb.
-- Increment 7's route look. Casings sharing a trunk compound their opacity,
-  so where `mode`'s four wires leave the pin together the trunk is a dark band
-  and the branches pale. A terminal port's highlight stroke on a 6 px square
+- Increment 7's route look. A terminal port's highlight stroke on a 6 px square
   is hard to see; the casings' ends find the consumers. On a short pin
   (`rates`' `in`) the `route` pill covers most of the top edge. The `route`
   pill at a tall assembly's bottom right is far from the entry port on its
