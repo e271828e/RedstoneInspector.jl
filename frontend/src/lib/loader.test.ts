@@ -54,9 +54,11 @@ describe("the fixtures", () => {
       expect(structureOf(d)?.nodes).toHaveLength(30);
       expect(outputsOf(d)?.order.length).toBeGreaterThan(0);
     }
-    const f = loaded(fixtureText("failure_cycle")).descriptor;
-    expect(structureOf(f)?.nodes).toHaveLength(3);
-    expect(outputsOf(f)).toBeUndefined();
+    for (const [name, n] of [["failure_cycle", 3], ["failure_nested", 4], ["failure_dead", 4], ["failure_probe", 5]] as const) {
+      const f = loaded(fixtureText(name)).descriptor;
+      expect(structureOf(f)?.nodes).toHaveLength(n);
+      expect(outputsOf(f)).toBeUndefined();
+    }
   });
 });
 

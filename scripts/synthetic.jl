@@ -4,7 +4,7 @@ module Synthetic
 using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
-    transparent_container, Absolute, Relative, Hz
+    transparent_container, input_passthrough, Absolute, Relative, Hz
 import Redstone.Blocks: Group, Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
@@ -295,5 +295,54 @@ y_direct(::Sum, (; u)) = (e = u.a - u.b,)
 failure_structure() = Group((; g = Gain(1.0), s = Sum());
                             local_wires = ("g/ot" => "s/a",),
                             input_wires = ("e" => "g/e", "b" => "s/b"))
+
+"`failure_cycle`'s loop with the controller one level down: the chain crosses `ctl`'s boundary."
+failure_nested() = Group((plant = Plant(2.0, 0.3),
+                          ctl = Group((; pi = PI(3.0, 2.0));
+                                      input_wires = ("ref" => "pi/ref", "y" => "pi/y"),
+                                      output_wires = "pi/y" => "u",
+                                      sample_times = (pi = Absolute(Hz(50)),)));
+                         local_wires = ("ctl/u" => "plant/u", "plant/power" => "ctl/y"),
+                         input_wires = ("ref" => "ctl/ref", "d" => "plant/d"),
+                         output_wires = "plant/y" => "y")
+
+"A leaf whose `F` reads `v` and `f` directly and whose state integrates `g`."
+struct Piecewise <: AbstractComponent end
+
+x_init(::Piecewise) = (q = 0.0,)
+u_types(::Piecewise) = (v = Float64, f = Float64, g = Float64)
+y_types(::Piecewise) = (F = Float64,)
+y_direct(::Piecewise, (; u)) = (F = u.v > 0 ? u.f + u.v : -u.f,)
+x_deriv(::Piecewise, (; u)) = (q = u.g,)
+
+"An artificial loop through `m` and `g2`: the hop from `m/g` to `m/F` is dead."
+failure_dead() = Group((m = Piecewise(), g1 = Gain(1.0), g2 = Gain(1.0));
+                       local_wires = ("m/F" => "g2/e", "g2/out" => "m/g", "g1/out" => "m/v"),
+                       input_wires = ("r" => "g1/e", "f" => "m/f"))
+
+"A gain whose input passthrough selects nothing: an `EmptyFaceSelection` warning, and a sound model."
+struct SelectedNothing <: AbstractComponent
+    g::Gain
+    src::Gain
+end
+
+local_wires(::SelectedNothing) = ("src/out" => "g/e",)
+input_wires(a::SelectedNothing) = (input_passthrough(a, "g"; select = _ -> false)..., "in" => "src/e")
+output_wires(::SelectedNothing) = ("g/out" => "out",)
+
+"A leaf whose state output throws."
+struct Thrower <: AbstractComponent end
+
+x_init(::Thrower) = (; a = 0.0)
+y_types(::Thrower) = (p = Float64,)
+y_state(::Thrower, (; x)) = error("boom")
+x_deriv(::Thrower, (; x)) = (; a = 0.0)
+
+"A probe throw beside an empty selection: fail-fast, with the structure and a warning."
+failure_probe() = Group((s = SelectedNothing(Gain(2.0), Gain(3.0)), t = Thrower());
+                        input_wires = ("in" => "s/in",))
+
+"A clean build with one `EmptyFaceSelection` warning."
+warning() = SelectedNothing(Gain(2.0), Gain(3.0))
 
 end # module Synthetic

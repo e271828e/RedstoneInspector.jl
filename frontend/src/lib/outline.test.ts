@@ -10,11 +10,15 @@ const ROWS: [string, number, number][] = [
   ["containers", 9, 9],
   ["descent", 4, 4],
   ["failure_cycle", 3, 3],
+  ["failure_dead", 4, 4],
+  ["failure_nested", 4, 3],
+  ["failure_probe", 5, 3],
   ["kinds", 10, 10],
   ["large", 171, 151],
   ["library", 33, 33],
   ["primitive", 1, 1],
   ["rates", 8, 4],
+  ["warning", 3, 3],
 ];
 
 const rowsOf = (name: string) => {

@@ -7,8 +7,8 @@ import { fixtureJson, fixtureNames, schemaJson } from "./fixtures";
 
 const names = fixtureNames();
 
-it("finds the twelve fixtures", () => {
-  expect(names).toHaveLength(12);
+it("finds the sixteen fixtures", () => {
+  expect(names).toHaveLength(16);
 });
 
 describe("ajv at default strictness", () => {
@@ -29,7 +29,7 @@ function structureIn(d: RedstoneDescriptor): StructureSection | undefined {
 
 describe("content assertions", () => {
   const withStructure = names.filter((n) => structureIn(fixtureJson(n) as RedstoneDescriptor));
-  it("finds eleven structures", () => expect(withStructure).toHaveLength(11));
+  it("finds fifteen structures", () => expect(withStructure).toHaveLength(15));
 
   it.each(withStructure)("%s: endpoints resolve, types have rows, consumers are unique", (name) => {
     const s = structureIn(fixtureJson(name) as RedstoneDescriptor)!;

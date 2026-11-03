@@ -1,0 +1,445 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "failure",
+  "name": "failure_nested",
+  "failure": {
+    "policy": "collected",
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Redstone.Blocks.Group",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{plant::Main.Synthetic.Plant, ctl::Redstone.Blocks.Group{@NamedTuple{pi::Main.Synthetic.PI}, Tuple{}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{pi::Redstone.Absolute}}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}",
+          "inputs": [
+            {
+              "name": "ref"
+            },
+            {
+              "name": "d"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "ctl",
+                "port": "u"
+              },
+              "to": {
+                "path": "plant",
+                "port": "u"
+              }
+            },
+            {
+              "from": {
+                "path": "plant",
+                "port": "power"
+              },
+              "to": {
+                "path": "ctl",
+                "port": "y"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "ref"
+              },
+              "to": {
+                "path": "ctl",
+                "port": "ref"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "d"
+              },
+              "to": {
+                "path": "plant",
+                "port": "d"
+              }
+            },
+            {
+              "from": {
+                "path": "plant",
+                "port": "y"
+              },
+              "to": {
+                "path": "",
+                "port": "y"
+              }
+            }
+          ],
+          "parameters": [
+            {
+              "name": "local_wires",
+              "value": "(\"ctl/u\"=>\"plant/u\", \"plant/power\"=>\"ctl/y\")"
+            },
+            {
+              "name": "input_wires",
+              "value": "(\"ref\"=>\"ctl/ref\", \"d\"=>\"plant/d\")"
+            },
+            {
+              "name": "output_wires",
+              "value": "(\"plant/y\"=>\"y\",)"
+            },
+            {
+              "name": "sample_times",
+              "value": "NamedTuple()"
+            }
+          ]
+        },
+        {
+          "path": "plant",
+          "field": "children",
+          "key": "plant",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Plant",
+          "signature": "Main.Synthetic.Plant",
+          "inputs": [
+            {
+              "name": "u",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "d",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "power",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "ω",
+              "value": "2.0"
+            },
+            {
+              "name": "ζ",
+              "value": "0.3"
+            }
+          ]
+        },
+        {
+          "path": "ctl",
+          "field": "children",
+          "key": "ctl",
+          "class": "assembly",
+          "type": "Redstone.Blocks.Group",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{pi::Main.Synthetic.PI}, Tuple{}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{pi::Redstone.Absolute}}",
+          "inputs": [
+            {
+              "name": "ref"
+            },
+            {
+              "name": "y"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "u"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "ctl",
+                "port": "ref"
+              },
+              "to": {
+                "path": "ctl/pi",
+                "port": "ref"
+              }
+            },
+            {
+              "from": {
+                "path": "ctl",
+                "port": "y"
+              },
+              "to": {
+                "path": "ctl/pi",
+                "port": "y"
+              }
+            },
+            {
+              "from": {
+                "path": "ctl/pi",
+                "port": "y"
+              },
+              "to": {
+                "path": "ctl",
+                "port": "u"
+              }
+            }
+          ],
+          "parameters": [
+            {
+              "name": "local_wires",
+              "value": "()"
+            },
+            {
+              "name": "input_wires",
+              "value": "(\"ref\"=>\"pi/ref\", \"y\"=>\"pi/y\")"
+            },
+            {
+              "name": "output_wires",
+              "value": "(\"pi/y\"=>\"u\",)"
+            },
+            {
+              "name": "sample_times.pi",
+              "value": "Absolute(1//50, 0//1)"
+            }
+          ]
+        },
+        {
+          "path": "ctl/pi",
+          "field": "children",
+          "key": "pi",
+          "class": "leaf",
+          "tier": "discrete",
+          "timing": {
+            "anchor": 1,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.PI",
+          "signature": "Main.Synthetic.PI",
+          "inputs": [
+            {
+              "name": "ref",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            },
+            {
+              "name": "y",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "y",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k_p",
+              "value": "3.0"
+            },
+            {
+              "name": "k_i",
+              "value": "2.0"
+            }
+          ]
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "ref",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        },
+        {
+          "name": "d",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [
+        {
+          "T": {
+            "num": 1,
+            "den": 50
+          },
+          "tau": {
+            "num": 0,
+            "den": 1
+          },
+          "scope": "ctl",
+          "key": "pi"
+        }
+      ],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Redstone.Blocks.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "locations": [
+            {
+              "function": "sample_times",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2123
+            },
+            {
+              "function": "local_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2120
+            },
+            {
+              "function": "input_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2121
+            },
+            {
+              "function": "output_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2122
+            },
+            {
+              "function": "transparent_container",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2124
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.Plant",
+          "docstring": "A damped oscillator driven by `u` and `d`, with a state output and a direct one.",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 145
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 146
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 144
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.PI",
+          "docstring": "A PI controller, discrete, its output direct.",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 273
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 274
+            },
+            {
+              "function": "s_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 272
+            }
+          ]
+        }
+      ]
+    },
+    "diagnostics": [
+      {
+        "kind": "AlgebraicCycle",
+        "severity": "error",
+        "path": "plant",
+        "message": "algebraic loop among `plant`, `ctl/pi`: plant/power → ctl/pi/y, ctl/pi/y → plant/u — real: a loop survives the trace (`ctl/pi` structurally, the rest globally); break it with a state, a stage-1 (`y_state`) port, or a `UnitDelay`, which moves the signal onto the discrete tier and inserts a Δt_base-scale zero-order hold (§5.5)",
+        "cycle": {
+          "members": [
+            "plant",
+            "ctl/pi"
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "plant",
+                "port": "power"
+              },
+              "to": {
+                "path": "ctl/pi",
+                "port": "y"
+              }
+            },
+            {
+              "from": {
+                "path": "ctl/pi",
+                "port": "y"
+              },
+              "to": {
+                "path": "plant",
+                "port": "u"
+              }
+            }
+          ],
+          "classification": "real",
+          "dead": [],
+          "traced": [
+            {
+              "path": "plant",
+              "mode": "global"
+            },
+            {
+              "path": "ctl/pi",
+              "mode": "structural"
+            }
+          ]
+        }
+      }
+    ],
+    "warnings": []
+  }
+}

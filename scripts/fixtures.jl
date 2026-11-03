@@ -65,10 +65,10 @@ write_fixture("descent", descent())
 write_fixture("closed_loop", closed)
 write_fixture("closed_loop_deployment", Deployment(build(closed); h = 1//100))
 
-for base_name in ("large", "containers", "primitive", "kinds", "rates", "library")
+for base_name in ("large", "containers", "primitive", "kinds", "rates", "library", "warning")
     write_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end
-for base_name in ("failure_cycle", "failure_structure")
+for base_name in ("failure_cycle", "failure_structure", "failure_nested", "failure_dead", "failure_probe")
     write_failure_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end
 

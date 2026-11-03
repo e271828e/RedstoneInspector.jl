@@ -16,7 +16,11 @@ const TABLE: [string, number, number, number, [number, number, number]][] = [
   ["rates", 8, 4, 3, [0, 0, 7]],
   ["large", 171, 11, 150, [0, 0, 170]],
   ["failure_cycle", 3, 1, 2, [0, 0, 2]],
+  ["failure_nested", 4, 2, 2, [0, 0, 3]],
+  ["failure_dead", 4, 1, 3, [0, 0, 3]],
+  ["failure_probe", 5, 2, 2, [2, 0, 2]],
   ["library", 33, 1, 32, [0, 0, 32]],
+  ["warning", 3, 1, 2, [2, 0, 0]],
 ];
 
 describe("the tree of each fixture", () => {

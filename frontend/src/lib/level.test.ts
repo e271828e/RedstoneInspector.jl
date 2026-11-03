@@ -9,12 +9,14 @@ const level = (name: string, path = ""): Level => {
   const m = fixtureModel(name);
   return levelOf(m.tree!, m.resolution!, path);
 };
-const STRUCTURES = ["aircraft", "descent", "closed_loop", "closed_loop_deployment", "containers", "primitive", "kinds", "rates", "large", "failure_cycle", "library"];
+const STRUCTURES = ["aircraft", "descent", "closed_loop", "closed_loop_deployment", "containers", "primitive", "kinds", "rates", "large", "failure_cycle", "library",
+  "failure_nested", "failure_dead", "failure_probe", "warning"];
 
 describe("the root level", () => {
   it.each([
     ["aircraft", 3, 2], ["descent", 5, 4], ["closed_loop", 9, 30], ["closed_loop_deployment", 9, 30], ["containers", 8, 7],
     ["kinds", 18, 10], ["rates", 6, 5], ["large", 156, 323], ["failure_cycle", 5, 5], ["library", 34, 40],
+    ["failure_nested", 5, 5], ["failure_dead", 5, 5], ["failure_probe", 3, 1], ["warning", 4, 3],
   ] as const)("%s: %i blocks, %i wires", (name, blocks, wires) => {
     const l = level(name);
     expect(l.blocks).toHaveLength(blocks);

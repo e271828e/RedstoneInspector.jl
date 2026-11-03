@@ -122,6 +122,7 @@ describe("routes", () => {
   it.each([
     ["aircraft", 2], ["descent", 4], ["closed_loop", 55], ["closed_loop_deployment", 55], ["containers", 7],
     ["primitive", 0], ["kinds", 10], ["rates", 6], ["large", 333], ["failure_cycle", 5], ["library", 40],
+    ["failure_nested", 5], ["failure_dead", 5], ["failure_probe", 2], ["warning", 3],
   ] as const)("%s: the producers' routes reach %i consumers", (name, n) => {
     expect(producerRoutes(res(name)).reduce((sum, rt) => sum + rt.consumers.length, 0)).toBe(n);
   });

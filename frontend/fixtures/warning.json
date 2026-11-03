@@ -1,0 +1,227 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "build",
+  "name": "warning",
+  "build": {
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Main.Synthetic.SelectedNothing",
+          "signature": "Main.Synthetic.SelectedNothing",
+          "inputs": [
+            {
+              "name": "in"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "src",
+                "port": "out"
+              },
+              "to": {
+                "path": "g",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "",
+                "port": "in"
+              },
+              "to": {
+                "path": "src",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "g",
+                "port": "out"
+              },
+              "to": {
+                "path": "",
+                "port": "out"
+              }
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "g",
+          "field": "g",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "2.0"
+            }
+          ]
+        },
+        {
+          "path": "src",
+          "field": "src",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "3.0"
+            }
+          ]
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "in",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Main.Synthetic.SelectedNothing",
+          "docstring": "A gain whose input passthrough selects nothing: an `EmptyFaceSelection` warning, and a sound model.",
+          "locations": [
+            {
+              "function": "local_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 329
+            },
+            {
+              "function": "input_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 330
+            },
+            {
+              "function": "output_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 331
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.Gain",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 112
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 113
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 111
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "order": [
+        "src",
+        "g"
+      ],
+      "components": [
+        {
+          "path": "g",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        },
+        {
+          "path": "src",
+          "stage1": [],
+          "stage2": [
+            "out"
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      {
+        "kind": "EmptyFaceSelection",
+        "severity": "warning",
+        "path": "g",
+        "message": "`input_passthrough` at `g`: `select` accepted no face of the child, so nothing passes through — its input faces are `e` (§8.8)"
+      }
+    ]
+  }
+}

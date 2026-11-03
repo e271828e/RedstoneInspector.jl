@@ -103,9 +103,14 @@ the pinned Redstone's `src/descriptor.json`. Among the synthetic models,
 root output of the same name, so its root draws a wire of every style, and
 `library` holds one instance of every shipped block, plus a `Junction` over a
 user function, on two anchors with a relative and a phased rate, so every icon
-and every legend form has something to show. Both are committed, so the
-frontend builds and tests without Julia. To regenerate them, from the
-repository root:
+and every legend form has something to show. Four models give the overlay
+something to show, each ported from the core's suite. `failure_nested` closes
+`failure_cycle`'s loop through a controller one level down, so the loop's chain
+crosses a boundary. `failure_dead` is an artificial loop with a dead hop.
+`failure_probe` is a probe throw, fail-fast with its structure, beside an
+`EmptyFaceSelection` warning. `warning` is a clean build with that warning
+alone. Both directories are committed, so the frontend builds and tests
+without Julia. To regenerate them, from the repository root:
 
     julia --project=. -e 'using Pkg; Pkg.instantiate()'
     julia --project=scripts scripts/fixtures.jl

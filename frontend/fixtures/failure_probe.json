@@ -1,0 +1,332 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "failure",
+  "name": "failure_probe",
+  "failure": {
+    "policy": "fail-fast",
+    "structure": {
+      "nodes": [
+        {
+          "path": "",
+          "class": "assembly",
+          "type": "Redstone.Blocks.Group",
+          "signature": "Redstone.Blocks.Group{@NamedTuple{s::Main.Synthetic.SelectedNothing, t::Main.Synthetic.Thrower}, Tuple{}, Tuple{Pair{String, String}}, Tuple{}, @NamedTuple{}}",
+          "inputs": [
+            {
+              "name": "in"
+            }
+          ],
+          "outputs": [],
+          "wires": [
+            {
+              "from": {
+                "path": "",
+                "port": "in"
+              },
+              "to": {
+                "path": "s",
+                "port": "in"
+              }
+            }
+          ],
+          "parameters": [
+            {
+              "name": "local_wires",
+              "value": "()"
+            },
+            {
+              "name": "input_wires",
+              "value": "(\"in\"=>\"s/in\",)"
+            },
+            {
+              "name": "output_wires",
+              "value": "()"
+            },
+            {
+              "name": "sample_times",
+              "value": "NamedTuple()"
+            }
+          ]
+        },
+        {
+          "path": "s",
+          "field": "children",
+          "key": "s",
+          "class": "assembly",
+          "type": "Main.Synthetic.SelectedNothing",
+          "signature": "Main.Synthetic.SelectedNothing",
+          "inputs": [
+            {
+              "name": "in"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "s/src",
+                "port": "out"
+              },
+              "to": {
+                "path": "s/g",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "s",
+                "port": "in"
+              },
+              "to": {
+                "path": "s/src",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "s/g",
+                "port": "out"
+              },
+              "to": {
+                "path": "s",
+                "port": "out"
+              }
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "s/g",
+          "field": "g",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "2.0"
+            }
+          ]
+        },
+        {
+          "path": "s/src",
+          "field": "src",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Gain",
+          "signature": "Main.Synthetic.Gain",
+          "inputs": [
+            {
+              "name": "e",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": [
+            {
+              "name": "k",
+              "value": "3.0"
+            }
+          ]
+        },
+        {
+          "path": "t",
+          "field": "children",
+          "key": "t",
+          "class": "leaf",
+          "tier": "continuous",
+          "timing": {
+            "anchor": 0,
+            "m": 1,
+            "c": 0
+          },
+          "type": "Main.Synthetic.Thrower",
+          "signature": "Main.Synthetic.Thrower",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "p",
+              "type": "Float64",
+              "kind": {
+                "kind": "float"
+              },
+              "pinned": false
+            }
+          ],
+          "parameters": []
+        }
+      ],
+      "root_inputs": [
+        {
+          "name": "in",
+          "type": "Float64",
+          "kind": {
+            "kind": "float"
+          },
+          "pinned": false
+        }
+      ],
+      "anchors": [],
+      "scopes": [],
+      "types": [
+        {
+          "name": "Redstone.Blocks.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "locations": [
+            {
+              "function": "sample_times",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2123
+            },
+            {
+              "function": "local_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2120
+            },
+            {
+              "function": "input_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2121
+            },
+            {
+              "function": "output_wires",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2122
+            },
+            {
+              "function": "transparent_container",
+              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "line": 2124
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.SelectedNothing",
+          "docstring": "A gain whose input passthrough selects nothing: an `EmptyFaceSelection` warning, and a sound model.",
+          "locations": [
+            {
+              "function": "local_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 329
+            },
+            {
+              "function": "input_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 330
+            },
+            {
+              "function": "output_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 331
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.Gain",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 112
+            },
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 113
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 111
+            }
+          ]
+        },
+        {
+          "name": "Main.Synthetic.Thrower",
+          "docstring": "A leaf whose state output throws.",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 337
+            },
+            {
+              "function": "x_init",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 336
+            }
+          ]
+        }
+      ]
+    },
+    "diagnostics": [
+      {
+        "kind": "UserCodeFraming",
+        "severity": "error",
+        "path": "t",
+        "message": "`t`: `y_state` threw during the build's probe — bundle {x, t} (§13.2)\n  cause: boom",
+        "function": "y_state"
+      }
+    ],
+    "warnings": [
+      {
+        "kind": "EmptyFaceSelection",
+        "severity": "warning",
+        "path": "s/g",
+        "message": "`input_passthrough` at `s/g`: `select` accepted no face of the child, so nothing passes through — its input faces are `e` (§8.8)"
+      }
+    ]
+  }
+}
