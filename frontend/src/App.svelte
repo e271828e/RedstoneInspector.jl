@@ -24,7 +24,7 @@
   import { legendLit, legendMarks } from "./lib/focus";
   import { diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./lib/diagnostics";
   import type { Face } from "./lib/resolve";
-  import { faceText, originOf, routeDrawing, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
+  import { faceText, originOf, routeDrawing, routeLevels, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
     back, clearLegendFocus, clearRoute, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus,
     setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, trace, type Region,
@@ -76,6 +76,7 @@
   // The standing route, what the open level draws of it and its status line.
   const traced = $derived(model?.tree && session.route ? routeOf(model, session.route) : undefined);
   const routeDrawn = $derived(traced ? routeDrawing(model!, traced, session.level) : undefined);
+  const routeMarks = $derived(traced && routeLevels(traced));
   /** The selection's face when it has a route: the pane's trace button. */
   const selectionOrigin = $derived.by(() => {
     const o = model?.tree ? originOf(model, session.selection) : undefined;
@@ -311,7 +312,7 @@
       {#snippet tree()}
         <Tree
           {model} level={session.level} mode={prefs.mode} selection={session.selection} expanded={session.expanded}
-          focused={session.focus === "tree"} {listing} {marks} {counts} {diagnosticMarks} onselect={select} onopen={open} ontoggle={toggleExpanded}
+          focused={session.focus === "tree"} {listing} {marks} {counts} {diagnosticMarks} {routeMarks} onselect={select} onopen={open} ontoggle={toggleExpanded}
         >
           {#snippet search()}
             <Search

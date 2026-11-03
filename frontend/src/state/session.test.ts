@@ -158,6 +158,26 @@ describe("the standing route", () => {
     expect(session.route).toEqual(hRef);
   });
 
+  it("is kept across the deployment, dropped by rates and by a fresh load", () => {
+    load(undefined);
+    load(fixtureModel("closed_loop"));
+    trace(hRef);
+    load(fixtureModel("closed_loop_deployment"));
+    expect(session.route).toEqual(hRef);
+    trace(hRef);
+    trace(plantV);
+    load(fixtureModel("closed_loop_deployment"));
+    expect(session.route).toEqual(plantV);
+    trace(hRef);
+    load(fixtureModel("rates"));
+    expect(session.route).toBeUndefined();
+    load(fixtureModel("closed_loop"));
+    trace(hRef);
+    load(undefined);
+    load(fixtureModel("closed_loop"));
+    expect(session.route).toBeUndefined();
+  });
+
   it("Escape clears it ahead of the focused diagnostic", () => {
     load(fixtureModel("failure_cycle"));
     select({ level: "", target: { kind: "block", id: "plant" } });

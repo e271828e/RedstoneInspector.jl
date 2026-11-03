@@ -6,7 +6,7 @@
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
 // read off the DOM.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, expect, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { blockBoxes, drop, dropOver, expect, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
@@ -15,6 +15,7 @@ const routeBadge = (page: Page, id: string) => page.locator(`g.overlay g.badge[d
 const casings = (page: Page) => page.locator("g.casings path.casing.route").evaluateAll((ps) => ps.map((p) => p.getAttribute("data-wire")).sort());
 const opacity = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => getComputedStyle(e).opacity);
 const tag = (page: Page, id: string) => page.locator(`g.block[data-id="${id}"]`);
+const routeRows = (page: Page) => page.locator('nav.tree .row:has(span.mark[data-mark="route"])').evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")).sort());
 /** The status line as text, the backquotes of the oracle's spelling dropped. */
 const plain = (s: string) => s.replaceAll("`", "");
 /** A badge's pill in level units, beside its block's or pin's box. */
@@ -60,6 +61,10 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   }
   await expect(pane(page).locator("button.trace")).toHaveAttribute("aria-pressed", "true");
   await expect(pane(page).locator("button.trace")).toHaveAttribute("title", "Clear the route");
+  // the tree's blue marks on the levels it crosses, the root's included
+  expect(await routeRows(page)).toEqual(["", "lqr_controller", "pid_controller"]);
+  await expect(page.locator('nav.tree .row[data-path="sensing"] span.mark')).toHaveCount(0);
+  await expect(page.locator('nav.tree .row[data-path="pid_controller"] span.mark[data-mark="route"]')).toHaveAttribute("title", "on the route");
   await shot(page, "closed_loop", "", "routes");
 
   // pid_controller's badge opens it: one casing, the terminal, the pin badged at its top outer end
@@ -104,6 +109,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(page.locator("path.casing.route")).toHaveCount(0);
   await expect(statusRoute(page)).toHaveCount(0);
   await expect(page.locator('g.badge[data-role="route"]')).toHaveCount(0);
+  await expect(page.locator('nav.tree span.mark[data-mark="route"]')).toHaveCount(0);
 
   // the pane's button traces it, the clear control clears it
   await expect(pane(page).locator("button.trace")).toHaveAttribute("aria-pressed", "false");
@@ -173,6 +179,24 @@ test("closed_loop: the right-click menu traces a port square and a wire, on thos
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
 });
 
+test("a push keeps a route whose origin the new model declares, recomputed, and drops one it does not", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await tag(page, "⟨in⟩h_ref").click();
+  await press(page, "t");
+  await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
+  await dropOver(page, "closed_loop_deployment");
+  await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
+  await expect(svg(page)).toHaveClass(/\broute-focus\b/);
+  expect(await casings(page)).toEqual(["lqr_controller|in|h_ref", "pid_controller|in|h_ref"]);
+  expect(await routeRows(page)).toEqual(["", "lqr_controller", "pid_controller"]);
+  await dropOver(page, "rates");
+  await page.locator(readyLevel("")).waitFor();
+  await expect(statusRoute(page)).toHaveCount(0);
+  await expect(svg(page)).not.toHaveClass(/route-focus/);
+  await expect(page.locator("path.casing.route")).toHaveCount(0);
+  await expect(page.locator('nav.tree span.mark[data-mark="route"]')).toHaveCount(0);
+});
+
 test("rates: src/out traced from the menu, fast and slow badged, fast opened by its badge with fast/outer badged and inner's input terminal", async ({ page }) => {
   await drop(page, "rates");
   await page.locator('rect.port[data-port="src|out|out"]').click({ button: "right" });
@@ -189,6 +213,8 @@ test("rates: src/out traced from the menu, fast and slow badged, fast opened by 
   await expect(routeBadge(page, "⟨in⟩in")).toHaveCount(1);
   await expect(page.locator('rect.port.route-terminal[data-port="fast/inner|in|in"]')).toHaveCount(1);
   expect(await casings(page)).toEqual(["fast/inner|in|in", "fast/outer|in|in"]);
+  // the four levels marked in the tree once fast is open, its row expanded
+  expect(await routeRows(page)).toEqual(["", "fast", "fast/outer", "slow"]);
 });
 
 test("primitive: the u tag traced reads 0 consumers across 0 levels, the tag the origin, no casing", async ({ page }) => {

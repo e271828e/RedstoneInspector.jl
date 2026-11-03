@@ -2,8 +2,8 @@
 // model, the open level and its hash, each visited level's view and layout, the
 // selection, the tree's expansion, the query, the legend's focus, the focused
 // diagnostic, the standing route, the drawer and the keyboard's region. Keyed by
-// path and name, never by index; a push rekeys it (`rekey`) and drops the focused
-// diagnostic.
+// path and name, never by index; a push rekeys it (`rekey`, the route through
+// `rekeyRoute`) and drops the focused diagnostic.
 // Nothing here touches local storage; the open level is the URL's hash.
 import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
@@ -12,7 +12,7 @@ import { rekeyFocus } from "../lib/focus";
 import { ancestors, defaultExpansion, folderOf } from "../lib/outline";
 import { isLevel, rekey } from "../lib/rekey";
 import type { Face } from "../lib/resolve";
-import { sameFace } from "../lib/routes";
+import { rekeyRoute, sameFace } from "../lib/routes";
 import type { Tree } from "../lib/tree";
 import type { View } from "../lib/view";
 
@@ -127,15 +127,15 @@ function opensDrawer(m: Model): boolean {
 
 /**
  * A new model. The first, or one after a refusal, resets everything: the root open, its row expanded one level,
- * nothing selected, the drawer open on diagnostics only when one exists. A replacement rekeys the per-tab state
- * and notes a fallen level; the drawer stays, opening on diagnostics when the new model carries one. In both, a
- * hash naming a level of the new model wins and the focused diagnostic is dropped.
+ * nothing selected, no route, the drawer open on diagnostics only when one exists. A replacement rekeys the
+ * per-tab state, the route kept while the new model declares its origin face, and notes a fallen level; the drawer
+ * stays, opening on diagnostics when the new model carries one. In both, a hash naming a level of the new model
+ * wins and the focused diagnostic is dropped.
  */
 export function load(m: Model | undefined) {
   const hashed = browser ? levelOfHash(location.hash) : undefined;
   const replacing = !!model && !!m;
   diagnosticFocus = undefined; // a diagnostic has no key to rekey by
-  route = undefined;
   if (m && replacing) {
     const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
     level = r.level;
@@ -145,6 +145,7 @@ export function load(m: Model | undefined) {
     layouts = new Map([...r.layouts].map(([p, l]) => [p, { ...l, stale: true }]));
     query = r.query;
     legendFocus = legendFocus === undefined ? undefined : rekeyFocus(legendFocus, model!, m);
+    route = route && rekeyRoute(route, m);
     note = r.note;
     if (opensDrawer(m)) drawer = { open: true, tab: "diagnostics" };
   } else {
@@ -156,6 +157,7 @@ export function load(m: Model | undefined) {
     layouts = new Map();
     query = "";
     legendFocus = undefined;
+    route = undefined;
     note = undefined;
   }
   model = m;
