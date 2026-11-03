@@ -2165,7 +2165,9 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   white on amber is the page's lowest-contrast text. The dead hop's cross, ±3
   px, is small at the fit. A loop's drawer row carries no location (the look
   pass on reading 16): its feedthrough is in its members' `y_direct`, which
-  the format does not locate yet. A loop's chain leaving a level through a
+  the format does not locate yet. Once it does, the row links one location
+  per member and the location link moves under the message, which runs
+  narrower beside it today (the look pass). A loop's chain leaving a level through a
   pin has no badge there (answer 8 gives the loop none), so the reader climbs
   by the breadcrumb.
 - Increment 7's route look. A terminal port's highlight stroke on a 6 px square
@@ -2187,6 +2189,10 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   increment 8's execution-order tab.
 - The drawer's filter shows only when rows exist, the empty state alone with
   none; the brief's contract lists the filter in the body.
+- The tree's rows and the pane's face rows take a click but are a `div` and a
+  `tr`, not buttons (answer 11); the tree's have `j` and `k`, the face rows no
+  keyboard path. The look pass left them, with the drawer's below, to a later
+  accessibility sweep.
 - The drawer's rows and its filter have no keyboard path from the regions'
   Tab cycle yet: Tab moves between the four region roots alone, so a row's
   button and the filter take focus by a click.
