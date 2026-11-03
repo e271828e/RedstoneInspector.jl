@@ -6,7 +6,7 @@
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
 // read off the DOM.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, dropOver, effectiveOpacity, expect, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { blockBoxes, drop, dropOver, effectiveOpacity, expect, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
@@ -228,4 +228,15 @@ test("primitive: the u tag traced reads 0 consumers across 0 levels, the tag the
   await expect(tag(page, "⟨in⟩u")).toHaveClass(/\broute-origin\b/);
   await expect(page.locator("path.casing.route")).toHaveCount(0);
   await expect(page.locator('g.badge[data-role="route"]')).toHaveCount(0);
+});
+
+test("closed_loop: a route inside pid_controller marks its row and the root's as its ancestor", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await openPath(page, "pid_controller");
+  await page.locator('rect.port[data-port="pid_controller/h_ctl|out|u"]').click({ button: "right" });
+  await page.locator(".viewport div.menu button.trace").click();
+  await expect(statusRoute(page)).toContainText(plain("tracing `pid_controller/h_ctl/u`: 1 consumer across 1 level"));
+  expect(await routeRows(page)).toEqual(["", "pid_controller"]);
+  await expect(page.locator('nav.tree .row[data-path="pid_controller"] span.mark[data-mark="route"]')).toHaveAttribute("title", "on the route");
+  await expect(page.locator('nav.tree .row[data-path=""] span.mark[data-mark="route"]')).toHaveAttribute("title", "on the route, beneath");
 });

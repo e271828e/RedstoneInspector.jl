@@ -443,7 +443,8 @@ Each file sits beside its module, loads fixtures by name through
   terminal, no origin), `mode` (7 across 4, `pid_controller`'s four
   terminals), `plant/V` (3 across 3, the origin `plant|out|V`), the route
   traced from `pid_controller`'s `h_ref` input (h_ref's route, its origin the
-  face's square on each level); `routeLit`; `rates`' `src/out` (3 across 4,
+  face's square on each level), `pid_controller/h_ctl/u` (1 across 1, the
+  tree's marks `pid_controller` and the root as its ancestor); `routeLit`; `rates`' `src/out` (3 across 4,
   `fast` and `slow` entered at the root, `fast/outer` at `fast`), the root
   output `outer` (1 across 3, its pins crossed); `large`'s `b102/out1` (6
   across 1 level, the singular); `primitive`'s `u` (0 consumers across 0
@@ -967,8 +968,10 @@ connection is `connected` or `lost`; the hosted copy's landing has none.
   and ", beneath" when the row's own node carries none, the root's row
   included (a diagnostic at the root marks its row, though the canvas draws
   nothing for it); a row on a level the
-  standing route crosses (`routeMarks`, `routeLevels`, the root included,
-  never propagated) a blue `span.mark` titled "on the route". Folder rows
+  standing route crosses (`routeMarks`, `routeLevels`, the root included) a
+  blue `span.mark` titled "on the route", and on each ancestor of one the
+  route does not cross the same mark titled "on the route, beneath", as the
+  diagnostic marks propagate (workspace answer 2). Folder rows
   carry no mark. The tree never filters. Rows have `tabindex="-1"`, so a row click focuses the row and the
   region. With focus anywhere in `nav.tree` but the search field, `h j k l`
   are the tree's (`treeStep`), the canvas's never fire: `j` and `k` select the
@@ -1697,7 +1700,10 @@ the page's socket fails against `vite preview`, so every check but
   with `fast/outer` and the pin `⟨in⟩in` badged, `fast/inner|in|in` terminal,
   two casings, the tree's marks on the root, `fast`, `fast/outer` and `slow`.
   `primitive`: the `⟨in⟩u` tag traced, "tracing u: 0 consumers across 0
-  levels", the tag the origin, no casing, no badge.
+  levels", the tag the origin, no casing, no badge. `closed_loop`'s
+  `pid_controller/h_ctl|out|u` traced from the menu inside `pid_controller`,
+  "1 consumer across 1 level", the tree's marks on `pid_controller`, "on the
+  route", and the root, "on the route, beneath".
 - `network.spec.ts`: every request while loading, dropping `closed_loop` and
   opening `sensing` has the preview server's origin, and the page makes
   exactly one WebSocket attempt, to the preview server's host at `/ws`. The
@@ -2173,8 +2179,6 @@ e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` 
   the trace and the pane shows no button. A push that keeps an origin which no
   longer resolves leaves the route standing undrawn, with no status, until
   Escape or another trace; no fixture has one.
-- The tree's route marks are the levels the route crosses, the root included,
-  not propagated upward; a collapsed ancestor of a crossed level shows nothing.
 - The right-click menu has no keyboard path (`t` is the keyboard's trace) and
   its button is not focused on opening.
 - The status bar clips on overflow (`overflow: hidden`), so at a narrow width a

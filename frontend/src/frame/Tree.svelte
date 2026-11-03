@@ -3,8 +3,8 @@
   // shared with the canvas, the chevron expanding and the double-click opening;
   // the search field on top, its results in the outline's place while listing,
   // the hits' dashed markers on the rows otherwise; a red or amber dot on a row
-  // whose subtree holds a diagnostic or a warning, a blue one on a level the
-  // standing route crosses. The tree never filters.
+  // whose subtree holds a diagnostic or a warning, a blue one on a row whose
+  // subtree holds a level the standing route crosses. The tree never filters.
   import { tick, type Snippet } from "svelte";
   import { palette, stepPair } from "../canvas/palette";
   import { count, type Selection } from "../lib/detail";
@@ -36,8 +36,8 @@
     counts?: ReadonlyMap<string, number>;
     /** Each node's diagnostics and warnings, at it or beneath it. */
     diagnosticMarks?: ReadonlyMap<string, TreeMark>;
-    /** The levels the standing route crosses. */
-    routeMarks?: ReadonlySet<string>;
+    /** The levels the standing route crosses, true, and their ancestors, false. */
+    routeMarks?: ReadonlyMap<string, boolean>;
     onselect: (s: Selection) => void;
     onopen: (path: string) => void;
     ontoggle: (path: string) => void;
@@ -127,7 +127,10 @@
           ></span>
         {/if}
         {#if routeMarks?.has(r.path)}
-          <span class="mark" data-mark="route" title="on the route" style:background={palette.highlight}></span>
+          <span
+            class="mark" data-mark="route" title={routeMarks.get(r.path) ? "on the route" : "on the route, beneath"}
+            style:background={palette.highlight}
+          ></span>
         {/if}
       {/if}
       {#if under > 0}<span class="hits" title={`${under} marked beneath`}>{under}</span>{/if}

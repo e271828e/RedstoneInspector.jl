@@ -12,6 +12,8 @@ function traced(name: string, origin: Face): Traced {
   return r;
 }
 /** A level's drawing with its sets sorted, for `toEqual`. */
+/** The tree's route marks, sorted by path. */
+const marks = (name: string, r: Traced) => Object.fromEntries([...routeLevels(fixtureModel(name).tree!, r)].sort());
 const drawing = (name: string, r: Traced, level: string) => {
   const d = routeDrawing(fixtureModel(name), r, level);
   return { wires: sorted(d.wires), entered: sorted(d.entered), pins: sorted(d.pins), terminals: sorted(d.terminals), origin: d.origin };
@@ -38,7 +40,7 @@ describe("closed_loop's routes", () => {
   it("h_ref: 2 consumers across 3 levels, both controllers entered, the tag the origin", () => {
     const r = traced("closed_loop", face("", "in", "h_ref"));
     expect(routeStatus(r.origin, r)).toBe("tracing `h_ref`: 2 consumers across 3 levels");
-    expect(sorted(routeLevels(r))).toEqual(["", "lqr_controller", "pid_controller"]);
+    expect(marks("closed_loop", r)).toEqual({ "": true, lqr_controller: true, pid_controller: true });
     expect(drawing("closed_loop", r, "")).toEqual({
       wires: ["lqr_controller|in|h_ref", "pid_controller|in|h_ref"], entered: ["lqr_controller", "pid_controller"],
       pins: ["⟨in⟩h_ref"], terminals: ["⟨in⟩h_ref|out|h_ref"], origin: "⟨in⟩h_ref|out|h_ref",
@@ -51,7 +53,7 @@ describe("closed_loop's routes", () => {
   it("mode: 7 consumers across 4 levels", () => {
     const r = traced("closed_loop", face("", "in", "mode"));
     expect(routeStatus(r.origin, r)).toBe("tracing `mode`: 7 consumers across 4 levels");
-    expect(sorted(routeLevels(r))).toEqual(["", "lqr_controller", "pid_controller", "selection"]);
+    expect(marks("closed_loop", r)).toEqual({ "": true, lqr_controller: true, pid_controller: true, selection: true });
     expect(drawing("closed_loop", r, "").entered).toEqual(["lqr_controller", "pid_controller", "selection"]);
     expect(drawing("closed_loop", r, "pid_controller").terminals).toEqual([
       "pid_controller/V_ctl|in|engaged", "pid_controller/h_ctl|in|engaged", "pid_controller/q_ctl|in|engaged", "pid_controller/θ_ctl|in|engaged",
@@ -65,6 +67,11 @@ describe("closed_loop's routes", () => {
       terminals: ["plant|out|V"], origin: "plant|out|V",
     });
     expect(drawing("closed_loop", r, "lqr_controller").terminals).toEqual(["lqr_controller/state_pack|in|in1", "lqr_controller/z_pack|in|in2"]);
+  });
+  it("pid_controller/h_ctl/u: 1 consumer on 1 level, the root marked as its ancestor", () => {
+    const r = traced("closed_loop", face("pid_controller/h_ctl", "out", "u"));
+    expect(routeStatus(r.origin, r)).toBe("tracing `pid_controller/h_ctl/u`: 1 consumer across 1 level");
+    expect(marks("closed_loop", r)).toEqual({ "": false, pid_controller: true });
   });
   it("a route traced from pid_controller's h_ref input is h_ref's, its origin that face's square on each level", () => {
     const r = traced("closed_loop", face("pid_controller", "in", "h_ref"));

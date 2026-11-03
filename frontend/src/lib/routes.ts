@@ -6,6 +6,7 @@ import type { Lit } from "./focus";
 import { inPinId, levelOf, outPinId, parsePortId, portId, producerFace } from "./level";
 import type { Model } from "./model";
 import { faceKey, route, type Face, type Route } from "./resolve";
+import type { Tree } from "./tree";
 
 /** A route and the face it was traced from. */
 export interface Traced extends Route {
@@ -91,8 +92,15 @@ export const faceText = (f: Face) => (f.path === "" ? f.port : `${f.path}/${f.po
 export const routeStatus = (origin: Face, r: Route): string =>
   `tracing \`${faceText(origin)}\`: ${count(r.consumers.length, "consumer", "consumers")} across ${count(r.levels.size, "level", "levels")}`;
 
-/** The levels a route crosses, the tree's route marks. */
-export const routeLevels = (r: Route): ReadonlySet<string> => r.levels;
+/** The tree's route marks: each level the route crosses, true, and each ancestor of one it does not, false. */
+export function routeLevels(tree: Tree, r: Route): ReadonlyMap<string, boolean> {
+  const marks = new Map<string, boolean>();
+  for (const l of r.levels) {
+    marks.set(l, true);
+    for (let q = tree.parent.get(l); q !== undefined; q = tree.parent.get(q)) if (!marks.has(q)) marks.set(q, false);
+  }
+  return marks;
+}
 
 /** What a route lights on a level: the blocks and pins its wires touch and the origin's, its wires, its terminal ports. */
 export function routeLit(model: Model, r: Traced, level: string): Lit {

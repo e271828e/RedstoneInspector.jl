@@ -76,7 +76,7 @@
   // The standing route, what the open level draws of it and its status line.
   const traced = $derived(model?.tree && session.route ? routeOf(model, session.route) : undefined);
   const routeDrawn = $derived(traced ? routeDrawing(model!, traced, session.level) : undefined);
-  const routeMarks = $derived(traced && routeLevels(traced));
+  const routeMarks = $derived(traced && routeLevels(model!.tree!, traced));
   /** The selection's face when it has a route: the pane's trace button. */
   const selectionOrigin = $derived.by(() => {
     const o = model?.tree ? originOf(model, session.selection) : undefined;

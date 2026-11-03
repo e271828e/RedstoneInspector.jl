@@ -232,7 +232,7 @@ from its producer through every fan-out to every consumer, cased in the
 highlight hue on each level, the face traced from haloed, the consumers' ports
 marked, a `route` pill on each closed assembly it enters and on each pin it
 leaves a level by, a click on a pill following it in or out, and a blue dot on
-each level's row in the tree. The status bar names it, "tracing `h_ref`: 2
+each level's row in the tree and on every row above one. The status bar names it, "tracing `h_ref`: 2
 consumers across 3 levels", with a clear control. The route survives
 navigation, selection and a push that still declares its face; the trace
 repeated, the clear control or Escape clears it. Escape clears the route
