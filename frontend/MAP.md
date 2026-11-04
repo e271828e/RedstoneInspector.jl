@@ -1,35 +1,8 @@
 # The frontend's map
 
-What lives where under `frontend/`, what is built once on load, what each test
-pins, and the traps found. Paths are relative to `frontend/`. Increment 2
-built the pure half; increment 3 the canvas and the browser checks; increment 4
-the frame around the canvas; increment 5 the interaction (the view and layout
-kept per level, the hash, the keyboard, focus, the drag, the rekeying on a push,
-search) and the live tab's socket client, then its look pass (the Shift row, `z`,
-`n` and `N`, the tree's keys, the ring for the keyboard only, draggable pins, the
-view kept only for an unchanged level, the leave prompt, the labelled facts);
-increment 6 the visual grammar's finish (the two color modes with the badges
-and the legend, wire styles by kind with the trunks' dots and the type labels,
-the library icons, the regions, the three text levels, an ELK tuning pass) and
-Firefox as a second, non-blocking browser project, then its look pass (the
-palette respread by CIEDE2000, the legend's continuous line and its focus, the
-type labels unqualified on their longest segment above the blocks, the child
-selected on a climb, Shift's one-axis drag, the member's container kind, the
-docstring's bare title, the narrow pane's stacked rows) and its second round
-(the palette constructed in OKLCh, the wires in their producer's fill, an
-assembly on the one triple its leaves share or gray, the clock badge on every
-assembly with a discrete leaf, the continuous line first, `nearest` by the
-facing-edge gap), then the type labels as ELK's edge labels, whole beside their
-ports; increment 7 four overlay fixtures, the diagnostics overlay (member halos,
-a loop's chain across levels, dead-hop chords, badges, in the error and warning
-hues) with the drawer's diagnostics tab and the tree's marks, and face routes
-(the trace action by `t`, the pane's button and the canvas's right-click menu,
-drawn across levels, named in the status bar, kept across a push); increment 8
-the drawer's three analysis tabs (root inputs, timing, execution order with the
-feedthrough edges as presumed rows), the execution-order badges with `o` and
-the breadcrumb's third control, the docstrings rendered from Markdown with the
-`@ref` link rule, and the help page at `#help` with `?`, the version baked at
-build time.
+What lives where under `frontend/`, the DOM contract the checks select on, and
+the tests by file. Paths are relative to `frontend/`; a brief cites this map by
+section. Rules and reasons live in the records, open items in `design/pending.md`.
 
 ## Layout
 
@@ -159,38 +132,26 @@ them to the stores. The code imports the generated types by name from
   `drawer`, each rooted at one focusable element. A **canvas region**
   (`Region` in `regions.ts`) is a keyed container's frame on the canvas,
   `{path, field, members}`, the path its folder's; the text says which.
-- A **triple** is a timing `[anchor, m, c]`; a model's triples in palette
-  order give each a **step**, 0 to 7 colored, 8 on an **extra**: 8 to 11
-  (`#9` to `#12`) in the four colored extras, 12 on in the shared neutral
-  (`stepPair`). A legend
-  line's **key** is its triple's `tripleKey`, `"4,1,0"`, or `continuous`; the
-  **legend's focus** is one key, and what it **lights** on a level its `Lit`
-  blocks and wires, its ports empty. A wire's
-  **class** is `scalar`, `flag`, `vector`, `struct` or `opaque`, from its
-  terminal producer's kind, the outer kind winning.
+- A **triple** is a timing `[anchor, m, c]`; in palette order each gets a
+  **step**, 0 to 7 colored, 8 to 11 (`#9` to `#12`) the colored **extras**,
+  12 on the shared neutral (`stepPair`). A legend line's **key** is
+  `tripleKey`'s `"4,1,0"`, or `continuous`. A wire's **class** is `scalar`,
+  `flag`, `vector`, `struct` or `opaque`, from its terminal producer's kind.
 - A **diagnostic** is a failure body's `diagnostics` row or any body's
-  `warnings` row, one list (`diagnosticsOf`), errors first, each with its
-  **index** in that list, which the drawer's rows, the badges and the focus
-  use. Its **severity** is `error` or `warning`, drawn in the palette's
-  `error` hue or amber. A loop's **chain** is its terminal pairs mapped onto
-  declared wires, each **hop** `{level, wire, from, to}`; a closed child the
-  chain passes through **continues** it. A **dead hop** draws as a **chord**
-  across its member. The **overlay** is what a level draws of every diagnostic
-  and warning together (`Overlay`), the error winning where both land.
+  `warnings` row, one list (`diagnosticsOf`), errors first, keyed by its
+  **index** there; its **severity** is `error` or `warning`. A loop's
+  **chain** is its terminal pairs mapped onto declared wires, each **hop**
+  `{level, wire, from, to}`; a closed child it passes through **continues**
+  it. The **overlay** is what a level draws of them all (`Overlay`).
 - A **focus** is one of three standing states that dim the canvas: the route,
   the focused diagnostic, the legend's line, one at a time in that order; what
   it lights is a `Lit`, `{blocks, wires, ports}`.
-- An **analysis row** is a row of the drawer's three analysis tabs (`Row` in
-  `analysis.ts`), tagged by `kind`: `order`, a leaf's **position**, 1-based in
-  `outputs.order`, with its stage 1 and stage 2 ports and its `edges`; `edge`,
-  a feedthrough edge `{from, to}` under its consumer's order row, labelled
-  **presumed**; `root-input`; `anchor`, the base grid's row `{index: 0, base:
-  true}` first; `scope`; `component`. `rowTarget` gives the selection its click
-  makes. An **order badge** is a child block's positions as text, a leaf's its
-  own, a closed assembly's its leaves' as runs joined with an en dash, "3–5, 8"
-  (`orderBadge` over `ranges`).
-- The **help page** is the session's `help`, shown in place of the frame or the
-  landing; its hash is `#help`, a history entry over the level's.
+- An **analysis row** (`Row` in `analysis.ts`) is tagged by `kind`: `order`,
+  a leaf's 1-based **position** in `outputs.order` with its stage ports and
+  `edges`; `edge`, a feedthrough edge `{from, to}` under its consumer's row,
+  **presumed**; `root-input`; `anchor`, the base grid's `{index: 0, base:
+  true}` first; `scope`; `component`. An **order badge** is a block's
+  positions as runs, "3–5, 8" (`orderBadge` over `ranges`).
 
 ## Built once on load
 
@@ -204,1187 +165,407 @@ demand from the resolution, never stored. A primitive root's level is its
 leaf with a pin and a wire per face, built by `levelOf`, so the canvas has no
 special case.
 
-A push, or a second drop, replaces the model whole; `rekey` carries the
-per-tab state across by path and name, never by index (see "Stores").
-
 ## Stores
 
 The three lifetimes of `workspace.md` answer 9.
 
 - **Per tab, in memory** (`session.svelte.ts`): the model; the open level by
-  path, mirrored in the URL's hash; `views`, each visited level's `View` by
-  path; `layouts`, each visited level's `LevelLayout` by path; the selection
-  `{level, target}`; the expansion set of node and folder paths; `query`, the
-  search text; `legendFocus`, the focused legend line's key; `diagnosticFocus`,
-  the focused diagnostic's index; `route`, the standing route's origin face;
-  the drawer's open state and tab; `focus`, the region holding the keyboard; `note`, the fallback
-  note; `help`, the help page shown, mirrored by the hash `#help`. Raw state throughout: each change
-  replaces the value, so no deep proxy wraps the model.
-  - `load` on a first model, or one after a refusal, resets everything: the
-    root open, the root and its folders expanded, nothing selected, no views,
-    layouts, query, legend focus, diagnostic focus, route or note, the drawer open on `diagnostics` only when the body
-    carries a diagnostic (`opensDrawer`); a warning alone leaves it closed,
-    though the tab's count includes warnings. `load(undefined)`, a refusal,
-    unloads.
-  - `load` on a replacement, a model arriving while one is loaded, passes the
-    state through `rekey`, the old model given, and marks every kept layout
-    `stale`; the legend's focus goes through `rekeyFocus` (its anchor followed by
-    key and scope, kept while the new model draws the triple); the route goes
-    through `rekeyRoute`, kept while the new model's node at its path declares
-    that face on that side (the root node covering a root face), and the shell
-    recomputes it from the new model; the focused diagnostic is dropped, an
-    index having no key; the drawer keeps its state and opens on `diagnostics`
-    when the new model carries one.
-  - In both, a hash naming a level of the new model other than the one chosen
-    wins, its view dropped so it fits, and the note cleared. Then the level's
-    row and its ancestors expand and the hash is replaced, except under the
-    help page: `load` leaves `help` standing and the hash `#help` untouched, so
-    the rekey alone picks the level and the entry below is read when the page
-    closes.
-  - `open` shows a level (the row and its ancestors expanded, the note
-    cleared, the selection cleared or, on a move to a strict ancestor of the
-    level left, the ancestor's child on the path selected, `childOnPath`) and
-    pushes a history entry with its hash; the
-    push is skipped when the hash already names it. `climb` is `open` of the
-    parent. `openFromHistory(hash, state)`, on `popstate` whatever the hash,
-    reads `#help` (`isHelpHash`) as the help page shown, the level left as it
-    is; any other hash hides the help page and shows the hash's level, the root
-    when it names none, through `show` only when that level is not the open
-    one, so a return from the help page keeps the selection and the note; it
-    pushes nothing. `select` sets the level to the
-    selection's, replacing the hash, never pushing; for a node or folder it
-    expands the ancestors. The hash is `#level=` and the path through
-    `encodeURIComponent` with `%2F` put back to `/`; the root has none. Since
-    `climb` and `openFromHistory` go through the same `show`, Shift-k,
-    Backspace, Alt-Up, a breadcrumb link, back and forward all select the child
-    left when they land on an ancestor.
-  - The history depth: every entry this page load writes carries
-    `{load, depth}` in `history.state`, `load` an id made when the module
-    loads, which then stamps the entry it loaded on as depth 0; `open`'s push
-    is one deeper and sets `top`, the deepest entry ahead; `popstate` reads the
-    entry's depth, 0 for an entry of another load. An entry whose state is
-    `null`, the new one a hash link or a typed hash makes, is stamped one
-    deeper than the entry left, `top` following, as `open` would have pushed
-    it. `back` (Shift-`h`) goes back only above depth 0 and `forward`
-    (Shift-`l`) only below `top`, so neither leaves the page.
-  - The help page: the module reads `#help` at load, so a page loaded there
-    shows it over the landing or whatever loads under it. `openHelp` shows it
-    and pushes `#help` one deeper, `top` following; nothing when it shows.
-    `closeHelp` hides it at once, then goes back when the entry below is this
-    load's (`depth > 0`), whose `popstate` shows its level, else replaces the
-    hash with the open level's (a page loaded at `#help`). `toggleHelp` is `?`.
-  - `setView`, `setLayout` (stores `stale: false`), `setQuery`, `setFocus`,
-    `toggleLegendFocus(key)` (a second click on the focused line clears it),
-    `clearLegendFocus`, `toggleDiagnosticFocus(index)` (a drawer row's click or
-    a badge's; a second click on the focused row clears it),
-    `clearDiagnosticFocus`, `trace(origin)` (sets the route, or clears it when
-    the face is the standing origin, by `sameFace`), `clearRoute`, and
-    `escape`: the help page is closed, else the route is cleared, else the focused diagnostic, else the
-    legend's focus, else a non-empty query, else the selection. `open`,
-    `climb`, `select` and the history leave the route and the diagnostic focus
-    standing. The shell clears the legend's focus whenever the color mode is
-    `tier`.
-- **The push's rekeying** (`rekey.ts`), as built: the level stays when it is
-  still a level (the root or an assembly), else falls to its longest
-  segment-aligned prefix that is, the root at worst, with `note` reading
-  `` `<old>` is not in this model; showing `<new>` `` (the root as "the
-  root"). The expansion keeps the node and folder paths that exist. The
-  selection keeps its key: a node by path, placed on its old level when that
-  survives and on the node's parent otherwise; a folder by path, on its
-  parent; a pin by its level surviving and that level's face of the side and
-  name; a port by its node's path and the face of the side and name, or, for a
-  pin's port, by the level and the face; a wire by its level surviving and a
-  wire of that consumer port id in the new level; otherwise `undefined`. The
-  views and the layouts keep the levels that survive by path; a view only
-  while the level's set of block ids is unchanged between the two models
-  (`sameBlocks`, workspace.md answer 9 as amended), so `closed_loop_deployment`
-  over `closed_loop` keeps every view and `descent` over `aircraft` fits the
-  root; the fallback level's view is dropped so the canvas fits it. The query is kept whole. A
-  model without a tree rekeys to the root, everything dropped but the query.
-- **Per tab, the connection** (`live.svelte.ts`), apart from the model:
-  `state`, `undefined` until the first handshake resolves, then `hosted`,
-  `connected` or `lost`; `text`, the raw descriptor text last received;
-  `attempt`, the reconnects since the connection was lost. Only
-  `src/live/socket.ts` sets them.
-- **Per browser, in local storage** (`prefs.svelte.ts`): one key,
+  path, mirrored in the hash; `views` and `layouts`, each visited level's
+  `View` and `LevelLayout` by path; the selection `{level, target}`; the
+  expansion set of node and folder paths; `query`; `legendFocus`, a line's
+  key; `diagnosticFocus`, an index; `route`, the standing route's origin
+  face; the drawer's open state and tab; `focus`, the region holding the
+  keyboard; `note`, the fallback note; `help`, mirrored by the hash `#help`.
+  Raw state throughout: each change replaces the value, so no deep proxy
+  wraps the model.
+  - `load` of a first model, or of one after a refusal, resets everything:
+    the root open, the root and its folders expanded, nothing else kept. The
+    drawer opens on `diagnostics` only when the body carries a diagnostic
+    (`opensDrawer`), a warning alone leaving it closed though counted.
+    `load(undefined)`, a refusal, unloads.
+  - `load` of a replacement passes the state through `rekey` and marks every
+    kept layout `stale`; the legend's focus goes through `rekeyFocus` (an
+    anchor followed by key and scope), the route through `rekeyRoute`, kept
+    while the new model's node at its path declares the face, and the shell
+    recomputes it; the focused diagnostic is dropped, an index having no
+    key; the drawer keeps its state and opens on `diagnostics` when the new
+    model carries one.
+  - In both, a hash naming another level of the new model wins, its view
+    dropped and the note cleared; then the level's ancestors expand and the
+    hash is replaced. Under the help page `load` leaves `help` and `#help`
+    standing, and the entry below is read when the page closes.
+  - `open` pushes a history entry unless the hash already names the level;
+    `climb` is `open` of the parent. `openFromHistory`, on `popstate`, reads
+    `#help` (`isHelpHash`) as the help page and any other hash as its level,
+    through `show` only when the level changes; it pushes nothing. `show`
+    selects the ancestor's child on a move to a strict ancestor
+    (`childOnPath`), forward and a tree double-click included. `select`
+    replaces the hash and expands a node's ancestors. The hash is `#level=`
+    and the path through `encodeURIComponent`, `%2F` put back; the root has
+    none.
+  - The history depth: this load's entries carry `{load, depth}` in
+    `history.state`; `open` pushes one deeper and sets `top`; a `null` state,
+    from a hash link or a typed hash, is stamped one deeper than the entry
+    left. `back` (Shift-`h`) acts above depth 0 and `forward` (Shift-`l`)
+    below `top`, so neither leaves the page.
+  - The help page: the module reads `#help` at load. `openHelp` pushes
+    `#help` one deeper; `closeHelp` hides the page, then goes back when the
+    entry below is this load's (`depth > 0`), else replaces the hash with the
+    open level's. `toggleHelp` is `?`.
+  - `escape`: the help page, else the route, else the focused diagnostic,
+    else the legend's focus, else a non-empty query, else the selection.
+    `trace(origin)` sets the route, or clears it for the standing origin
+    (`sameFace`); `toggleLegendFocus` and `toggleDiagnosticFocus` clear on a
+    second click. `open`, `climb`, `select` and the history leave the route
+    and the diagnostic focus standing; the shell clears the legend's focus
+    whenever the mode is `tier`.
+- **The push's rekeying** (`rekey.ts`), by answer 9's keys. A level that is
+  no longer a level falls to its longest segment-aligned prefix that is, the
+  root at worst, with `note` reading `` `<old>` is not in this model; showing
+  `<new>` `` ("the root" for the root). A selected node is placed on its old
+  level when that survives, else on its parent. A view survives only while
+  the level's set of block ids is unchanged (`sameBlocks`), and the fallback
+  level's view is dropped so it fits. The query is kept whole. A model
+  without a tree rekeys to the root, everything dropped but the query.
+- **Per tab, the connection** (`live.svelte.ts`): `state` (see "The live
+  tab"), `text`, the raw descriptor last received, and `attempt`, the
+  reconnects since the loss. Only `src/live/socket.ts` sets them.
+- **Per browser** (`prefs.svelte.ts`): one local storage key,
   `redstone-inspector/prefs`, holding `{version: 1, sizes: {tree, detail,
-  drawer}, collapsed: {tree, detail}, mode, labels, order}`, read once at load through
-  `parsePrefs`, which gives the defaults (280, 360, 200, nothing collapsed,
-  `mode` `"tier"`, `labels` false, `order` false) on a missing, malformed or other-version
-  entry, keeps the default for a missing or mistyped field, so the two fields
-  increment 6 added and increment 8's `order` needed no version bump, and clamps a size to its bounds
-  (tree 160 to 640, detail 240 to 800, drawer 80 to 640); written on every
-  change, each move of a drag included. `setMode(mode)`, `toggleLabels()` and
-  `toggleOrder()` change the color mode, the type labels and the order badges
-  (workspace.md answers 7 and 9); all three survive a push and a reload. The
-  prefs are never rekeyed.
+  drawer}, collapsed: {tree, detail}, mode, labels, order}`, read once at
+  load through `parsePrefs`. It gives the defaults (280, 360, 200, nothing
+  collapsed, `tier`, labels and order off) on a missing, malformed or
+  other-version entry, keeps the default for a missing or mistyped field, so
+  a new field needs no version bump, and clamps a size (tree 160 to 640,
+  detail 240 to 800, drawer 80 to 640). Written on every change, each move
+  of a drag included; never rekeyed.
 
 ## The tests
 
-Each file sits beside its module, loads fixtures by name through
-`fixtures.ts` and pins:
+Vitest, `npm test`. Each file sits beside its module, under `src/lib/` unless
+named with its folder, and loads fixtures by name through `fixtures.ts`; its
+test names state the pins. One line per file: its concern; the fixtures.
+"Every fixture" is a table over the fixtures that apply; the oracles are the
+reviewer's Python scripts (`design/rules.md`).
 
-- `fixtures.test.ts`: ajv at default strictness over all sixteen fixtures,
-  one test per file; on the fifteen structures, every wire endpoint names a node
-  or the level's own path and a face it declares, every node type has a
-  `types` row, and the consumer endpoint is unique within each level.
-- `loader.test.ts`: every fixture loads; the label order (envelope `name`,
-  file name, root display name, kind word); `failure_structure` loads with no
-  structure; refusals in words for another major, no `format_version`, not
-  JSON, an unknown kind, a missing or null body, a build or deployment without
-  `structure.nodes` and a failure whose `structure` lacks it; the minor-version
-  note; a failure loads without structure; the failures with a structure,
-  `failure_cycle` 3 nodes, `failure_nested` 4, `failure_dead` 4,
-  `failure_probe` 5, each with no outputs.
-- The four overlay fixtures of increment 7 join the per-fixture rows, from the
-  oracles rerun over the regenerated directory: `tree.test.ts` (nodes,
-  assemblies, root children, field, keyed and transparent members)
-  `failure_nested` 4, 2, 2, 0, 0, 3; `failure_dead` 4, 1, 3, 0, 0, 3;
-  `failure_probe` 5, 2, 2, 2, 0, 2; `warning` 3, 1, 2, 2, 0, 0.
-  `resolve.test.ts`'s route consumer totals 5, 5, 2 and 3; `feedthrough.test.ts`
-  0, 0, 0 (a failure carries no outputs) and 1; `level.test.ts`'s root blocks
-  and wires 5 and 5, 5 and 5, 3 and 1, 4 and 3; `outline.test.ts`'s rows in
-  full and at load, `failure_dead` 4 and 4, `failure_nested` 4 and 3,
-  `failure_probe` 5 and 3, `warning` 3 and 3.
-- `tree.test.ts`: per fixture the node, assembly and root-child counts and
-  the memberships; every parent an assembly the path extends; the longest
-  prefix (`rates`' `fast/outer/hold`); `containers`' keyed segments
-  `field/key` and its field-only node; display names by alias, then type.
-- `resolve.test.ts`: `closed_loop`'s 42 assembly faces and 55 leaf inputs by
-  terminal, deepest chain 3; `rates`' 7 output faces, deepest 4; `large`'s
-  313 and 18 leaf inputs, 12 output faces; `primitive`'s root inputs; an
-  inline assembly whose input and output faces share a name; `faceInfo` on leaf, assembly and root faces; route consumer totals per
-  fixture, `closed_loop`'s 11 root-input consumers and largest fan-out 7,
-  `containers`' and `large`'s and `rates`' root-face routes, level sets; a
-  wire's route equal to its producer's and its consumer's.
-- `feedthrough.test.ts`: the edge count per fixture, `closed_loop`'s two named
-  edges and no root-input producer, `containers`' five in order, none without
-  `outputs`.
-- `level.test.ts`: per fixture the root level's blocks and wires; block order;
-  the root-input flag; a child's fields; boundary endpoints to pins; unique
-  wire ids in every level; `closed_loop`'s `pid_controller` and
-  `lqr_controller`; `large`'s ten inner levels; the primitive root's leaf with
-  its two input pins flagged as root inputs, two output pins and four wires;
-  `elkGraph` on `descent`: children, layer constraints, fixed ports
-  with sides, edges port to port, the root options with components packed in
-  model order and cycles broken greedily with model order as the tie-break;
-  on `containers`' root the `in` and `out` pins' layer constraints and every
-  port's side. With regions: `containers`' root nesting `gains/a`, `gains/b`
-  and `pair/1` in `region:gains` and `region:pair` at their first member's
-  place, the padding option and `INCLUDE_CHILDREN` on the root;
-  `closed_loop`'s root, with no region, equal to the two-argument graph, its
-  options pinned whole and its children flat. With type labels, on
-  `closed_loop`'s root: each given port's label on its first wire alone with
-  `TAIL` placement, none on the rest of a fan-out (`mode`'s three wires) and
-  none for a port not given (`plant|out|h`).
-- `model.test.ts`: the model's fields, and a structureless failure's left
-  undefined.
-- `view.test.ts`: `zoomAt` keeps the world point under the pointer to within
-  1e-9 at four factors; `fitView` contains a wide and a tall extent, each at the
-  scale its binding dimension sets, centered, and stops at `maxScale`; `pan`
-  moves the view by the drag's screen pixels at the current scale; `centreOn`
-  puts a rectangle's center at the viewport's center at the same scale.
-- `outline.test.ts`: per fixture the oracle's rows in full and at load, unique
-  paths; nothing expanded shows the root alone; `containers`' two folders under
-  the root holding `gains/a`, `gains/b` and `pair/1` at depth 2, `s1`, `s2` and
-  `scale` rows of the root, `folderOf`, a keyed node's ancestors through its
-  folder; `rates`' `fast/outer/hold` at depth 3 with ancestors `""`, `fast`,
-  `fast/outer`; assembly rows expandable, leaf rows not; `primitive` one row
-  labelled `primitive`; `aircraft`'s root row labelled by the loader.
-  `treeStep` on `closed_loop`: `j` and `k` one visible row, the first with none
-  selected, nothing past the ends; `l` expanding a collapsed `sensing`, then
-  stepping to its first child, nothing on a leaf; `h` collapsing an expanded
-  row, stepping from a leaf or a collapsed row to its parent's row, nothing at a
-  collapsed root; on `containers` a keyed member stepping to its folder, the
-  expanded folder collapsing and the collapsed one stepping to the root;
-  `rowSelection` of a folder on its parent's level.
-- `detail.test.ts`: every kind-phrase form inline and over `kinds`' eleven
-  faces; the base grid and `rates`' `fast/outer/hold` on anchor `fast` at `m` 2,
-  `T` 1/50; `closed_loop`'s root level, `plant`'s facts and faces with their
-  producers, consumers and stages, `sensing/altimeter`'s alias against its type,
-  `sensing` closed, the root wire into `sensing|in|h` with its terminal producer
-  and consumer, a wire into a leaf, the pin and port `h_ref` with two consumers
-  and its `root_inputs` row, a leaf input port's producer; `detailOf`'s dispatch,
-  the open level's node giving the level layout; `faceSelection`; `containers`' folders and memberships; `rates`' level `fast`
-  with its one scope; a primitive root's level as its leaf, labelled.
-  `ratePhrase` over nine inline timings (every base tick, the 2nd, 3rd, 4th,
-  11th and 22nd, an offset, a tick of `q_ctl` at 1/50 s with `m` 5 and `c` 2),
-  a non-zero tau joining T, `rates`' `hold` "every 2nd tick of fast, 1/50 s",
-  `pid_controller/q_ctl` "every tick of q_ctl, 1/50 s" with the full timing as
-  its title, `kinds`' discrete leaf at anchor 0 "every base tick"; `plant`, a
-  continuous leaf, with no rate and the class "leaf, continuous"; the member
-  title naming transparent and keyed, `memberKind`'s "transparent container",
-  "keyed container" and "field". `levelLine` in the singular on an inline
-  one-wire structure (`open level · 1 child · 1 wire`) and the plural on
-  `rates`' `fast` (`2 children · 4 wires`).
-- `rates.test.ts`, from the oracle (`grammar.py`), the counts the assembly
-  rule of 2026-11-02 changed read by hand off the fixtures' timings:
-  `closed_loop`'s 10 triples by anchor, no block on the base grid, anchors 9
-  and 10 extra; `rates`' three triples with `fast/outer` at `× 2`; `library`'s
-  five, anchor 2 (1/50 s) before anchor 1 (1/10 s), with its `× 2` and `phase`
-  lines; `kinds` one, `aircraft` and `containers` none; on `closed_loop`
-  `sensing` and `lqr_controller` on their leaves' one triple, the other three
-  assemblies `mixed` with no triple, the clock counts 1, 4, 1, 2 and 2; the
-  root's legend, the continuous line, then steps 0 and 5 off the two colored
-  assemblies and 3, 4, 6 and 7 off the wires; `pid_controller`'s seven lines,
-  its controllers' steps 1 to 4 and selection's delays' 6 and 7 on its wires;
-  `selection`'s five lines with `command_δt` at step 7, and `actuators`' legend
-  numbers 9 and 10; `rates`' `fast` mixed with two clocks and `slow` on its
-  leaf's triple with one, each level's lines and a title; no `scopes` row read,
-  `fast`'s naming its inner clock and, on a copy, `slow`'s naming one its leaf
-  does not tick on; `wireTriple` on a continuous producer, on `h_ctl`'s wire
-  and from a root input. The continuous line, from the look fixer's oracle
-  (`continuous.py`): first and unnumbered on every closed_loop level,
-  `library`, `kinds` and the primitive root, from wires alone on `rates`'
-  `fast`, `fast/outer` and `slow`, absent on an inline structure whose blocks
-  all take a triple and whose other wire leaves a root input, and on one whose
-  one block without a triple is a mixed assembly.
-- `focus.test.ts`, the oracle's lit sets, those the assembly rule changed read
-  by hand: on `closed_loop`'s root anchor 1 lighting `sensing` and anchor 6
-  `lqr_controller`, each by its triple, and no wire; anchor 4 the mixed
-  `pid_controller` (a leaf beneath) and `selection|in|δe_pid`, anchor 9
-  `actuators`, the continuous color `plant`, every assembly and 17 wires, and
-  below at `pid_controller`, `selection` and `actuators`; on `rates` each
-  triple at the root lighting the mixed `fast` by its leaves, the continuous
-  color `src` but not `fast`, and on `fast` the wires alone; `legendMarks`
-  (`sensing` and `noise` on anchor 1, `q_ctl` alone on anchor 4, on `rates`
-  `fast/inner` and not the mixed `fast`, 14 continuous leaves with `plant` and
-  no assembly); `rekeyFocus` keeping a triple and the continuous color across
-  `closed_loop_deployment`, dropping one `rates` lacks, dropping the continuous
-  color on an inline structure whose one node without a triple is a mixed
-  assembly, following an anchor by its key on a copy of `rates` with its
-  anchors swapped.
-- `diagnostics.test.ts`, from the oracle (`overlay.py`): `diagnosticsOf`'s
-  order, errors then warnings, indexed; `chainOf` on `failure_cycle` (the root's
-  `ctl|in|y` and `plant|in|u`), `failure_nested` across `ctl`'s boundary (two
-  wires at the root, two inside), `failure_dead`, and a pair whose walk ends at
-  another producer contributing nothing without a throw; `overlayOf` on every
-  failure and `warning` (`failure_cycle`'s two halos and no badge,
-  `failure_nested`'s `ctl` continuing, `failure_dead`'s chord on `m` from
-  `m|in|g` to `m|out|F`, `failure_probe`'s `t` badge `y_state` titled with the
-  message's first line and `s/g` amber at `s`, `warning`'s `g` with the kind),
-  on a synthetic copy of `failure_cycle` (an `UnconnectedInput` at `ctl`
-  marking the port `ctl|in|ref` and its wire, an `EmptyFaceSelection` warning
-  at `plant`), the error winning on one block, nothing for a diagnostic at the
-  root, on the level's own node or on a structureless model; `treeMarks`
-  counting diagnostics, not rows, propagated to the root, `own` for the
-  ", beneath" title, the root's own for a diagnostic at the root; `diagnosticTarget` (a port mark before a wire mark, a
-  pin's port for an endpoint on the root's path, a loop's first member, a node
-  on its parent's level, every fixture row a target exactly when it has a
-  structure and a node); `litBy` on `failure_nested` at both levels, the
-  synthetic's first row and a probe failure.
-- `routes.test.ts`, from the oracle's `routes`: `originOf` (a pin's and a
-  port's own face, a wire's producer face, `sensing|in|h` giving `plant/h`,
-  none for a block); `closed_loop`'s `h_ref` (2 consumers across 3 levels, the
-  root's two wires, both controllers entered, `⟨in⟩h_ref` a pin, a terminal and
-  the origin; at `pid_controller` the one wire into `h_ctl|in|r`, the pin, the
-  terminal, no origin), `mode` (7 across 4, `pid_controller`'s four
-  terminals), `plant/V` (3 across 3, the origin `plant|out|V`), the route
-  traced from `pid_controller`'s `h_ref` input (h_ref's route, its origin the
-  face's square on each level), `pid_controller/h_ctl/u` (1 across 1, the
-  tree's marks `pid_controller` and the root as its ancestor); `routeLit`; `rates`' `src/out` (3 across 4,
-  `fast` and `slow` entered at the root, `fast/outer` at `fast`), the root
-  output `outer` (1 across 3, its pins crossed); `large`'s `b102/out1` (6
-  across 1 level, the singular); `primitive`'s `u` (0 consumers across 0
-  levels, no wire, the tag still the origin); `rekeyRoute` keeping `h_ref` and
-  `plant/V` across `closed_loop_deployment`, dropping `h_ref` against `rates`
-  and a structureless model.
-- `wires.test.ts`: `wireClass` over `kinds`' eleven faces and a vector of
-  structs; `closed_loop`'s root 27 scalar and 3 flag, `lqr_controller` 13, 1
-  and 7 vector; `descent`'s one flag wire and the `StopFlag` face's class;
-  `kinds`' root 3, 3, 2, 1, 1; 19 and 20 labelled ports, `mode`'s label `Bool`
-  on its first wire, a label typed through `sensing`'s face; ten fan-outs at the
-  root, `mode` 3, none on `kinds`; `mode`'s three wires in `labelledPorts`;
-  `shortType` over eleven types (modules dropped, `var"#f#3"` and a dot inside
-  `var"…"` or a string kept, numbers untouched) and no qualifier left in
-  `closed_loop`'s or `kinds`' root labels.
-- `icons.test.ts`: all 31 roster keys on inline nodes, their ids and kinds, the
-  text icons' texts; `sensing/altimeter` `sum` by alias over the type
-  `Junction`, `lqr_controller/engaged`, `plant`, `Group`, a user `Pack` and
-  `library`'s `fn` none; `state_pack` `pack`; the Constants `0`,
-  `Int8[0, 0]`, `a=1.0, b=2.0` and `kinds`' `fn` `constant-opaque`; `Delay`'s
-  `K` from `{3, Float64}`, `{Float64, 12}`, a nested parameter, none for a
-  symbol `K`, and `library`'s `z⁻³`; `descent`'s `stop`.
-- `regions.test.ts`: `containers`' root, `gains` with `a` and `b`, `pair` with
-  `1`, the labels `a`, `b`, `1`, `s1`, `s2`, `scale`; `closed_loop`'s root
-  none; an inline keyed container under `ctl` giving `ctl/loops`, a transparent
-  member labelled by its segment and in no region.
-- `level.test.ts` also: `parsePortId` reads a child's port id and a pin's back.
-- `navigate.test.ts`: on a three-by-three grid of boxes at 100 px pitch, from
-  the center `l`, `h`, `j`, `k` give the four neighbors and never a diagonal;
-  from a corner the two outward directions give `undefined`; a closer box off
-  the row wins while twice its offset costs less than the farther box's gap,
-  then loses to it, `j` taking it; on boxes from `closed_loop`'s root and
-  `lqr_controller`, `selection` far above in the next layer and `tracker`
-  before `u_unpack`, a box in the origin's own layer never to its right; the
-  gap read between facing edges, a wide box starting close beating a narrow
-  one with the nearer center, and clamped at zero for a box reaching back past
-  the origin's edge; a tie goes to the lower id, an unknown origin gives
-  `undefined`;
-  `follow` moves `x` by the shortfall exactly for a box left of the view, `y`
-  for a box below, returns the view itself for a box inside, and aligns the
-  near (top or left) edge of a box larger than the viewport.
-- `search.test.ts`, every count the oracle's: `parseQuery`'s three prefixes,
-  the lower-casing and anything else bare; `closed_loop`'s `h` as the nodes
-  `sensing/noise`, `pid_controller/h_ctl`, `selection/select_δe`,
-  `selection/select_δt` and 9 faces, the first `("", in, h_ref)`, the rows nodes
-  then faces; the table's other rows (`type:Junction` 6 and 20, `face:in1` 0
-  and 8, `path:sensing` 3 and 6, `zzz` none); `path:plant face:h` as `plant`'s
-  `h` alone and `plant` as the one node; `TYPE:junction` bare, so no hit; a
-  `face:` term giving no node hits; a prefix with no text after it no term
-  (`face:`, `path: type: face:` empty, `face: h` the bare `h`, `face:` and
-  `type:` no hits); `stepHit` on `closed_loop`'s `h` from nothing to the
-  first and the last, after a selected hit, wrapping both ways, a selection
-  that is no hit starting afresh, no hits giving `undefined`; on `large`'s `b`
-  `N` reaching the 171st hit and `n` past the 100th row; `large`'s `b` as 171 nodes, `CAP` 100 rows
-  and `total` 171; the matched ranges per field and `ranges` merging overlaps;
-  `rates`' `hold` marked at `fast/outer/hold` and `slow/hold`, 1 beneath
-  `fast`, `fast/outer` and `slow`; `closed_loop`'s `h` beneath `sensing` 1,
-  `pid_controller` 1, `selection` 2, `lqr_controller` and `actuators` 0; a
-  node owning several face hits counted once; `levelHits` on `closed_loop`'s
-  root for `h` (no block hit, three under, eight ports, the `h_ref` pin) and
-  `path:sensing` (`sensing` a hit, not under, its two ports).
-- `rekey.test.ts`: `closed_loop`'s state at `sensing` with `sensing/noise`
-  selected, against `closed_loop_deployment`, kept whole with no note; against
-  `rates`, the level the root, the note naming `sensing` and "the root", the
-  selection and both views dropped, the root's layout kept, the expansion `""`
-  alone, the query `h`; the pin `⟨in⟩h` on `sensing` kept against the
-  deployment and dropped against a copy whose `sensing` lacks `h`; the wire and
-  the port `sensing/altimeter|in|in1` kept, a wire of an unknown port id
-  dropped; an inline structure with `a/b/c` selected at `a/b` against one where
-  `a/b` is a leaf, the level `a` with the note naming `a/b`. `sameBlocks`:
-  the deployment's root and `sensing` draw `closed_loop`'s blocks, `descent`'s
-  root not `aircraft`'s, `rates`' not `closed_loop`'s; `rekey` given the
-  previous model keeping the deployment's two views and dropping the root's
-  view of `aircraft` against `descent`.
-- `analysis.test.ts`, from the oracle (`analysis.py`): `closed_loop`'s 24 order
-  rows numbered from 1, row 1 `plant` with six stage-1 ports and no stage 2,
-  row 15 `pid_controller/h_ctl` with `saturated` and `u`, `u_raw`, row 24
-  `actuators/δt_limiter` with `y` alone; its 16 edges, five under row 18, two
-  each under 21 and 22, `pid_controller/h_ctl/u → pid_controller/θ_ctl/r` under
-  17; `library`'s 32 rows and 14 edges, three under 28, 29 and 31; a failure
-  none, a primitive root its leaf; `ranges` "3–5, 8", "2–3", "3"; the badges of
-  `closed_loop`'s assemblies and leaves, `rates`' `fast` "2–3", `fast/outer` "3",
-  `slow` "4", `primitive`'s root "1", none for a leaf absent from the order, an
-  assembly with none beneath or a model without outputs; `closed_loop`'s three
-  root inputs with their phrases and consumers (`mode`'s seven as a set, the
-  oracle walking breadth-first), `kinds` none, `primitive` two; the base grid's
-  row first, `closed_loop`'s 10 anchors at `1/50 s`, `rates`' two at the root
-  and three scopes; the components of `rates` with periods `1/50 s`, `1/25 s`,
-  `1/10 s`, `library`'s 12 in walk order and by period (`unit_delay` first,
-  `noise`, `d_limited` "2 base ticks" last), `closed_loop` 10, `kinds` 1,
-  `primitive` none; the schedule note for a build and a deployment; `rowTarget`
-  on each row kind and on a primitive root; a structureless model's empty
-  results.
-- `docstring.test.ts`: `refLink` on a glossary id, an explicit binding qualified
-  or joined with the type's module, a bare link's text without its backticks,
-  and a type outside `Redstone`; `rewriteRefs` on `library`'s `Integrator` row
-  (five glossary links, two bare), `LQRTracker`'s `@ref Redstone.trim!`,
-  `Group`'s bare `local_wires` to `api/#Redstone.Blocks.local_wires` (the
-  pending note's case), an outside type's links left as text; `renderDocstring`
-  on `closed_loop`'s `Longitudinal` row without an `<a>`, on the `Integrator`
-  source (the signature a `<pre><code>`, seven links with `target="_blank"`, no
-  raw tag), on a hostile source (`<b>x</b>` and `<script>` as text, the image as
-  `<code>alt</code>`, the `javascript:` link as text).
-- `protocol.test.ts`: the hello at `?tab=loop` and at `""`; `openLocationMessage`'s
-  fields; a fixture's text a descriptor, a hello control, `[]`, `nonsense`,
-  `null` and `{}` other; the backoff's 1000, 2000, 4000 and 30000 at attempt 10;
-  `downloadName`.
-- `src/canvas/router.test.ts`: `orthoRoute` forward in four points through the
-  midpoint, backward in six running 12 below the taller box; `rerouteTouching`
-  on `descent`'s root with `plant` moved 200 down changing `plant`'s three wires
-  (`gear|in|h`, `plant|in|δe`, `plant|in|δt`), each ending on its consumer's
-  port, and keeping `stop|in|u` the same array; on `closed_loop`'s root `plant`
-  moved 200 down dropping its wires' junction points and keeping every other
-  wire's array.
-- `src/canvas/layout.test.ts`: `containers`' root laid out with its regions,
-  each region box exactly its members' union grown by the padding, every route
-  starting and ending on its ports in the level's coordinates (the one inside
-  `gains` included); a level with no region keeping no region box. On
-  `closed_loop`'s and `containers`' roots, one label box per labelled port, its
-  given size, an offset from the port's point right of it and under its wire,
-  never the level's or the region's coordinates; no labels given, none laid
-  out.
-- `src/canvas/size.test.ts`: `detailAt` at and either side of each floor, the
-  floors in order; `sizeLabels` on `kinds`' root with `i`'s type emptied, under
-  a stubbed `document` whose canvas has no context: every other producer port's
-  unqualified type at `LABEL_FONT`'s width and `LABEL_HEIGHT`, and none for `i`.
-- `src/state/session.test.ts`: `load` keeps the drawer closed on a build whose
-  body carries one warning and no diagnostic, the count 1, and opens it on
-  `diagnostics` for `failure_cycle`'s one diagnostic; a replacement rekeys
-  (`closed_loop` at `sensing` with `sensing/noise` selected, then the
-  deployment keeping both, then `rates` falling to the root with the note and
-  the query kept), `open` clears the note, a refusal then a model starts fresh;
-  `escape` clears the legend's focus, then the query, then the selection; the
-  focused diagnostic set, toggled, replaced and cleared, kept across a level,
-  cleared by a push and a fresh load, cleared by `escape` ahead of the legend's
-  focus; the route set, cleared by the same trace, replaced and cleared, held
-  across `open`, `climb` and `select`, cleared by `escape` ahead of the focused
-  diagnostic, kept across `closed_loop_deployment` (`h_ref` and `plant/V`),
-  dropped by `rates` and by a fresh load; the
-  legend line's toggle; the focus kept across a level and
-  `closed_loop_deployment`, dropped by `rates` and a fresh load; climbing
-  selecting the child left (`climb` from `sensing`, `rates`' `open("")` from
-  `fast/outer`, back from `fast/outer` to `fast`), a move down or across
-  selecting nothing; `hashOf` and `levelOfHash`,
-  the root without a hash, `#level=` and other hashes naming none; the help
-  page opened, closed and toggled with the level and the selection kept,
-  Escape's first step ahead of the route, `isHelpHash` and `openFromHistory`
-  over `#help` and level hashes (the selection kept on the way back), a fresh
-  load and a rekeying load under it, `help` standing.
-- `src/canvas/palette.test.ts`: on `large`'s 43 triples `stepPair` gives the
-  eight steps, then the four `extras`, then the shared `extra` from the
-  thirteenth on; the thirteen fills and the thirteen strokes all distinct;
-  rate mode's fifteen wire colors, the thirteen fills, `continuousWire` and
-  the gray, all distinct.
-- `src/state/prefs.test.ts`: `parsePrefs` gives the defaults on `null`, garbage,
-  another version and a missing version; reads a stored object back, `mode`
-  `rate`, `labels` true and `order` true included; keeps the defaults for
-  mistyped fields, a `mode` of `rates` and an `order` of `1` among them; clamps
-  an out-of-range size.
-
-The ten mutants of increment 2's brief each turn at least one test red.
-Increment 5's brief aims its unit mutants at these tests: `rekey` falling to
-the root without the prefix, `parseQuery` taking `TYPE:`, a `face:` term
-matching nodes, `beneath` counting a face-hit owner twice, the cap at 101, the
-backoff fixed at 1 s. The look pass's unit mutants: a prefix-only term kept
-(`search.test`), `stepHit` clamping instead of wrapping and walking `rows`
-(`search.test`), `h` on a leaf doing nothing (`outline.test`), a view kept on a
-changed level (`rekey.test`), a rate on a continuous leaf (`detail.test`).
-Increment 6's unit mutants: `wireClass` reading a vector's element
-(`wires.test`), `INCLUDE_CHILDREN` on every level (`level.test`), the palette
-order by anchor index before period and anchor 0 not first (`rates.test`, on
-`rates` and `library`), the assembly taking its first leaf's triple
-(`rates.test`), `Delay`'s `K` ignored (`icons.test`), the dropped container
-translation (`layout.test`), the thresholds swapped (`size.test`). Its look
-pass's: the continuous line's wire rule dropped, the line always shown, a root
-input's wire counted (`rates.test`); no shortening (`wires.test`); no
-leaf-beneath rule, the query cleared before the focus, a push dropping it
-(`focus.test`, `session.test`); no child selected on
-a climb (`session.test`); every membership "field" (`detail.test`); the
-extras back on the shared neutral, the colored extras reused past the twelfth
-(`palette.test`, the first also `colors.spec`). Its second round's: the
-assembly taking its first leaf's triple, the `scopes` row read first, `mixed`
-never true, a mixed assembly counted continuous by the legend, the continuous
-line last, the badge only past one clock (`rates.test`); the mixed branch
-dropped from `legendLit` and from `rekeyFocus` (`focus.test`);
-`continuousWire` the gray (`palette.test`); `nearest` without the factor 2,
-without the far-edge filter, between centers and unclamped (`navigate.test`);
-a mixed assembly in the continuous pair, a wire in its producer's stroke, the
-continuous wire in the continuous fill or the gray, one badge title for every
-count, the badge only past one clock (`colors.spec`). The edge labels': an
-empty type sized, the type left qualified (`size.test`); a label on every wire
-of a fan-out, a placement other than `TAIL` (`level.test`); the label box in
-the level's coordinates or its container's, keyed by wire (`layout.test`); the
-last wire for the first, a middle anchor, a cut text, the labels laid out only
-while shown, the baseline above the wire, the labels frozen at ELK's places
-(`wires.spec`). Increment 7's unit mutants: a chain hop from `fanout` instead
-of `feeder`, the tree's counts counting rows (`diagnostics.test`); the status's
-singular wrong, a push keeping a route whose origin is gone, the route's step
-after the legend's in `escape` (`routes.test`, `session.test`). Increment 8's
-brief aims these unit mutants at its tests: positions 0-based, the assembly's badge its first and last
-position alone, the edge list from `fanout`, an edge row under its producer,
-the root-input row selecting its consumer, the anchor table without the base
-grid's row, the period sort by `m` alone, the same schedule note for both kinds
-(`analysis.test`); `rewriteRefs` leaving the glossary form, the bare form joined
-with `Redstone`, an outside type's links kept, `renderer.html` passing raw HTML,
-the link renderer keeping `javascript:` (`docstring.test`); `#help` read as a
-level, Escape clearing the route first, a load under the help page closing it
-(`session.test`).
+- `fixtures.test.ts`: the fixtures against the schema copy (ajv at default
+  strictness) and their wire and type invariants; every fixture.
+- `loader.test.ts`: the header check, refusals, labels; every fixture,
+  edited copies.
+- `tree.test.ts`: the parent rule, memberships, display names; every fixture.
+- `resolve.test.ts`: the resolution, `faceInfo`, route totals and levels;
+  every fixture, `closed_loop`, `rates`, `large`, `containers`, `primitive`.
+- `feedthrough.test.ts`: the edges; every fixture, `closed_loop`, `containers`.
+- `level.test.ts`: the level builder, `elkGraph` with its options, regions and
+  labels, `parsePortId`; every fixture, `closed_loop`, `containers`, `large`.
+- `model.test.ts`: what `loadModel` builds; the deployment and two failures.
+- `view.test.ts`: `zoomAt`, `fitView`, `pan`, `centreOn`; synthetic extents.
+- `outline.test.ts`: the tree's rows, folders, `treeStep`, `rowSelection`;
+  every fixture, `containers`, `rates`, `closed_loop`.
+- `detail.test.ts`: the pane's facts and phrases, `levelLine`; `closed_loop`,
+  `kinds`, `rates`, `containers`, `primitive`, inline timings and structures.
+- `rates.test.ts`: palette order, an assembly's triple, clocks, legend lines,
+  `wireTriple`; `closed_loop`, `rates`, `library`, `kinds`, inline structures
+  (`grammar.py`, `continuous.py`).
+- `focus.test.ts`: `legendLit`, `legendMarks`, `rekeyFocus`; `closed_loop`,
+  the deployment, `rates` and a copy, an inline structure.
+- `diagnostics.test.ts`: chains, the overlay, the tree's marks, targets,
+  `litBy`; the failures, `warning`, a synthetic copy (`overlay.py`).
+- `routes.test.ts`: `originOf`, routes, `routeLit`, `rekeyRoute`;
+  `closed_loop`, `rates`, `large`, `primitive` (`overlay.py`'s `routes`).
+- `wires.test.ts`: wire classes, labelled ports, fan-outs, `shortType`;
+  `kinds`, `closed_loop`, `descent`.
+- `icons.test.ts`: `iconOf`'s roster and keys, Constants, `Delay`'s `K`;
+  inline nodes, `closed_loop`, `library`, `kinds`, `descent`.
+- `regions.test.ts`: `regionsOf`, `label`; `containers`, `closed_loop`, inline.
+- `navigate.test.ts`: `nearest`, `follow`; a grid and `closed_loop`'s boxes.
+- `search.test.ts`: queries, hits, `beneath`, `levelHits`, `stepHit`;
+  `closed_loop`, `large`, `rates` (the oracle's table).
+- `rekey.test.ts`: `rekey`, `sameBlocks`; `closed_loop` against the
+  deployment, `rates` and edited copies, `descent` over `aircraft`.
+- `analysis.test.ts`: the analysis rows, `orderBadge`, `rowTarget`;
+  `closed_loop`, `library`, `rates`, `kinds`, `primitive` (`analysis.py`).
+- `docstring.test.ts`: `refLink`, `rewriteRefs`, `renderDocstring`;
+  `library`'s and `closed_loop`'s rows, a hostile source.
+- `protocol.test.ts`: the messages, `classifyFrame`, `backoff`; literals.
+- `src/canvas/router.test.ts`: `orthoRoute`, `rerouteTouching`; `descent`,
+  `closed_loop`.
+- `src/canvas/layout.test.ts`: region and label boxes; `containers`,
+  `closed_loop`, `descent`.
+- `src/canvas/size.test.ts`: `detailAt`, `sizeLabels` under a stubbed
+  `document`; `kinds`.
+- `src/canvas/palette.test.ts`: `stepPair`, the colors kept apart; `large`.
+- `src/state/session.test.ts`: `load`, `escape`, the focuses, the route,
+  climbing, the hash, the help page; `closed_loop`, the deployment,
+  `rates`, `failure_cycle`, `failure_probe`, a `descent` with a warning.
+- `src/state/prefs.test.ts`: `parsePrefs`; literals.
 
 ## The canvas
 
-`Canvas.svelte` takes `model`, `path`, `mode`, `labels`, `order`, `selected`, `view`,
-`layout`, `hits`, `lit`, `focus`, `focusKey`, `legendFocus`, `overlay`,
-`routeDrawn` and `focused`, and calls `onopen(path)`, `onselect(target)` (`undefined` for a
-background click), `onview(view)`, `onlayout(geometry, dragged)`,
-`onlegend(key)`, `onbadge(index)` and `ontrace(face)`. The caller
-decides what a click selects and passes back the target to draw, only when the
-selection was made on the drawn level. On each `path` it builds the level and
-sizes it, with its regions (`regionsOf`) and its type labels (`sizeLabels`); when the session holds a layout for the level that is not `stale`,
-it draws that geometry at once, so `data-ready` never goes absent and no ELK
-run happens; otherwise it clears `data-ready`, runs ELK, puts a stale layout's
-dragged blocks back at their dragged places with their wires re-routed
-(`replace`), reports the geometry through `onlayout` and sets `data-ready`. It
-then restores the session's view for the level, or fits. `view` and `layout`
-are read with `untrack`, only when a level is drawn. The hover is cleared, the
-selection left to the caller; a level change also closes the right-click
-menu. The shell keys the canvas on the model
-(`{#key model}`), so each model gets a fresh one. It draws, bottom
-to top, the regions, the casings (a route's first, then the selection's and
-the hover's), the wires with the struct cores, the trunks'
-dots, the blocks and pins with their ports and halos, the type labels, then
-`g.overlay`, so a halo or casing composes as answer 9 orders it (dim, normal,
-route casing, selection halo, error overlay), no block covers a label and the
-error hue lands on top of everything. `<defs>` holds one arrowhead
-marker per wire color on the level and one `<symbol>` per glyph icon.
+`Canvas.svelte` takes `model`, `path`, `mode`, `labels`, `order`, `selected`,
+`view`, `layout`, `hits`, `lit`, `focus`, `focusKey`, `legendFocus`,
+`overlay`, `routeDrawn` and `focused`, and calls `onopen(path)`,
+`onselect(target)` (`undefined` for a background click), `onview(view)`,
+`onlayout(geometry, dragged)`, `onlegend(key)`, `onbadge(index)` and
+`ontrace(face)`. The caller decides what a click selects and passes back the
+target only when it was made on the drawn level. The shell keys the canvas on
+the model (`{#key model}`), so each model gets a fresh one.
 
-- **Sizes** (`size.ts`): the segment `600 12px`, face names `11px`, the display
-  name `11px` in the lighter color, a pin's label `12px`, a type label `9px`,
-  the badge `9px`, all in one system sans stack. The display name is cut with an
-  ellipsis at **120 px** (`DISPLAY_NAME_WIDTH`), its qualified form in the
-  block's hover title. A child's width fits its first line (`label`: a keyed
-  member's key, else its segment), its second line and, row by row, an input
-  name and the output name beside it with a pinned mark's 8 px; header 36, row
-  16, foot 6; at least 60. The second line's term is the cut display name, or,
-  with an icon, `ICON_WIDTH` (44 px), a `Constant`'s text cut at
-  `CONSTANT_WIDTH` (60 px) when wider (`iconWidth`). A pin is 22 high; a root
-  tag adds its 9 px point and a 9 px empty slot at its outer end.
-- **The color modes** (answer 6). `mode` `tier` fills a child by its tier, an
-  assembly gray with its double border; `rate` fills a child by its
-  `blockTriple`'s step (`stepsOf`, the model's palette order), an extra past
-  the eighth step with one of the four `extras` (steps 8 to 11) and past the
-  twelfth with the shared `extra` (answer 6 as amended at core `e538e38`;
-  `stepPair` is the one reader, for fills, strokes, wires, the legend's
-  swatches and the tree's dots), no triple with the continuous pair. A closed
-  assembly takes the one triple its discrete leaves share, its double border in
-  that step's stroke; a `mixed` one, whose leaves tick on several, the assembly
-  gray; one with no discrete leaf the continuous pair. Its `scopes` row colors
-  nothing (answer 6 as amended 2026-11-02, second round). The eight steps are
-  constructed (the same amendment): eight hues evenly spread round the OKLCh
-  hue circle at one chroma, the fills alternating two lightness bands by step
-  down to about L* 66 (AA contrast with the text, 4.5 and up), each stroke its
-  fill's hue darkened, step 0 a warm peach. Every pair of fills lies CIEDE2000
-  12.2 or more apart under normal vision and about 4 under Machado's simulated
-  deutan, protan and tritan vision, never identical, the legend's focus
-  telling any two apart. The four `extras` were re-picked at a lower chroma
-  from the hues left, distinct under normal vision only. The construction is
-  under the traps. No check pins a value. In rate mode a child may carry one
-  pill, `g.badge-pill`, straddling its top edge at the right (a `rect` in the
-  background with the block's stroke and `text.badge`): `#<n>` for an extra,
-  `n` its legend number, `<k> clock(s)` on every closed assembly with a
-  discrete leaf beneath (`clockCount`), both joined by ` · `. Its `<title>`
-  explains, "Every discrete leaf inside ticks on this one clock." for one
-  clock, "Multi-rate: …; open it to see which." for several. The legend, an
-  HTML `div.legend` in the viewport's bottom-left corner, lists first the
-  unnumbered `continuous` line, when a drawn block takes the continuous color
-  (a continuous leaf, an assembly with no discrete leaf, never a mixed one) or
-  a wire not from a root input takes `continuousWire`; then the triples
-  visible on the level in palette order, each drawn block's and each level
-  wire's `wireTriple`, so every color a wire draws has its line, while a root
-  input's wires add none. Each line is a
-  `button.line` holding a `span.swatch` in the step's colors (the continuous
-  pair's on the continuous line), for an extra a `span.number` `#<n>` in the
-  shared neutral, after a swatch in its colors for the four colored extras,
-  then the text (`base grid`, `anchor 2
-  (1/50 s) × 2, phase 1`, `continuous`), the anchor's key and scope in the
-  line's title; rate mode only, absent with no line.
-- **The legend's focus** (answers 6 and 9 as amended). A click on a line calls
-  `onlegend(key)`; the shell toggles the session's `legendFocus` and passes
-  `lit = legendLit(model, level, key)` with the key, and no `hits` while a
-  focus stands. `legendLit` lights the children whose color is the key's,
-  the closed assemblies with a leaf of it anywhere beneath and the wires drawn
-  in its color; a mixed assembly, gray, is lit only by a leaf beneath, so the
-  continuous color passes over one with no continuous leaf; pins are never
-  lit. While the focus stands and no route or focused diagnostic does, the
-  shell passes `focus` `legend`, so `svg.canvas` carries
-  `legend-focus` and `data-focus`, the lit block, wire, core, dot and type
-  label `lit`, and CSS dims everything else to `--dim` as for a search. The
-  focused line's button is `aria-pressed`. The tree takes `legendMarks` with
-  `beneath`'s counts while no query stands, the query's marks otherwise.
-- **Wires** (answer 4). Each `path.wire` carries its class, `levelWireClasses`
-  over the terminal producer's kind, and CSS draws it: `scalar` thin solid,
-  `flag` dashed `4 3`, `vector` 3 wide, `opaque` dotted `1 3` in `wireLight`,
-  `struct` 5 wide under a `path.wire-core` of the same `d` at 1.6 in the
-  background color, its arrowhead on the core. The struct thus draws as a
-  double line, two bands round a background core, where answer 4 says a
-  triple line. In tier mode a wire is `wire`
-  gray; in rate mode its terminal producer's fill (`stepPair`), so a wire names
-  the block it leaves; `continuousWire` from a continuous producer, the
-  continuous fill being too pale for a line; the gray from a root input
-  (`fromRootInput`). Each wire color gets its own `marker` (`arrow-<i>`, in
-  user units so a thick wire's head keeps a thin one's size).
-- **Trunks.** ELK routes the wires leaving one port as a shared trunk and
-  reports each split as an edge's `junctionPoints`; `layoutLevel` keeps them as
-  `Geometry.junctions` by wire id and the canvas draws a `circle.junction` of
-  radius 2.5 in the wire's color at each. `rerouteTouching` drops the junction
-  points of the wires it re-routes, so a dragged block's wires lose their dots.
-- **Type labels** (answer 4 as amended). They are ELK's edge labels.
-  `sizeLabels` gives each producer port with a wire on the level
-  (`labelledPorts`) its type with the module qualifiers dropped (`shortType`),
-  measured at `LABEL_FONT` and `LABEL_HEIGHT` (11) high, none for an empty
-  type. `elkGraph` puts each on its port's first wire alone, with
-  `elk.edgeLabels.placement: TAIL` (`LABEL_OPTIONS`), on every layout, the
-  labels shown or not, so the toggle never moves a block. `layoutLevel` keeps
-  each label's box as `Geometry.labels` by port id, an offset from the port's
-  point, so a dragged block carries its labels. ELK puts a tail label just
-  right of the port and below the wire. With `labels` on, the canvas draws one
-  `text.type-label` per box, start-anchored at the port's point plus the
-  offset, its baseline 8 below the box's top (`LABEL_BASELINE`), whole, the
-  whole type in its `<title>`, the port's first wire its `data-wire`. They sit
-  in `g.type-labels` after `g.blocks`, each painted over a 3 px stroke in the
-  background color (`paint-order: stroke`). `labels` off draws none. On
-  `kinds` all ten draw, on `closed_loop`'s root all 19.
-- **Regions** (answer 5). `regionsOf` gives the level's keyed containers;
-  `elkGraph` nests each one's members in a compound node `region:<path>` with
-  the padding 28, 12, 12, 12 and sets `elk.hierarchyHandling:
-  INCLUDE_CHILDREN`, only on a level with a region, so every other level's
-  graph is the flat one. `layoutLevel` translates a member's box by its
-  region's position and each edge's points and junction points by its
-  `container`'s, and keeps ELK's region boxes as `Geometry.regions`. The canvas
-  draws each region's frame from its members' current boxes grown by the
-  padding (`frames`), so a dragged member carries the frame, equal to ELK's box
-  until a drag: a `g.region` before everything else, a dashed `rect.shape` with
-  `rx` 6, a `rect.halo`, `text.caption` with the field. The frame's stroke, its
-  invisible 5 px halo band and the caption take a click, which selects the
-  folder; the interior passes clicks through. A keyed member's first line reads
-  its key. The fit covers the frames; `centre` on a folder centres its frame.
-- **Icons** (answer 7). A child whose `iconOf` gives an icon draws `g.icon` in
-  place of `text.display` at the second line's place: a text icon in the
-  display name's font (a `Constant`'s value cut by `cutConstant`; another text
-  wider than `ICON_WIDTH` squeezed to it with `textLength`), or a glyph as a
-  `<use>` of `#icon-<id>`, 12 high, in the text color. The icon's `<title>` is
-  the display name, a `Constant`'s with its whole value, and the icon takes the
-  hover (`pointer-events: bounding-box`); the block's title stays the path and
-  the qualified name.
-- **Text levels** (answer 10). `svg.canvas[data-detail]` is `detailAt(view.scale)`:
-  `full` from 0.6, `no-faces` from 0.4, `segments` from 0.25, `frames` below.
-  CSS hides the face names (`text.face`) below `full`, the display names and
-  icons from `segments`, the segments at `frames`; wires, ports, pins' names,
-  captions, badges and type labels stay.
-- **The view**: the fit leaves 24 screen pixels clear and stops at scale 2, so a
-  small level is not blown up, and covers the union of the layout's extent and
-  every box, so a block dragged outside is fitted too; the wheel zooms by
-  `exp(-deltaY * 0.0015)` about the pointer; a drag that starts on the bare SVG
-  pans, and under 3 px of travel is a click that clears the selection. Every
-  change, the fit included, goes out through `onview`, which the shell stores
-  per level.
-- **The handle.** The shell holds the component through `bind:this`
-  (`canvasView`) and calls its exports: `fit()`, `zoomBy(factor)` about the
-  viewport's center, `panBy(dx, dy)` in screen pixels (a positive `dx` shows
-  what lies to the right), `boxes()`, the drawn blocks and pins in world units
-  in the level's order (none while ELK runs), `follow(id)`, the least pan
-  bringing a block inside the viewport with 24 px clear (`navigate.ts`'s
-  `follow`), kept while a level is laid out and done once it is drawn, so `n`
-  landing on a level not yet laid out follows too, and `centre(target)`, the
-  view at its scale with the target's center at the viewport's: a block's or
-  pin's box, a port's square, a wire's route's bounding box.
-- **The drag.** A pointer down on a block or a pin, a root input's tag
-  included, records the drag without capturing. Under 3 px it stays the click it
-  is. Past it the block joins the end of `dragged`, drawn last among the
-  blocks, and the pointer is captured on its group after `tick()`, once Svelte
-  has moved the node. Each move shifts the box by the travel in world units
-  and re-routes its touching wires through `rerouteTouching`: an east port to
-  a west port in four points through the midpoint, or six running 12 below the
-  greater of the two boxes' bottoms when it runs backward. With Shift held,
-  read from each pointer event, the travel since the press keeps to its axis
-  of greater absolute travel (`|dx| >= |dy|` keeps x); a window `keydown` or
-  `keyup` of Shift during a moved drag re-applies the pointer's last place
-  (`dragTo`), so pressing Shift midway snaps and releasing it frees the move.
-  The slop reads the free travel. On the release the canvas
-  reports the geometry through `onlayout` and selects the block itself, since
-  the browser fires no click after a press whose node moved.
-- **Search hits.** `hits` is `{blocks, under, ports}` from `levelHits`:
-  `blocks` holds the child node hits and the pins of the level's own faces
-  hit, `under` the closed children with marked nodes beneath, `ports` the
-  children's face hits. While `hits` is defined `svg.canvas` carries
-  `searching`; a hit's halo and a hit port's halo are `dashed` unless that
-  element is selected, whose halo stays solid. CSS dims to `--dim` (the
-  palette's 0.35) the wires with their cores, dots and type labels, and every child of a non-hit block, its badge included, except its halos
-  and its hit ports, so a hit port in a dimmed block stays opaque.
-- **Selection** lives in the session; a background click reports `undefined`,
-  and the shell's Escape clears it. The keys are the shell's.
-- **One dimming focus** (answer 9). `focus` is `route`, `diagnostic` or
-  `legend`, the one standing focus `lit` belongs to, and `focusKey` its
-  `data-focus` (the route's origin as `faceText` spells it, the diagnostic's
-  index, the legend line's key). `svg.canvas` carries `route-focus`,
-  `diagnostic-focus` or `legend-focus` by it, and one rule dims for all three:
-  every wire, core, dot and type label not `lit`, and every child of a block
-  not `lit` but its halos and its `lit` port squares. The overlay's elements
-  sit outside `g.block` and carry none of those classes, so they never dim.
-  The shell passes no `hits` while a focus stands.
-- **The diagnostics overlay** (answer 8). `overlay` is `overlayOf(model,
-  level)`. `g.overlay`, the svg's last child, drawn only once `shown`'s level
-  is `path` so an id never lands on another level during a layout, holds in
-  order: `path.mark-wire` (the wire's own `d`, 3 px), `rect.mark-halo` (the
-  block's halo geometry, 3 px outside, `rx` 7 or a pin's, a `path` with `tagD`
-  for a root tag, 5 px at opacity 0.5), `rect.mark-port` (the square grown 2 px
-  each side), `path.chord` from the input square's center to the output
-  square's, dashed `--dash`, with `path.cross`, two diagonals of ±3 px at its
-  midpoint, then the badges. The hue is `--hue`, set per element by
-  `data-severity` from `--error` and `--warning`, which the viewport sets from
-  the palette. A diagnostic naming the level's own node draws nothing.
-- **The badges' corner.** The rate pill straddles the top edge at the right
-  (`BADGE_TOP` -7, `BADGE_INSET` 4, `BADGE_HEIGHT` 12); the overlay's pills
-  straddle the bottom edge at the right, mirrored (`y = box.height -
-  BADGE_HEIGHT - BADGE_TOP`), sharing the inset, height, padding and font,
-  several on one child running right to left `BADGE_GAP` (2) apart: the
-  diagnostic's (the `function` or the `kind`, titled with the message's first
-  line) rightmost, then the continuation's (`loop`), then the route's
-  (`route`). `overlayBadges` builds them. A `diagnostic` badge's click calls
-  `onbadge(index)`; a `continues` one's and a child's `route` one's
-  `onopen(child)`.
-- **The order badges** (workspace.md answer 7, reading 9). With `order` on, the
-  `orders` map gives every child block of the level, leaf or closed assembly,
-  its `orderBadge` text, a primitive root's leaf included; pins and tags get
-  none, nor a block whose text is `undefined`. Inside the child's `g.block`,
-  after the rate pill, `g.order-badge[data-id]` straddles the top edge at the
-  left, the rate pill mirrored: a `rect` at `x = BADGE_INSET`, `y = BADGE_TOP`,
-  `orderWidth(text)` wide (the text's width plus `2 × BADGE_PAD`), `BADGE_HEIGHT`
-  high, rounded by half its height, filled with the background and stroked in
-  the text color; `text.order` at `BADGE_FONT` in the text color; its `<title>`
-  "Position N in the execution order" for a leaf, "Positions N in the execution
-  order: the leaves inside" for an assembly. The badge carries its title and a
-  click on it selects the block, bubbling to `g.block`, and it dims with its
-  block through the existing child rules. Nothing is reserved in `sizeBlock`, so a toggle
-  never re-lays a level. **The raised pill** (reading 19): on a block carrying an
-  order badge where `orderWidth(text) + pill width + 2 × BADGE_INSET` exceeds
-  the block's width, the rate pill rides one row higher, `y = BADGE_TOP -
-  BADGE_HEIGHT - BADGE_GAP`, keeping its right inset; on `closed_loop`'s root in
-  rate mode `pid_controller`, `lqr_controller`, `selection` and `actuators` raise
-  theirs and `sensing`'s straddles.
-- **A route** (answer 9, workspace.md answer 8). `routeDrawn` is
-  `routeDrawing(model, traced, level)`. Under each route wire a
-  `path.casing.route[data-wire]` at the selected casing's width, 7, opaque in
-  `g.route-casings`, which takes the selected casing's opacity, 0.4, as one
-  group, so casings sharing a trunk merge rather than add up; drawn before the
-  selection's casings. The origin: on a pin, `g.block`
-  takes `route-origin` with its `.halo` at 0.5; on a child's port square,
-  `rect.port` takes `route-origin` and its `.port-halo` is `on`. Every
-  terminal port square takes `route-terminal`, stroked in the highlight hue as
-  `marked`. A `g.badge[data-role="route"]` in the highlight hue (no
-  `data-severity`) reads `route` on each closed child entered, titled "The
-  route continues inside; open it to follow it.", and, off the root only, on
-  each pin crossed, straddling the pin's top edge at its outer end (an input
-  pin's left, `BADGE_INSET` in; an output pin's right), titled "The route
-  leaves this level here; go to the parent to follow it."; its click calls
-  `onopen` of the level's parent, which is the shell's `open` and so a climb
-  selecting the child left. The root's pins are on the route but never
-  badged, so a root tag's slot never holds one.
-- **The right-click menu** (workspace.md answer 8). `contextmenu` on a pin's
-  `g.block`, a `rect.port` (stopping there, so a pin's square gives the port)
-  or a `path.wire-hit` prevents the browser's menu and opens `div.menu` in
-  `.viewport` at the pointer, one `button.trace` reading "Trace"; nothing else
-  handles `contextmenu`, so the browser's menu stays on the background, a
-  block, a label and the panes. A right-click selects nothing. The button's
-  click traces `originOf(model, {level, target})` of the right-clicked target
-  through `ontrace` and closes the menu. A window `pointerdown` in the capture
-  phase outside the menu, the wheel and a level change close it; a window
-  `keydown` in the capture phase closes it on Escape and stops the event, so
-  that Escape never reaches the shell's chain. The button is not focused on
-  opening.
+On each `path` it builds and sizes the level with its regions and type
+labels. A held layout not `stale` is drawn at once, with no ELK run and
+`data-ready` never absent; otherwise it clears `data-ready`, runs ELK, puts a
+stale layout's dragged blocks back with their wires re-routed, reports
+`onlayout` and sets `data-ready`, then restores the level's view or fits.
+`view` and `layout` are read with `untrack`. A level change clears the hover
+and closes the menu. The draw order is answer 9's: regions, casings (the
+route's first), wires with struct cores, dots, blocks with ports and halos,
+type labels, `g.overlay`. `<defs>` holds one arrowhead per wire color, in
+user units, and one `<symbol>` per glyph.
+
+What the records do not fix, or where the page differs:
+
+- **Sizes** (`size.ts`): the segment `600 12px`, face names and the display
+  name `11px`, a pin's label `12px`, type labels and badges `9px`; the display
+  name cut at 120 px. A child fits its first line (`label`: a keyed member's
+  key, else its segment), its second line and each row's input and output
+  names with a pinned mark's 8 px; header 36, row 16, foot 6, at least 60. An
+  icon counts `ICON_WIDTH` (44), a `Constant` its text cut at
+  `CONSTANT_WIDTH` (60) (`iconWidth`). A pin is 22 high; a root tag adds a
+  9 px point and a 9 px empty slot.
+- **Colors.** `stepPair` is the one reader of a step's colors: fills,
+  strokes, wires, swatches, the tree's dots. No check pins a value.
+- **The rate pill** `g.badge-pill` straddles a child's top edge at the right
+  (`BADGE_TOP` -7, `BADGE_INSET` 4, `BADGE_HEIGHT` 12): `#<n>` for an extra,
+  `<k> clock(s)` on a closed assembly with a discrete leaf beneath
+  (`clockCount`), joined by ` · `.
+- **The legend** is an HTML `div.legend` in the bottom-left corner; a line's
+  click calls `onlegend(key)`, and the shell passes `legendLit`'s set and
+  `focus` `legend` while no route or diagnostic focus stands.
+- **Wires.** CSS by class: `scalar` thin, `flag` dashed `4 3`, `vector` 3
+  wide, `opaque` dotted `1 3` in `wireLight`, `struct` 5 wide under a
+  `path.wire-core` at 1.6 in the background color carrying the arrowhead: a
+  double line where answer 4 says triple. In rate mode a continuous
+  producer's wires take `continuousWire`, a root input's the gray.
+- **Trunks.** ELK's `junctionPoints` become `Geometry.junctions`, a
+  `circle.junction` of radius 2.5 each; `rerouteTouching` drops them.
+- **Type labels.** ELK edge labels on each port's first wire, `TAIL`, on
+  every layout; `Geometry.labels` keeps each box by port id as an offset
+  from the port's point, so a dragged block carries its labels. Baseline 8
+  below the box's top, over a 3 px stroke in the background color.
+- **Regions.** A compound node `region:<path>`, padding 28, 12, 12, 12,
+  `INCLUDE_CHILDREN` only on a level with a region; `layoutLevel` translates
+  by each edge's `container`. Frames are drawn from the members' current
+  boxes (`frames`); the stroke, a 5 px halo band and the caption select the
+  folder, the interior passes clicks through. The fit covers the frames.
+- **Icons.** A text wider than `ICON_WIDTH` squeezed by `textLength`; a
+  glyph a `<use>` 12 high in the text color. The icon's `<title>` is the
+  display name; it takes the hover (`pointer-events: bounding-box`).
+- **Text levels.** `full` from scale 0.6, `no-faces` from 0.4, `segments`
+  from 0.25, `frames` below; captions, badges and pins' names never drop.
+- **The view.** The fit leaves 24 px clear, stops at scale 2 and covers
+  every box; the wheel zooms by `exp(-deltaY * 0.0015)`, its listener
+  `{passive: false}`; a drag on the bare SVG pans, under 3 px a click. Every
+  change goes out through `onview`.
+- **The handle** `canvasView`: `fit()`, `zoomBy(factor)` about the center,
+  `panBy(dx, dy)`, `boxes()` (none while ELK runs), `follow(id)` with 24 px
+  clear, held until the level is drawn, and `centre(target)` on a box, a
+  port square, a wire's bounding box or a folder's frame.
+- **The drag.** Past 3 px the block joins the end of `dragged` and the
+  pointer is captured after `tick()`. Each move re-routes the touching wires:
+  four points through the midpoint, or six running 12 below the lower box
+  when backward. Shift keeps the travel since the press to its axis of
+  greater absolute travel; a window Shift `keydown` or `keyup` re-applies
+  the last place (`dragTo`). The release reports `onlayout` and selects.
+- **Dimming** to `--dim` (0.35). A focus dims every wire, core, dot and
+  label not `lit`, and every child of a block not `lit` but its halos and lit
+  ports; a search dims every wire and every child of a non-hit block but its
+  halos and hit ports, a hit's halo `dashed` unless selected. The overlay
+  sits outside `g.block` and never dims.
+- **The overlay**, drawn only once `shown`'s level is `path`: wire marks 3
+  px, mark halos 3 px outside at opacity 0.5 (`tagD` for a root tag), port
+  marks 2 px each side, chords between the squares' centers with a ±3 px
+  cross, then badges. `data-severity` sets `--hue` from `--error` or
+  `--warning`. A diagnostic on the level's own node draws nothing.
+- **Bottom badges** straddle the bottom edge at the right, right to left
+  `BADGE_GAP` (2) apart: the diagnostic's, `loop`, `route`
+  (`overlayBadges`); a diagnostic's click calls `onbadge`, the others
+  `onopen`.
+- **The order badge**, `order` on, straddles a child's top edge at the
+  left, `orderWidth(text)` wide, background fill, text-color stroke, titled
+  "Position N in the execution order" or "Positions N in the execution
+  order: the leaves inside"; its click selects the block. Nothing is
+  reserved in `sizeBlock`; where both pills do not fit, the rate pill rides
+  one row higher (reading 19).
+- **A route.** `path.casing.route`, width 7, in `g.route-casings` at 0.4 as
+  one group so a shared trunk does not add up; the origin's halo at 0.5 or
+  its port halo `on`; `route-terminal` squares; a `route` badge on each closed
+  child entered and, off the root, on each pin crossed at its outer end,
+  its click opening the parent.
+- **The right-click menu.** `contextmenu` on a pin, a `rect.port` or a
+  `path.wire-hit` opens `div.menu` at the pointer and selects nothing;
+  elsewhere the browser's menu stays. A capture-phase `pointerdown` outside,
+  the wheel and a level change close it; a capture-phase Escape closes it
+  and stops the event.
 
 **The DOM contract**, which the harness and the reviewer select on:
 
-- `svg.canvas[data-level="<path>"][data-ready]`, `data-level` the drawn level's
-  path, `""` at the root; `data-ready` is absent while a level is laid out.
-- `g.block[data-id]` for every block and pin, with the class `leaf`,
-  `assembly` or `pin`; a pin also `in` or `out`, and a root input
-  `root-input`. Its outline is `.shape`: a `path` for a root tag, a `rect`
-  otherwise. Its `<title>` is the path and the qualified display name, or a
-  pin's face name.
-- `rect.port[data-port]` with the port id `block|side|name`, the class `stage1`
-  on an open square; `.pinned[data-port]` for a pinned mark.
-- `path.wire[data-wire]` with the wire's id; over it `path.wire-hit[data-hit]`,
-  transparent and 8 px wide, takes the click, the hover and the `<title>`, the
-  two endpoints.
-- `selected` and `hover` as classes on the selected and hovered `g.block`,
-  `rect.port` or `path.wire`; under the wires `path.casing[data-wire]` with
-  `selected` or `hover` for a wire, `incident` or `incident-hover` for the
-  wires of a selected or hovered block; `marked` on the two port squares of
-  the selected wire, `marked-hover` on those of the hovered wire.
-- `button.fit`. The wrapper `div.viewport` was `.frame` until the frame took
-  that name; it is the canvas region's root, `tabindex="0"`, `focused` while
-  the keyboard is in it.
-- `svg.canvas` carries `searching` while a query stands; `g.block` carries
-  `search-hit` for a node hit or a hit pin and `search-under` for a closed
-  assembly with marked nodes beneath; `rect.port` carries `search-hit` for a
-  face hit; the dashed halo is the block's `.halo` or the port's `.port-halo`
-  with `dashed`.
-- `g.blocks` holds the `g.block` children; the most recently dragged block is
-  its last child.
-- `svg.canvas[data-mode="tier" | "rate"]`, `[data-labels]` while the labels
-  show, `[data-detail="full" | "no-faces" | "segments" | "frames"]`.
-- `g.block .shape[data-step]` in rate mode, the step index, absent on a block
-  with the continuous color or the assembly gray; `g.block.extra` past the
-  eighth step; `g.badge-pill` holding its `title` and `text.badge` reading
-  `#<n>`, `1 clock`, `<k> clocks` or a number and a count joined by ` · `.
-- `path.wire[data-kind="scalar" | "flag" | "vector" | "struct" | "opaque"]`;
-  `path.wire-core[data-wire]` over every struct wire; `circle.junction
-  [data-wire]` at each junction point; `g.type-labels` after `g.blocks`
-  holding `text.type-label[data-port][data-wire]`, the producer port's id and
-  its first wire, the one ELK labels, with a `<title>` holding the whole type,
-  present only while `data-labels`.
-- `g.regions` first in the svg, holding `g.region[data-path]` with `rect.halo`,
-  `rect.shape` and `text.caption`, `selected` when the selection is that
-  folder; a keyed member's `g.block[data-region]` names its region; its
-  `text.segment` reads the key.
-- `g.block g.icon[data-icon]` in place of `text.display` on a block with an
-  icon, holding a `text` or a `use[href="#icon-<id>"]`; `symbol#icon-<id>` in
-  `<defs>` for every glyph.
-- `text.face` for a face name.
-- `div.legend` in `.viewport`, holding first `li.continuous` without
-  `data-step`, then `li[data-step]`, each with `button.line[aria-pressed]` holding
-  `span.swatch`, `span.number`, or both for a colored extra, then `span.text`.
-- `svg.canvas.legend-focus[data-focus="<key>"]` while a legend line is
-  focused, `svg.canvas.diagnostic-focus[data-focus="<index>"]` while a
-  diagnostic is, `svg.canvas.route-focus[data-focus="<face>"]` while a route
-  stands; `lit` on the lit `g.block`, `path.wire`, `path.wire-core`,
-  `circle.junction`, `text.type-label` and `rect.port`.
-- `g.overlay` last in `svg.canvas`, holding `path.mark-wire[data-wire]
-  [data-severity="error" | "warning"]`, `rect.mark-port[data-port]
-  [data-severity]`, `rect.mark-halo[data-id][data-severity]` (a `path` for a
-  root tag), `path.chord[data-id][data-from][data-to][data-severity]` with
-  `path.cross[data-id]`, and `g.badge[data-id][data-role="diagnostic" |
-  "continues" | "route"]`, `[data-severity]` on the first two, holding its
-  `title`, a `rect` and `text.badge-text`.
-- `path.casing.route[data-wire]` in `g.casings > g.route-casings`; `route-origin` on a `g.block`
-  (a pin) or a `rect.port`; `rect.port.route-terminal`.
-- `div.menu` in `.viewport` holding `button.trace`, while a right-click menu
-  is open.
-- `svg.canvas[data-order]` while the order badges are on; `g.block
-  g.order-badge[data-id]` holding `title`, `rect` and `text.order`; the badge
-  carries its title and a click on it selects the block.
+| element | selector | set when |
+|---|---|---|
+| the svg | `svg.canvas[data-level][data-ready]` | `data-level` the drawn level's path, `""` at the root; `data-ready` absent while a level is laid out |
+| the svg | `[data-mode="tier"]` or `"rate"`, `[data-labels]`, `[data-order]` | the prefs: the color mode, the labels shown, the order badges on |
+| the svg | `[data-detail]`: `full`, `no-faces`, `segments`, `frames` | `detailAt(view.scale)` |
+| the svg | `.searching` | while `hits` stands |
+| the svg | `.legend-focus`, `.diagnostic-focus` or `.route-focus`, with `[data-focus]` | the standing focus; the line's key, the diagnostic's index or the origin's `faceText` |
+| the canvas region | `div.viewport[tabindex="0"]`, `.focused` | always; `focused` while it holds the keyboard |
+| the fit button | `button.fit` | always |
+| a block | `g.blocks > g.block[data-id]` with `.leaf`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin; the last child the most recently dragged |
+| a block's outline | `g.block .shape`, a `path` for a root tag, else a `rect`; `[data-step]` | `data-step` in rate mode, absent with the continuous color or the gray |
+| a block's states | `.selected`, `.hover`, `.search-hit`, `.search-under`, `.lit`, `.extra`, `.route-origin` | selection, hover, a hit or a closed assembly with marked nodes beneath, a focus, past the eighth step, a pin as a route's origin |
+| a keyed member | `g.block[data-region]`, its `text.segment` the key | inside a region |
+| a block's text | `text.segment`, `text.display`, `text.face`; `<title>` | the title the path and the qualified display name on two lines, or a pin's face name |
+| an icon | `g.block g.icon[data-icon]` holding a `text` or a `use[href="#icon-<id>"]`; `symbol#icon-<id>` in `<defs>` | in place of `text.display` |
+| a halo | `.halo` and `.port-halo`, `.dashed`, `.on` | a search hit's dashed halo; a route origin's port halo |
+| a port | `rect.port[data-port]`, the port id; `.stage1` | every face; `stage1` on an open square |
+| a port's states | `.selected`, `.hover`, `.marked`, `.marked-hover`, `.search-hit`, `.lit`, `.route-origin`, `.route-terminal` | `marked` on the selected wire's two squares, `marked-hover` on the hovered wire's |
+| a pinned mark | `.pinned[data-port]` | a pinned face |
+| a wire | `path.wire[data-wire][data-kind]`, the kind `scalar`, `flag`, `vector`, `struct` or `opaque`; `.selected`, `.hover`, `.lit` | every level wire |
+| a wire's hit path | `path.wire-hit[data-hit]` | over each wire, transparent, 8 px wide; takes the click, the hover, the `<title>` and the right-click |
+| a struct's core | `path.wire-core[data-wire]` | over each struct wire |
+| a trunk's dot | `circle.junction[data-wire]` | each junction point |
+| a casing | `path.casing[data-wire]` with `.selected`, `.hover`, `.incident` or `.incident-hover` | a selected or hovered wire, or the wires of a selected or hovered block |
+| a route casing | `g.casings > g.route-casings > path.casing.route[data-wire]` | each wire of the standing route |
+| a type label | `g.type-labels > text.type-label[data-port][data-wire]`, `<title>` the whole type | after `g.blocks`, only while `data-labels`; the producer port and its first wire |
+| a region | `g.regions > g.region[data-path]` holding `rect.halo`, `rect.shape`, `text.caption`; `.selected` | first in the svg; `selected` when the folder is |
+| the rate pill | `g.badge-pill` holding `title` and `text.badge` | rate mode, an extra or a clock count |
+| the order badge | `g.block g.order-badge[data-id]` holding `title`, `rect`, `text.order` | while `data-order` |
+| the overlay | `g.overlay` | last in the svg |
+| a mark | `path.mark-wire[data-wire]`, `rect.mark-port[data-port]`, `rect.mark-halo[data-id]`, each `[data-severity]`, `error` or `warning` | a diagnostic's attribution; a `path` mark halo on a root tag |
+| a dead hop | `path.chord[data-id][data-from][data-to][data-severity]`, `path.cross[data-id]` | a dead hop's member |
+| an overlay badge | `g.badge[data-id][data-role]`, the role `diagnostic`, `continues` or `route`, `[data-severity]` on the first two, holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing, a route entering or leaving |
+| the legend | `div.legend` in `.viewport`: `li.continuous`, then `li[data-step]`, each `button.line[aria-pressed]` holding `span.swatch`, `span.number` or both, then `span.text` | rate mode with a line; `aria-pressed` on the focused line |
+| the menu | `div.menu` in `.viewport` holding `button.trace` | while a right-click menu is open |
 
 ## The frame
 
-`App.svelte` shows `Landing` until a model loads, then `Frame` with the panes as
-snippets: the tree and the detail pane at the sides, full height, each with a
-head row holding its collapse button; between them the breadcrumb, the canvas
-area, the drawer and the status bar. A structureless failure shows the frame
-with an empty tree and `pre.outcome` in the canvas area. A refusal unloads the
-model and the landing shows its sentence. The title is `<label> – Redstone
-inspector` with a model and `Redstone inspector` without. In the live tab the
-landing has a status bar under it holding the connection and the help link,
-while the connection is `connected` or `lost`; the hosted copy's landing has
-none. While `session.help` the help page replaces whichever of the two shows,
-the model kept (see "The help page" below).
+`App.svelte` shows `Landing` until a model loads, then `Frame` with the panes
+as snippets: the tree and the detail pane at the sides, full height, each with
+its collapse button; between them the breadcrumb, the canvas area, the drawer
+and the status bar. A structureless failure shows the frame with an empty
+tree and `pre.outcome` in the canvas area; a refusal unloads and the landing
+shows its sentence. The title is `<label> – Redstone inspector`, or
+`Redstone inspector` alone. In the live tab the landing has a status bar
+while the connection is `connected` or `lost`. While `session.help` the help
+page replaces whichever shows, the model kept.
 
-- **The tree.** A row: indent by depth, a chevron button on an expandable row
-  (turned when expanded), a dot following the color mode (in tier mode the
-  tier's stroke or the assembly gray; in rate mode the node's step's stroke,
-  a colored extra's or the shared neutral's (`stepPair`), the continuous stroke with no triple, the assembly gray for an
-  assembly without a triple, a mixed one or one with no discrete leaf beneath),
-  a folder glyph instead on a folder, the segment, the display name lighter; the
-  root row the label alone. A click selects (a node on its parent's level, the
-  root on the open level, a folder on its parent's); the open level's own node
-  selected shows the level layout in the pane; a double-click on an
-  assembly row opens it; the chevron toggles and stops both. A selection made
-  elsewhere scrolls its row into view after the DOM updates. The search field
-  sits at the top, passed in as the `search` snippet so it belongs to the tree
-  region. While a query stands a marked node's row carries `hit`, its dot
-  ringed dashed, and a collapsed row with marked nodes beneath shows `.hits`
-  with the count, a collapsed folder summing its members'. With no query
-  standing and a legend line focused, the same `hit` and `.hits` mark the rows
-  on the focused color (`legendMarks`). A node row with a diagnostic at it
-  or beneath (`diagnosticMarks`, `treeMarks`) shows after its name a 7 px
-  `span.mark` dot, red while its error count is positive, else amber, titled
-  with the counts in words ("1 error", "2 warnings", "1 error, 1 warning")
-  and ", beneath" when the row's own node carries none, the root's row
-  included (a diagnostic at the root marks its row, though the canvas draws
-  nothing for it); a row on a level the
-  standing route crosses (`routeMarks`, `routeLevels`, the root included) a
-  blue `span.mark` titled "on the route", and on each ancestor of one the
-  route does not cross the same mark titled "on the route, beneath", as the
-  diagnostic marks propagate (workspace answer 2). Folder rows
-  carry no mark. The tree never filters. Rows have `tabindex="-1"`, so a row click focuses the row and the
-  region. With focus anywhere in `nav.tree` but the search field, `h j k l`
-  are the tree's (`treeStep`), the canvas's never fire: `j` and `k` select the
-  next and previous visible row as a click does, the first row when none is
-  selected; `l` expands a collapsed expandable row and on an expanded one
-  selects its first child; `h` collapses an expanded row and on a collapsed row
-  or a leaf selects its parent's row, folder rows being rows. A row selected by
-  a key scrolls into view, as one selected elsewhere does; only the row's own
-  click does not scroll.
-- **The search** (`Search.svelte`). `input.query` bound to the session's
-  query, and `button.clear`. While the field has focus and the query is not
-  blank, `listing` is true and the tree renders `.results` in the outline's
-  place: the `nodes` group, then the `faces` group, each with its header and
-  count, one `.hit` row per hit, a node row showing the path (the model's
-  label for the root) and the hit's label, a face row the owner's path (`/` for
-  the root), the side and the face name, the matched text in `mark`; past the cap `.refine` reads `<total> hits;
-  showing 100, refine the query`, and no hit reads `no hits`. A node hit's
-  label is the display name, or the qualified alias or type when a type term
-  matched outside it, so the row always marks a type match. `.active` starts
-  on the first row; Down and Up move it, Enter picks it, Escape clears the
-  query; a click on a row picks it, its `mousedown` prevented so the field
-  keeps focus and the click lands. A pick selects a node as a tree click does
-  and a face through `faceSelection` (`hitSelection`); a pick, Escape and the
-  clear button move focus to `.viewport`, which brings the outline back with its
-  markers. A term whose text is empty after its prefix (`face:` alone) is no
-  term, so a query of bare prefixes lists, dims and marks nothing. While a
-  query stands with hits, `n` and `N` outside the field select the next and
-  the previous hit in the full order, nodes then faces, never capped
-  (`stepHit`), as a pick does, then the canvas follows the hit's block (a
-  port's block for a face) once its level is drawn; the walk starts after the
-  selection when it is a hit, else at the first or the last, and wraps.
-- **The breadcrumb.** The open control, a button over a hidden file input, then
-  each ancestor as a link and the open level as `.current`, the root by the
-  label, others by their segment. At the right end `div.controls`: the color
-  mode's segmented switch, `tier` and `rate`, titled "Color by tier" and "Color
-  by rate", the type labels' toggle `types`, titled "Show the type of every
-  wire", and the order badges' toggle `order`, titled "Number every leaf by
-  its position in the execution order" (workspace.md answer 7), the same pref
-  as `o`.
-- **The detail pane.** `detailOf(model, level, selection)` gives the facts; the
-  pane renders one layout per kind. A leaf's and an assembly's: the header with
-  segment, display name, and the path line holding the path, the copy button
-  and, on an assembly, the open button reading "Open"; then `dl.facts`, one
-  `dt` and `dd[data-fact]` per fact, each `dt` titled with one sentence from
-  `FACT_TITLES`: `type`, the qualified type and, when there is one, a light
-  "alias" and the alias; `class`, `classPhrase` ("leaf, continuous",
-  "assembly"); `rate`, a discrete leaf's only, `ratePhrase` ("every 4th base
-  tick, offset 1", "every tick of q_ctl, 1/50 s", T and a non-zero tau before the
-  offset), its title `timingPhrase`'s full reading; `children`, an assembly's
-  count; `member`, when the node has a key, its container's kind
-  (`memberKind`), "transparent container children, key plant", "keyed
-  container gains, key a", "field …" for neither form, its title
-  `memberTitle`'s explanation of the kind. Below it the signature
-  disclosure, the docstring disclosure, the locations, the parameters and the
-  faces. The level layout keeps its `p.facts` line, the pin and port layouts
-  theirs. Face rows and producer and consumer links
-  select through `faceSelection`: a root face's pin at the root, else the port
-  on the level that draws its node; on the level layout a face row selects the
-  level's own pin. The signature disclosure shows only when the signature
-  differs from the qualified type, which it would repeat; counts read in the
-  singular for one, as the status bar's. The copy button writes the path. A
-  location click calls `onlocation(file, line)`; the shell sends
-  `open_location` while connected and returns true, and otherwise returns
-  false and the pane writes `file:line` to the clipboard with its `copied`
-  mark. The button's title reads "Open in the editor" or "Copy the file
-  label" by the `editor` prop. The docstring is a disclosure, collapsed on
-  every selection, its summary the title "docstring" alone; its body
-  `div.docstring` holding `renderDocstring(facts.docstring, facts.type)` as
-  HTML (`{@html}`), `facts.type` the type row's key, so an alias resolves
-  against its base's module (build_release.md answer 7): `[text](@ref g-x)` a
-  glossary link, a bare or explicit binding an API link, a type outside
-  `Redstone` its links as code text, raw HTML as text, an image as its text, a
-  link kept only with an `http` scheme and opened in a new tab with `rel
-  noopener`, so the leave prompt never fires. Its styles are `:global` under
-  `div.docstring`: the pane's font, `pre` on the strip, `code` in monospace,
-  links in the highlight, headings at 13 px. `aside.detail` is a size
-  container: under `@container (max-width: 420px)`, so at the default 360 px
-  too, the parameters' rows and cells are blocks, each summary under its name,
-  both full width, and each face row a grid, `side name kind` on the first
-  line, the type on the second, `pinned stage links` on the third, the head
-  hidden and a stage written "stage 1". The facts' values break only inside a word
-  too long for a line of its own (`overflow-wrap: break-word`). The pin's and
-  the port's path line carry `button.trace` after the copy button, and the
-  wire's layout a path line holding it alone under its heading, while the
-  shell passes `origin`, the selection's face (`originOf`) when it has a
-  route: "Trace", titled "Trace this value's route", or, while that face's
-  route stands (`tracing`), "Clear the route" with `aria-pressed="true"`; a
-  click calls `ontrace(origin)`.
-- **The drawer.** Four tabs; a click opens on that tab or closes the open one;
-  its height is the prefs' splitter while open, its strip alone while closed.
-  The diagnostics tab (workspace.md answer 6) takes `diagnostics`
-  (`diagnosticsOf`), `current` (the focused index), `editor`,
-  `ondiagnostic(index)` and `onlocation`: `input.filter`, placeholder "Filter
-  by kind, path or message", a case-insensitive substring over the kind, the
-  raw path and the whole message, the component's own state, kept across a tab
-  switch and a push; then one `li.diagnostic` per row in the list's order
-  holding `button.row`, which wraps the head, the kind in the row's hue and
-  the path (`/` for the root), and under it the whole message; beside the
-  button, outside it, when the attributed node's type has a location and
-  the row is no loop, `a.location` reading `file:line` for the first, which
-  calls `onlocation` and
-  on false copies with a `copied` mark as the pane does. A click on the row's
-  button calls `ondiagnostic`; the shell toggles the focus and, once focused, selects
-  `diagnosticTarget`'s selection, which shows its level; a structureless
-  failure's rows focus alone. The focused row is `current` and scrolls into
-  view whenever `current` changes while the drawer is open. With no row at all
-  the tab shows `p.empty` "No diagnostics or warnings." and no filter; while
-  the filter hides every row, "No row matches the filter.". A diagnostic badge
-  on the canvas opens the drawer on `diagnostics` and focuses its row. The
-  other three tabs (workspace.md answer 6, the pending bullet) are components
-  under `src/frame/tabs/`, each taking `model` and `onrow(selection)`, which
-  the shell's `select` takes, so every row's `button.row` selects
-  `rowTarget`'s selection and shows its level as a tree click does. The
-  drawer's body scrolls to its top on a tab switch and keeps its scroll across
-  a push. A structureless model shows each tab's empty state.
-  - **Root inputs** (`RootInputs.svelte`): `table.root-inputs`, a header row
-    (name, type, kind, pinned titled "A pinned face: the writer marked it;
-    version 1.0 of the format carries none", terminal consumers), one
-    `tr.root-input[data-name]` per `rootInputRows` row: `td.name > button.row >
-    code`, `td.type > code`, `td.kind` (the kind phrase), `td.pinned`
-    ("pinned" or empty), `td.consumers` (a `code` per consumer, `path/port`, a
-    root output `/port`, joined by ", ", each unbroken, "none" with none). The
-    button selects the root tag `⟨in⟩name` on the root level, a primitive
-    root's too. `p.empty` "No root inputs.".
-  - **Timing** (`Timing.svelte`): `h3` "Anchors" and `table.anchors` (index,
-    T, tau, scope, key), `tr.anchor[data-index]` per `anchorRows` row; the base
-    grid's (`base`, index 0) reads "0 base grid", `Δt` titled "The deployment's
-    base step, which a build does not know", "0", "—", "the deployment's",
-    with no button; another's `td.scope` holds `button.row > code` selecting
-    the declaring scope's node on its parent's level, or "the root" with no
-    button. `h3` "Rate scopes" and `table.scopes`, `tr.scope[data-path]
-    [data-key]` with `td.path` (a button, `/` for the root), `td.key` and
-    `td.triple` titled with `tripleTitle`, or `p.empty` "No rate scopes.". `h3`
-    "Components", `button.sort-period[aria-pressed]` "by period" (the
-    drawer's state, bound into the tab, kept across a tab switch, never a
-    pref), `table.components` with `tr.component[data-path]`: `td.swatch >
-    span.swatch[data-step]` filled and bordered by `stepPair(step)` whatever
-    the mode (reading 13), `td.path` (a button), `td.triple` titled,
-    `td.period`; or `p.empty` "No discrete leaves.". Then `p.schedule-note`,
-    `scheduleNote`'s sentence (reading 1). A structureless model: one
-    `p.empty` "No timing: the descriptor carries no structure.".
-  - **Execution order** (`Order.svelte`): `ol.order >
-    li.step[data-position][data-path]` (`data-path=""` and `code.path` "/" for
-    a primitive root), each `button.row` holding `span.position` and
-    `code.path`, selecting the leaf on its parent's level; `ul.ports >
-    li.port[data-stage="1" | "2"]`, stage 1 first, titled "published from
-    stage 1" or "published from stage 2", the stage-2 boxes filled as the
-    canvas's squares; with edges, `ul.edges > li.edge[data-from][data-to]`
-    (both `path/port`) titled "Presumed from the stage lists: a stage-2 port
-    into a block with a stage-2 output. The build's structure, not a traced
-    dependence; it can overstate what the block reads.", holding `button.row`
-    reading `code` from → `code` to's port and `span.presumed` "presumed",
-    selecting the consumer's input port square on its parent's level
-    (`faceSelection`). `p.empty` "No execution order: the build did not reach
-    it." on any model without outputs.
-- **The status bar.** The kind word, the totals over the whole model (leaves,
-  assemblies, the sum of every assembly's wires), the color mode's word, `tier
-  colors` or `rate colors`, the note; the fallback note
-  while one stands, until the next open or push; while a route stands
-  `span.route`, "tracing `h_ref`: 2 consumers across 3 levels" with the face
-  in `code` (`routeStatus`, the face `path/port` or a root face's name, the
-  singular for one, "0 consumers across 0 levels" for a route with no wire),
-  holding `button.clear-route` reading "clear", which calls `onclear`; in the live tab the
-  connection's state at the right end and, for a model that came over the
-  socket, the download. The download saves `live.text`, the frame's own bytes,
-  as `<label>.json` through a `Blob` URL and a detached `a[download]`, the URL
-  revoked after 40 s. A model dropped or picked in the live tab offers no
-  download. Last, at the right end, `a.help[href="#help"]` reading "?",
-  titled "The help page", a plain hash link the history handler reads (reading
-  18); after the connection's state, which takes the free space, it sits
-  beside it.
-- **The help page** (`Help.svelte`, workspace.md answer 11). `article.help`
-  in place of the frame or the landing while `session.help`, reached by `?`,
-  the landing's link and the status bar's. It scrolls on its own and is
-  focused on mount, so Space and the arrows scroll it; the shell's handler
-  takes `?` and Escape alone, Tab included in what it leaves to the browser.
-  `h1` "Redstone inspector", `button.close` "back" titled "Close the help page
-  (Escape or ?)" calling `closeHelp`; a `nav` of five links to the sections,
-  each `a[href="#help-<id>"]` whose click prevents the default and scrolls the
-  section into view, since a hash change would close the page; then
-  `section[data-section]` with its `h2`: `reading`, `ul.terms` of
-  `li[data-term]` (`TERMS`' eighteen, the thirteen with a sample holding
-  `svg.sample[data-sample]`, then `b.term` and the line); `simulink`,
-  `table.vocabulary`; `refusals`, `ul.refusals` (each `b` and the reason),
-  `h3` "Not here yet", `ul.not-yet` and the line under it; `keyboard`,
-  `KEYS_NOTE`, `table.keys` (one `tr` per `KEYS` row, a `kbd` per key) and
-  `p.vimium` with both patterns in `code`; `about`, `p.privacy` and
-  `dl.about`: inspector `__INSPECTOR_VERSION__`, format "major" and
-  `__FORMAT_MAJOR__`, then the three `LINKS` as `a[target="_blank"]
-  [rel="noopener"]` reading their URLs. A backquoted span in the text renders
-  as `code`. **The samples**, 120 by 48 px each, `aria-hidden`, drawn with
-  the palette's colors as attributes or through the CSS variables
-  `article.help` sets from it and the canvas's fonts and sizes from `size.ts`:
-  a continuous block with its segment, display name and two squares; a
-  discrete block with an input and a filled and an open output; the four
-  wire classes with arrowheads; a capsule pin; a tag on the canvas's `tagD`
-  formula, repeated in `Help.svelte`; a dashed region with its caption and a
-  member; a gray assembly with a clock pill on its top edge; a haloed block; a
-  cased right-angle wire; a chord with its cross across a block; a dimmed
-  block beside a lit one; the three reserved hues as labelled swatches; a
-  block in the tier fill beside one in rate step 0's.
-- **Focus.** The four region roots `nav.tree`, `.viewport`, `aside.detail`
-  (both of the pane's branches) and `section.drawer` carry `tabindex="0"`. The
-  window's `focusin` sets the session's region from the focused element's
-  nearest root, and a `focusout` with no related target clears it. The root of
-  the region holding the keyboard carries `focused`, and under `:focus-visible`
-  only it draws as a 2 px inset outline in the highlight hue, the halo's; the
-  browser's own outline is off on the roots. Tab, a programmatic focus after a
-  key, shows the ring; a mouse press on the canvas focuses `.viewport` with
-  `focused` and no ring. A push or a drop over a loaded model keeps focus in the
-  region that held it: the canvas is keyed on the model, so its old root leaves
-  the DOM with the focus; the shell notes the region before `load` and focuses
-  its root after `tick()` when focus fell to the body.
+What the records do not fix, or where the page differs:
+
+- **The tree.** A click selects a node on its parent's level, the root on
+  the open level, a folder on its parent's. A selection made elsewhere or by
+  a key scrolls its row into view; a row's own click does not. The search
+  field is the `search` snippet, so it belongs to the tree region. `hit` and
+  `.hits` mark the query's nodes, else the legend focus's (`legendMarks`). A
+  node row's 7 px `span.mark` is red while its errors count, else amber,
+  titled "1 error", "2 warnings", "1 error, 1 warning", plus ", beneath"
+  when its own node carries none (`treeMarks`); the route's blue, "on the
+  route" or "on the route, beneath" (`routeLevels`); folders carry none. Rows
+  have `tabindex="-1"`; with focus in `nav.tree` outside the field, `h j k l`
+  are `treeStep`'s, `j` or `k` with none selected taking the first row.
+- **The search.** `.results` replaces the outline while the field has focus
+  and the query is not blank; past the cap `.refine` reads `<total> hits;
+  showing 100, refine the query`, else `no hits`. A node hit's label is the
+  display name, or the qualified alias or type when a type term matched
+  outside it. A row's `mousedown` is prevented so the field keeps focus. A
+  pick (`hitSelection`), Escape and the clear button move focus to
+  `.viewport`. `n` and `N` walk the uncapped order (`stepHit`).
+- **The breadcrumb's controls** are titled "Color by tier", "Color by
+  rate", "Show the type of every wire" and "Number every leaf by its
+  position in the execution order".
+- **The detail pane.** Each `dt` is titled from `FACT_TITLES`; `rate` is
+  `ratePhrase` with `timingPhrase` in its title, `member` `memberKind` with
+  `memberTitle`. Face rows and links select through `faceSelection`; on the
+  level layout a face row selects the level's own pin. A location click
+  calls `onlocation(file, line)`: the shell sends `open_location` while
+  connected and returns true, else the pane copies `file:line`; its title
+  reads "Open in the editor" or "Copy the file label". The docstring is
+  `renderDocstring(facts.docstring, facts.type)` through `{@html}`
+  (`build_release.md` answer 7), its styles `:global` under `div.docstring`.
+  `aside.detail` is a size container: under 420 px, the default 360
+  included, parameters and faces stack. The trace button reads "Trace" or,
+  while that route stands, "Clear the route", `aria-pressed`.
+- **The drawer.** A tab's click opens on it or closes it. The diagnostics
+  filter, a case-insensitive substring over kind, raw path and message, is
+  the tab's own state, kept across a switch and a push, shown only with
+  rows. A row's `a.location` shows when its node's type has a location and
+  it is no loop. A row's click toggles the focus and then selects
+  `diagnosticTarget`'s selection; the focused row scrolls into view. The
+  analysis tabs take `model` and `onrow`, the shell's `select`, over
+  `rowTarget`; `Timing` binds `byPeriod`, the drawer's, never a pref. The
+  body scrolls to its top on a tab switch.
+- **The analysis tabs.** A root input's row selects its tag `⟨in⟩name`; its
+  consumers read `path/port`, or `/port`, joined by ", ". Timing's first row
+  is the base grid's, "0 base grid", with no button; a scope cell selects
+  its declaring node or reads "the root"; a component's swatch is
+  `stepPair(step)` in either mode (reading 13); `p.schedule-note` is
+  `scheduleNote` (reading 1). An order step of a primitive root has
+  `data-path=""`; the ports list stage 1 first; an edge row, titled as
+  presumed from the stage lists, selects the consumer's input port.
+- **The status bar.** The kind, the model's totals, `tier colors` or `rate
+  colors`, the loader's note, the fallback note until the next open or push,
+  `routeStatus` with its clear control, then at the right end the
+  connection, the download and `a.help`. The download saves `live.text` as
+  `<label>.json` through a `Blob` URL revoked after 40 s, for a model that
+  came over the socket only.
+- **The help page** scrolls on its own and is focused on mount
+  (`tabindex="-1"`). Its nav links prevent their default and scroll, since a
+  hash change would close the page. The samples are 120 by 48 px in the
+  palette's colors and the canvas's sizes, the tag repeating `tagD`.
+  `dl.about` reads `__INSPECTOR_VERSION__` and `__FORMAT_MAJOR__`.
+- **Focus.** `focusin` sets the session's region from the nearest root; a
+  `focusout` with no related target clears it. The ring is a 2 px inset
+  outline in the highlight hue on `.focused:focus-visible` alone. A push or a
+  drop over a model notes the region before `load` and refocuses its root
+  after `tick()` when focus fell to the body.
 
 **The frame's DOM contract**, which the harness and the reviewer select on:
 
-- `.frame` holding `.pane[data-pane="tree" | "detail" | "drawer"]`, each with
-  `collapsed` when collapsed (the drawer when closed); `.splitter[data-pane]` for
-  the three splitters, always present, `active` when draggable;
-  `button.collapse[data-pane]` on each side pane.
-- `nav.tree` holding `.row[data-path][data-depth]` with `node` or `folder`, a
-  node row also `leaf` or `assembly`, and the states `expanded`, `selected`,
-  `open`; `button.chevron` in an expandable row; `.segment` in every row,
-  `.name` in a node row but the root's.
-- `nav.breadcrumb[data-level-path]` holding `a[data-path]` for each ancestor and
-  `.current` for the open level; `button.open-file` and its `input[type=file]`;
-  `.controls` holding `.mode button[data-mode="tier" | "rate"]` with
-  `aria-pressed` on the current one, `button.type-labels[aria-pressed]` and
-  `button.order-badges[aria-pressed]`.
-- `aside.detail[data-kind="level" | "leaf" | "assembly" | "folder" | "wire" |
-  "pin" | "port"][data-id]`, the id a path for a level, node or folder and the
-  element's id otherwise, holding `h2 .segment`, `h2 .name`, `.path-line`
-  holding `.path`, `button.copy` and, on an assembly, `button.open-level` right
-  after the copy button; `p.facts` on a level, a pin, a port, a wire and a
-  folder; on a leaf and an assembly `dl.facts` of `dt[title]` and
-  `dd[data-fact="type" | "class" | "rate" | "children" | "member"]`, the
-  `type` row holding `.type` and, with an alias, `.alias`, the `rate` and
-  `member` rows a `title`; `details.signature` (only when the signature
-  differs from the type) with its `summary` reading "signature",
-  `details.docstring` holding `summary .title` ("docstring") alone and
-  `div.docstring` with the rendered HTML,
-  `.locations li`, `.parameters tr` with `td.param-name` and `td.param-value`,
-  `.scopes li` on a level,
-  `table.faces tr[data-port]` (the face's own port id) with `in` or `out` and
-  the cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage` on a
-  leaf; `a.producer` and `a.consumer` with `data-path` and `data-port`;
-  `.keys a[data-path]` on a folder;
-  `.endpoints` on a wire; `.root-input` on a root input's pin or port;
-  `button.trace[aria-pressed]` in the `.path-line` of a pin, a port and a wire
-  with a route. A structureless model's pane is `data-kind="level"` with
-  `data-id=""`.
-- `section.drawer[data-open="true" | "false"][data-tab]` holding
-  `button.tab[data-tab="diagnostics" | "root-inputs" | "timing" | "order"]`,
-  `.count` on a tab that has one, and `.tab-body` while open; the diagnostics
-  tab's body `div.diagnostics` holding `input.filter`, `ul.diagnostics >
-  li.diagnostic[data-index][data-severity]` holding `button.row` with
-  `.kind`, `.path` and `span.message`, and `a.location` beside the button,
-  `current` on the focused row, and `p.empty`. The root-inputs body:
-  `table.root-inputs tr.root-input[data-name]` with `td.name button.row`,
-  `td.type`, `td.kind`, `td.pinned`, `td.consumers`. The timing body:
-  `table.anchors tr.anchor[data-index]`, `table.scopes
-  tr.scope[data-path][data-key]`, `button.sort-period[aria-pressed]`,
-  `table.components tr.component[data-path]` with `span.swatch[data-step]`,
-  `td.triple`, `td.period`, `p.schedule-note`. The order body: `ol.order
-  li.step[data-position][data-path]` with `button.row`, `ul.ports
-  li.port[data-stage]`, `ul.edges li.edge[data-from][data-to] button.row` and
-  `span.presumed`. `p.empty` in each tab.
-- `footer.status[data-kind]` holding `.counts`, `.mode[data-mode]`, `.note`, `.fallback`,
-  `span.route` with its `code` and `button.clear-route`,
-  `.connection[data-state="connected" | "lost"]`, `button.download` and
-  `a.help[href="#help"]`; under the landing it has no `data-kind` and holds
-  `.connection` and `a.help` alone.
-- `nav.tree`, `.viewport`, `aside.detail` and `section.drawer` carry
-  `tabindex="0"`, and `focused` on the one holding the keyboard, mouse or key;
-  the ring is drawn on `.focused:focus-visible` alone.
-- `.search` at the top of `nav.tree` holding `input.query` and `button.clear`;
-  `.results` holding `.group[data-group="nodes" | "faces"]` with `.group-head
-  .count` and `.hit[data-path]` rows, a face row also `[data-side][data-face]`,
-  `.active` on the keyboard's row, `mark` for the emphasis, `.refine` when
-  capped. `nav.tree .row` carries `hit` and holds `.hits` with the count on a
-  collapsed row with marked nodes beneath. A node row holds
-  `span.mark[data-mark="error" | "warning" | "route"]` with a `title`.
-- `.landing` holding `.privacy` (ending "The page loads nothing from any other
-  site."), `button.open-file`, `.drop-hint`, `a.help[href="#help"]` reading
-  "help";
-  `pre.outcome` on a refusal (in `.landing`) and on a structureless failure (in
-  the canvas area).
-- `article.help` in `main` while the help page shows, holding `button.close`,
-  `nav a` ×5 and `section[data-section="reading" | "simulink" | "refusals" |
-  "keyboard" | "about"]`; `ul.terms li[data-term]` with `svg.sample`,
-  `table.vocabulary`, `ul.refusals`, `ul.not-yet`, `table.keys`, `p.vimium`,
-  `p.privacy`, `dl.about`.
+| element | selector | set when |
+|---|---|---|
+| the grid | `.frame` holding `.pane[data-pane]`, `tree`, `detail` or `drawer`, `.collapsed` | always; `collapsed` on a collapsed pane or a closed drawer |
+| the splitters | `.splitter[data-pane]`, `.active`; `button.collapse[data-pane]` | always present, `active` when draggable; the collapse buttons on the side panes |
+| the regions | `nav.tree`, `.viewport`, `aside.detail`, `section.drawer`, each `[tabindex="0"]`, `.focused` | `focused` on the one holding the keyboard, mouse or key |
+| a tree row | `nav.tree .row[data-path][data-depth]`, `.node` or `.folder`, a node `.leaf` or `.assembly`; `.expanded`, `.selected`, `.open`, `.hit` | every visible row |
+| a row's parts | `button.chevron`, `.segment`, `.name`, `.hits`, `span.mark[data-mark]`, `error`, `warning` or `route`, with a `title` | a chevron on an expandable row; `.name` on a node row but the root's; `.hits` on a collapsed row with marked nodes beneath |
+| the search | `.search` holding `input.query`, `button.clear` | at the top of `nav.tree` |
+| the results | `.results` holding `.group[data-group]`, `nodes` or `faces`, with `.group-head .count`, `.hit[data-path]` (a face row also `[data-side][data-face]`), `.active`, `mark`, `.refine` | while `listing` |
+| the breadcrumb | `nav.breadcrumb[data-level-path]` holding `a[data-path]`, `.current`, `button.open-file` and its `input[type=file]` | with a model |
+| the controls | `.controls` holding `.mode button[data-mode][aria-pressed]`, `button.type-labels[aria-pressed]`, `button.order-badges[aria-pressed]` | at the breadcrumb's right end |
+| the pane | `aside.detail[data-kind][data-id]`, the kind `level`, `leaf`, `assembly`, `folder`, `wire`, `pin` or `port` | the id a path for a level, node or folder, else the element's id; `data-id=""` on a structureless model |
+| the header | `h2 .segment`, `h2 .name`, `.path-line` holding `.path`, `button.copy`, `button.open-level` right after it, `button.trace[aria-pressed]` | the open button on an assembly; trace on a pin, a port or a wire with a route |
+| the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `rate`, `children` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a level, pin, port, wire or folder; `dl.facts` on a leaf or assembly |
+| the disclosures | `details.signature` with `summary` "signature"; `details.docstring` holding `summary .title` "docstring" and `div.docstring` | the signature only when it differs from the type |
+| the lists | `.locations li`, `.parameters tr` with `td.param-name`, `td.param-value`, `.scopes li`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the scopes on a level, the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
+| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a leaf |
+| the drawer | `section.drawer[data-open][data-tab]` holding `button.tab[data-tab]`, `diagnostics`, `root-inputs`, `timing` or `order`, `.count`, `.tab-body` | `.count` on a tab that has one; the body while open |
+| diagnostics | `div.diagnostics` holding `input.filter`, `ul.diagnostics > li.diagnostic[data-index][data-severity]` with `button.row` holding `.kind`, `.path`, `span.message`, then `a.location`; `.current` | `current` on the focused row; `p.empty` "No diagnostics or warnings." or "No row matches the filter." |
+| root inputs | `table.root-inputs tr.root-input[data-name]` with `td.name button.row`, `td.type`, `td.kind`, `td.pinned`, `td.consumers` | `p.empty` "No root inputs." |
+| timing | `table.anchors tr.anchor[data-index]`, `table.scopes tr.scope[data-path][data-key]`, `button.sort-period[aria-pressed]`, `table.components tr.component[data-path]` with `span.swatch[data-step]`, `td.triple`, `td.period`, `p.schedule-note` | `p.empty` "No rate scopes.", "No discrete leaves.", or "No timing: the descriptor carries no structure." |
+| order | `ol.order li.step[data-position][data-path]` with `button.row`, `span.position`, `code.path`; `ul.ports li.port[data-stage]`; `ul.edges li.edge[data-from][data-to] button.row`, `span.presumed` | `p.empty` "No execution order: the build did not reach it." without outputs |
+| the status bar | `footer.status[data-kind]` holding `.counts`, `.mode[data-mode]`, `.note`, `.fallback`, `span.route` with `code` and `button.clear-route`, `.connection[data-state]`, `connected` or `lost`, `button.download`, `a.help[href="#help"]` | under the landing no `data-kind`, `.connection` and `a.help` alone |
+| the landing | `.landing` holding `.privacy`, `button.open-file`, `.drop-hint`, `a.help[href="#help"]`; `pre.outcome` | `pre.outcome` on a refusal, and in the canvas area on a structureless failure |
+| the help page | `article.help` in `main` holding `button.close`, `nav a` ×5, `section[data-section]`, `reading`, `simulink`, `refusals`, `keyboard` or `about`; `ul.terms li[data-term]` with `svg.sample[data-sample]`, `table.vocabulary`, `ul.refusals`, `ul.not-yet`, `table.keys`, `p.vimium`, `p.privacy`, `dl.about` | while `session.help` |
 
 ## The keyboard
 
-`App.svelte`'s window `keydown`, `workspace.md` answer 11 as built. While the
-help page shows the handler takes `?` and Escape alone, without Ctrl or Meta,
-and leaves every other key to the browser, Tab included, so the page scrolls
-and tabs. Otherwise Tab is handled first, even from the search field, and
-cycles only with a model; then every other
-key is ignored while focus is in a text field, where the search field handles
-its own Down, Up, Enter and Escape. A key with Ctrl or Meta held is the
-browser's, except Cmd-K and Ctrl-K; with Alt held only Alt-Up acts. Shift with
-a letter arrives upper case and is lower-cased before Shift is read; `N` alone
-is read from `e.key`, so an upper-case `N` without Shift is `N` too. `?` acts
-with or without a model; every other row only with one. The help page's
-`table.keys` is this table, row for row (`KEYS` in `help.ts`, `help.spec.ts`
-counting this table's rows).
+`App.svelte`'s window `keydown`, as built from `workspace.md` answer 11.
+While the help page shows the handler takes `?` and Escape alone and leaves
+every other key to the browser, Tab included. Otherwise Tab is handled first,
+even from the search field, and cycles only with a model; every other key is
+ignored in a text field, where the search field handles its own Down, Up,
+Enter and Escape. Ctrl or Meta leaves a key to the browser, except Cmd-K and
+Ctrl-K; with Alt only Alt-Up acts. Shift with a letter is lower-cased before
+Shift is read; `N` alone is read from `e.key`. `?` acts with or without a
+model, every other row only with one. `help.spec.ts` checks this table's
+row count against `table.keys` (`KEYS` in `help.ts`): change both.
 
 | key | does |
 |---|---|
@@ -1410,29 +591,22 @@ counting this table's rows).
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
 
 Dragging has no keyboard form; Shift during a drag is the canvas's own
-listener (see "The drag"), which the table's handler ignores. Every control,
-the legend's lines included, is a real button or link.
+listener (see "The canvas").
 
 ## The live tab
 
 `src/live/socket.ts`, as `frontend/PROTOCOL.md` and `live_session.md` answers
 4 to 6 say. `connect(onDescriptor)`, called once on mount, opens
 `ws://<host>/ws` at the page's origin (`wss` under `https:`). On `open` it
-sends `helloMessage(location.search)`, `{"type":"hello","channel":<tab>,
-"major":1}` with `""` without a `tab` parameter, resets `attempt` and marks
-`connected`. A text frame that `classifyFrame` reads as a descriptor is kept
-as `live.text` and handed to `onDescriptor`; a control message and anything
-else are dropped, since stage 1 defines no message in that direction. The
-shell feeds the text to `parseDescriptor` with no file name, so the label is
-the envelope's `name` or the root's display name, then to `load` as a drop's;
-a refusal unloads and shows on the landing. A close before any `open` is the
-hosted copy: `hosted`, no retry, nothing shown. A close after one marks
-`lost`, waits `backoff(attempt)` (1, 2, 4 s and so on, capped at 30 s) and
-opens again, greeting on `open`; a failed retry keeps backing off. No
-keepalive. `sendOpenLocation(file, line)` sends `openLocationMessage` while
-`connected` and returns true, else sends nothing and returns false.
-
-The connection's states in the status bar:
+sends `helloMessage(location.search)`, the channel `""` without a `tab`
+parameter, resets `attempt` and marks `connected`. A text frame
+`classifyFrame` reads as a descriptor is kept as `live.text` and handed to
+`onDescriptor`; anything else is dropped. The shell parses the text with no
+file name and loads it as a drop's. A close before any `open` is the hosted
+copy: `hosted`, no retry, nothing shown. A close after one marks `lost`,
+waits `backoff(attempt)` (1, 2, 4 s, capped at 30 s) and opens again. No
+keepalive. `sendOpenLocation(file, line)` sends while `connected` and
+returns true, else returns false.
 
 | `live.state` | `.connection` |
 |---|---|
@@ -1442,1132 +616,84 @@ The connection's states in the status bar:
 | `connected`, a descriptor received | `connected` |
 | `lost` | `disconnected, retrying` |
 
-`button.download` shows only with a model that came over the socket and the
-text it came as.
-
 ## The browser checks
 
-`npm run e2e` runs `playwright test` over `e2e/`, against `vite preview` on
-port 4319 serving `dist/`, so `npm run build` runs first. Two projects:
-`chromium` and `firefox`. Plain `npm run e2e` runs both; on this machine
-Firefox cannot start inside the command sandbox, so a local run is `npm run
-e2e -- --project=chromium`. CI runs the Chromium project as the blocking step
-"Browser checks, Chromium", then the Firefox project as "Browser checks,
-Firefox (non-blocking)" with `continue-on-error: true`, after `npx playwright
-install --with-deps chromium firefox`; Firefox turns blocking once it has
-passed a few runs, before the release. The checks that read the clipboard
-back skip under Firefox (`test.skip(browserName === "firefox", ...)`):
-`detail.spec.ts`'s copy button and location click and `live.spec.ts`'s hosted
-copy. Each test opens `/`,
-or the path given as `at`, and loads a fixture through `drop` in
-`e2e/fixtures.ts`, which builds a `File` in a `DataTransfer` and dispatches a
-`drop` event on the window, the shell's own handler, then waits for
-`svg.canvas[data-ready]` or the outcome text. `dropOver` drops on the page as
-it stands, so the session lives on, and waits for a canvas or an outcome that
-was not there before. `press` presses a key and waits a frame. Without a route
-the page's socket fails against `vite preview`, so every check but
-`live.spec.ts`'s mocked ones runs the hosted copy.
+`npm run e2e` runs Playwright over `e2e/` against `vite preview` on port 4319
+serving `dist/`, so `npm run build` runs first. Two projects, `chromium` and
+`firefox`; CI runs Firefox with `continue-on-error: true` until it has passed
+a few runs, before the release. The clipboard checks skip under Firefox.
+`e2e/fixtures.ts` is the harness: `drop` opens `/` or the path given as `at`,
+dispatches a `drop` carrying the fixture on the window and waits for
+`svg.canvas[data-ready]` or the outcome; `dropOver` drops on the page as it
+stands; `press` presses a key and waits a frame; `live` mocks the socket.
+Without the mock the socket fails against `vite preview`, so every other
+check runs the hosted copy. Each file's header comment names its records.
+One line per file: its concern; the fixtures.
 
-- `draw.spec.ts`: every structure, every level of the oracle's table, opened by
-  double-clicking down from the root: blocks, wires, `in` and `out` pins,
-  closed assemblies, stage 1 squares and pinned marks; every root `in` pin a
-  `root-input` drawn as the tag's `path`, every other pin a capsule `rect`.
-  `failure_structure` says "no structure to draw" and has no canvas. `large`'s
-  root logs its time, dropped to drawn. The rows carry increment 6's `kinds`
-  (18 blocks, 10 wires, 9 output pins) and `library` (34 blocks, 40 wires).
-  The `large` output pins' order check the brief asked for is dropped, its
-  reason in a comment (see the traps' ELK pass). Increment 7's four fixtures
-  add their rows (blocks, wires, `in`, `out`, closed, stage 1, pinned):
-  `failure_nested` root 5, 5, 2, 1, 1, 0, 0 and `ctl` 4, 3, 2, 1, 0, 0, 0;
-  `failure_dead` root 5, 5, 2, 0, 0, 0, 0; `failure_probe` root 3, 1, 1, 0, 1,
-  0, 0 and `s` 4, 3, 1, 1, 0, 0, 0; `warning` root 4, 3, 1, 1, 0, 0, 0.
-- `open.spec.ts`: on `closed_loop`, `sensing` by double-click (4 blocks), back
-  by Backspace (9), `actuators` by click then Enter, a double-click on `plant`
-  and Enter on a selected `plant` each leaving the root; at `actuators` the
-  pins and the two chains top to bottom in the fixture's declared order; at
-  `lqr_controller` every wire left to right and `tracker` right of its six
-  feeders and left of `u_unpack`; on `rates`, `fast/outer` two deep and two
-  Backspaces back.
-- `select.spec.ts`: on `closed_loop`'s root, `plant` alone `selected` with 11
-  `incident` casings and no other casing; the wire into `sensing|in|h`
-  `selected`, its casing, its two port squares `marked`; a port square and a
-  pin each alone; Escape and a background click clearing; hover on `sensing`;
-  hover on that wire giving it `hover` and its port squares `marked-hover`, none
-  `marked`; `plant`'s title, its path and qualified name on two lines.
-- `view.spec.ts`: on `closed_loop`'s root, the fitted `viewBox` containing every
-  block's box; the wheel keeping the world point under the pointer within
-  1 px, read through `getScreenCTM`; a background drag shifting the `viewBox`
-  by the drag in world units; the fit button restoring the fitted `viewBox`;
-  `lqr_controller` opened and fitted anew, its `viewBox` containing its blocks.
-  Its helpers `viewBox` and `blockBoxes` now live in `fixtures.ts`.
-- `keys.spec.ts` (workspace 11, 3), on `closed_loop`'s root, with the check's
-  own `nearest` over `blockBoxes` (centers beyond the origin's far edge, the
-  least facing-edge gap plus twice the perpendicular center offset): `plant` clicked, then `l`, `j`, `k`, `h`,
-  each selecting the block the check names (or staying when it names none),
-  one `g.block.selected`, the pane's `data-id` following, the box inside the
-  `viewBox`; after `+` four times, a child whose `l`-neighbor lies outside the
-  view selected through its tree row, Tab handing the keyboard to the canvas,
-  then `l` bringing the neighbor inside with the `viewBox` width unchanged; with nothing selected `l` selecting the
-  first `g.block`; the wire into `sensing|in|h` selected, then `l` moving from
-  `sensing`; Right, Left, Down, Up each moving the `viewBox` by `48 / scale`
-  within 0.01, then Shift with `h`, `j`, `k`, `l` at the root with nothing
-  selected moving nothing, no selection made; Shift-`h` at the first entry
-  leaving the URL and the drawn root as they were, `sensing` opened, Shift-`h`
-  to the root with no hash, Shift-`l` to `#level=sensing`, Shift-`l` again
-  staying, Shift-`h` twice ending at the root on the same URL, and no dialog
-  throughout (a leave would show the prompt); `sensing` clicked and Shift-`j`
-  opening it, Shift-`k` climbing, Enter on `actuators` opening it; `z` with
-  nothing selected leaving the zoomed `viewBox`; after `0`, a click, `+` three
-  times and six Rights, `z` putting the client center of `plant`'s `.shape`,
-  then of the port square `sensing|in|h`, within 0.5 px of the canvas's with the
-  width unchanged, and the same for the wire `sensing|in|h` after six Downs;
-  `+` dividing the width by 1.25 and `=` again, `-` three times, all about the
-  center within 0.01 with the pointer resting off-center over the canvas, `0` restoring the fitted `viewBox`, and again after a
-  pan; `d` opening the drawer on `diagnostics` and closing it; Tab twice
-  giving `.viewport` the computed outline `solid`, then a tree row clicked and
-  a press on the canvas's corner giving `.viewport` focus and `focused` with the
-  outline `none`; Tab from the
-  body focusing `nav.tree`, `.viewport`, `aside.detail`, `section.drawer`,
-  `nav.tree`, and Shift-Tab back, each the one `.focused` and the active
-  element; `t` with nothing selected drawing no route and leaving the
-  `viewBox`, the drawer and the level (the reserved keys' half retired in
-  increment 8, `o` by `order.spec.ts` and `?` by `help.spec.ts`); `r` toggling `data-mode` and `y` `data-labels`, each leaving the
-  other's attribute, the selection and the `viewBox`; with `h` in the search and `plant` selected, Escape
-  emptying the field and `searching` with `plant` still selected, Escape
-  again clearing the selection.
-- `state.spec.ts` (workspace 3, 9): on `closed_loop` no hash at load,
-  `#level=sensing` after a double-click, `goBack` to the root with no hash and
-  `goForward` to `sensing`; on `rates` `#level=fast`, `#level=fast/outer`, and
-  Backspace to `#level=fast`; on `closed_loop` the wheel zoomed at `sensing`,
-  Backspace to the root with the hash empty, `sensing` reopened from its tree
-  row with the `viewBox` within 0.01 of the zoomed one and a `MutationObserver`
-  counting no absence of `data-ready` (no second layout); three clicks leaving `history.length` and
-  the hash unchanged; the drop at `/#level=sensing` opening `sensing`, fitted
-  (`0` changes nothing). Rekeying: `sensing` open, `sensing/noise` selected,
-  zoomed, `actuators` expanded, `h` in the search; `closed_loop_deployment`
-  dropped over it keeping the level, the selection, the `viewBox`, the
-  expansion and the query, the status bar `deployment`, no `.fallback`, and
-  `.viewport` still the active element and `.focused`; `rates`
-  dropped, the level the root, `.fallback` naming `sensing` and "the root",
-  nothing selected and the pane the root level's own facts, "open level",
-  which a stale selection kept on the fallen level would not show, the query
-  `h`, no hash; a `major: 2` copy refused on the
-  landing with no rows; `closed_loop` dropped, fresh at the root with 7 rows
-  and no `.fallback`. `aircraft` zoomed by `+` twice, then `descent` dropped
-  over it: the root's `viewBox` width not the zoomed one, and `0` changing
-  nothing, so the root was fitted.
-- `drag.spec.ts` (initial 12, the spike): on `closed_loop` `plant` dragged by
-  `(0, 120)` screen pixels, its box moved by `120 / scale` in `y` within 1 and
-  not in `x`, every `path.wire` touching `plant` (read from the fixture's root
-  wires) changed and every other `d` byte-equal, `plant` the last `g.block` in
-  `g.blocks` and `selected`, every other box unchanged; a 2 px drag on
-  `sensing` moving nothing and selecting it; the `⟨in⟩h_ref` tag dragged by
-  120 moving by `120 / scale` in `y` within 1, every other box unchanged. The
-  tag dragged by (-60, 90): its box moved by the travel, its two wires (read
-  from the fixture's root wires from the root input `h_ref`) changed and every
-  other `d` byte-equal, last in `g.blocks` and `selected`; its box equal after
-  `sensing` and Backspace and after a drop of `closed_loop_deployment`, still
-  last.
-  `plant`'s dragged box equal after `sensing` and Backspace and after a drop of
-  `closed_loop_deployment`, with `sensing` at ELK's place and `plant` still
-  last; after `page.reload()` and a drop, `plant` back at ELK's place. On
-  `descent`, `plant` dragged 120 down: `gear|in|h` from a two-point to a
-  four-point route, `stop|in|u` byte-equal; then dragged right past `gear`:
-  `gear|in|h` six points running below both boxes, `stop|in|u` still
-  byte-equal. Shift (initial 12 as amended): `plant` dragged by (100, 30) with
-  Shift held from the press moving in x alone; dragged by (40, 120), then Shift
-  pressed with no pointer move snapping x back and keeping y, released
-  restoring x; the `h_ref` tag by (-20, 90) with Shift moving in y alone.
-- `search.spec.ts` (workspace 5), every count the oracle's: on `closed_loop`
-  `/` and then `Meta+k` from the canvas focusing `input.query`; `h` giving
-  the groups' counts 4 and 9, 13 rows, the first `.hit` `sensing/noise` and
-  `.active`, the first face row the root's `in` `h_ref`, `mark` in every row,
-  `searching` with no child `search-hit`, `search-under` on `sensing`,
-  `pid_controller` and `selection`, 8 hit ports and their 8 dashed port halos,
-  the `⟨in⟩h_ref` pin a hit with a dashed halo, `sensing`'s shape at opacity 1,
-  `plant`'s at 0.35 and its hit port `plant|out|h` at 1; Down twice and Enter
-  selecting `selection/select_δe` at level `selection`, the pane `leaf`, focus
-  on `.viewport`, no `.results`, `selection` expanded with both selects `hit`,
-  `.hits` 1 on `sensing` and `pid_controller`, none on `lqr_controller` (a
-  `hit` row itself), `sensing/noise` `hit` once `sensing` expands; the field
-  focused again showing 13 rows; `type:Junction` 26 rows and 2 under;
-  `path:sensing` with `sensing` a hit, none under, its two ports; `face:in1`
-  with 8 face rows, no nodes group and 3 under; `path:plant face:h` one row,
-  one port; `zzz` no rows and still `searching`; Escape in the field and the
-  clear button each emptying it, removing `searching`, `.hits` and `hit`, and
-  focusing `.viewport`. A click on the `plant` row selecting it, the pane
-  `leaf`, its halo solid. `large`'s `b` with 100 rows, the count 171 and
-  `.refine` reading `171 hits; showing 100, refine the query`. `rates`' `hold`:
-  2 rows, `.hits` 1 on `fast` and `slow` and both `search-under`, `fast/outer`
-  with 1 once `fast` expands, and `search-under` at level `fast`. On
-  `closed_loop`, `face:`, `path:`, `type:` and `face: type:` each giving no
-  `.results`, no `searching` and no `hit` row, `face:i` giving both. `h`'s 13
-  rows read from the list, Tab to the canvas, `+` six times at the root; `N`
-  selecting the last row's element, `n` thirteen times walking every row in
-  order, then `N` from the first wrapping to the last and `N` again the one
-  before: each time the hit's level drawn, its element `selected` (a node's
-  block, a root face's pin, another face's port square) and its outline's
-  client box inside the canvas's.
-- `live.spec.ts` (live_session 4 to 6, workspace 10), over `live(page,
-  path)`'s mock: at `/?tab=loop` the first message equal to
-  `{"type":"hello","channel":"loop","major":1}` as an object; `.connection`
-  reading `connected, waiting for inspect` with `data-state="connected"`, the
-  landing up and no `button.download`; `closed_loop`'s text sent, the root
-  drawn, the title `closed_loop – Redstone inspector`, `.connection` reading
-  `connected`, no `.landing`; the download's suggested name `closed_loop.json`
-  and its bytes equal to the sent text, which is the fixture re-indented to 4
-  spaces so that a re-serialized download would differ; `plant`'s first location titled "Open
-  in the editor" and clicked, the next message `open_location` with the row's
-  file and line; `descent`'s text replacing the model, `build`, 4 rows; the
-  mock closed, `data-state="lost"` reading "retrying", a second connection and
-  a second hello within 3 s, `connected` again; a `major: 2` text refused on
-  the landing with no frame. A control frame, `[]` and `nonsense` sent between
-  `closed_loop` with `plant` selected and `descent`: descent keeps `plant`
-  selected, so it replaced a loaded model and nothing was fed to the loader.
-  At `/` the hello's channel `""`. `closed_loop` pushed, Tab twice to the
-  canvas, `descent` pushed: `.viewport` still the active element and
-  `.focused`. Without a route, after a drop, the location
-  titled "Copy the file label" and copying its label, no `.connection` and no
-  `button.download`.
-- `header.spec.ts`: a `major: 2` copy of `descent` refused in a sentence
-  naming format 2.0 and 1.0; a `minor: 1` copy drawn with its note, read from
-  `footer.status .note`.
-- `landing.spec.ts`: before a drop the landing with "never uploaded" and "The
-  page loads nothing from any other site.", no "network", the open control,
-  the drop hint, `a.help[href="#help"]` reading "help", no canvas, no rows, the bare title; a `major: 2` copy refused on the landing with no frame;
-  `closed_loop` replacing the landing and titling the window `closed_loop –
-  Redstone inspector`; the landing's file input picking `closed_loop`;
-  `failure_structure` in the frame: an empty tree, the breadcrumb reading the
-  label alone, `pre.outcome` with "no structure to draw", the drawer open on
-  `diagnostics` with count 2, the status bar `failure`, the pane's label.
-- `tree.spec.ts`: on `closed_loop` 7 rows at load, the root `open` reading
-  `closed_loop`, none `selected`; the root row clicked `selected` with the level
-  still the root, the pane `level` and no `button.open-level`; `sensing`'s chevron expanding to 9 rows with
-  the level unchanged; a click on `sensing` selecting it without opening, the
-  pane `assembly`; a click on `sensing/noise` showing level `sensing` with the
-  block `selected`, the pane `leaf`; Backspace and a click on `plant` selecting
-  its row; a double-click on `actuators` opening it, its row the one `open` and
-  `expanded`; the
-  chevron collapsing `sensing` by its two rows. On `containers` 9 rows in walk
-  order, the folders at depth 1 and their members at depth 2, a folder click
-  giving the folder layout and, on the canvas, the `gains` region alone
-  `selected`. On `rates`
-  `fast/outer` opened by double-clicks and `hold` clicked: `fast` and
-  `fast/outer` expanded, `hold` selected at depth 3, `fast/outer` open; again with `fast` collapsed by
-  its chevron before the click, `fast` and `fast/outer` expanded anew and `hold`
-  selected. `primitive` one row, `aircraft`'s root row; `large`'s 151 rows, and
-  a click on the `b150` block scrolling the tree pane so its row lies inside it.
-  The tree's keys on `closed_loop` after a click on the root row: `j` selecting
-  the second row and its block on the canvas, `j` down to `sensing`, `k` and
-  `j`; `l` expanding `sensing` (two more rows) with `sensing` still selected and
-  the level the root, so the canvas's `l` did not fire; `l` again selecting its
-  first child with the level `sensing`; `h` back to `sensing`, `h` collapsing
-  it, `h` to the root's row, `h` collapsing the root to one row, `h` staying,
-  `l` expanding it again; Shift-`j` on `sensing` opening it; Enter on the
-  `actuators` row opening it. On `large`, sixty `j`s from the root selecting the
-  61st row, the pane scrolled and the row inside it.
-- `detail.spec.ts`: on `closed_loop` the level layout at load; `plant`'s header,
-  its labels `type`, `class`, `member`, each `dt` titled with a sentence, the
-  class "leaf, continuous", no `rate` row, the member "transparent container
-  children, key plant" titled `Transparent: `, the type, no alias, no open button, no
-  signature (it equals the type), 14 parameter rows, 3
-  location rows, the docstring collapsed, its summary reading "docstring"
-  alone, its body holding `Longitudinal(`, a click opening it to a visible
-  `div.docstring` with no `a` (a type outside `Redstone`), 2 input and 6 output rows, every type `Float64`
-  and kind `float`, every stage 1, the producer links of `δe` and `δt`, the two
-  consumer links of `h`, none on `α`; the `sensing/altimeter` consumer link
-  moving the canvas to `sensing` with `sensing/altimeter|in|in1` alone
-  `selected`, the pane `port`; from `sensing/altimeter` the producer link `plant`
-  `h` moving it back to the root with `plant|out|h` alone `selected`, the pane
-  `port`; `sensing/altimeter`'s alias and type inside the `type` row, its
-  signature collapsed, titled "signature" and reading
-  `Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}`, and the facts,
-  the signature, the docstring and the locations in that document order;
-  `sensing`'s assembly layout with the labels `type`, `class`, `children`,
-  `member`, the class "assembly", children "2", no stages, and its open button
-  right after the copy button (`.path-line button.copy + button.open-level`)
-  opening it; `pid_controller/q_ctl`'s labels `type`, `class`, `rate`,
-  `member`, the class "leaf, discrete", the rate "every tick of q_ctl, 1/50 s"
-  titled `anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0`; the root wire
-  into `sensing|in|h` with its endpoints, producer `plant/h`, one consumer
-  `sensing/altimeter/in1`, `Float64 float`, level `/`; the pin `h_ref` with two
-  consumers; a face row selecting `plant|out|V` on the canvas, its facts line
-  `port · stage 1 · not pinned`; the copy button writing `plant` to the
-  clipboard; `plant`'s first location writing its file label, ending `:<line>`;
-  `lqr_controller/tracker`'s pane with no sideways scroll (`scrollWidth` equal
-  to `clientWidth` on the detail pane's body). On `rates` level `fast`'s one
-  scope line and, at `fast/outer`, `hold`'s rate "every 2nd tick of fast, 1/50
-  s"; on
-  `containers` the folder's keys `a` and `b`, `a` selecting `gains/a` in the
-  pane, the tree and the canvas, its pane without a signature, its member
-  "keyed container gains, key a" titled `Keyed: `. The narrow pane: `plant` at
-  the pane's 240 px through the prefs, the first parameter's value below its
-  name and both as wide as the table, the face row `plant|out|V` with its kind
-  beside its name, its type below, its stage and links below the type, the
-  head hidden, 14 parameter rows; at 600 px the value beside the name, the type
-  and the stage beside the face name, the head shown. The level facts
-  in the singular and the plural: `aircraft` `open level · 1 child · 2 wires`,
-  `kinds` `open level · 9 children · 10 wires`; the singular `1 wire` is
-  `detail.test.ts`'s, on an inline structure, since no fixture level has one
-  wire after increment 6. Increment 8's docstrings (build_release.md answer 7):
-  `library`'s `integrator` opened, seven `a[target="_blank"][rel="noopener"]`
-  and no other, five under `DOCS_URL`'s `glossary/#g-`, one ending
-  `api/#Redstone.Blocks.LimitedIntegrator`, the first `pre code` reading
-  `Integrator(; x0 = 0.0) -> Integrator`, no `@ref` left; a copy of `primitive`
-  whose type's docstring is hostile, `<b>x</b>` and the `<script>` visible as
-  text, `code` "alt", no `b`, `img`, `script` or `a`. The check keeps its own
-  copy of the docs URL literal.
-- `frame.spec.ts`: on `closed_loop` the status bar `build` with 24 leaves, 6
-  assemblies, 94 wires and no note, `a.help[href="#help"]` reading "?" titled
-  "The help page", its right edge within 10 px of the bar's; the drawer closed with counts 3 on root
-  inputs, 24 on order, 0 on diagnostics and none on timing, the root-inputs tab
-  opening it on three `tr.root-input` and a second click closing it; the tree splitter dragged 100 px widening the tree
-  by 100 within 2 px, kept across a reload and a new drop; the drawer opened and
-  its splitter dragged 150 px up, its height grown by 150 within 2 px and kept
-  across a reload, the drawer opened again; the detail pane
-  collapsed by its button, kept across a reload, expanded by the button.
-  `closed_loop_deployment` reads `deployment`; `failure_cycle` reads `failure`
-  with the drawer open on `diagnostics`, count 1, and no order count; a
-  `minor: 1` copy of `descent` shows the note.
-- `open.spec.ts` also: at `rates`' `fast/outer` the breadcrumb's links `rates`
-  and `fast` and `.current` `outer`; the `fast` link opening `fast`; Alt-Up
-  climbing to the root. The level is read from `nav.breadcrumb[data-level-path]`.
-  Climbing selects the child left: `sensing`, Shift-`k` with `sensing` selected
-  on the canvas, in the pane and in the tree, Shift-`j` reopening it with
-  nothing selected, Shift-`h` back onto the root selecting `sensing` again;
-  `rates`' `fast/outer`, the breadcrumb's root link selecting `fast`, Alt-Up
-  from `fast/outer` selecting `fast/outer` at `fast`, Backspace selecting
-  `fast`.
-- `leave.spec.ts` (workspace 10): `closed_loop` dropped, `plant` clicked (a
-  real interaction, which Chromium wants before it asks), `goBack` past the
-  first entry giving one dialog of type `beforeunload`, dismissed, the root
-  still drawn and the title kept; `closed_loop` pushed over the live mock at
-  `/`, `plant` clicked, `goBack` reaching `about:blank` with no dialog.
-- `colors.spec.ts` (grammar 6, workspace 7, 9, 11), the counts the assembly
-  rule of 2026-11-02 changed read by hand: on `closed_loop` at load
-  `data-mode="tier"`, `tier colors`, the tier button pressed, no legend and no
-  `data-step`; `r` giving `rate`, `rate colors`, the rate button pressed,
-  `sensing` at step 0 and `lqr_controller` at step 5, `pid_controller`,
-  `selection` and `actuators` with no step and the computed fill and stroke
-  they had in tier mode, unlike `plant`'s; the badges `1 clock`, `4 clocks`,
-  `1 clock`, `2 clocks`, `2 clocks`, `sensing`'s title the one-clock sentence
-  and `pid_controller`'s starting `Multi-rate:`; `plant` with no step and no
-  badge; the legend's seven lines, first the one `li.continuous` reading
-  `continuous`, no `data-step`, its swatch's computed fill and border
-  `plant`'s, then anchors 1, 4, 5, 6, 7 and 8 at steps 0 and 3 to 7, no
-  `span.number`; the tree's dots of `sensing` and `pid_controller` their
-  shapes' computed strokes. The tier gray read off `sensing|in|h` before `r`,
-  `V_ref`'s two root wires keeping it in rate mode; `pid_controller` steps 1
-  to 4 in order, four distinct fills, the legend's seven lines, `continuous`,
-  then steps 1 to 4, 6 and 7; `h_ctl`'s tree dot equal to its shape's computed
-  stroke; an icon's computed color the same after `r` and back; `actuators`'
-  limiters `extra` with `#9` and `#10`, the legend's `span.number`s, the two
-  limiters' computed fills unlike each other, the lags' and the shared neutral
-  the number pill keeps, each limiter's legend swatch (beside `#9`, `#10`)
-  equal to its block's fill and stroke, the lags with no step; the wire out of
-  each limiter in that limiter's fill; the wires out of the two lags one
-  color, unlike the lag's fill and stroke, the gray and the limiters' colors;
-  each arrowhead's fill its wire's stroke; a reload and a drop keeping `rate`,
-  the tier button back. On `rates` the switch clicked, `fast`, whose `scopes`
-  row names anchor 1, with no step in its tier colors and `2 clocks`, `slow`
-  at step 2 with `1 clock`, each badge's title; the legend `continuous`,
-  `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, `anchor 2 (1/10 s)`; `fast`
-  opened, `inner` step 0 and `outer` step 1, no continuous block, the lines
-  `continuous`, `anchor 1 (1/50 s)`, `anchor 1 (1/50 s) × 2`, the first from
-  `src`'s wires alone.
-- `focus.spec.ts` (grammar 6, 9, workspace 11, as amended; the lit sets the
-  look fixer's oracle's, the steps read by hand): on `closed_loop` in rate
-  mode anchor 4's line, step 3, clicked: `legend-focus`, `data-focus`
-  `4,1,0`, its button pressed and step 0's and the continuous line's not, the
-  gray `pid_controller` the one lit block and `selection|in|δe_pid`
-  the one lit wire, `plant`'s and the `h_ref` tag's shapes and `sensing|in|h`
-  at opacity 0.35, the lit at 1; `.hits` 1 on the collapsed `pid_controller`
-  alone, `q_ctl` the one `hit` row once expanded; kept at `pid_controller`
-  with `q_ctl` and two wires lit; a second click clearing it, no `lit`, no
-  `hit` row. The continuous line lighting `plant` and the five assemblies, 17
-  wires with `sensing|in|h` and without `V_ref`'s, `plant`'s row `hit`,
-  `.hits` 1 on `sensing` and 7 on `lqr_controller`. With `h` standing, a line
-  clicked giving `legend-focus` without `searching` or a `search-hit`, the
-  tree's `.hits` the query's (1 on `sensing`, 2 on `selection`); Escape
-  clearing the focus with the query kept and `searching` back, Escape again
-  the query; anchor 1's line focused, `r` to tier and back with nothing focused;
-  anchor 4 focused, `closed_loop_deployment` dropped over keeping it and its
-  lit `pid_controller`, `rates` dropped over clearing it.
-- `wires.spec.ts` (grammar 4, 10, workspace 7): on `kinds` the ten wires by
-  class 3, 3, 2, 1, 1, the struct's one core with the same `d`, after the wire,
-  narrower, carrying the arrowhead; the flag dashed, the scalar not, the opaque
-  dotted unlike the flag and in a lighter gray than a scalar's computed
-  stroke, the vector wider; no label at load; `y` giving
-  `data-labels` with `aria-pressed`, every block's `transform` unchanged, and
-  the labels by `expectLabels` (below), `i|out|y` reading `Int8`, `v|out|y`
-  starting `SVector{` with its title `StaticArraysCore.SVector{…`, `i`'s at
-  9 px with `paint-order` starting `stroke` and its stroke the background; `y`
-  off; the button on, the same count; a reload keeping them, laid out afresh
-  with every block's `transform` the one at load; the button off. On
-  `closed_loop`'s root `y` moving no block, 19 producer ports, the labels by
-  `expectLabels`, `mode`'s `Bool`. `expectLabels` takes each port's point from
-  its first wire's first point: one label per producer port, its `data-wire`
-  the port's first wire, its computed `text-anchor` `start` with its box
-  starting at its `x`, 0 to 6 right of the port's point, its top 0 to 8 below
-  it, its text the title's `shortType` whole, with no ellipsis and no module
-  qualifier, its node after `g.blocks`. `mode`'s one or two dots each on at
-  least two of its three wires; `plant` dragged 120 down, its wires' dots gone
-  and every other dot in place; then `y` again, the labels by `expectLabels`,
-  `plant`'s moved by its block's move and every other label in place.
-- `icons.spec.ts` (grammar 7, 1): on `closed_loop`'s `lqr_controller` four
-  `pack`, one `unpack`, one `lqr`, one `constant`, seven in all, `free_pair`'s
-  text `Int8[0, 0]` whole or cut with its title whole, `engaged` with
-  `text.display` `Junction` and no icon, `state_pack` with no display name and
-  its width equal to the sizing rule with `ICON_WIDTH` recomputed in the page;
-  `sensing/altimeter` `sum` with its block title naming
-  `Redstone.Blocks.SumJunction`, `sensing/noise` `noise`. On `kinds` five
-  `constant`, `fn` `constant-opaque` through its `use`, `nt` whole or cut with
-  its title whole, every Constant's text within `CONSTANT_WIDTH`, `mat` cut,
-  `i` `0`. On `descent` `stop` and its symbol. On `library`, its fit below a
-  floor, `+` pressed until `full` and no icon's computed `display` `none`,
-  then the oracle's 26 ids, 31 icons, `fn` none, `delay` `z⁻³`, every `use` with its symbol,
-  `zoh_tf` at the rule's width and narrower than its display name would make
-  it.
-- `regions.spec.ts` (grammar 5, workspace 2): on `containers` two regions in
-  order, `gains` and `pair`, their captions; `gains/a`, `gains/b` and `pair/1`
-  with `data-region` and their keys; `s1`, `s2`, `scale` in none; the frame
-  dashed with `rx` 6; every member inside its frame and the others clear of
-  both; `g.regions` before `g.blocks`. The `gains` folder row clicked: its
-  region `selected`, `pair`'s not, the pane `folder`; `pair`'s caption clicked:
-  its region and its tree row `selected`, the pane `field pair`; a click on
-  `gains`' top edge selecting it, aimed at the middle of the edge's band at the
-  current scale; `gains/b` dragged 100 down, `gains`' frame
-  taller and holding it, `pair`'s unchanged; Escape clearing. `closed_loop`'s
-  root without a region.
-- `zoom.spec.ts` (grammar 10): on `closed_loop`'s root `full` at the fit; `-`
-  until the scale, the svg's width over the `viewBox`'s, is below each floor
-  read from `size.ts`, `no-faces` hiding every `text.face` and keeping the
-  segments, display names and pins' names, `segments` hiding the display names
-  too, `frames` the segments too with the `path.wire` and `rect.port` counts
-  unchanged and shown; `0` back to `full`. On `sensing` the icons kept at
-  `no-faces` and hidden at `segments` and at `frames`.
-- `overlay.spec.ts` (grammar 8, 9, workspace 10, 3; counts from `overlay.py`):
-  `failure_cycle` with the drawer open on `diagnostics`, the two error
-  `rect.mark-halo`s on `plant` and `ctl`, the two `path.mark-wire`s each with
-  its wire's `d`, 3 px, its stroke the mark halo's and unlike the selection
-  halo's, no badge, no chord, `g.overlay` the svg's last child, no focus class
-  and `plant` at opacity 1; `plant` clicked, the selection halo at 0.5 before
-  the mark halo in document order. `failure_nested`: `plant`'s halo, the root's
-  two hops, `ctl`'s `continues` badge reading `loop` with its title opening
-  `ctl`, there `ctl/pi`'s halo and the two inner hops, no badge; the tree's
-  `plant`, `ctl` and `ctl/pi` "1 error", the root "1 error, beneath".
-  `failure_dead`: the chord's ends within 0.5 px of `m|in|g`'s and `m|out|F`'s
-  centers (the squares' `getBBox` plus the block's translation, the chord's ends
-  by `getPointAtLength`), dashed, its cross centered within 0.5 px, `m` and
-  `g2` haloed, the chain's wires. `failure_probe`: `t`'s badge `y_state`,
-  `diagnostic` and `error`, titled with the message's first line, one badge
-  at the root, count 2; at `s` the amber halo and badge `EmptyFaceSelection`,
-  the two badges' fills unlike; back at the root with the drawer closed by
-  `d`, `t`'s badge opening the drawer with row 0 `current`, `diagnostic-focus`
-  with `data-focus="0"`, `s` at 0.35 and `t` at 1, the overlay undimmed by its
-  own opacity or a group's (`effectiveOpacity`, the product of the computed
-  opacities up to `svg.canvas`: `t`'s mark halo 0.5, its badge 1), Escape
-  clearing it. `warning`: the drawer closed, count 1, `g` amber, nothing in the
-  error hue. The synthetic descriptor (`failure_cycle` with an unfed input at
-  `ctl` and a warning at `plant`, dropped as text): `rect.mark-port` on
-  `ctl|in|ref`, `path.mark-wire` on `ctl|in|ref`, `ctl` error, `plant` warning.
-  `failure_structure`: no canvas, the drawer's two rows.
-- `drawer.spec.ts` (workspace 6, 2): `failure_probe`'s two rows in order, the
-  first's kind `UserCodeFraming`, path `t`, message with `cause: boom`, location
-  ending in the fixture's line, the second's path `s/g`; the filter on kind,
-  path (case-insensitive), message, cleared, and `zzz` with "No row matches the
-  filter."; the first row selecting `t` with the pane following and
-  `diagnostic-focus`, the second opening `s` with `s/g` selected, a second
-  click clearing the focus and keeping the selection; Escape clearing the
-  focus before a query. `failure_nested` from inside `ctl`: the row drawing
-  the root with `plant` selected. `failure_cycle`: `plant` selected.
-  `failure_structure`: two rows without a location, a click giving `current`.
-  `closed_loop`: the tab by its button, "No diagnostics or warnings.", no
-  filter. `warning`: one amber row, the tree's `g` "1 warning", the root "1
-  warning, beneath". `failure_probe`'s tree counts. `failure_probe` with its
-  error at the root, dropped as text: the root's row red, "1 error, 1
-  warning" with no ", beneath", `t`'s row without a mark, `s` "1 warning,
-  beneath". A push of `closed_loop`
-  over a focused row: no `current`, no focus class, the drawer kept open on
-  `diagnostics`, count 0.
-- `routes.spec.ts` (workspace 8, 11, 9, 3; grammar 9; counts from
-  `overlay.py`'s `routes`): `closed_loop`'s `⟨in⟩h_ref` tag clicked and `t`:
-  `route-focus`, the tag `route-origin`, the oracle's two `path.casing.route`,
-  each at opacity 1 and 0.4 in effect,
-  `route` badges on `pid_controller` and `lqr_controller` alone, the one
-  terminal `⟨in⟩h_ref|out|h_ref`, `plant` at 0.35 and `pid_controller` at 1,
-  the wires dimmed but the route's, the badge's effective opacity 1,
-  `span.route` "tracing
-  h_ref: 2 consumers across 3 levels" with `code` and "clear", the child's
-  badge straddling its bottom edge at the right, the pane's button pressed and
-  titled "Clear the route", the tree's route marks on the root,
-  `lqr_controller` and `pid_controller`, none on `sensing`. `pid_controller`'s
-  badge: one casing on `pid_controller/h_ctl|in|r`, that square
-  `route-terminal`, the pin `⟨in⟩h_ref` badged with its title, straddling its
-  top edge in its left half, no origin there, the status unchanged. The pin's
-  badge: the root with `pid_controller` selected, the two casings, the
-  unselected tag's halo opacity above 0. `plant` clicked and `t`: nothing
-  changes. `t` on the tag: the route, its casings, badges, status and marks
-  gone. The pane's button tracing it again; `button.clear-route` clearing it.
-  The menu: a `contextmenu` dispatched on `plant`'s shape and on the svg left
-  unprevented with no menu, on `plant|out|V` prevented with `div.menu`
-  holding `button.trace` "Trace"; Escape closing the menu alone with `plant`
-  still selected; a press on the status bar closing it; the port traced, 3
-  across 3, its square `route-origin` with its port halo `on`, `plant` still
-  selected; the wire `sensing|in|h` traced as `plant/h`; the port
-  `sensing|in|h` traced from itself, its square the origin and
-  `plant|out|h` a terminal; the wheel closing the menu; Escape clearing the
-  route, then the selection. A push: `h_ref`'s route kept across
-  `closed_loop_deployment` with its status, casings and marks, dropped by
-  `rates`. `rates`: `src|out|out` traced from the menu, 3 across 4, its port
-  halo on with nothing selected, `fast` and `slow` badged, `fast` by its badge
-  with `fast/outer` and the pin `⟨in⟩in` badged, `fast/inner|in|in` terminal,
-  two casings, the tree's marks on the root, `fast`, `fast/outer` and `slow`.
-  `primitive`: the `⟨in⟩u` tag traced, "tracing u: 0 consumers across 0
-  levels", the tag the origin, no casing, no badge. `closed_loop`'s
-  `pid_controller/h_ctl|out|u` traced from the menu inside `pid_controller`,
-  "1 consumer across 1 level", the tree's marks on `pid_controller`, "on the
-  route", and the root, "on the route, beneath".
-- `network.spec.ts`: every request while loading, dropping `closed_loop`,
-  opening `sensing` and showing the help page by `?` has the preview server's
-  origin, and the page makes exactly one WebSocket attempt, to the preview
-  server's host at `/ws`.
-- `analysis.spec.ts` (workspace 6, the pending bullet; counts from
-  `analysis.py`): on `closed_loop` the order tab's 24 `li.step`, the first
-  `plant` at position 1 with six stage-1 ports and none of stage 2, position 15
-  with `saturated` at stage 1 and `u`, `u_raw` at stage 2; 16 `li.edge`, five
-  under position 18, `pid_controller/h_ctl/u` under 17 reading "presumed";
-  row 24 clicked drawing `actuators` with `δt_limiter` selected; the edge
-  `pid_controller/h_ctl/u → θ_ctl/r` clicked drawing `pid_controller` with
-  `pid_controller/θ_ctl|in|r` selected; the root-inputs tab's three rows,
-  `mode` with seven consumers, its pinned cell empty and its kind `boolean`,
-  `h_ref`'s consumers separated by ", ", its row selecting `⟨in⟩h_ref` on the
-  root; the timing tab's 11 anchor rows, the first "base grid", the second
-  `sensing`, `noise`, `1/50 s`, the scopes' `p.empty`, 10 components each with a
-  `data-step`, `sensing/noise`'s swatch background equal to that block's fill
-  in rate mode once `sensing` is drawn and the same in tier mode, the note
-  "need a deployment", anchor 1 selecting `sensing`; screenshots of the order
-  and timing tabs at a 420 px drawer. `closed_loop_deployment`: "carries no
-  schedule". `rates`: three scopes, `fast/outer`'s triple "anchor 1 (1/50 s) ×
-  2", its row selecting `fast/outer` on `fast`, the periods `1/50 s`, `1/25 s`,
-  `1/10 s`. `library`: 12 components, `noise` first; the sort pressed,
-  `unit_delay` first and `noise` last; again, walk order back; 32 steps and 14
-  edges; a tab switch opening the shared body at its top and keeping the sort.
-  `kinds`: "No root inputs.", one component. `failure_cycle`: "did not reach
-  it", two anchor rows. `failure_structure`: every tab's `p.empty`. A push
-  keeping the open tab and redrawing it from the new model.
-- `order.spec.ts` (workspace 7, 9, 11): on `closed_loop`'s root no badge and
-  the toggle unpressed, reading "order" with its title; `o` setting
-  `data-order` and pressing it; the six badges' texts (`plant` "1", `sensing`
-  "2–3", `pid_controller` "4–5, 15, 17, 19", `lqr_controller` "6–10, 16, 18,
-  20", `selection` "11–12, 21–22", `actuators` "13–14, 23–24"), none on a pin,
-  the two titles' forms; each badge's box spanning its block's top edge with
-  its left within 6 px of the block's; its `rect`'s computed fill the
-  viewport's background and its stroke and text the segment's fill; a click on
-  its lower half selecting the block; `sensing`'s badge taking the pointer, its
-  computed `pointer-events` not `none` and the point at its upper half, above
-  the block, hitting it; in rate mode the five pills within 6 px
-  of their blocks' right edges, none overlapping its badge, the four narrow
-  assemblies' pills above the badge's row and `sensing`'s straddling right of
-  it (reading 19); inside `pid_controller` `h_ctl` "15" and `free` "5", none on
-  a pin; a reload keeping the badges and the level, the toggle turning them
-  off, `o` on again, `closed_loop_deployment` dropped over keeping them.
-  `primitive`'s leaf "1"; `rates`' `fast` "2–3", `slow` "4"; `failure_cycle`
-  with `o` no badge and the toggle pressed. With the badges on and the search
-  "plant" standing on the root, `sensing`'s badge's effective opacity equal to
-  its shape's, both below 1, and `plant`'s 1. Screenshot of the root with the
-  badges.
-- `help.spec.ts` (workspace 11, 10; build 7, 8): before a drop the landing's
-  link opening `article.help` with `#help`, the landing gone; the five sections
-  in order with their `h2`s and five nav links; 18 terms, 13 samples, none on
-  display name, legend, level, semantic zoom and triple; 13 vocabulary rows,
-  the first "subsystem", "assembly"; the three refusals by name and three not-yet
-  lines; `table.keys` with as many rows as this map's keyboard table, read from
-  `MAP.md`, one `kbd` "?" and one "o"; `p.vimium`'s two patterns in `code`;
-  `p.privacy`'s two sentences; `dl.about` naming the version the check reads
-  from `../Project.toml`, "major 1" and the three links with their addresses,
-  each `target="_blank"` `rel="noopener"`; Space scrolling the page; the about
-  link scrolling to the end with the hash still `#help`; the close button
-  showing the landing with no hash. On `closed_loop` at `pid_controller`: `?`
-  showing the page with `#help` and no frame; Escape back to the level with
-  `#level=pid_controller`, then `goForward` showing the page again (the close
-  went back); `?` closing; `?` and `goBack`; `?` then `closed_loop_deployment`
-  dropped under it (waiting on the title, no canvas showing), the page still
-  shown with `#help`, its close showing the new model's `pid_controller`; the
-  status bar's link opening the page; `h` and Down leaving it shown, the close
-  finding nothing selected. A load at `/#help` with no model: the page over
-  the landing, `?` closing it with no hash, `?` and the close button. A model
-  dropped under a page loaded at `/#help`: the page stands, its close showing
-  the root with no hash. The landing's link and, on `closed_loop`, the status
-  bar's: each page's close going back, `goForward` showing it again. A typed
-  `#level=pid_controller` on `closed_loop`, then Shift-h showing the root with
-  no hash, the null-state stamp's pin. Screenshot of the page's top.
+- `draw.spec.ts`: every level of the oracle's table, its blocks, wires,
+  pins, squares and marks; every structure, `failure_structure`.
+- `open.spec.ts`: opening, climbing, the breadcrumb, declared order, the
+  child left selected; `closed_loop`, `rates`.
+- `select.spec.ts`: selection, hover, casings, marks, titles; `closed_loop`.
+- `view.spec.ts`: fit, wheel, pan, the fit button; `closed_loop`.
+- `keys.spec.ts`: the canvas's keys, the focus ring, Tab; `closed_loop`.
+- `state.spec.ts`: the hash, history, views per level, the push's rekeying;
+  `closed_loop`, the deployment, `rates`, `aircraft`, `descent`.
+- `drag.spec.ts`: drags, the router's forms, places kept, Shift's axis;
+  `closed_loop`, the deployment, `descent`.
+- `search.spec.ts`: results, markers, dimming, the cap, empty prefixes, `n`
+  and `N`; `closed_loop`, `large`, `rates`.
+- `live.spec.ts`: the hello, pushes, the download, `open_location`, the
+  reconnect, dropped frames, the hosted copy; `closed_loop`, `descent`.
+- `header.spec.ts`: the major refusal, the minor note; copies of `descent`.
+- `landing.spec.ts`: the landing, a refusal, the pick, a structureless
+  failure's frame; `closed_loop`, `descent`, `failure_structure`.
+- `tree.spec.ts`: rows, selection, opening, folders, scrolling, the tree's
+  keys; `closed_loop`, `containers`, `rates`, `primitive`, `aircraft`, `large`.
+- `detail.spec.ts`: each pane layout, links, copying, the narrow pane, the
+  docstrings; `closed_loop`, `rates`, `containers`, `aircraft`, `kinds`,
+  `library`, a copy of `primitive`.
+- `frame.spec.ts`: the status bar, the drawer's counts, splitters and
+  collapse kept; `closed_loop`, the deployment, `failure_cycle`, `descent`.
+- `leave.spec.ts`: the leave prompt, dropped against pushed; `closed_loop`.
+- `colors.spec.ts`: rate mode's fills, badges, legend, wires, the tree's
+  dots, the mode kept; `closed_loop`, `rates`.
+- `focus.spec.ts`: the legend's focus, Escape, tier mode, a push;
+  `closed_loop`, the deployment, `rates`.
+- `wires.spec.ts`: wire classes, type labels, trunk dots, a drag;
+  `kinds`, `closed_loop`.
+- `icons.spec.ts`: icons drawn and sized; `closed_loop`, `kinds`, `descent`,
+  `library`.
+- `regions.spec.ts`: regions, the folder selected, a frame following a drag;
+  `containers`, `closed_loop`.
+- `zoom.spec.ts`: the text levels at each floor; `closed_loop`.
+- `overlay.spec.ts`: halos, marks, chords, badges, the diagnostic focus; the
+  failures, `warning`, a synthetic copy of `failure_cycle`.
+- `drawer.spec.ts`: the diagnostics tab, the tree's marks, a push; the
+  failures, `warning`, `closed_loop`.
+- `routes.spec.ts`: tracing, casings, badges, the status line, the marks, the
+  menu, a push; `closed_loop`, the deployment, `rates`, `primitive`.
+- `network.spec.ts`: every request to the preview origin, one socket
+  attempt; `closed_loop`.
+- `analysis.spec.ts`: the analysis tabs, their rows selecting, the sort, a
+  push; `closed_loop`, the deployment, `rates`, `library`, `kinds`, failures.
+- `order.spec.ts`: the order badges, their place, dimming and toggle;
+  `closed_loop`, the deployment, `primitive`, `rates`, `failure_cycle`.
+- `help.spec.ts`: the help page's sections, history entry and keys, a load
+  under it; `closed_loop`, the deployment.
 
-**Screenshots** go to `e2e/screenshots/`, ignored, and CI uploads them as the
-`screenshots` job output, with `dist/` as `dist`: the drawing check's as
-`<fixture>__<level>.png`, the root as `root` and `/` in a path as `__`; the other
-checks' as `<check>.<fixture>__<level>.png`, `open`, `select`, `view`, `major2`,
-`minor1`, `network`, `landing` (`none` before a drop), `tree`, `detail-leaf`,
-`detail-wire`, `frame-collapsed`, `keys` (the drawer opened by `d`),
-`fallback`, `drag`, `search`, `search-markers`, `live` (`none` while
-waiting, then `closed_loop`), `colors` (`closed_loop`'s root and
-`pid_controller` in rate mode), `focus` (`closed_loop`'s root with anchor 4
-focused), `detail-narrow` (`plant` at 240 px), `wires` (`kinds` with labels), `icons`
-(`lqr_controller`, `library`), `regions` (`containers`), `zoom`
-(`closed_loop`'s root at `frames`), `overlay` (`failure_nested`'s root and
-`ctl`, `failure_dead`'s root, `failure_probe`'s `s`), `drawer`
-(`failure_probe`'s root), `routes` (`closed_loop`'s root with `h_ref`
-traced, and `pid_controller`), `analysis-order` and `analysis-timing`
-(`closed_loop`'s root), `order` (`closed_loop`'s root with the badges) and
-`help` (`none`, the page's top before a drop). A run of another project writes the same
-names under `e2e/screenshots/<project>/`, so CI's artifact holds Chromium's at
-the top and Firefox's under `firefox/`; `shot` reads the project from
-`test.info()`.
+**Screenshots** go to `e2e/screenshots/`, ignored, and CI uploads them with
+`dist/`: `<fixture>__<level>.png` from the drawing check, the root as `root`
+and `/` as `__`, `<check>.<fixture>__<level>.png` from the others, `none`
+before a drop; another project's under `e2e/screenshots/<project>/`.
 
 ## The generated types and the scripts
 
 `npm run types` runs `json2ts` over `schema/descriptor.json` into
 `src/lib/descriptor.d.ts`, with `--additionalProperties false` so the one open
 object, `NodeIdentity`, gets no index signature. The file is ignored and
-regenerated by the `predev`, `prebuild`, `precheck` and `pretest` hooks, so it
-never lags the copy. `npm run check` runs svelte-check over `src/`, `e2e/` and
-`playwright.config.ts`, tests included; `npm test` runs Vitest once; `npm run
-e2e` runs Playwright, both projects unless one is named; `npm run dev`, `build` and `preview` are Vite's.
-
-## Traps
-
-- **The generator's placeholders.** Branch fields spelled `true` come out
-  `unknown`, which made `node.path` `string | undefined` and left `d.build`
-  undefined after narrowing on `kind`. The core's schema now spells them
-  (core commit `778d6ee`). The envelope's branches still come out with
-  `kind?:` optional; narrowing works because the intersection with the
-  top-level `kind` excludes the other branches.
-- **ajv's strict mode** refuses the schema (`strictRequired` on the `not`
-  clauses); the test runs ajv at default strictness.
-- **Node types.** The spike's `tsconfig.json` limits `types` to
-  `vite/client`, so `fixtures.ts` carries `/// <reference types="node" />`
-  for `node:fs`, from the `@types/node` dev dependency.
-- **Narrowing on a literal union.** A discriminant typed `"in" | "out"` does
-  not narrow through a ternary chain; the pins are two types for that reason.
-- **Vitest's console.** Vitest 5 hides the console output of passing tests;
-  a probe writes to a file instead.
-- **A route's start.** The chain depends on the face a walk starts from, so a
-  route carries its producer and not the chain; otherwise a wire's route and
-  its producer face's differ.
-- **The drop in Playwright.** Playwright has no drop of an outside file; a
-  `DataTransfer` built in `page.evaluate` and a `DragEvent("drop")` dispatched
-  on the window reach the shell's handler. The pick path is checked by hand.
-- **The preview server.** The checks run against `vite preview` over `dist/`,
-  never the dev server, so a stale `dist/` tests old code: build first.
-  Outside CI an already running server on port 4319 is reused.
-- **Fonts on Linux.** Text is measured and drawn in the system stack; on the
-  Ubuntu runner `system-ui` resolves through fontconfig to whatever
-  `playwright install --with-deps` brings. Blocks size to it, so nothing
-  breaks, but CI's screenshots differ in face from a Mac's. Not yet seen on CI.
-- **The wheel.** A listener added through Svelte's `onwheel` may be passive;
-  the canvas adds its own with `{passive: false}` so `preventDefault` stops
-  the page scrolling.
-- **Unfilled shapes take no click.** A capsule with `fill="none"` is hit only
-  on its stroke; the canvas sets `pointer-events: visible` on `.shape`.
-- **A double-click selects text.** Without `user-select: none` on the canvas a
-  double-click selected the Fit button's label.
-- **Counting after a click.** `expect(await locator.count())` right after a
-  click can read before Svelte flushes; the checks use
-  `await expect(locator).toHaveCount(n)`, which retries.
-- **Clicking a wire.** A polyline's bounding-box center is often off the line;
-  the helper's `wirePoint` finds a point with `getPointAtLength` where
-  `elementFromPoint` is the wire's own hit path.
-- **The hover after a click.** The pointer stays where it clicked, so after
-  Escape the block it rests on still shows its `incident-hover` casings.
-- **A newline in a title.** `&#10;` inside a `<title>` does not survive
-  Svelte's compile, so the two lines ran together; the title's text is a
-  template literal with `\n`.
-- **ELK's components.** ELK packs a level's disconnected components in its own
-  order unless `considerModelOrder.components` is `MODEL_ORDER`; without it
-  `actuators` drew its `δt` chain above its `δe` chain.
-- **ELK's cycle breaking.** `MODEL_ORDER` reverses every edge against model
-  order, cycle or not, so `lqr_controller`'s `tracker`, declared before its
-  feeders, landed in the first layer with every feeder wire looping back.
-  `GREEDY_MODEL_ORDER` reverses a minimal set and uses model order only as the
-  tie-break.
-- **ELK's weight.** The bundle is one 1.49 MB chunk and Vite warns past
-  500 kB; ELK is most of it. Not split.
-- **Svelte state.** The laid-out level is `$state.raw`: a deep proxy over 156
-  blocks and 323 routes buys nothing. The session's state is raw too, each change
-  a new value.
-- **The splitter's pointer capture.** A drag captures the pointer on the
-  splitter itself (`setPointerCapture` in `pointerdown`), so `pointermove` keeps
-  arriving over the canvas and the panes; the size is the drag's start size plus
-  its travel, never accumulated per move. An inactive splitter stays in the DOM
-  with `pointer-events: none`.
-- **Local storage in Playwright.** Each test's browser context starts with empty
-  storage, so prefs never leak between checks; `page.reload()` keeps them within
-  a test. `drop` navigates to `/` itself.
-- **Local storage in Vitest.** Node 26 has an experimental `localStorage` and
-  warns when it is touched; the prefs store reads only when `window` exists.
-- **Clipboard permissions.** Headless Chromium reads the clipboard back only
-  after `context.grantPermissions(["clipboard-read", "clipboard-write"])`.
-- **`scrollIntoView` in a hidden pane.** A collapsed tree renders no rows, so a
-  selection made while it is collapsed scrolls nothing, and expanding it does not
-  scroll to the selected row.
-- **Narrowing in templates.** An `{:else if}` on a union discriminant
-  (`"leaf" | "assembly"`, `"pin" | "port"`) does not narrow the following
-  branches; the pane narrows with `"signature" in facts` and `"id" in facts`.
-- **Whitespace in blocks.** Svelte drops a leading space inside `{#if}`, so a
-  facts line built from conditional pieces ran together; it is a joined string.
-  The root-inputs tab met it again, `{#if i > 0}, {/if}` rendering "," with no
-  space; the separator is `{", "}`, pinned on `h_ref`'s cell.
-- **Class collisions.** The canvas's wrapper `.frame` and the drawer's pane
-  `section.pane.drawer` each made a contract selector match twice; the canvas's
-  wrapper is `.viewport` and the panes carry only `pane` and `data-pane`.
-- **A row's text.** A tree row's text includes the chevron's glyph; the checks
-  read `.segment`.
-- **A face row's middle.** Playwright clicks an element's centre, which in a face
-  row can be a consumer link; the check clicks the `.face-name` cell.
-- **Word breaking in the pane.** `overflow-wrap: anywhere` lets a table cell's
-  min-content shrink to one character, which squashed `Float64`; the type cell
-  breaks anywhere above a `min-width` of `8ch`, so `lqr_controller/tracker`'s
-  `StaticArraysCore.SVector{5, Float64}` wraps and `Float64` does not. The
-  face name, the kind phrase, the links and both parameter cells break
-  anywhere too, which auto layout uses only under pressure, so a name stays
-  whole until the pane is too narrow for the row; only the side, pinned and
-  stage cells are `nowrap`. CI's wider Linux fonts overflowed the tracker's
-  pane by 9 px with the name and kind cells `nowrap`, which no Mac run showed;
-  the check now also pins the pane at its narrowest width through the prefs.
-- **ELK's position hints.** Answer 9 sends the surviving blocks' previous
-  positions to ELK as hints after a push. Probed on 2026-10-30 over
-  `closed_loop`'s root and `actuators`, `descent` and `rates`:
-  `crossingMinimization.semiInteractive` and the `INTERACTIVE` strategies
-  ignore positions while `considerModelOrder.strategy` is `NODES_AND_EDGES`,
-  which is how a level is steered by declaration order; with model order off
-  they honor a swap but also move blocks nobody dragged (`plant` from y 257 to
-  42 with the layout's own output as hints); `elk.interactiveLayout` alone
-  changes nothing. The two steerings exclude each other, so a push relays out
-  with model order and no hints, and puts the dragged blocks back at their
-  dragged places (reading 1 of increment 5's brief, ratified in workspace.md
-  answer 9 as amended 2026-11-01).
-- **A block drag's pointer capture.** Capturing on the press retargets a port
-  square's click to the block's group, which turned `select.spec`'s port check
-  red. The canvas captures only past the 3 px slop, after `tick()`, once Svelte
-  has moved the raised group: moving a captured node drops the capture.
-- **The lost click.** Chrome fires no `click` after a release when the pressed
-  node was moved in the DOM (probed: `pointerdown`, `gotpointercapture`,
-  `pointerup`, `lostpointercapture`, no `click`), so the canvas selects a
-  dragged block itself on the release.
-- **A pan only on the bare SVG.** The pan starts only when the press's target
-  is the `svg` itself, so a press on a block is the block's.
-- **The canvas effect and `untrack`.** The synchronous path that draws a
-  stored layout runs under `untrack`; otherwise `fit` reads the width and the
-  height and the effect re-runs on every resize, refitting.
-- **A name collision.** The shell's handle on the canvas is `canvasView`: the
-  name `canvas` collides with the `Frame` snippet of that name, a
-  svelte-check error.
-- **Focus on a canvas press.** A mouse press focuses the nearest focusable
-  ancestor, `.viewport`, which takes `focused` but, under `:focus-visible`, no
-  ring; tree rows carry `tabindex="-1"` for the same reason, so a row click
-  lands in the tree region, where `h j k l` are then the tree's: a check that
-  wants the canvas's keys after a row click presses Tab first.
-- **`:focus-visible` and a press.** Chromium keeps `:focus-visible` on an
-  element that stays focused, so a mouse press on a canvas that Tab focused
-  keeps the ring; a press arriving from another region shows none. `focus()`
-  called from a key handler, Tab's cycle, does match `:focus-visible`.
-- **`N` in Playwright.** `page.keyboard.press("N")` sends `N` without
-  `shiftKey`; the shell reads `N` from `e.key`, and the checks press `Shift+N`
-  as a keyboard does.
-- **`boundingBox()` of an SVG group.** Playwright's box for a `g.block` read
-  far larger than its `getBoundingClientRect()` (319 by 189 against 252 by
-  110 for the `h_ref` tag); in-view checks read a `.shape`'s client rect
-  through `evaluate`.
-- **The leave prompt in Playwright.** With a `dialog` listener that dismisses,
-  `page.goBack()` never settles, so the check gives it a 2 s timeout and
-  catches; with no listener `page.reload()` after real clicks still reloads, so
-  the reload checks need no handler. Chromium asks only after a real input,
-  which a `page.mouse` or locator click is.
-- **Reverting a mutant.** `git checkout -- <file>` also drops the uncommitted
-  change the mutant was applied over; mutants are reverted from a copy.
-- **Tab from the search field.** The shell handles Tab before it ignores keys
-  in text fields, so Tab cycles the regions from the field too.
-- **The search's hit rows and focus.** A click on a row would blur the field
-  and hide the list before the click lands; the row's `mousedown` is
-  prevented.
-- **`descent`'s straight wires.** ELK draws `gear|in|h` and `stop|in|u` as
-  two-point lines, and `plant` dragged down leaves `gear` to its right, so the
-  route is forward; `drag.spec.ts` drags `plant` past `gear` for the
-  six-point form.
-- **Under from marks, not node hits.** `levelHits`' `under` counts marked
-  nodes, face owners included, as the tree's counts do; the oracle's level
-  table counts node hits only, so for `face:in1` it reads none under where the
-  page shows 3. Every other row of the table agrees under both rules.
-- **`blockBoxes` and the halo.** `getBBox` on a block's group includes its
-  halos, so a box reads 3 to 6 px larger than the geometry; centers barely
-  move, which is what `nearest` reads.
-- **The socket against `vite preview`.** The preview server refuses the
-  upgrade at once (error, then close 1006, about 25 ms, never `open`), so every
-  check without a route runs the hosted copy.
-- **`routeWebSocket`.** `page.routeWebSocket("**/ws", handler)` before
-  `page.goto`; without `connectToServer()` the route is a pure mock and the
-  page's socket opens at once. The handler runs once per connection, so `live`
-  keeps every route and every message and acts on the latest. `send` returns
-  nothing, but frames on one socket arrive in order. Messages are read with
-  `expect.poll` on the recorded list.
-- **A negative frame check.** That a control frame is dropped needs a sync
-  point: the next descriptor is sent after it, and the rekeyed selection shows
-  that the model was replaced rather than loaded fresh after a refusal.
-- **The download's bytes.** Playwright's `download.path()` file compared to
-  `Buffer.from(text, "utf8")`; `closed_loop` carries `δ`, so the UTF-8 round
-  trip is exercised. The `Blob` URL is revoked late, since some browsers read
-  it after the click returns.
-- **The status bar before a model.** The frame, and so its status bar, exists
-  only with a model; the live tab's "waiting for `inspect`" needs a status bar
-  under the landing, which the shell renders while the connection shows.
-- **ELK's trunks and regions, probed 2026-11-02.** The orthogonal router
-  already routes the wires leaving one port as a shared trunk and marks each
-  split in one edge's `junctionPoints`; `elk.layered.mergeEdges` changes
-  nothing. A fan-out of n wires has between 1 and n − 1 junction points.
-  Compound nodes need `elk.hierarchyHandling: INCLUDE_CHILDREN`: without it the
-  edges crossing a region's border come back with no sections and the level
-  breaks into two rows. Every edge stays in the root's `edges` with a
-  `container`, the node whose coordinates its sections and junction points use
-  (`region:gains` for `gains/b|in|e`), so `layoutLevel` translates by it.
-- **ELK's pass, 2026-11-02** (increment 6, stage 7). Crossings (a horizontal
-  and a vertical segment of wires from different producer ports crossing
-  strictly inside both) and bends (route points minus two) per option set,
-  counted by a scratch script through `layoutLevel` and, for the candidates,
-  from the drawn `d`s with real text widths, which agreed:
-
-  | option set | `closed_loop` root | `large` root | `lqr_controller` | `large` outputs |
-  |---|---|---|---|---|
-  | increment 5's | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
-  | `feedbackEdges` | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
-  | `forceNodeModelOrder` | 61 / 60 | 699 / 634 | 6 / 26 | declared |
-  | `NETWORK_SIMPLEX` | 62 / 76 | 667 / 902 | 6 / 30 | reversed |
-  | `LINEAR_SEGMENTS` | 62 / 88 | 655 / 784 | 6 / 34 | reversed |
-  | `thoroughness` 20 | 60 / 82 | 622 / 612 | 6 / 26 | reversed |
-  | `edgeNodeBetweenLayers` doubled | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
-  | `edgeEdge` doubled, or both | 64 / 82 | 663 / 634 | 6 / 26 | reversed |
-  | `unnecessaryBendpoints` | 62 / 117 | 663 / 1014 | 6 / 26 | reversed |
-  | `greedySwitch` `TWO_SIDED` | 62 / 76 | 663 / 634 | 6 / 26 | reversed |
-  | thoroughness 20 and `forceNodeModelOrder` | 77 / 72 | 671 / 626 | 6 / 26 | declared |
-  | thoroughness 20 and `NETWORK_SIMPLEX` | 58 / 76 | 626 / 836 | 6 / 30 | reversed |
-  | thoroughness 20 and `LINEAR_SEGMENTS` | 60 / 92 | 636 / 776 | 6 / 36 | reversed |
-  | `forceNodeModelOrder` and `NETWORK_SIMPLEX` | 61 / 88 | 687 / 844 | 6 / 30 | declared |
-
-  Each cell is crossings / bends; thoroughness 20 with `feedbackEdges`,
-  `greedySwitch`, either spacing or `unnecessaryBendpoints` kept its own
-  crossings. Two sets met the criterion (fewer
-  crossings on `closed_loop`'s root, none more on the other two, `open.spec.ts`
-  green): thoroughness 20 alone, which landed, and with `NETWORK_SIMPLEX`,
-  which buys two crossings for 222 more bends on `large` and doubles its layout
-  time. `large`'s root went from about 360 to 460 ms, drop to drawn, under
-  thoroughness 20. No option fixes the tangle: it is the model's five feedback
-  loops. The root under the landed set is the drawing check's screenshot
-  `closed_loop__root.png`. `elkGraph` hands out the shared
-  `ROOT_OPTIONS` object, so a scratch script can mutate it before
-  `layoutLevel`; nothing in `src/` does.
-- **Arrowheads on thick wires.** A `marker` in the default `strokeWidth` units
-  grew three- and fivefold on the vector and struct wires; the markers are
-  `markerUnits="userSpaceOnUse"`. `fill="context-stroke"` works in Chromium,
-  but on the struct's core it would take the core's background color, so the
-  canvas keeps one marker per wire color and puts the struct's on its core.
-- **A label's text.** A `text.type-label`'s or `g.icon text`'s parent holds a
-  `<title>`; `textContent` of a type label includes its title, so the checks
-  read its text nodes alone, and an icon's `text` is read apart from the
-  title.
-- **`Delay`'s `K`.** The pinned core prints `Redstone.Blocks.Delay{Float64,
-  3}`, the integer second; `iconOf` takes the first top-level type parameter
-  that is an integer, which reads both orders.
-- **Wires above a region.** The regions draw first, so a wire crossing a frame
-  takes the click there through its 8 px hit path; a check clicks the frame's
-  top edge, clear of the wires, or the caption.
-- **A frame's edge band.** The frame's 1 px stroke and its halo take a click
-  from 5.5 world units above the edge to 0.5 below. A click one screen pixel
-  below the edge misses at a scale under 2, and one on the edge's line itself
-  missed at two of nine scales probed. `regions.spec.ts` aims at the band's
-  middle, 2.5 units above the edge, at the current scale.
-- **ELK's edge labels, probed 2026-11-03** (elkjs 0.12). A label with no
-  `text` is silently ignored: it comes back at (0, 0) and ELK reserves no
-  space for it. No option moves a tail label to the other side of the wire:
-  `sideSelection`, `inline` and `labelSide` change nothing, and only
-  `elk.spacing.edgeLabel` moves the offset. A label's coordinates are in the
-  edge's `container`, like its sections, so `layoutLevel` keeps it as an offset
-  from the section's start point. Laying out ELK's output object again returns
-  corrupt routes; a fresh layout needs a fresh graph from `elkGraph`. With the
-  labels in, measured on the fixtures: crossings unchanged on every level,
-  layers and pin order unchanged, width up 12% (`pid_controller`) to 42%
-  (`lqr_controller`), `closed_loop`'s root 888 to 1103, `large`'s 8207 to
-  10083, layout time unchanged.
-- **Glyphs in the text color.** A glyph is a `<symbol>` whose path and text use
-  `currentColor`, set by `.icon`'s `color`; a `<use>` inherits it.
-- **The rate palette's construction** (increment 6's look pass, second round;
-  answer 6 as amended 2026-11-02). The first round's search annealed eight
-  LCh steps on the least CIEDE2000 over normal and Machado's simulated
-  deutan, protan and tritan vision, with hue bans on the strokes, which then
-  colored the wires; it reached 10.06 at fills L* 72 and up, and the capacity
-  search showed that eight light fills distinct under every simulation do not
-  exist. Its palette cleared the bar but read as no nameable hues, so the
-  steps are constructed instead: eight hues evenly spread round the OKLCh hue circle at one chroma,
-  the fills alternating two lightness bands by step, down to about L* 66 (AA
-  contrast with the text, 4.5 and up, no longer AAA), each stroke its fill's
-  hue darkened, the order putting a warm peach at step 0, opposite the
-  continuous blue. The least CIEDE2000 between fills is 12.2 under normal
-  vision and about 4 under the simulations, never identical; the legend's
-  focus tells any two apart. The fills color the wires, so they keep clear of
-  `error`, `warning`, the highlight and the wire gray. The four `extras` were
-  re-picked greedily at a lower chroma from the hues left. Measure in
-  CIEDE2000: ΔE76 had overstated the first palette's greens, its least fill
-  pair 13 in ΔE76 and 7.5 in CIEDE2000.
-- **The default pane is narrow.** The detail pane's default 360 px sits under
-  the 420 px container query, so the stacked parameters and faces are what a
-  first load shows; the table rows need a pane past 420.
-- **Shift with no pointer move.** Playwright's `keyboard.down("Shift")` sets
-  `shiftKey` on the mouse events after it, but a Shift press while the pointer
-  rests sends no pointer event; the canvas's window `keydown` and `keyup`
-  re-apply the last place, which `drag.spec.ts` checks.
-- **A legend line in a button.** The button wrapped a line beside its `#9`
-  number into two rows; it is `nowrap`.
-- **Firefox locally.** Firefox cannot run inside this machine's command
-  sandbox ("Could not find profile folder"), and plain `npm run e2e` now starts
-  it; run `npm run e2e -- --project=chromium`. `npx playwright test --list
-  --project=firefox` verifies the configuration without launching it.
-- **A wire mark on a fixture.** `WireTypeMismatch` and
-  `WalkingFaceAtFrozenEntry` are raised before the structure step, so a wire
-  mark exists only on a structureless failure, which draws nothing; the
-  overlay's port and wire marks are pinned on a synthetic copy of
-  `failure_cycle` dropped as text.
-- **An endpoint carries no side.** A diagnostic's port mark names `{path,
-  port}`; the side is read from the node, an input when it declares one by
-  that name, else an output, and on the level's own path the mark lands on the
-  pin's square.
-- **The overlay during a layout.** While a new level is laid out `shown` still
-  holds the old one, so `g.overlay` draws only once `shown`'s level is the
-  `path` asked for; otherwise an id of the new level lands on the old.
-- **The chain's pins under a focus.** `litBy` lights the level's own pins a
-  chain runs to or from; without them `failure_nested`'s `ctl` dimmed `⟨in⟩y`
-  and `⟨out⟩u` while their lit wires ended on them. `routeLit` lights a route's
-  pins the same way.
-- **One `focusKey`.** `data-focus` needs a value for each focus, so it is a
-  prop of its own, apart from `legendFocus`, which keeps the legend's
-  `aria-pressed`.
-- **A right-click fires no click.** A right button press gives `contextmenu`
-  (and `auxclick`), never `click`, so a right-click on a port selects nothing;
-  the svg's pan and a block's drag start on the left button alone.
-- **Escape with the menu open.** The shell's Escape chain listens on the
-  window in the bubbling phase; the canvas closes the menu from a window
-  `keydown` listener in the capture phase (`onkeydowncapture`) and stops the
-  event, so that Escape leaves the route standing. A listener on the menu would
-  need the menu focused.
-- **Checking the browser's menu.** Playwright cannot see the native menu; the
-  check dispatches a cancelable `contextmenu` at an element and reads
-  `dispatchEvent`'s result, false when the canvas prevented it.
-- **The session in unit tests.** `session.svelte.ts` is module state shared by
-  every test in a file; a test that traces a route starts from
-  `load(undefined)`, or the route an earlier test left standing survives the
-  replacement and the first `trace` toggles it off. The same holds for `help`:
-  each help case closes the page before it ends. Vitest runs in Node, where
-  `history` is absent, so `closeHelp` always takes its replace branch there;
-  the back branch is `help.spec.ts`'s.
-- **The consumers' order.** `faceFacts`' terminal consumers come in
-  `terminalConsumers`' depth-first wire order, the oracle's breadth-first, so
-  `analysis.test.ts` compares `mode`'s seven as a set.
-- **Two pills on one top edge** (reading 19). With nothing reserved in
-  `sizeBlock`, the order badge and the clock pill need 10 to 34 world units
-  more than the width of four of `closed_loop`'s five root assemblies in rate
-  mode, and the badge, drawn later, covered the clock count. The pill rides one
-  row higher on such a block alone; `orderWidth` serves the badge and the fit
-  test, so the two never disagree.
-- **An exact pin by `npm install`.** `npm install marked@18.1.3` writes
-  `^18.1.3`; the caret was removed and `npm install` run again so the lock and
-  `package.json` agree, as `elkjs` is pinned. `npm ci` checks it.
-- **`marked`'s instance and its type.** The renderer is one module-level `new
-  Marked({gfm: true, renderer})`, so the global `marked` stays untouched;
-  `parse(text, {async: false})` types the result as a string. A `link`
-  override renders its inner tokens with `this.parser.parseInline`. The
-  glossary form `[text](@ref g-x)` is no CommonMark link (its destination holds
-  a space), so `rewriteRefs` runs on the source before parsing.
-- **A constant in an e2e check.** A Playwright check cannot import a Svelte
-  app module cleanly, so `detail.spec.ts` keeps its own copy of the docs URL;
-  `help.spec.ts` reads the version from `Project.toml` and the keyboard table
-  from this map as the build would, never from `src/`.
-- **A hash link's entry.** A click on `a[href="#help"]` fires `popstate` with
-  `state` null in Chromium, which is what lets the help links carry no handler
-  (reading 18); `openFromHistory` stamps such an entry one deeper, or the
-  page's close would replace it and leave two equal level entries behind.
-- **A hash link inside the help page.** Any hash other than `#help` closes
-  the page through the history handler, so the help page's section links
-  prevent their default and call `scrollIntoView`.
-- **Keys scrolling a nested scroller.** With `main` at `100vh`, the page
-  itself never scrolls; Space and the arrows scroll `article.help` only
-  because it is focused (`tabindex="-1"`, focused on mount), and the shell's
-  handler leaves those keys alone while it shows.
-- **A drop under the help page.** No canvas or outcome appears, so `dropOver`
-  would wait forever; `help.spec.ts`'s `dropUnder` waits on the window's
-  title, which names the new label.
-- **A folded constant.** Written as `` `${LIVE_URL}*` `` the Vimium patterns
-  never appeared literally in `dist/` (the minifier keeps the template), so a
-  grep for them found none; `help.ts` writes them out.
-- **The map's keyboard table is read by a check.** `help.spec.ts` counts this
-  map's keyboard rows and requires `table.keys` to match, so a row added to
-  the table without a `KEYS` row, or the reverse, turns it red.
-
-## Open items
-
-- ELK in a web worker: `large`'s root takes about 460 ms from drop to drawn on
-  an M4 under thoroughness 20 (320 to 360 ms before), sizing and layout on the
-  main thread.
-- A primitive root's leaf has an empty segment, so its bold first line on the
-  canvas is blank; the tree's row, the breadcrumb and the pane carry the label.
-- A folder under a node other than the root starts collapsed when that node is
-  expanded; no fixture has one.
-- The tree's `▸` chevron reads small in the system font.
-- The console shows one 404, the favicon's.
-- The layout of `closed_loop`'s root is tangled, feedback wires looping over and
-  under the level, as the spike found; increment 6's ELK pass (see the traps)
-  took it from 62 crossings to 60 with thoroughness 20, which also moves its
-  root input pins out of declaration order (`h_ref`, `mode`, `V_ref` top to
-  bottom; no check pins the root's pin order). The look pass judges it.
-  Already out of order before the pass: `pid_controller`'s and `selection`'s
-  input pins, `selection`'s and `kinds`' output pins.
-- `large`'s root draws its two output pins in reverse declaration order. Only
-  `forceNodeModelOrder` fixes it, at 663 to 699 crossings on `large`, so the
-  order check was dropped.
-- The base grid's peach is step 0 wherever a block ticks on the base grid;
-  `closed_loop` has no such block, so its palette order starts at anchor 1 and
-  the peach goes to `sensing`.
-- The rate badge straddles the block's top edge at the right, since inside the
-  corner it covered the segment on `closed_loop`'s root and answer 10 never cuts
-  a user name; reserving its width in `sizeBlock` would make a block's size
-  depend on the mode. Increment 8's order badge, top-left, met the same
-  question, settled by reading 19: the pill rides one row higher on a block too
-  narrow for both, so where it lands differs between a wide block and a narrow
-  one, and on `closed_loop`'s root `selection`'s and `actuators`' raised pills
-  sit on the wire along the drawing's top. The look pass judges both.
-- The legend can sit over the drawing's bottom-left corner; the fit does not
-  reserve it.
-- A root whose fit scale falls below a floor loads without its names:
-  `library` fits at about 0.36, at `segments`, so no display name or icon
-  shows until a zoom in, and `large` fits below the first floor. The look pass
-  settles the floors or the fit.
-- The type labels' room widens every level, 12% on `pid_controller` to 42% on
-  `lqr_controller`, so every fit scale moves down, which bears on the floors
-  above.
-- Type labels sit above the blocks and take the pointer for their title. ELK
-  keeps the blocks clear of them, but a block dragged onto a label has the
-  label take its click there.
-- The local router's backward route leaves the port by a 12 px stub, so after a
-  drag its vertical segment can run through the port's label; seen on
-  `actuators`' `δt` after dragging `plant` on `closed_loop`'s root.
-- `CONSTANT_WIDTH` at 60 px cuts `kinds`' `a=1.0, b=2.0` (64 px on a Mac) to
-  `a=1.0, b=…`; `Int8[0, 0]` (49 px) may cut under CI's fonts. The checks read
-  whole or cut.
-- The text icons wider than `ICON_WIDTH` on a Mac (`ẋ=Ax+Bu` 46 px,
-  `N(s)/D(s)` 48, `N(z)/D(z)` 49) are squeezed to 44 by `textLength`. The
-  discrete integrators draw their staircase beside the `1/s`, not under it,
-  where in 12 px the two overlapped. The glyphs are a first pass.
-- The text levels' floors look low (the headed look of stage 7): at 0.52, past
-  the first floor, the display names show at about 6 px, hard to read; the
-  look pass may raise them, something like 0.8, 0.6 and 0.4.
-- The Firefox project has never run here; its first run is CI's. Its clipboard
-  skip takes `live.spec.ts`'s whole hosted-copy check, so the no-connection and
-  no-download pins do not run under Firefox either.
-- A selected row does not scroll into view when a collapsed tree expands.
-- A mouse press on a canvas that already holds keyboard focus keeps the ring
-  (see the traps); a blur and refocus on the press would drop it.
-- Shift-`l` stops at the deepest entry this load pushed, so it never leaves the
-  page forward either; the records ask it of Shift-`h` alone.
-- The leave prompt calls `preventDefault` alone; Safari before 17 may also want
-  `returnValue`, untested.
-- The stacked parameters read name and value alike, the value under its name
-  at the same indent; the look decides whether the value wants a lighter color
-  or an indent.
-- Forward landing on an ancestor, and a tree double-click on an ancestor row,
-  also select the child left, since every level change goes through `show`;
-  the records name the keys, the breadcrumb and back.
-- A legend focus held onto a level with no line of it dims the whole level and
-  presses no line; Escape or another line clears it.
-- Shift's "axis of greater total travel so far" is read as the displacement
-  since the press, not the summed path in each axis.
-- `j` and `k` in the tree with no row selected both select the first row; the
-  records do not say.
-- `follow` aligns the top or left edge of a box larger than the viewport.
-- On a replacement the drawer keeps its state and opens on `diagnostics` when
-  the new model carries one; the records say nothing of it.
-- A face hit found by a `type:` term alone carries no `mark`, since its row
-  shows no type.
-- The download is offered only for a model that came over the socket; a file
-  dropped in the live tab offers none.
-- Acceptable survivors among the brief's mutants: the swallowed keys'
-  `preventDefault` (`o` and `?` from increment 6 until increment 8, `t` until increment 7), the exact palette values
-  and the icons' artwork, which no check pins by design, since headless Chromium has no find bar to open; `popstate`
-  pushing again, a no-op while `pushHash` skips a hash already standing. The
-  backoff's 30 s cap is pinned by `protocol.test.ts` at attempt 10.
-- The live tab's look, through `inspect` with `bundle_dir` at `frontend/dist`,
-  is the user's look-and-adjust pass; no check runs the real server.
-- Increment 7's look, for the look pass. The mark halo at opacity 0.5 over the
-  blue selection halo composes to purple, amber over it to olive, so a
-  selected member does not read red; the order holds (answer 9), the color
-  does not. A focus dims the uninvolved wires but not a selected block's
-  incident casings, which stay full. `failure_probe`'s `EmptyFaceSelection`
-  pill is about 190 px on a 130 px block, running past its left corner, and
-  white on amber is the page's lowest-contrast text. The dead hop's cross, ±3
-  px, is small at the fit. A loop's drawer row carries no location (the look
-  pass on reading 16): its feedthrough is in its members' `y_direct`, which
-  the format does not locate yet. Once it does, the row links one location
-  per member and the location link moves under the message, which runs
-  narrower beside it today (the look pass). A loop's chain leaving a level through a
-  pin has no badge there (answer 8 gives the loop none), so the reader climbs
-  by the breadcrumb.
-- Increment 7's route look. A terminal port's highlight stroke on a 6 px square
-  is hard to see; the casings' ends find the consumers. On a short pin
-  (`rates`' `in`) the `route` pill covers most of the top edge. The `route`
-  pill at a tall assembly's bottom right is far from the entry port on its
-  left edge and reads as a block mark.
-- A route on a level it does not cross dims the whole level, as a legend focus
-  held onto a level with no line does; the status bar still names it.
-- A face with no producer (an unfed input) cannot be traced: the shell ignores
-  the trace and the pane shows no button. A push that keeps an origin which no
-  longer resolves leaves the route standing undrawn, with no status, until
-  Escape or another trace; no fixture has one.
-- The right-click menu has no keyboard path (`t` is the keyboard's trace) and
-  its button is not focused on opening.
-- The status bar clips on overflow (`overflow: hidden`), so at a narrow width a
-  long route line can hide its clear control; Escape still clears. Untested.
-- The drawer's filter shows only when rows exist, the empty state alone with
-  none; the brief's contract lists the filter in the body.
-- The tree's rows and the pane's face rows take a click but are a `div` and a
-  `tr`, not buttons (answer 11); the tree's have `j` and `k`, the face rows no
-  keyboard path. The look pass left them, with the drawer's below, to a later
-  accessibility sweep.
-- The drawer's rows and its filter have no keyboard path from the regions'
-  Tab cycle yet: Tab moves between the four region roots alone, so a row's
-  button and the filter take focus by a click.
-- The timing tab's schedule rows and hyperperiod chart, and the legend's
-  concrete `Δt` and `(D, Φ)`, wait on the deployment overlay's minor bump
-  (reading 1 of brief 8); the tab says so in `p.schedule-note`.
-- The root-inputs tab has no claim column (stage 2), and its pinned column
-  stays empty since version 1.0 writes no pinned face.
-- A bare `@ref` to a name in a parent module (`local_wires`, `input_wires`,
-  `output_wires`, `sample_times`, `transparent_container` in every `Group`
-  docstring; `AsPort`, `Pinned`, `StopFlag`, `stop_reason` elsewhere) resolves
-  to `api/#Redstone.Blocks.<name>`, an anchor the API page lacks, so the link
-  lands at its top (build_release.md's pending note). A fix needs the API
-  page's anchors, a generated list at pin time.
-- The docs address is `dev/` until the core's first release; increment 11
-  flips it to `stable/` and checks the two Vimium patterns on the hosted copy.
-- The root's pane shows the level layout and never its type's docstring, so a
-  root `Group`'s docstring is unreachable at the root.
-- An analysis row's click selecting a tag or a port does not pan the canvas
-  to it, as a tree click does not; a port selection does not expand the tree.
-- The base grid's anchor row reads "the deployment's" in the key column, its
-  six readings spread over five columns; the look pass places them.
-- The help page replaces the frame, which unmounts: the canvas comes back from
-  the session's views and layouts, but the tree's scroll and the keyboard's
-  region do not, focus falling to the body after the close.
-- A typed level hash is stamped one deeper like a link's entry, so Shift-`h`
-  now walks back from it where it did nothing before increment 8.
-- The about section names the format's major alone (reading 16); the minor is
-  the writer's, no constant of the schema.
-- The help page's look, for the look pass: the five terms without a drawing
-  sit in a row with an empty first column; the tier and rate samples' fills
-  are near each other, the labels carrying them; the vocabulary's third
-  column is the builder's wording; the tag sample repeats the canvas's `tagD`
-  formula rather than sharing it, since the canvas's lives in its component.
+regenerated by the `predev`, `prebuild`, `precheck` and `pretest` hooks.
+`npm run check` runs svelte-check over `src/`, `e2e/` and
+`playwright.config.ts`; `npm test` runs Vitest once; `npm run e2e` runs
+Playwright, both projects unless one is named; `npm run dev`, `build` and
+`preview` are Vite's.
