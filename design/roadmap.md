@@ -1,13 +1,13 @@
 # The inspector: roadmap
 
 The staging of the inspector's stage 1, the static inspector over the
-descriptor, into eleven increments on two tracks, and the delegation
-pipeline's adjustments for the half of it written in TypeScript. Grounded
-in the core's tree at `2072d41` and in the seven design records under
-`design/`, which hold every ruling; this file restates none and
-says which answers each brief draws on. Each increment follows the
-pipeline: a brief in this directory written against the landed tree of its
-predecessors, a prototype in a worktree, one cold review, a fixer, push.
+descriptor, into eleven increments on two tracks. Grounded in the core's
+tree at `2072d41` and in the seven design records under `design/`, which
+hold every ruling; this file restates none and says which answers each
+brief draws on. Each increment follows the pipeline as `rules.md` adapts
+it for the frontend: a brief in `increments/` written against the landed
+tree of its predecessors, a prototype in a worktree, one cold review, a
+fixer, push.
 The briefs are written one at a time, after the predecessor lands, because
 they name files the predecessor creates.
 
@@ -39,13 +39,14 @@ three ways that the pipeline as run for the core does not cover.
 
 ## The rulings
 
-All in `design/`, none normative, the spec winning where they
-touch it (§13.9). A brief cites answers by record and number.
+All in this repo's `design/`, none normative, the core's spec winning
+where they touch it (`Redstone.jl/design/spec.md` §13.9). A brief cites
+answers by record and number.
 
 - `initial_design.md`: scope, the eighteen stage-1 answers, the axes.
 - `descriptor_design.md`: the format, the writer, the schema of record at
-  `src/descriptor.json`, the fixtures rule (answer 16).
-- `design/prototypes/render_spike/report.md`: hand-rolled SVG over ELK.js,
+  `Redstone.jl/src/descriptor.json`, the fixtures rule (answer 16).
+- `prototypes/render_spike/report.md`: hand-rolled SVG over ELK.js,
   the layout options exercised, what the spike did not test.
 - `visual_grammar.md`: how every concept is drawn, answers 1 to 10.
 - `workspace.md`: the frame, navigation, selection, the detail pane,
@@ -58,44 +59,9 @@ touch it (§13.9). A brief cites answers by record and number.
 - `build_release.md`: the release mechanics, the pin, the repo layout,
   the generated types, the tests, CI, the hosted address, the checklist,
   answers 1 to 8.
-
-## The pipeline for the frontend
-
-What changes for a frontend increment, and only that; the Julia
-increments run the pipeline unchanged.
-
-- **The repo.** All ten increments land in `RedstoneInspector.jl`, a
-  separate repo with the layout of `build_release.md`'s answer 3. A
-  prototype runs in a worktree of that repo, with `npm ci` run there and
-  the committed fixtures at hand. The core repo gains nothing from stage
-  1 beyond the `$id` commit already landed.
-- **The map.** Increment 2 writes `frontend/MAP.md`: the module layout,
-  which file owns which concern, the stores and what rekeys on a push,
-  the test files and what each pins, and the traps found. Every later
-  brief routes reading through it, and every later increment extends it
-  in its last stage. It is the frontend's `implementation.md`, kept to a
-  size a brief can cite by section.
-- **The brief's checks.** Beside its bookkeeping a frontend brief lists
-  the unit tests and Playwright checks the increment adds, each named
-  with the answer it pins, and the screenshots it must produce. The cold
-  reviewer runs the checker, the tests and the browser checks, reverts
-  each fix alone to show a check goes red, and reads the screenshots
-  against the answers; it does not read the code for style.
-- **The look-and-adjust pass.** After the review, before the increment is
-  called done, the user looks: the screenshots from the CI run, and
-  `npm run dev` in `frontend/` on the fixtures, which is the whole of
-  the user's own frontend loop. What the user asks to change goes to the
-  fixer as findings, with a cap of one pass per increment; what needs
-  more is a note in the next brief.
-- **Routing for the agent.** The prototype prompt names the records'
-  answers and the map's sections, never whole records; test output goes
-  through `tail`, Vite's and Playwright's output being verbose; ELK's
-  bundle and `node_modules/` are never read. The notes-file and
-  milestone rules of the delegation pipeline apply unchanged.
-- **Versions.** The spike's `package.json` fixes the dependency versions
-  the first frontend increment starts from: Svelte 5.57, Vite 8.3, ELK
-  0.12, Playwright 1.64, TypeScript 6.0, svelte-check 4.7, ajv 8.20. Node
-  26.12 is installed on the user's machine.
+- `rules.md`: the inspector's rules beyond the core's, the frontend's
+  pipeline among them.
+- `pending.md`: the work order and the open items, first bullet next.
 
 ## Staging
 
@@ -289,7 +255,7 @@ checks; its brief,
 pass's checklist, `look_inspector_07.md`, record the shape, the sixteen
 readings the user ratified, the review and the pass. The feedthrough edges
 were not drawn (reading 1): they move to increment 8's execution-order tab
-as rows labelled presumed, as `workspace.md`'s pending item now says. Facts
+as rows labelled presumed, as `workspace.md`'s pending item then said. Facts
 the next briefs take from it: the fixtures gain `failure_nested`,
 `failure_dead`, `failure_probe` and `warning`, sixteen in all;
 `src/lib/diagnostics.ts` holds the drawer's rows, a loop's chain, each
@@ -313,10 +279,11 @@ stands undrawn.*
 **Increment 8: analysis views and the help page.** The drawer's tabs,
 execution order with the badges and the feedthrough edges as rows
 labelled presumed (increment 7's reading 1), root inputs, the anchor and
-component tables, the schedule and hyperperiod chart over the deployment fixture,
-and the help page's five sections with the docstring link rule and the
-bundled Markdown renderer. Visible: the static page complete. Draws on
-`workspace.md` answers 7 and 11, `build_release.md` answer 7.
+component tables, and the help page's five sections with the docstring
+link rule and the bundled Markdown renderer; the schedule and hyperperiod
+chart moved to increment 10 on 2026-11-04. Visible: the static page
+complete. Draws on `workspace.md` answers 7 and 11, `build_release.md`
+answer 7.
 
 **Increment 9: the server.** On the Julia track after increment 1, in
 parallel with 2 to 8: the module slot, HTTP.jl on the fixed port and
@@ -330,8 +297,10 @@ point where the tracks touch. Visible: `inspect(model)` opens the page.
 Draws on `live_session.md` answers 1 and 3 to 8. *Landed on 2026-10-30 at
 `38b8c8e` of `RedstoneInspector.jl`, four commits on the Julia side only;
 its brief, `brief_inspector_09_server.md`, records the review and the
-readings, and `notes_inspector_09.md` their reasons. Facts the frontend
-takes from it, all in `frontend/PROTOCOL.md`: the page greets with
+readings, and `notes_inspector_09.md` their reasons. The review added a
+fifth `inspect` method, on a `Base.ExceptionStack`, since the REPL's
+`err` is the stack (reading 14). Facts the frontend takes from it, all
+in `frontend/PROTOCOL.md`: the page greets with
 `{"type": "hello", "channel": "<name>", "major": 1}` and asks for an
 editor with `{"type": "open_location", "file": "<path>", "line": <n>}`;
 the descriptor arrives as the pretty-printed envelope text in one text
@@ -358,8 +327,9 @@ regenerated deployment fixture; folded in, the writer qualifies every bare
 `@ref` link whose binding it can resolve from the type's module
 (`which(mod, name)` giving the defining module), so `local_wires` in a
 `Blocks` docstring reaches `Redstone.local_wires` on the API page, which
-closes `build_release.md`'s pending note and amends `descriptor_design.md`'s
-answer 10, the docstring source carrying qualified refs. The inspector
+closes the bare-`@ref` note `build_release.md` carried and amends
+`descriptor_design.md`'s answer 10, the docstring source carrying
+qualified refs. The inspector
 half: the pin bump, the timing tab's rows and chart, the legend's values,
 the page's link rule keeping its module-joining as the fallback for a ref
 the writer left bare. Visible: the deployment fixture's schedule on the

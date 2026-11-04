@@ -16,53 +16,7 @@ extensions.
 
 ## Pending questions
 
-Left open on purpose, each with the bump or the axis that owns it.
-
-- **The failure descriptor's bump.** Its body, the encoding of a diagnostic
-  as data, whether a raw user exception escaping a probe is wrapped into the
-  carrier or shown as diagnostics alone, and the carrier field (answer 15)
-  built at the same time. Settled on 2026-10-28 (`failure_descriptor.md`,
-  §13.9, D-434): the body is `policy`, `structure` when held, `diagnostics`
-  and `warnings`; a diagnostic is four fields with `function`, `marks` and
-  `cycle` optional; and D-248 frames every user throw, so nothing raw
-  escapes.
-- **The deployment overlay's bump.** The schedule rows, concrete `Δt`
-  values, the hyperperiod and the grid report beside `build` in the
-  deployment body. With it, or in a bump of its own, the per-component chain
-  of `sample_times` links that answer 9 left out, and the state events.
-- **Stage 2's extensions.** Per-field markers on a struct marker, the value
-  type schema, and whatever the bridge's connect payload adds to the
-  envelope. All additive.
-- **Marker additions not yet earned.** A `string` kind when a `String` port
-  appears, and `min`/`max` on an integer marker if stage 4's widgets want
-  bounds. Each is one minor bump.
-- **Locations beyond the declarations.** The stage functions, `y_state`,
-  `y_direct`, `x_deriv`, `s_update` and the event functions, among a type's
-  source locations, additive when a reader wants them.
-- **The drawing's additive proposals.** From axis 4's spike
-  (`design/prototypes/render_spike/report.md`, section 2), each a minor
-  bump (D-433): an optional node `alias`, the qualified name of the `const`
-  binding a block was built from, since the closed loop's six junctions
-  read alike; an optional envelope `name` the inspector package writes and
-  `descriptor` never does; and a type and kind on an assembly face, if
-  axis 3 styles wires by kind. Settled by axis 3 on 2026-10-27: `alias` and
-  `name` go as format 1.1 and the assembly-face fields are closed; the
-  bumps' working list is now `visual_grammar.md`'s "Design axes".
-- **The schema's `$id`.** The URL it carries once the inspector has a home
-  on GitHub Pages; the file ships before the URL resolves. Settled by axis
-  7 on 2026-10-30 (`build_release.md`, answer 7): the core's docs site
-  serves the schema of record, and the `$id` names it,
-  `https://e271828e.github.io/Redstone.jl/stable/descriptor.json`.
-- **The exact fixture set in the core's suite.** Which models of
-  `test/fixtures.jl` cover the cases answer 16 lists, and which small ones
-  the increment adds.
-- **The name.** `descriptor` is provisional until the export audit (D-226),
-  as `series` is.
-- **Pretty-printing.** Indentation and line breaks in the file are the
-  inspector package's encoder settings (axis 6), not the format's; the
-  format fixes key order only. Settled by axis 6 on 2026-10-28: JSON.jl at
-  two spaces with a trailing newline, for the file and the push alike
-  (`live_session.md`, answer 2).
+Open items live in `pending.md`.
 
 ## Answered questions
 
@@ -398,30 +352,8 @@ Left open on purpose, each with the bump or the axis that owns it.
 
 ## Design axes
 
-This session closed axes 1 and 2. What it hands on, in working order:
-
-1. **The docs commit.** §13.9 and the §9.2 sentence, D-432 with its
-   bundle, the `structure` field in §13.2 as recorded and unbuilt, D-257's
-   annotation, and `initial_design.md`'s pointer here.
-2. **The increment.** `src/descriptor.json`, `src/descriptor.jl` with the
-   two methods, `test_descriptor.jl` with its fixtures, JSON and JSONSchema
-   as test dependencies. Briefed under `brief_lessons.md`'s rules.
-3. **Axis 4's spike**, beside the increment, on the hand-written fixture of
-   answer 16. What the drawing finds missing reaches the schema before
-   version one freezes with the increment's commit. Run on 2026-10-26; its
-   record is `design/prototypes/render_spike/report.md`: hand-rolled SVG
-   over ELK.js, two findings taken into the schema, three deferred above.
-4. **Axis 3**, over the real schema: what it draws is on the node (class,
-   tier, timing, faces with markers, `field` and `key` for container
-   groups) and on the assembly node's wires; port classes join from
-   `outputs` by path.
-5. **Axes 6 and 7.** The encoder's indentation, the fixture generation and
-   the TypeScript types from the schema file. Axis 6 ran on 2026-10-28
-   (`live_session.md`): the indentation and the fixture script are its, the
-   types' generation is axis 7's.
-6. **The minor bumps**, each a short session: the deployment overlay with
-   the rates chain, state events, the failure descriptor with the carrier
-   field built, then stage 2's extensions.
+This session closed axes 1 and 2; what it handed on has landed or
+stands in `roadmap.md`'s staging.
 
 ## Glossary
 

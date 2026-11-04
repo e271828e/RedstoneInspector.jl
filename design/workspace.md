@@ -11,17 +11,7 @@ this page, so what this record builds must rehost as dock nodes.
 
 ## Pending questions
 
-Left open on purpose, each with its owner.
-
-- **A feedthrough emphasis.** A mark on every wire whose producer port is
-  stage 2 into a block with a stage 2, derived from the stage lists the
-  descriptor carries. Cheap, and distinct from the general feedthrough view
-  `initial_design.md`'s answer 9 deferred, which needs the tracer's maps:
-  this one is the build's presumed structure, not the traced one, and
-  overstates dependences inside a block. Held until it can be labelled so.
-  Increment 7 drew no feedthrough edges for that reason; their home is the
-  execution-order tab, a row per edge labelled as presumed beside the stage
-  ports it lists (amended 2026-11-03, increment 7's look pass).
+Open items live in `pending.md`.
 
 ## Answered questions
 
@@ -374,31 +364,8 @@ Left open on purpose, each with its owner.
 
 ## Design axes
 
-Handed on by this session, in working order:
-
-- **Axis 6: tabs by name.** `inspect(world; name = "variant")` writes the
-  envelope `name` and pushes to the tab bound to it, opening a new tab
-  when none is; the unnamed call pushes to the default tab; a tab tells the
-  server its name on reconnect; closing a tab frees the name (answer 9).
-  Beside it the open-in-editor request behind a location click (answer 4),
-  and printing the Vimium exclusion pattern once when the browser opens
-  (answer 11). Ran on 2026-10-28; its record is `live_session.md`, which
-  names the server-side record a channel and keeps "tab" for the browser's.
-- **Axis 4: the hints.** Previous positions as ELK hints on a relayout after
-  a push, keyed by node path, the dragged position among them (answer 9);
-  the spike left ELK's interactive options untested.
-- **Axis 7: the docstring links.** A Documenter `@ref` link in a rendered
-  docstring linking to the hosted documentation, which that axis knows the
-  address of (answer 4). The bundled Markdown renderer is its dependency
-  to pick, offline and without a CDN. Ran on 2026-10-29 and 30; its
-  record is `build_release.md`.
-- **The bumps, as `visual_grammar.md` hands them on**, with this session's
-  additions: the failure descriptor opens the drawer on its diagnostics
-  (answer 10); the deployment overlay fills the timing tab's schedule rows
-  and hyperperiod chart and the legend's lines (answer 7); stage 2's claim
-  table fills the root-inputs tab's writer column (answer 6).
-- **Axis 3's fallback chain**, amended by answer 10: `name`, the file name
-  for a dropped or picked file, the root type's display name.
+This session closed axis 5; what it handed on has landed or stands in
+`roadmap.md`'s staging.
 
 ## Glossary
 

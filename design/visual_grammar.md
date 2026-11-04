@@ -7,7 +7,11 @@ canvas (`design/prototypes/render_spike/report.md`). It builds on
 `initial_design.md`'s answers 6, 9 and 15 and on `descriptor_design.md`,
 and never restates them; where it amends one, it says so. Like its parents
 it is not normative. A schema change it asks for lands as a minor bump,
-docs commit first (D-433), and the client follows.
+docs commit first (D-433), and the client follows; the two it asked for,
+the node `alias` and the envelope `name`, joined version one with no
+bump, the package being unreleased.
+*Amended 2026-10-27 (`alias` and `name` landed, `86ff8cc`): the two were
+to land as a minor bump.*
 
 The scope is the core tier's drawing and the overlay of answer 6: blocks,
 ports, a level's boundary, wires, containers, color, library icons, the
@@ -16,40 +20,16 @@ layout tuning is axis 4's.
 
 ## Pending questions
 
-Left open on purpose, each with the axis or the bump that owns it.
-
-- **Palette values, glyph artwork and the legibility floor.** The exact
-  colors, the icon drawings, the halo and casing widths and the semantic
-  zoom thresholds are the front end's, tuned in the browser (axes 4 and 7).
-- **ELK's part.** Compound nodes for the regions of answer 5 and edge
-  merging for the fan-out trunks of answer 4 are axis 4's to configure and
-  measure; the grammar holds either way.
-- **The claim badge on a root input pin.** Its three states, unclaimed,
-  claimed by a device, claimed by the inspector itself, drawn in the slot
-  answer 3 reserves; the data is the claim table stage 2's bridge carries,
-  which its connect payload or a message of its own must therefore include.
-- **What the overlay needs from the failure descriptor's bump.** Per
-  diagnostic its kind, text and attribution as a node path, a path and port,
-  or a consumer endpoint; for `AlgebraicCycle` the members as node paths,
-  the wires as endpoint pairs in the format's `{"path", "port"}` objects,
-  the verdict when present, the dead hops as `{"path", "input", "output"}`
-  and the tracing mode per member; for a probe failure the function name
-  (answer 8). Settled on 2026-10-28 (`failure_descriptor.md`, answer 2):
-  `marks`, `cycle` and `function` carry exactly this.
-- **The bare port.** A bare contract (D-437, 2026-10-30, superseding D-436)
-  is one port with the default face `u` or `y`, and the descriptor spells
-  that face in `name` and in a wire endpoint's `port` as any other, format
-  unchanged. It draws as any port, its square with the label `u` or `y`
-  beside it; the hover title and the detail pane spell `path/u` or `path/y`,
-  as the core's renderers do. Nothing else in the grammar changes.
+Open items live in `pending.md`.
 
 ## Answered questions
 
 1. **The block: the spike's frame, kept.** A rounded rectangle with two
-   text lines: the node's segment in bold, then the display name, the type's
-   last segment until the alias bump of question 7 gives a better one. Fill
-   encodes tier, continuous and discrete in two colors, a closed assembly in
-   a neutral gray with a double border, the cue that it opens. The timing
+   text lines: the node's segment in bold, then the display name, the
+   last segment of the node's `alias` (question 7) when it carries one and
+   of its type otherwise. Fill encodes tier, continuous and discrete in
+   two colors, a closed assembly in a neutral gray with a double border,
+   the cue that it opens. The timing
    triple is not printed; it drives the rate colors of question 6. The
    signature and the parameters never appear on the block. Where an icon
    applies it replaces the second line, never the frame, so the name and
@@ -57,6 +37,8 @@ Left open on purpose, each with the axis or the bump that owns it.
    one block standing alone with its faces as the level's boundary around
    it, so the grammar has no special case and only the client's level
    builder does.
+   *Amended 2026-10-27 (`alias` landed, `86ff8cc`): the display name was
+   the type's last segment until the alias bump of question 7.*
    *Why:* the spike's picture already tells continuous from discrete with
    no legend, and gray alone reads as inert, hence the border. Keeping the
    frame under an icon keeps a library block and a user block aligned on
@@ -71,7 +53,14 @@ Left open on purpose, each with the axis or the bump that owns it.
    full strength. Type and kind are not drawn on the port; they reach the
    user through the wire styles of question 4, the type-label toggle and the
    detail pane. A failure descriptor has no `outputs` section, so every
-   output there is the filled square.
+   output there is the filled square. A bare contract (D-437) is one port
+   with the default face `u` or `y`, which the descriptor spells in `name`
+   and in a wire endpoint's `port` as any other, format unchanged; it
+   draws as any port, its square with the label `u` or `y` beside it, and
+   the hover title and the detail pane spell `path/u` or `path/y`, as the
+   core's renderers do.
+   *Amended 2026-10-30 (D-437, superseding D-436): the bare port joined
+   the answer, nothing else in the grammar changing.*
    *Why:* which output is state-derived is the one fact that explains why a
    feedback loop is legal, and the glyph costs no space. An unconnected
    input is refused by the build and an unconnected output is ordinary, so
@@ -248,8 +237,8 @@ Left open on purpose, each with the axis or the bump that owns it.
    and a fixed width, replacing the display name, which moves to the hover
    title and the detail pane; the ports and the sizing rule are untouched.
    The key is the node's `alias` when present and its `type` otherwise, so
-   the four `const` aliases of `Junction` draw apart: this asks for the
-   alias bump, an optional node field holding the qualified name of the
+   the four `const` aliases of `Junction` draw apart. The `alias` is an
+   optional node field, in version one, holding the qualified name of the
    most specific `const` type binding in the type's own parent module that
    the instance's type is a subtype of, other than the base type; a
    `Junction` over a user function and an alias defined elsewhere carry
@@ -274,6 +263,8 @@ Left open on purpose, each with the axis or the bump that owns it.
    A user type gets no icon and shows its type's last segment; author
    icons stay refused (answer 15). The icon never changes with tier or
    rate, which are the fill's.
+   *Amended 2026-10-27 (`alias` landed, `86ff8cc`): the answer asked for
+   the field as the alias bump.*
    *Why:* six of the closed loop's blocks read "Junction" with only the
    signature's `typeof(+)` to tell them apart, the parsing the format
    exists to avoid. *Rejected:* a `display_name` trait on the library
@@ -366,42 +357,8 @@ Left open on purpose, each with the axis or the bump that owns it.
 
 ## Design axes
 
-This session closed axis 3. What it hands on, in working order; this list
-supersedes the bumps' entries on `descriptor_design.md`'s pending list,
-which now points here.
-
-1. **The wire key.** Already in place: increment 81 wrote the sentence in
-   the schema's `Wire` description, consumer endpoints are unique within a
-   level, and asserts it in the descriptor suite (answer 4). Nothing to do.
-2. **The `alias` and `name` fields.** Landed on 2026-10-27, commit 86ff8cc.
-   The optional node `alias` with answer
-   7's writer rule, the most specific `const` type binding in the type's own
-   parent module, and the optional envelope `name` of answer 10, which the
-   inspector package writes and `descriptor` never does. They join version
-   one's shape with no version bump, the package being unreleased: schema,
-   writer, a fixture with a `SumJunction` and a `Pack`, two clauses in
-   §13.9, docs commit first.
-3. **Axis 5**, workspace and interaction, over this grammar: the tree, the
-   breadcrumb, the detail pane and the drawer, search, selection and focus,
-   view state by path across pushes, the analysis views, the help page.
-   Answers 3, 8 and 9 name what the tree and the drawer carry.
-4. **Axes 6 and 7**, as `descriptor_design.md` hands them on, with the
-   client's icon table, palette and glyph artwork verified in the browser
-   under answer 11's review model.
-5. **The inherited bumps**, each a short session, with what this session
-   added to it:
-   - *The failure descriptor*, with the carrier field built: it carries
-     what the pending list above asks for the overlay (answer 8). Ran on
-     2026-10-28; its record is `failure_descriptor.md`.
-   - *The deployment overlay*, with the rates chain and state events: its
-     schedule rows feed the legend's concrete `Δt` and `(D, Φ)` per color
-     (answer 6).
-   - *Stage 2's extensions*: the claim table beside the connect payload,
-     for the badge in the root input pin's slot (answer 3).
-   - *The marker additions, the extra locations and the schema's `$id`*,
-     unchanged.
-6. **Closed, no bump.** `type` and `kind` on an assembly face: the client
-   resolves (answer 4).
+This session closed axis 3; what it handed on has landed or stands in
+`roadmap.md`'s staging.
 
 ## Glossary
 

@@ -129,3 +129,79 @@ from the roadmap. None is missing now.
 - The convention's exact form lives only in `brief_records.md`;
   `AGENTS.md` says "edited in place with a dated note". `design/rules.md`
   could carry the form.
+
+## The pending pass
+
+Run under `brief_pending_roadmap.md`.
+
+### What moved where
+
+- `pending.md`: the stage 1 bullet kept, gaining one clause on what the
+  qualified `@ref` links do, since `build_release.md`'s note on them
+  retired. Added to the work order: "After the core's first release"
+  (the docs flip, the `[compat]` pin, the `$id`) and "The later stages".
+  Added under Unordered: the format bumps, the names the export audit may
+  change, Vite's proxy, Zed upstream, the schema's record path, and one
+  bullet per open item of increments 3 to 7, plus one bullet for
+  increment 8's items keyed to its look checklist.
+- The six records' "Pending questions" bodies became "Open items live in
+  `pending.md`."; their "Design axes" bodies one sentence pointing at
+  `roadmap.md`. Every hand-on item had landed, was staged, or now sits in
+  `pending.md`; none needed a new bullet beyond those above.
+  `initial_design.md`'s stage 2 to 4 pending lists stay, the later-stages
+  bullet pointing at them.
+- `visual_grammar.md`: "The bare port" folded into answer 2 with a note
+  dated 2026-10-30 (D-437); answers 1 and 7 and the preamble state that
+  `alias` and `name` joined version one unbumped, each with a note dated
+  2026-10-27 (`86ff8cc`).
+- `roadmap.md`: "The pipeline for the frontend" moved to `rules.md`; the
+  preamble, "The rulings" and increments 7 to 10 edited as the brief
+  says.
+- `rules.md`: the pipeline section before "Frontend increments", and
+  "Amending a record" last.
+
+### Dropped as closed
+
+From the records: every item marked settled or closed (the failure bump,
+the drawing's proposals, the `$id`, pretty-printing, the overlay's needs,
+the raw user exception, the generator's output). Not marked, judged
+closed: `descriptor_design.md`'s fixture set in the core's suite (the
+core's `test_descriptor.jl` landed with it); `visual_grammar.md`'s palette
+values and glyph artwork and "ELK's part" (increments 3 and 6 built and
+tuned them); `workspace.md`'s feedthrough emphasis (increment 8's
+execution-order tab draws the presumed rows, per the map at `bb2511f`).
+The bare `@ref` note and the timing tab's schedule went to increment 10's
+entry, already there.
+
+From the increments: the faces table's squeezed kind cells (increment 6's
+stacked rows), the Shift-`l` bound without a check (the keyboard check now
+pins it), `closed_loop`'s root pin order and Shift's travel (both ruled in
+increment 6's look pass), the halos composing to purple, the selected
+block's full casings and the terminal port's thin stroke (ruled in
+increment 7's look pass, entries 1.9, 5.6 and 6.3), the mutants' accepted
+survivors, and master's map item on the feedthrough edges. The map's
+"Firefox has never run here" is stale and was dropped; its clipboard skip
+stands.
+
+### Decided here
+
+- `visual_grammar.md`'s preamble keeps the minor-bump rule for later
+  changes and states the two fields' exception, rather than dropping the
+  rule.
+- Increment 8's map items are one bullet keyed to `look_inspector_08.md`'s
+  entries, so the pass's rulings stay on the checklist; what the pass
+  leaves open becomes its own bullet.
+- The map's "increment 11 flips the docs address" yields to
+  `build_release.md`'s pending note: the flip waits for the core's
+  release, which follows increment 11.
+- Some items merged: a legend focus and a route each dimming a level with
+  nothing of theirs; the keyboard paths of the tree, the face rows, the
+  drawer and the menu; the overlay's look leftovers; the route pill's two
+  placements.
+- "The schema's record path" was added from the move's sweep, which left
+  it tracked nowhere.
+- `rules.md`'s "The map" bullet was rewritten to the brief's ruling,
+  since its old list of test inventories and traps contradicted it; "The
+  repo" gained increment 10's core half beside the `$id` commit.
+- `roadmap.md`'s "The rulings" now names `Redstone.jl/src/descriptor.json`
+  and `prototypes/render_spike/report.md` by their paths from here.

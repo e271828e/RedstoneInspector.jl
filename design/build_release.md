@@ -17,31 +17,7 @@ appears and in the glossary.
 
 ## Pending questions
 
-Left open on purpose, each with its owner.
-
-- **The generator's output on the schema's idioms.** Whether
-  `json-schema-to-typescript` resolves the `true` placeholders of the node
-  branches to the identity's types, and narrows the envelope by `kind`
-  (answer 4). Checked by increment 2's brief on 2026-10-30: both failed,
-  `node.path` coming out `string | undefined` and `d.build` staying
-  optional under a `kind` branch, and the core's `778d6ee` spells the
-  shared fields in both node branches and the bodies in the envelope's
-  branches, after which the generated types are required and narrow by
-  `kind`; the same instances validate. Closed.
-- **A bare `@ref` to a name in a parent module.** The anchor rule of answer
-  7 joins the docstring's own module with the name, so a `Blocks` docstring
-  naming `Build` lands at the top of the API page. Revisited if it bites.
-- **The docs address flip.** The bundle's docs constant is `dev/` until the
-  core's first release and `stable/` after (answer 7). The pin bump that
-  moves to the registered Redstone flips it.
-- **The pin after registration.** The `[sources]` revision becomes a
-  `[compat]` range at the root and an equality bound plus the release tag
-  in `scripts/` (answer 2). The first pin bump after the core registers
-  makes that edit.
-- **The `$id` resolving.** The schema's `$id` names the core's docs site
-  (answer 7), which serves the file only once the core's first release
-  deploys `stable/`. The file ships before the URL resolves, as
-  `descriptor_design.md` already accepts.
+Open items live in `pending.md`.
 
 ## Answered questions
 
@@ -450,24 +426,8 @@ Left open on purpose, each with its owner.
 
 ## Design axes
 
-This session closed axis 7 and with it stage 1's design. What it hands on,
-in working order:
-
-1. **The core's small commit**: the `$id` in `src/descriptor.json` and the
-   copy in `docs/make.jl` (answer 7). Source, so proposed before editing.
-2. **The repo**, `RedstoneInspector.jl`, with answer 3's layout, answer 2's
-   pin, answer 6's workflow and the `scripts` project, created as the
-   first step of the increment below.
-3. **The frontend**, axes 3 to 5 over the committed fixtures and the
-   generated types, under answer 11's review model: the checker, the tests
-   of answer 5 and the screenshots.
-4. **The package's increment**, as `live_session.md` hands it on, with the
-   fixture script, `release.jl` and the README of this record; the Zed
-   check of `live_session.md`'s pending list runs in it.
-5. **The first release**, once the frontend draws the fixtures, by answer
-   8's checklist; the deployment overlay's bump stands as
-   `visual_grammar.md` hands it on, and stages 2 to 4 after the core's
-   release.
+This session closed axis 7 and with it stage 1's design; what it
+handed on has landed or stands in `roadmap.md`'s staging.
 
 ## Glossary
 

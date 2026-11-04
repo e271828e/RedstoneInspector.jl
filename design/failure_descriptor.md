@@ -19,10 +19,7 @@ and only a nested carrier, an `InternalInvariant` and an
 
 ## Pending questions
 
-- **The runtime carrier.** `StepError` is not a `DiagnosticError` and has no
-  descriptor; stage 3, which has a run to show, owns it.
-- **The kind names.** A diagnostic's `kind` is its type's name, which the
-  export audit may still rename, as every name in Appendix C's set.
+Open items live in `pending.md`.
 
 ## Answered questions
 
@@ -121,19 +118,8 @@ and only a nested carrier, an `InternalInvariant` and an
 
 ## Design axes
 
-What this bump hands on, in working order:
-
-1. **The increment**: `src/diagnostics.jl` and `src/build.jl` for the
-   carrier and the door; `src/descriptor.jl` for the failure method, the
-   diagnostic encoder and the build body's `warnings`; `src/descriptor.json`;
-   `test_descriptor.jl`'s cases and `test_build.jl`'s carrier tests.
-   Briefed under `brief_lessons.md`'s rules, prototyped first.
-2. **The page**, as `workspace.md`'s answers 6 and 10 and
-   `visual_grammar.md`'s answer 8 already settle: the drawer on the
-   diagnostics with the overlay lit, the list alone without a structure,
-   amber for warnings.
-3. **The deployment overlay's bump**, next of the inherited bumps, as
-   `visual_grammar.md` hands it on.
+What this bump handed on has landed or stands in `roadmap.md`'s
+staging.
 
 ## Glossary
 

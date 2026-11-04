@@ -14,25 +14,7 @@ in view.
 
 ## Pending questions
 
-Left open on purpose, each with its owner.
-
-- **Vite's dev server proxying the socket.** The faster development loop of
-  answer 8, which needs a preference listing extra allowed origins and a
-  forwarding entry in the Vite configuration. Taken up by whoever develops
-  the frontend, when the rebuild-and-reload loop chafes.
-- **Zed in `edit`'s table.** Checked by increment 9: Zed is absent from
-  Julia 1.13.3's editor table, and the fallback runs `zed path` without
-  the line. The inspector's README gives the `InteractiveUtils.define_editor("zed")`
-  entry for `startup.jl`; the package carries no editor code (answer 6).
-  Proposing the entry upstream is open.
-- **A token in the URL.** Stage 2's, if commanding a run over the socket
-  earns more than the `Origin` check (answer 6).
-- **A protocol version.** Stage 2's, needed only if a third client ever
-  speaks the protocol (answer 5).
-- **A raw user exception escaping a probe.** Settled on 2026-10-28 by
-  `failure_descriptor.md`'s preamble: D-248 frames every user throw, so
-  none escapes. The failure bump's. Until it rules, `inspect(root)` lets
-  it propagate and the tab keeps its previous descriptor (answer 7).
+Open items live in `pending.md`.
 
 ## Answered questions
 
@@ -314,36 +296,8 @@ Left open on purpose, each with its owner.
 
 ## Design axes
 
-This session closed axis 6. What it hands on, in working order:
-
-1. **The schema's move**, `schema/descriptor.json` to `src/descriptor.json`,
-   with the sweep of every citation (answer 10). Its own small commit.
-2. **The failure bump**, before the package's increment (answer 7): the
-   carrier's `structure` field built, `descriptor(::DiagnosticError)`, the
-   encoding of a diagnostic as data, and its ruling on a raw user
-   exception. Its body and the deployment overlay's bump stay as
-   `visual_grammar.md` hands them on.
-3. **Axis 7**, build, release and verification, with what this session
-   adds: `scripts/fixtures.jl` wired into CI; the TypeScript types
-   generated from the committed schema copy at bundle build time, and the
-   generator's choice; the CI that builds the bundle, attaches it to the
-   release and updates `Artifacts.toml`; the hosted copy's address, which
-   fixes the schema's `$id` and the help page's second Vimium pattern; the
-   Documenter `@ref` links of the detail pane; and the release checklist
-   that keeps one tag for the package and the bundle. Ran on 2026-10-29
-   and 30; its record is `build_release.md`.
-4. **The package's increment**, after the frontend of axes 3 to 5 and the
-   failure bump: the four `inspect` methods and `write_descriptor` with its
-   `IO` primitive, the server with its channels, the protocol's stage 1
-   half and `frontend/PROTOCOL.md`, open-in-editor and the `Origin` check,
-   the three preferences `port`, `open_browser` and `bundle_dir`, the
-   unexported `stop!`, and the test suite of answer 10. The Zed check of
-   the pending list runs in it.
-5. **Stage 2's device side**, over this server as built: the channel's
-   sockets are the subscribers, control messages are more `type`s, values
-   are binary frames, the `Origin` check already guards the socket that
-   will stage inputs, `inspect(sim)` is the fifth method, and the token
-   and the protocol version wait on the pending list above.
+This session closed axis 6; what it handed on has landed or stands in
+`roadmap.md`'s staging.
 
 ## Glossary
 
