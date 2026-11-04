@@ -2,7 +2,7 @@
 
 The contract between the inspector's server, `src/server.jl`, and the page. It
 has one section per message type, and each stage appends its own. The design
-record is `design/inspector/live_session.md` in the Redstone.jl repo, answers
+record is `design/live_session.md`, answers
 3 to 6.
 
 ## The handshake

@@ -6,3 +6,4 @@ frontend/e2e/screenshots/
 frontend/test-results/
 frontend/playwright-report/
 .DS_Store
+node_modules/

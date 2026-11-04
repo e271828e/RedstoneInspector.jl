@@ -279,6 +279,7 @@ and the fixtures regenerate against the old core.
 - `frontend/fixtures/`, `frontend/schema/`: the committed descriptors and schema copy.
 - `Artifacts.toml`: the bundle's entry, written by the release workflow.
 - `frontend/`: the page, mapped in `frontend/MAP.md`.
+- `design/`: the design records, the roadmap, the work order and the increments' records, routed by `AGENTS.md`.
 - `.github/workflows/CI.yml`: the package suite, the fixtures' drift check, and the frontend's check, tests, build and browser checks, its screenshots and `dist/` kept as job outputs.
 
 ## License
