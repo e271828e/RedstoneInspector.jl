@@ -1,4 +1,4 @@
-// Search (workspace.md answer 5, visual_grammar.md answer 9): `/` and Cmd-K focus
+// Search (workspace.md answer 5, visual_grammar.md answer 9): `/`, Cmd-K and Ctrl-K focus
 // the field; the results stand in the outline's place while it has focus; hits
 // take the dashed halo on the open level and the rest dims; the tree's rows take
 // the dashed marker with counts up collapsed rows. The counts are the oracle's.

@@ -207,7 +207,7 @@ and the drawer, the focus ring showing for the keyboard only; `r` switches the
 color mode and `y` the type labels; `o` the execution-order badges; `t`
 traces the selected pin, port or wire; `?` opens and closes the help page.
 Search, in the field at the top of the tree, opened
-by `/` or Cmd-K, matches paths, types and face names as case-insensitive
+by `/`, Cmd-K or Ctrl-K, matches paths, types and face names as case-insensitive
 substrings, `path:`, `type:` and `face:` narrowing a term to one field, a
 prefix alone matching nothing yet; the hits list while the field has focus,
 take a dashed halo on the canvas with the rest dimmed, and mark the tree's rows

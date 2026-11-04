@@ -173,7 +173,7 @@
     return true;
   }
 
-  /** `/` and Cmd-K: the search field focused with its text selected, the tree pane expanded first if collapsed. */
+  /** `/`, Cmd-K and Ctrl-K: the search field focused with its text selected, the tree pane expanded first if collapsed. */
   async function focusSearch() {
     if (prefs.collapsed.tree) {
       toggleCollapsed("tree");
