@@ -204,8 +204,9 @@ opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
 or Alt-Up climbs; `z` centres the selection; `0` fits, `+` and `-` zoom; `d`
 toggles the drawer; Tab moves between the tree, the canvas, the detail pane
 and the drawer, the focus ring showing for the keyboard only; `r` switches the
-color mode and `y` the type labels; `t` traces the selected pin, port or
-wire; `o` and `?` are reserved. Search, in the field at the top of the tree, opened
+color mode and `y` the type labels; `o` the execution-order badges; `t`
+traces the selected pin, port or wire; `?` opens and closes the help page.
+Search, in the field at the top of the tree, opened
 by `/` or Cmd-K, matches paths, types and face names as case-insensitive
 substrings, `path:`, `type:` and `face:` narrowing a term to one field, a
 prefix alone matching nothing yet; the hits list while the field has focus,
@@ -238,6 +239,32 @@ navigation, selection and a push that still declares its face; the trace
 repeated, the clear control or Escape clears it. Escape clears the route
 first, then a focused diagnostic, then a legend line's focus, then the search,
 then the selection.
+
+The drawer's other three tabs analyse the build. Root inputs lists each input
+of the root with its type, its kind and the leaves and root outputs it finally
+reaches. Timing lists the anchors, the base grid first, the keyed rate scopes
+and every discrete leaf with its timing, its rate color and its period,
+sortable by period; the schedule rows and the hyperperiod chart wait for a
+deployment format that carries them, and the tab says so. Execution order
+numbers every leaf with its stage 1 and stage 2 ports, and under a leaf the
+feedthrough edges into it, labelled presumed, since they come from the stage
+lists and can overstate what a block reads. A click on any row selects what
+it names and opens its level. `o`, or the `order` toggle beside the type
+labels', numbers every leaf on the canvas by its position in that order, and
+a closed assembly by its leaves' ranges, "4–5, 15, 17, 19"; the setting is
+kept per browser. The detail pane renders a docstring from Markdown: a
+glossary or API reference in a Redstone docstring links to the core's
+documentation in a new tab, a reference in any other type's docstring stays
+code text, and raw HTML, images and links other than `http` ones are shown
+as text. The help page, at `#help`, opens from the landing panel's link, `?`
+and the `?` at the right of the status bar, and closes by its button, `?`,
+Escape or back. It holds a legend of the diagram's terms with small
+drawings, a table mapping Simulink's vocabulary to Redstone's, what the page
+refuses and what is not here yet, the keyboard table with the two Vimium
+exclusions, `http://localhost:8601/*` and
+`https://e271828e.github.io/RedstoneInspector.jl/*`, and the privacy
+statement with the inspector's version, read from `Project.toml` at build
+time, the format's major and the links.
 
 In the live session the page connects to the server's socket on load and
 greets with its tab's channel. The status bar reads "connected, waiting for
