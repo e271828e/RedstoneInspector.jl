@@ -49,6 +49,29 @@ frontend's traps condensed out of `frontend/MAP.md`. Fold them into
 rules, keeping each as one bullet, and delete `traps.md`. If the file is
 absent, say so in your report and leave `rules.md` as it is.
 
+## After the map's cut
+
+The frontend map was cut on the `increment-8` branch (commit `e2385b3`
+in the worktree; do not touch it). Three follow-ups on master are yours:
+
+- `AGENTS.md`'s "Where things live" row for the map and its "Where a new
+  fact goes" bullet still route traps and "what a check pins" to
+  `frontend/MAP.md`. Traps now live in `design/rules.md`; what a check
+  pins lives in the test's own name; the map keeps the layout, the
+  vocabulary, the stores, the DOM contract tables, the keyboard and the
+  live tab. Reword both.
+- Add one bullet under `pending.md`'s Unordered list, for increment 8's
+  merge: two code comments on the branch cite text that left the map,
+  `src/lib/level.ts:124` ("MAP.md's traps hold the table", now only in
+  `bb2511f`) and `e2e/draw.spec.ts:21` ("MAP.md's open items"); and
+  these test names no longer say what they pin, since the map's
+  inventory went: `src/lib/detail.test.ts`'s five bare element names,
+  `e2e/detail.spec.ts` "plant: the leaf layout" and "the level layout at
+  load", `e2e/tree.spec.ts` "closed_loop: rows, selection and opening",
+  `e2e/draw.spec.ts`'s "draws" template, `e2e/search.spec.ts`'s "the
+  other queries", `e2e/help.spec.ts`'s landing check. The bullet asks the
+  look pass's fixer to fix the comments and rename the tests.
+
 ## Bookkeeping
 
 - Append a section "The glossary pass" to
