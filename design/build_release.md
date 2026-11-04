@@ -431,31 +431,4 @@ handed on has landed or stands in `roadmap.md`'s staging.
 
 ## Glossary
 
-- **Artifact.** Pkg's sense throughout: the bundle `Artifacts.toml` names
-  by its tree hash and fetches from the release's tarball. A file CI hands
-  between jobs is a *job output* here.
-- **Base path.** The prefix a built page puts before its own files'
-  addresses; `./` makes them relative to the page, so one build serves
-  two addresses.
-- **Checker.** `svelte-check`, which reads the TypeScript annotations
-  before the code runs and is the cheapest reviewer of code read rarely.
-- **Drift check.** A CI step that regenerates a committed derived file,
-  the fixtures and the schema copy, and fails when the result differs.
-- **Generator.** A program that writes code from a description, here the
-  TypeScript declarations from the schema copy.
-- **Headless browser.** A real Chrome started with no window and driven by
-  a script, which is what Playwright runs the checks in.
-- **Job, workflow.** GitHub Actions' units: a workflow is one file run on
-  a trigger, a job one machine's sequence of steps inside it, and `needs`
-  orders jobs.
-- **Lock file.** `package-lock.json`, the exact versions of every Node
-  dependency, committed so that `npm ci` installs the same set everywhere.
-- **Pin.** The one fact that says which Redstone the fixtures and tests are
-  built against: a commit revision before the core's first release, a
-  version after.
-- **Tag-absent rule.** The release trigger: on a push to master, release
-  the version `Project.toml` claims if no tag of that version exists.
-- **Tree hash.** The git-style hash of an unpacked directory's contents,
-  which Pkg uses to name and verify an artifact.
-- **`$id`.** A JSON Schema's own name as a URL, its identity for readers
-  and validators.
+Terms are defined in `glossary.md`.

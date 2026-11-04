@@ -369,27 +369,4 @@ This session closed axis 5; what it handed on has landed or stands in
 
 ## Glossary
 
-- **Breadcrumb.** The open level's path as links above the canvas, the root
-  labelled as the tree labels it.
-- **Drawer.** The bottom pane: diagnostics, root inputs, timing and
-  execution order as tabs, collapsed to its tab strip unless a diagnostic
-  exists.
-- **Folder row.** A keyed container's row in the tree, named by the field,
-  no node: it highlights the region and shows the field.
-- **Frame.** The grid of tree, canvas, detail pane and drawer with its
-  splitters, replaced by stage 4's dock while the panes stay.
-- **Landing panel.** What the canvas shows before a model is loaded: the
-  privacy statement, the open control, a drop hint, the help link.
-- **Push.** A new descriptor arriving in a tab from the live session, after
-  which every piece of session state is rekeyed by path.
-- **Route.** A face's value path, upstream to its terminal producer and
-  downstream to every terminal consumer, drawn across levels once started
-  on purpose.
-- **Session state.** What a tab keeps for its lifetime: the open level,
-  each level's view and positions, the expansion, the selection, the
-  route, the query, the drawer's state; against the browser's preferences
-  and the model's data.
-- **Tab by name.** A browser tab bound to an envelope `name`, which
-  `inspect` pushes to by that name.
-- **Trace.** The action that starts a route: the detail pane's button, the
-  right-click entry or `t`.
+Terms are defined in `glossary.md`.

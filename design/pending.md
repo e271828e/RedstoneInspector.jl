@@ -29,10 +29,7 @@ The bullets stand in working order, the first one next.
   its anchor (amending `descriptor_design.md` answer 10); then 11, the
   release. Open across increments: the non-blocking Firefox project
   fails the two leave-prompt checks, to be settled before it turns
-  blocking. The built-in Julia GUI is parked (D-310). The later stages,
-  the bridge, the live inspector and the cockpit, stand after the core's
-  first release, their questions listed in `initial_design.md` and the
-  spec's debts in the core's `pending.md`.
+  blocking. The built-in Julia GUI is parked (D-310).
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The root's
   `[sources]` revision becomes a `[compat]` range, and `scripts/` keeps the
@@ -219,3 +216,16 @@ the increment it came from.
   The help page unmounting the frame, the tree's scroll and the keyboard's
   region lost on the close (4.10). A typed level hash stamped one deeper,
   so Shift-`h` walks back from it (0.5).
+- **Increment 8's merge: stale citations and test names.** The map's cut
+  on the `increment-8` branch (`e2385b3`) left two code comments citing
+  text that left the map: `frontend/src/lib/level.ts:124`, "MAP.md's traps
+  hold the table", the table now only in `bb2511f`'s map, and
+  `frontend/e2e/draw.spec.ts:21`, "MAP.md's open items". With the map's
+  test inventory gone, these test names no longer say what they pin:
+  `frontend/src/lib/detail.test.ts`'s five bare element names,
+  `frontend/e2e/detail.spec.ts`'s "plant: the leaf layout" and "the level
+  layout at load", `frontend/e2e/tree.spec.ts`'s "closed_loop: rows,
+  selection and opening", `frontend/e2e/draw.spec.ts`'s "draws" template,
+  the "the other queries" clause in `frontend/e2e/search.spec.ts`'s
+  `closed_loop` test, and `frontend/e2e/help.spec.ts`'s landing check. The
+  look pass's fixer fixes the comments and renames the tests.

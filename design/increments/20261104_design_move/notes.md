@@ -205,3 +205,75 @@ stands.
   repo" gained increment 10's core half beside the `$id` commit.
 - `roadmap.md`'s "The rulings" now names `Redstone.jl/src/descriptor.json`
   and `prototypes/render_spike/report.md` by their paths from here.
+
+## The glossary pass
+
+Run under `brief_glossary.md`. The seven records' glossaries, 97 entries,
+became `glossary.md`, 89 entries in one alphabetical list, each ending
+with the record and answer that rule it; a stage 2 to 4 term with no
+numbered answer cites its section of `initial_design.md`. Each record's
+"Glossary" section now reads "Terms are defined in `glossary.md`."
+
+### Merged
+
+- "Format version", from `initial_design.md` and `descriptor_design.md`:
+  the independence from Redstone's version and the bump rules from the
+  first, the `{"major", "minor"}` object from the second, whose answer 1
+  replaced the first's `major.minor` spelling.
+- "Parameter summary", from the same two: `descriptor_design.md` answer
+  10's compact `repr` cut at 80 characters over the first's "truncated
+  `show` text", and the detail pane over "beside each type name", since
+  `visual_grammar.md` answer 1 keeps parameters off the block.
+- "Kind" and "Diagnostic's kind" into one `kind` entry with the three
+  senses, the leaf face's `kind` field named as the marker's holder.
+- "Timing" and "Triple" under "Timing", with "Triple" a one-line
+  cross-reference.
+- "Pin", the grammar's boundary node and `build_release.md`'s Redstone
+  pin: one entry with two senses, each cited.
+
+### Corrected to the answers
+
+- "Deployment descriptor": its body holds `build` alone until the
+  overlay's bump (`descriptor_design.md` answer 13); the entry said it
+  adds the schedule and grid facts.
+- "Failure descriptor": any carrier, a service's included, with its
+  warnings, the structure present when the carrier holds one
+  (`failure_descriptor.md` answers 1 and 3); the entry said a failed
+  build and "when the structure step passed".
+- "Badge": the clock count and the extras' number of `visual_grammar.md`
+  answer 6, the order badge and the route's pin badge of `workspace.md`
+  answers 7 and 8, in place of the retired "multi-rate interior".
+- "Legend": the continuous line, the wires' triples and the focus of
+  answer 6. "Dim": the legend line among the foci of answer 9. "Hue,
+  reserved": the fills keep their distance from the three hues, where
+  the entry said they were absent from the palette.
+- "Push": rekeyed by path and name, what has no key dropped
+  (`workspace.md` answer 9).
+- "Pin", the build sense: after the release, the tag with an equality
+  bound in `scripts/` (`build_release.md` answer 2).
+- "Schema of record": the path carries the `Redstone.jl/` prefix.
+
+### Dropped as the spec's
+
+"Descriptor", "`descriptor`" and "Kind marker", both of the last; the
+spec's Appendix D defines all three. The `descriptor` entry's reason
+for the name and the descriptor entry's "the bridge's connect payload"
+stay in `initial_design.md` answers 13 and 4.
+
+### Kept beside a homonym of the spec's
+
+"Artifact", "Bundle", "Frame" and "Trace" mean something else in the
+spec's glossary; each entry gained a clause naming the core's sense.
+
+### The rest of the pass
+
+- The 87 traps of `traps.md` moved whole into `rules.md` under "Frontend
+  traps", before "Amending a record", and `traps.md` is deleted.
+- `AGENTS.md`: a row for the glossary; the map's row lists what the map
+  keeps; traps route to `rules.md` and what a check pins to the test's
+  name.
+- `pending.md`: the stage 1 bullet's sentence on the later stages
+  dropped; a bullet for increment 8's merge, the two stale comments and
+  the test names, added last under Unordered.
+- `rules.md`: "Routing for the agent" says the prompt names the answers
+  and the map is read whole; the preamble names the traps.

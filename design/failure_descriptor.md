@@ -123,16 +123,4 @@ staging.
 
 ## Glossary
 
-- **Cycle section.** The `cycle` object an `AlgebraicCycle` diagnostic
-  carries: members, wires as terminal pairs, the classification, the dead
-  hops and the tracing modes.
-- **Diagnostic's kind.** Its Julia type's name, the third sense of `kind` in
-  the format beside the envelope's and the kind marker's, told apart by
-  where it sits.
-- **Failure body.** The object under `failure`: `policy`, `structure` when
-  held, `diagnostics` and `warnings`.
-- **Mark.** A port or a wire a diagnostic names beyond its path, where the
-  overlay draws; `marks` holds them as two arrays.
-- **Policy.** `fail-fast` or `collected`, the carrier's type parameter read
-  out: whether the list is the first failure alone or everything a step
-  found.
+Terms are defined in `glossary.md`.

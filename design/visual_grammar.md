@@ -362,34 +362,4 @@ This session closed axis 3; what it handed on has landed or stands in
 
 ## Glossary
 
-- **Badge.** A small mark in a block's corner or at a pin's end carrying a
-  fact: a diagnostic, a loop or route continuing inside a closed child, a
-  multi-rate interior, a root input's claim.
-- **Casing.** The highlight of a line: a wider translucent band under a
-  wire in the highlight hue.
-- **Chord.** A dead hop drawn inside its member, a dashed line from an input
-  square to an output square with a cross at its middle.
-- **Dim.** The opacity state of everything uninvolved while a diagnostic, a
-  route or a search is focused; never a color change.
-- **Display name.** A block's second text line: the alias's last segment,
-  else the type's, replaced by an icon where one applies.
-- **Halo.** The highlight of a shape: a soft wide outline just outside a
-  block, a pin or a port square.
-- **Hue, reserved.** Red for errors, amber for warnings, blue for highlight,
-  all absent from the rate palette.
-- **Legend.** The canvas-corner list of the triples visible on the open
-  level in rate mode, each read out, later with its concrete `Δt`.
-- **Level.** What the canvas draws at a time: an assembly's children as
-  blocks, its own faces as pins, its wires.
-- **Pin.** A boundary face of the open level drawn as a node with one port:
-  an outlined capsule, or a tag for a root input.
-- **Rate mode, tier mode.** The two color modes: by timing triple, the
-  compiled clock, or by continuous against discrete.
-- **Region.** A keyed container's elements framed in a thin dashed rounded
-  rectangle captioned with the field name.
-- **Semantic zoom.** The fixed order in which a block's text levels drop
-  below the legibility floor: face names, display name and icon, segment.
-- **Tag.** A root input's pin: a capsule pointed into the model, filled with
-  the external color, its outer end a slot for the claim badge.
-- **Triple.** A leaf's or scope's `(anchor, m, c)`: the anchor it hangs
-  from, its multiple and its phase in that anchor's ticks.
+Terms are defined in `glossary.md`.

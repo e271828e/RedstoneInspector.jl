@@ -25,12 +25,13 @@ the work, `src/` and `test/` the package, `frontend/` the page,
 | What | Where |
 |---|---|
 | the design records of stage 1, one per axis, none normative | `design/initial_design.md`, `descriptor_design.md`, `visual_grammar.md`, `workspace.md`, `live_session.md`, `failure_descriptor.md`, `build_release.md`; a ruling is cited as "`workspace.md` answer 9" |
+| the terms the records coin, one entry each with the answer that rules it | `design/glossary.md`; the core's terms are in `Redstone.jl/design/spec.md`'s Appendix D |
 | the staging of stage 1 and each landed increment's facts | `design/roadmap.md` |
 | the work order, the open items, what waits on the core | `design/pending.md`, first bullet next; the state of an open task lives on its bullet, nowhere else |
 | the inspector's rules beyond the core's | `design/rules.md` |
 | one folder per increment: its brief, notes and look checklist | `design/increments/` |
 | the rendering spike, retired | `design/prototypes/render_spike/` |
-| the frontend's map: layout, stores, the DOM contract, the checks, traps | `frontend/MAP.md`, cited by section |
+| the frontend's map: the layout, the vocabulary, the stores, the DOM contract tables, the keyboard, the live tab | `frontend/MAP.md`, cited by section |
 | the protocol between the server and the page | `frontend/PROTOCOL.md` |
 | the committed fixtures and the schema copy | `frontend/fixtures/`, `frontend/schema/` |
 | the user's documentation | `README.md`, and the help page inside the bundle |
@@ -48,7 +49,8 @@ names are unchanged, and `roadmap_inspector.md` became `roadmap.md`.
   while the user is away: a notes file in the increment's folder.
 - What an increment landed and the facts the next brief takes: the
   roadmap's entry for it.
-- A trap, a DOM contract, what a check pins: `frontend/MAP.md`.
+- A trap: `design/rules.md`. A DOM contract, a store, a key:
+  `frontend/MAP.md`. What a check pins: the test's own name.
 - A lesson on briefing or running a frontend increment: `design/rules.md`.
 - Anything about the user's machine or tools: the user's own
   instructions, never this repo.

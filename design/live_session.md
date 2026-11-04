@@ -301,30 +301,4 @@ This session closed axis 6; what it handed on has landed or stands in
 
 ## Glossary
 
-- **Bundle directory.** The folder the server serves the page from: the
-  artifact Pkg unpacked on install, or the `bundle_dir` preference's
-  folder in the development loop.
-- **Channel.** The server's record for one name: the name, the latest
-  descriptor text pushed to it, and the sockets of the browser tabs that
-  greeted with it. The default channel's name is `""`.
-- **Control message.** A text frame carrying a JSON object with a `type`
-  field: `hello` and `open_location` in stage 1, stage 2's verbs later.
-- **Descriptor frame.** A text frame carrying the pretty-printed envelope
-  as its own bytes, told from a control message by its `format_version`
-  key.
-- **Greeting.** The page's first message after the handshake, `hello` with
-  its channel name and the format major its bundle reads; the server
-  answers with the channel's stored text if any.
-- **Handshake.** The HTTP request that asks a server to open a WebSocket at
-  `/ws`. Accepted by the inspector's server when the `Origin` is its own,
-  refused by GitHub Pages, which is how the page learns whether it is live.
-- **Hosted page, live page.** The same bundle loaded from GitHub Pages,
-  with no socket, or from the inspector's server, with one.
-- **Loopback.** The interface `127.0.0.1`, reachable only from the machine
-  itself. The server binds it and nothing else.
-- **Origin.** The scheme, host and port a page was loaded from, which the
-  browser puts in every handshake and the page's code cannot alter.
-- **Preference.** A per-machine setting read through Preferences.jl: `port`,
-  `open_browser` and `bundle_dir` in stage 1.
-- **Spawned task.** A task created with `Threads.@spawn`, free to run on any
-  thread, against an `@async` task pinned to the thread that made it.
+Terms are defined in `glossary.md`.
