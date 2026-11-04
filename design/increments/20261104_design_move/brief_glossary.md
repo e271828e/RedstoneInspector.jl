@@ -72,6 +72,16 @@ in the worktree; do not touch it). Three follow-ups on master are yours:
   other queries", `e2e/help.spec.ts`'s landing check. The bullet asks the
   look pass's fixer to fix the comments and rename the tests.
 
+## Two overlaps from the pending pass
+
+- `pending.md`'s stage 1 bullet ends with a sentence on the later stages
+  that the new later-stages bullet now covers; drop the sentence from the
+  stage 1 bullet.
+- `rules.md`'s "Routing for the agent" bullet says the prompt names the
+  map's sections, which sits beside the newer rule that the map is read
+  whole; reword it so the prompt names the records' answers and the map
+  is read whole before the frontend change.
+
 ## Bookkeeping
 
 - Append a section "The glossary pass" to
