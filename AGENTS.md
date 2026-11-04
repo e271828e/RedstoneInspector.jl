@@ -31,7 +31,7 @@ the work, `src/` and `test/` the package, `frontend/` the page,
 | the inspector's rules beyond the core's | `design/rules.md` |
 | one folder per increment: its brief, notes and look checklist | `design/increments/` |
 | the rendering spike, retired | `design/prototypes/render_spike/` |
-| the frontend's map: the layout, the vocabulary, the stores, the DOM contract tables, the keyboard, the live tab | `frontend/MAP.md`, cited by section |
+| the frontend's map: the layout, the vocabulary, the stores, the DOM contract tables, the keyboard, the live tab | `frontend/MAP.md`, read whole before a frontend change |
 | the protocol between the server and the page | `frontend/PROTOCOL.md` |
 | the committed fixtures and the schema copy | `frontend/fixtures/`, `frontend/schema/` |
 | the user's documentation | `README.md`, and the help page inside the bundle |
@@ -50,7 +50,8 @@ names are unchanged, and `roadmap_inspector.md` became `roadmap.md`.
 - What an increment landed and the facts the next brief takes: the
   roadmap's entry for it.
 - A trap: `design/rules.md`. A DOM contract, a store, a key:
-  `frontend/MAP.md`. What a check pins: the test's own name.
+  `frontend/MAP.md`. What a check pins: the test's own name. A term
+  the records coin: `design/glossary.md`.
 - A lesson on briefing or running a frontend increment: `design/rules.md`.
 - Anything about the user's machine or tools: the user's own
   instructions, never this repo.
@@ -61,7 +62,7 @@ names are unchanged, and `roadmap_inspector.md` became `roadmap.md`.
   `design/rules/increment_rules.md` first, then `design/rules.md` here.
 - `src/` or `test/`: the core's `design/rules/code_rules.md` whole, then
   the README's "Layout" section.
-- `frontend/`: `frontend/MAP.md` for the files touched, and
+- `frontend/`: `frontend/MAP.md` whole, and
   `frontend/PROTOCOL.md` for anything on the socket.
 - A record: read it whole; the roadmap's "The rulings" section says what
   each holds.
