@@ -1,11 +1,11 @@
 // The no-CDN rule (build_release.md answer 5): every request the page makes
-// while loading, dropping closed_loop and opening sensing has the page's origin;
-// the page makes exactly one WebSocket attempt, to its own host at `/ws`, which
-// the preview server refuses. The help page's part waits for increment 8.
+// while loading, dropping closed_loop, opening sensing and showing the help page
+// has the page's origin; the page makes exactly one WebSocket attempt, to its own
+// host at `/ws`, which the preview server refuses.
 import { test } from "@playwright/test";
 import { drop, expect, readyLevel, shot } from "./fixtures";
 
-test("every request goes to the preview server's origin", async ({ page, baseURL }) => {
+test("every request goes to the preview server's origin, the help page's included", async ({ page, baseURL }) => {
   const urls: string[] = [];
   const sockets: string[] = [];
   page.on("request", (r) => urls.push(r.url()));
@@ -14,6 +14,8 @@ test("every request goes to the preview server's origin", async ({ page, baseURL
   await page.locator('g.block[data-id="sensing"]').dblclick();
   await page.locator(readyLevel("sensing")).waitFor();
   await shot(page, "closed_loop", "sensing", "network");
+  await page.keyboard.press("?");
+  await page.locator("article.help svg.sample").first().waitFor();
   expect(urls.length).toBeGreaterThan(0);
   const origin = new URL(baseURL!).origin;
   expect(urls.filter((u) => new URL(u).origin !== origin)).toEqual([]);

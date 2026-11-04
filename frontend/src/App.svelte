@@ -1,8 +1,9 @@
 <script lang="ts">
   // The shell: a file picked or dropped anywhere on the page, the landing panel
   // before a model, the frame over the session once one loads; the window's
-  // title, the hash and back and forward, and the keyboard table outside text
-  // fields (workspace.md answer 11); the live tab's socket, its descriptors fed
+  // title, the hash and back and forward, the help page in place of either, and
+  // the keyboard table outside text fields (workspace.md answer 11); the live
+  // tab's socket, its descriptors fed
   // to the loader a dropped file goes through (live_session.md answer 5).
   import Canvas, { type Target } from "./canvas/Canvas.svelte";
   import { palette } from "./canvas/palette";
@@ -10,6 +11,7 @@
   import Detail from "./frame/Detail.svelte";
   import Drawer from "./frame/Drawer.svelte";
   import Frame from "./frame/Frame.svelte";
+  import Help from "./frame/Help.svelte";
   import Landing from "./frame/Landing.svelte";
   import Search from "./frame/Search.svelte";
   import StatusBar from "./frame/StatusBar.svelte";
@@ -26,8 +28,8 @@
   import type { Face } from "./lib/resolve";
   import { faceText, originOf, routeDrawing, routeLevels, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
-    back, clearLegendFocus, clearRoute, climb, escape, forward, levelOfHash, load, open, openDrawer, openFromHistory, select, session, setFocus,
-    setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleLegendFocus, trace, type Region,
+    back, clearLegendFocus, clearRoute, climb, closeHelp, escape, forward, load, open, openDrawer, openFromHistory, select, session, setFocus,
+    setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder } from "./state/prefs.svelte";
@@ -46,8 +48,6 @@
   const ZOOM_STEP = 1.25;
   /** The four regions in Tab's order, by their roots. */
   const REGIONS: [Region, string][] = [["tree", "nav.tree"], ["canvas", ".viewport"], ["detail", "aside.detail"], ["drawer", "section.drawer"]];
-  /** Keys reserved for later increments, swallowed so the browser's defaults do not fire: help. */
-  const RESERVED = new Set(["?"]);
 
   const model = $derived(session.model);
   /** The selection the canvas draws: one made on the open level, a folder as its region. */
@@ -236,11 +236,25 @@
   }
 
   function onkeydown(e: KeyboardEvent) {
+    // The help page takes `?` and Escape alone; Tab and every other key are the browser's, so the page scrolls.
+    if (session.help) {
+      if (e.ctrlKey || e.metaKey || (e.key !== "?" && e.key !== "Escape")) return;
+      e.preventDefault();
+      if (e.key === "?") toggleHelp();
+      else escape();
+      return;
+    }
     if (e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
     }
-    if (!session.model || typing(e.target)) return;
+    if (typing(e.target)) return;
+    if (e.key === "?" && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      toggleHelp();
+      return;
+    }
+    if (!session.model) return;
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "k") {
       e.preventDefault();
       focusSearch();
@@ -275,7 +289,7 @@
     else if (key === "y" && !e.shiftKey) toggleLabels();
     else if (key === "o" && !e.shiftKey) toggleOrder();
     else if (e.key === "t") traceFrom(model?.tree ? originOf(model, session.selection) : undefined);
-    else handled = RESERVED.has(e.key); // swallowed until their increments
+    else handled = false;
     if (handled) e.preventDefault();
   }
 
@@ -301,14 +315,16 @@
   {onkeydown}
   onfocusin={focusin}
   onfocusout={focusout}
-  onpopstate={(e) => openFromHistory(levelOfHash(location.hash), e.state)}
+  onpopstate={(e) => openFromHistory(location.hash, e.state)}
 />
 
 <main
   class:dragging
   style="--text:{palette.text};--text-light:{palette.textLight};--bg:{palette.background};--border:{palette.paneBorder};--strip:{palette.strip}"
 >
-  {#if model}
+  {#if session.help}
+    <Help onclose={closeHelp} />
+  {:else if model}
     <Frame drawerOpen={session.drawer.open}>
       {#snippet tree()}
         <Tree

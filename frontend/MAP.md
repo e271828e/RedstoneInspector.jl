@@ -1189,8 +1189,9 @@ is read from `e.key`, so an upper-case `N` without Shift is `N` too.
 | `d` | toggle the drawer on its current tab; Shift-`d` does nothing |
 | `r` | the color mode to the other one, kept per browser |
 | `y` | the type labels on or off, kept per browser |
+| `o` | the execution-order badges on or off, kept per browser (`toggleOrder`) |
+| `?` | the help page shown or closed (`toggleHelp`), with or without a model; while it shows, `?` and Escape alone are the handler's |
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
-| `o`, `?` | swallowed (`preventDefault`) until increment 8 gives them their objects |
 
 Dragging has no keyboard form; Shift during a drag is the canvas's own
 listener (see "The drag"), which the table's handler ignores. Every control,

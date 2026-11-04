@@ -2,8 +2,9 @@
   // One line (workspace.md answers 1, 3 and 10; live_session.md answer 4): the
   // kind word, the model's totals, the loader's note, the push's fallback note,
   // the standing route with its clear control (workspace.md answer 8); in the
-  // live tab the connection's state and the descriptor's download. Under
-  // the landing panel it shows the connection alone.
+  // live tab the connection's state and the descriptor's download; the help
+  // link at its right end. Under the landing panel it shows the connection
+  // and the link.
   import type { Model } from "../lib/model";
   import { downloadName } from "../lib/protocol";
   import type { LiveState } from "../state/live.svelte";
@@ -81,6 +82,7 @@
     {@const text = download}
     <button class="download" title={`Save the descriptor as ${downloadName(model.label)}`} onclick={() => save(text, model.label)}>Download</button>
   {/if}
+  <a class="help" href="#help" title="The help page">?</a>
 </footer>
 
 <style>
@@ -92,6 +94,8 @@
   .counts, .note, .mode { color: var(--text-light); }
   .fallback { font-weight: 600; }
   .connection { margin-left: auto; color: var(--text-light); }
+  .help { margin-left: auto; color: var(--text-light); text-decoration: none; font-weight: 600; }
+  .connection ~ .help { margin-left: 0; }
   .connection[data-state="lost"] { font-weight: 600; }
   .download, .clear-route { font: 11px system-ui, sans-serif; padding: 0 6px; }
   .route { color: var(--highlight); }

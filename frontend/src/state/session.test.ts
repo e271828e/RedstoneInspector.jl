@@ -3,8 +3,8 @@ import { fixtureJson, fixtureModel } from "../lib/fixtures";
 import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
 import {
-  clearDiagnosticFocus, clearRoute, climb, diagnosticCount, escape, hashOf, levelOfHash, load, open, openFromHistory, select, session, setQuery,
-  toggleDiagnosticFocus, toggleLegendFocus, trace,
+  clearDiagnosticFocus, clearRoute, climb, closeHelp, diagnosticCount, escape, hashOf, isHelpHash, levelOfHash, load, open, openFromHistory, openHelp,
+  select, session, setQuery, toggleDiagnosticFocus, toggleHelp, toggleLegendFocus, trace,
 } from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
@@ -203,7 +203,7 @@ describe("climbing", () => {
     open("");
     expect(session.selection).toEqual({ level: "", target: { kind: "block", id: "fast" } });
     open("fast/outer");
-    openFromHistory("fast");
+    openFromHistory(hashOf("fast"));
     expect(session.selection).toEqual({ level: "fast", target: { kind: "block", id: "fast/outer" } });
   });
 
@@ -224,5 +224,64 @@ describe("the hash", () => {
     expect(levelOfHash("")).toBeUndefined();
     expect(levelOfHash("#level=")).toBeUndefined();
     expect(levelOfHash("#other")).toBeUndefined();
+  });
+});
+
+describe("the help page", () => {
+  it("opens, closes and toggles, the model and the level kept", () => {
+    load(fixtureModel("closed_loop"));
+    open("sensing");
+    select({ level: "sensing", target: { kind: "block", id: "sensing/noise" } });
+    openHelp();
+    expect(session.help).toBe(true);
+    openHelp();
+    expect(session.help).toBe(true);
+    closeHelp();
+    expect([session.help, session.level, session.selection?.target.id]).toEqual([false, "sensing", "sensing/noise"]);
+    toggleHelp();
+    expect(session.help).toBe(true);
+    toggleHelp();
+    expect(session.help).toBe(false);
+    expect(session.model).toBeDefined();
+  });
+
+  it("is Escape's first step, before the route and the selection", () => {
+    load(fixtureModel("closed_loop"));
+    select({ level: "", target: { kind: "block", id: "plant" } });
+    trace({ path: "", side: "in", port: "h_ref" });
+    openHelp();
+    escape();
+    expect([session.help, session.route?.port, session.selection?.target.id]).toEqual([false, "h_ref", "plant"]);
+    escape();
+    expect(session.route).toBeUndefined();
+  });
+
+  it("is the hash `#help` through openFromHistory, any other hash hiding it and naming the level", () => {
+    expect([isHelpHash("#help"), isHelpHash(""), isHelpHash("#level=help"), isHelpHash("#helpx")]).toEqual([true, false, false, false]);
+    load(fixtureModel("rates"));
+    open("fast");
+    select({ level: "fast", target: { kind: "block", id: "fast/outer" } });
+    openFromHistory("#help");
+    expect([session.help, session.level]).toEqual([true, "fast"]);
+    openFromHistory(hashOf("fast"));
+    expect([session.help, session.level, session.selection?.target.id]).toEqual([false, "fast", "fast/outer"]);
+    openFromHistory("#help");
+    openFromHistory(hashOf("slow"));
+    expect([session.help, session.level]).toEqual([false, "slow"]);
+    openFromHistory("#help");
+    openFromHistory("");
+    expect([session.help, session.level]).toEqual([false, ""]);
+  });
+
+  it("stands across a load under it, which rekeys the level as without it", () => {
+    load(undefined);
+    openHelp();
+    load(fixtureModel("closed_loop"));
+    expect([session.help, session.level]).toEqual([true, ""]);
+    open("sensing");
+    load(fixtureModel("closed_loop_deployment"));
+    expect([session.help, session.level]).toEqual([true, "sensing"]);
+    closeHelp();
+    expect([session.help, session.level, session.model?.kind]).toEqual([false, "sensing", "deployment"]);
   });
 });

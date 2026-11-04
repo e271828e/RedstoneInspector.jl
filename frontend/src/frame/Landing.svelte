@@ -1,16 +1,14 @@
 <script lang="ts">
   // What the page shows before a model loads (workspace.md answer 10): the
-  // privacy statement, the open control, the drop hint; a refusal below them.
+  // privacy statement, the open control, the drop hint, the help link; a refusal below them.
+  import { PRIVACY } from "../lib/help";
   let { outcome, onfile }: { outcome?: string; onfile: (file: File | undefined) => void } = $props();
   let input = $state<HTMLInputElement>();
 </script>
 
 <div class="landing">
   <h1>Redstone inspector</h1>
-  <p class="privacy">
-    The file is read inside your browser and never uploaded.
-    The page loads nothing from any other site.
-  </p>
+  <p class="privacy">{PRIVACY}</p>
   <p>
     <button class="open-file" onclick={() => input?.click()} title="Open a descriptor (.json)">Open a descriptor…</button>
     <input
@@ -19,6 +17,7 @@
     />
   </p>
   <p class="drop-hint">or drop a <code>.json</code> descriptor anywhere on the page.</p>
+  <p><a class="help" href="#help">help</a></p>
   {#if outcome}<pre class="outcome">{outcome}</pre>{/if}
 </div>
 
@@ -27,6 +26,7 @@
   h1 { font-size: 1.3rem; margin: 0 0 1rem; }
   .privacy { color: var(--text); line-height: 1.45; }
   .drop-hint { color: var(--text-light); }
+  .help { color: var(--text-light); }
   .open-file { font: 14px system-ui, sans-serif; padding: 4px 10px; }
   pre { white-space: pre-wrap; margin: 1rem 0 0; }
 </style>

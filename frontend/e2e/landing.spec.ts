@@ -1,5 +1,5 @@
 // The landing panel and the label in the window's title (workspace.md answer 10):
-// the privacy statement before a drop, a refusal on the landing, the frame once a
+// the privacy statement and the help link before a drop, a refusal on the landing, the frame once a
 // model loads, a structureless failure in the frame.
 import { test } from "@playwright/test";
 import { drop, expect, fixtureText, readyLevel, rows, shot, status } from "./fixtures";
@@ -10,7 +10,7 @@ const major2 = () => {
   return JSON.stringify(d);
 };
 
-test("before a drop: the privacy statement, the open control, no canvas, no rows", async ({ page }) => {
+test("before a drop: the privacy statement, the open control, the help link, no canvas, no rows", async ({ page }) => {
   await page.goto("/");
   const landing = page.locator(".landing");
   await expect(landing).toHaveCount(1);
@@ -19,6 +19,7 @@ test("before a drop: the privacy statement, the open control, no canvas, no rows
   await expect(landing.locator(".privacy")).not.toContainText("network");
   await expect(landing.locator("button.open-file")).toHaveCount(1);
   await expect(landing.locator(".drop-hint")).toHaveCount(1);
+  await expect(landing.locator('a.help[href="#help"]')).toHaveText("help");
   await expect(landing.locator("pre.outcome")).toHaveCount(0);
   await expect(page.locator("svg.canvas")).toHaveCount(0);
   await expect(rows(page)).toHaveCount(0);

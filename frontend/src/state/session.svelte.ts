@@ -1,10 +1,11 @@
 // The per-tab state in memory (workspace.md answer 9's second lifetime): the
 // model, the open level and its hash, each visited level's view and layout, the
 // selection, the tree's expansion, the query, the legend's focus, the focused
-// diagnostic, the standing route, the drawer and the keyboard's region. Keyed by
-// path and name, never by index; a push rekeys it (`rekey`, the route through
-// `rekeyRoute`) and drops the focused diagnostic.
-// Nothing here touches local storage; the open level is the URL's hash.
+// diagnostic, the standing route, the drawer, the keyboard's region and the help
+// page. Keyed by path and name, never by index; a push rekeys it (`rekey`, the
+// route through `rekeyRoute`) and drops the focused diagnostic.
+// Nothing here touches local storage; the open level is the URL's hash, the help
+// page `#help` pushed over it.
 import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
 import type { Model } from "../lib/model";
@@ -34,6 +35,7 @@ let diagnosticFocus = $state<number | undefined>();
 let route = $state.raw<Face | undefined>();
 let focus = $state<Region | undefined>();
 let note = $state<string | undefined>();
+let help = $state(false);
 
 export const session = {
   get model() { return model; },
@@ -59,6 +61,8 @@ export const session = {
   get focus() { return focus; },
   /** The fallback note, while it stands. */
   get note() { return note; },
+  /** The help page shows, in place of the frame or the landing. */
+  get help() { return help; },
 };
 
 /** The hash naming a level: none for the root, `#level=<path>` otherwise. */
@@ -75,9 +79,13 @@ export function levelOfHash(hash: string): string | undefined {
   }
 }
 
+/** Whether a hash is the help page's. */
+export const isHelpHash = (hash: string): boolean => hash === HELP_HASH;
+const HELP_HASH = "#help";
+
 const browser = typeof window !== "undefined";
-/** The URL with the level's hash, the page's own address for the root. */
-const urlOf = (path: string) => `${location.pathname}${location.search}${hashOf(path)}`;
+/** The URL with the hash, the page's own address for none. */
+const urlOf = (hash: string) => `${location.pathname}${location.search}${hash}`;
 
 /**
  * The level entries this page load made, each carrying `{load, depth}` in `history.state`: the entry the page
@@ -88,15 +96,17 @@ const LOAD = browser ? `${Date.now()}-${Math.random()}` : "";
 let depth = 0;
 let top = 0;
 if (browser) history.replaceState({ load: LOAD, depth }, "");
+// A page loaded at `#help` shows the help page over whatever loads under it.
+if (browser && isHelpHash(location.hash)) help = true;
 
 function pushHash() {
   if (!browser || location.hash === hashOf(level)) return;
   depth += 1;
   top = depth;
-  history.pushState({ load: LOAD, depth }, "", urlOf(level));
+  history.pushState({ load: LOAD, depth }, "", urlOf(hashOf(level)));
 }
 function replaceHash() {
-  if (browser && location.hash !== hashOf(level)) history.replaceState(history.state, "", urlOf(level));
+  if (browser && location.hash !== hashOf(level)) history.replaceState(history.state, "", urlOf(hashOf(level)));
 }
 
 /** Shift-h: the previous level entry of this page load; nothing at the first. */
@@ -169,7 +179,8 @@ export function load(m: Model | undefined) {
     views = v;
   }
   if (m?.tree) expand([...ancestors(m.tree, level), level]);
-  replaceHash();
+  // Under the help page the hash stays `#help`; the entry below it is read when the page closes.
+  if (!help) replaceHash();
 }
 
 function expand(paths: string[]) {
@@ -211,12 +222,49 @@ export function climb() {
   if (p !== undefined) open(p);
 }
 
-/** Back or forward: the level the hash names, the root when it names none, nothing pushed; `state` the entry's. */
-export function openFromHistory(path: string | undefined, state?: unknown) {
+/**
+ * Back, forward or a hash link: `#help` shows the help page; any other hash hides it and shows the level it names,
+ * the root when it names none, nothing pushed. `state` is the entry's; a hash link's new entry carries none and is
+ * stamped one deeper, as `open` would push it.
+ */
+export function openFromHistory(hash: string, state?: unknown) {
   const s = state as { load?: string; depth?: number } | null | undefined;
-  depth = s?.load === LOAD && typeof s.depth === "number" ? s.depth : 0;
-  if (!show(path !== undefined && model?.tree && isLevel(model.tree, path) ? path : "")) return;
+  if (browser && s === null) {
+    depth += 1;
+    top = depth;
+    history.replaceState({ load: LOAD, depth }, "");
+  } else depth = s?.load === LOAD && typeof s.depth === "number" ? s.depth : 0;
+  help = isHelpHash(hash);
+  const tree = model?.tree;
+  if (help || !tree) return;
+  const path = levelOfHash(hash);
+  const to = path !== undefined && isLevel(tree, path) ? path : "";
+  if (to !== level) show(to);
   replaceHash();
+}
+
+/** The help page shown, a history entry pushed with `#help` over the level's. */
+export function openHelp() {
+  if (help) return;
+  help = true;
+  if (!browser) return;
+  depth += 1;
+  top = depth;
+  history.pushState({ load: LOAD, depth }, "", urlOf(HELP_HASH));
+}
+
+/** The help page closed: back to the entry below when it is this load's, else the hash replaced with the level's. */
+export function closeHelp() {
+  if (!help) return;
+  help = false;
+  if (depth > 0) history.back();
+  else replaceHash();
+}
+
+/** `?`: the help page shown or closed. */
+export function toggleHelp() {
+  if (help) closeHelp();
+  else openHelp();
 }
 
 /** Selects an element on its level, showing that level; a node's or folder's row is revealed. */
@@ -290,9 +338,10 @@ export function clearRoute() {
   route = undefined;
 }
 
-/** Escape's chain: the route, then the focused diagnostic, then the legend's focus, then a standing query, then the selection. */
+/** Escape's chain: the help page, then the route, then the focused diagnostic, then the legend's focus, then a standing query, then the selection. */
 export function escape() {
-  if (route !== undefined) route = undefined;
+  if (help) closeHelp();
+  else if (route !== undefined) route = undefined;
   else if (diagnosticFocus !== undefined) diagnosticFocus = undefined;
   else if (legendFocus !== undefined) legendFocus = undefined;
   else if (query !== "") query = "";

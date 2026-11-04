@@ -1,4 +1,4 @@
-// The frame (workspace.md answers 1, 6 and 10): the status bar's kind and totals,
+// The frame (workspace.md answers 1, 6, 10 and 11): the status bar's kind, totals and help link,
 // the drawer's strip, counts and open rule, the splitters and the collapsed panes
 // kept per browser across a reload and a new drop.
 import { test, type Page } from "@playwright/test";
@@ -9,13 +9,18 @@ const tab = (page: Page, t: string) => drawer(page).locator(`button.tab[data-tab
 const treePane = (page: Page) => page.locator('.pane[data-pane="tree"]');
 const detailPane = (page: Page) => page.locator('.pane[data-pane="detail"]');
 
-test("closed_loop: the status bar reads the kind and the model's totals", async ({ page }) => {
+test("closed_loop: the status bar reads the kind and the model's totals, the help link at its right end", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(status(page)).toHaveAttribute("data-kind", "build");
   await expect(status(page)).toContainText("build");
   const counts = status(page).locator(".counts");
   for (const t of ["24 leaves", "6 assemblies", "94 wires"]) await expect(counts).toContainText(t);
   await expect(status(page).locator(".note")).toHaveCount(0);
+  const link = status(page).locator('a.help[href="#help"]');
+  await expect(link).toHaveText("?");
+  await expect(link).toHaveAttribute("title", "The help page");
+  const bar = (await status(page).boundingBox())!, box = (await link.boundingBox())!;
+  expect(bar.x + bar.width - (box.x + box.width)).toBeLessThanOrEqual(10);
 });
 
 test("closed_loop: the drawer stays closed with its counts readable, and a tab opens and closes it", async ({ page }) => {
