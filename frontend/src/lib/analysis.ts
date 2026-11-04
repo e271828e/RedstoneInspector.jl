@@ -6,6 +6,7 @@ import type { Rational } from "./descriptor";
 import { faceSelection, faceFacts, kindPhrase, type Selection } from "./detail";
 import type { Model } from "./model";
 import type { Face } from "./resolve";
+import { inPinId } from "./level";
 import { stepsOf, tripleKey, tripleText, type Triple } from "./rates";
 
 /** A feedthrough edge under its consumer's row: a stage-2 leaf output into a leaf with a stage 2, presumed. */
@@ -185,7 +186,7 @@ const nodeSelection = (model: Model, path: string): Selection | undefined =>
 
 /**
  * What a row's click selects: an order or component row its leaf, an edge row its consumer's input port, a root
- * input its root tag (its leaf's port on a primitive root), an anchor row its declaring scope's node and a scope
+ * input its root tag, an anchor row its declaring scope's node and a scope
  * row its assembly; nothing for the base grid's row and a root scope.
  */
 export function rowTarget(model: Model, row: Row): Selection | undefined {
@@ -198,7 +199,7 @@ export function rowTarget(model: Model, row: Row): Selection | undefined {
     case "edge":
       return faceSelection(tree, row.to);
     case "root-input":
-      return faceSelection(tree, { path: "", side: "in", port: row.name });
+      return { level: "", target: { kind: "block", id: inPinId(row.name) } };
     case "anchor":
       return row.base || row.scope === "" ? undefined : nodeSelection(model, row.scope);
     case "scope":

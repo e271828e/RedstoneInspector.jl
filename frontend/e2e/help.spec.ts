@@ -3,7 +3,8 @@
 // with the legend's samples, the vocabulary, the refusals, the keyboard table as
 // long as the map's, both Vimium patterns, the privacy statement and the versions;
 // a history entry `#help` over the level's, closed by its button, Escape, `?` and
-// back; a load under it read when it closes; the keys the browser's while it shows.
+// back, a link-opened page too; a load under it read when it closes; the keys the
+// browser's while it shows; a typed level hash this load's entry.
 import { readFileSync } from "node:fs";
 import { test, type Page } from "@playwright/test";
 import { drop, expect, fixtureText, hash, openPath, press, readyLevel, selected, shot, status } from "./fixtures";
@@ -143,6 +144,36 @@ test("a model dropped under a page loaded at #help: the help page stands, its cl
   await dropUnder(page, "closed_loop");
   await expect(help(page)).toHaveCount(1);
   await help(page).locator("button.close").click();
+  await page.locator(readyLevel("")).waitFor();
+  expect(await hash(page)).toBe("");
+});
+
+test("a page opened by the landing's link or the status bar's closes by going back, its entry the one forward", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".landing a.help").click();
+  await expect(help(page)).toHaveCount(1);
+  await help(page).locator("button.close").click();
+  await expect(page.locator(".landing")).toHaveCount(1);
+  expect(await hash(page)).toBe("");
+  await page.goForward();
+  await expect(help(page)).toHaveCount(1);
+
+  await drop(page, "closed_loop");
+  await status(page).locator("a.help").click();
+  await expect(help(page)).toHaveCount(1);
+  await help(page).locator("button.close").click();
+  await page.locator(readyLevel("")).waitFor();
+  await expect(help(page)).toHaveCount(0);
+  expect(await hash(page)).toBe("");
+  await page.goForward();
+  await expect(help(page)).toHaveCount(1);
+});
+
+test("a level hash typed on a loaded closed_loop is this load's entry: Shift-h returns to the root", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await page.evaluate(() => { location.hash = "#level=pid_controller"; });
+  await page.locator(readyLevel("pid_controller")).waitFor();
+  await press(page, "Shift+H");
   await page.locator(readyLevel("")).waitFor();
   expect(await hash(page)).toBe("");
 });

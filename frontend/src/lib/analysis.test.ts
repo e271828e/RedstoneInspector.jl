@@ -177,9 +177,9 @@ describe("rowTarget", () => {
     expect(rowTarget(cl, componentRows(cl)[0])).toEqual({ level: "sensing", target: { kind: "block", id: "sensing/noise" } });
   });
 
-  it("selects a primitive root's leaf on the root level, and its root input's port there", () => {
+  it("selects a primitive root's leaf on the root level, and its root input's tag there", () => {
     expect(rowTarget(prim, orderRows(prim)[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
-    expect(rowTarget(prim, rootInputRows(prim)[0])).toEqual({ level: "", target: { kind: "port", id: "|in|u" } });
+    expect(rowTarget(prim, rootInputRows(prim)[0])).toEqual({ level: "", target: { kind: "block", id: "⟨in⟩u" } });
   });
 });
 

@@ -1,6 +1,7 @@
 // The header check and the label rule (workspace.md answer 10). The page
 // validates nothing else at runtime.
 import type { OutputsSection, RedstoneDescriptor, StructureSection } from "./descriptor";
+import { MAJOR } from "./protocol";
 import { displayName } from "./tree";
 
 export interface Loaded {
@@ -26,10 +27,10 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
     return refuse(`This file is not JSON: ${(e as Error).message}.`);
   }
   const fv = d?.format_version;
-  if (typeof fv?.major !== "number") return refuse("This file carries no format_version; this page reads format 1.0.");
+  if (typeof fv?.major !== "number") return refuse(`This file carries no format_version; this page reads format ${MAJOR}.0.`);
   const minor = typeof fv.minor === "number" ? fv.minor : 0;
-  if (fv.major !== 1) {
-    return refuse(`This file is in descriptor format ${fv.major}.${minor}, which this page cannot read; it reads format 1.0.`);
+  if (fv.major !== MAJOR) {
+    return refuse(`This file is in descriptor format ${fv.major}.${minor}, which this page cannot read; it reads format ${MAJOR}.0.`);
   }
   if (!KINDS.includes(d.kind)) {
     return refuse(`This file's kind is ${JSON.stringify(d.kind)}, none of build, deployment and failure.`);
@@ -46,7 +47,7 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
   }
   const descriptor = d as RedstoneDescriptor;
   const loaded: Loaded = { ok: true, descriptor, label: labelOf(descriptor, fileName) };
-  if (minor > 0) loaded.note = `format 1.${minor}, newer than this page's 1.0; unknown fields ignored`;
+  if (minor > 0) loaded.note = `format ${MAJOR}.${minor}, newer than this page's ${MAJOR}.0; unknown fields ignored`;
   return loaded;
 }
 

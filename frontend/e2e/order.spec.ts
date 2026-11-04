@@ -2,10 +2,11 @@
 // and the breadcrumb's toggle turning them on, a leaf's position and a closed
 // assembly's ranges over the whole model, straddling the top edge at the left
 // with the rate pill at the right, kept per browser across a reload and a drop,
-// none on a pin or a tag or on a model without an order. The texts are the
-// oracle's (`analysis.py`); the geometric pins are recomputed here from the DOM.
+// none on a pin or a tag or on a model without an order, taking the pointer for
+// its title and dimming with its block. The texts are the oracle's
+// (`analysis.py`); the geometric pins are recomputed here from the DOM.
 import { test, type Page } from "@playwright/test";
-import { drop, dropOver, expect, openPath, press, shot } from "./fixtures";
+import { drop, dropOver, effectiveOpacity, expect, openPath, press, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const toggle = (page: Page) => page.locator("nav.breadcrumb .controls button.order-badges");
@@ -55,9 +56,15 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   const segment = await page.locator('g.block[data-id="plant"] text.segment').evaluate((e) => getComputedStyle(e).fill);
   expect(await badge(page, "plant").evaluate((e) => getComputedStyle(e).fill)).toBe(segment);
   expect(await page.locator('g.order-badge[data-id="plant"] > rect').evaluate((e) => getComputedStyle(e).stroke)).toBe(segment);
-  // a click on the badge's lower half, inside the block, selects the block: the badge takes no pointer
+  // the badge takes the pointer for its title: its upper half, above the block, hits it
   const sensing = (await boxes(page)).find((b) => b.id === "sensing")!;
-  await page.mouse.click((sensing.order.left + sensing.order.right) / 2, (sensing.block.top + sensing.order.bottom) / 2);
+  const sensingBadge = page.locator('g.order-badge[data-id="sensing"]');
+  expect(await sensingBadge.evaluate((e) => getComputedStyle(e).pointerEvents)).not.toBe("none");
+  const x = (sensing.order.left + sensing.order.right) / 2;
+  expect(await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest("g.order-badge")?.getAttribute("data-id"),
+    [x, (sensing.order.top + sensing.block.top) / 2])).toBe("sensing");
+  // a click on the badge's lower half, inside the block, selects the block
+  await page.mouse.click(x, (sensing.block.top + sensing.order.bottom) / 2);
   await expect(page.locator("svg.canvas g.block.selected")).toHaveAttribute("data-id", "sensing");
   await page.keyboard.press("Escape");
   await shot(page, "closed_loop", "", "order");
@@ -128,4 +135,18 @@ test("primitive, rates and failure_cycle: the root's own leaf badged, the scopes
   await press(page, "o");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
   await expect(badges(page)).toHaveCount(0);
+});
+
+test("closed_loop: under a search the badge dims with its block, a hit's badge stays full", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "o");
+  await press(page, "/");
+  await page.locator("input.query").fill("plant");
+  await expect(page.locator('g.block.search-hit[data-id="plant"]')).toHaveCount(1);
+  await expect(svg(page)).toHaveClass(/searching/);
+  const badgeOf = (id: string) => effectiveOpacity(page, `g.order-badge[data-id="${id}"]`);
+  const shape = await effectiveOpacity(page, 'g.block[data-id="sensing"] > .shape');
+  expect(shape).toBeLessThan(1);
+  expect(await badgeOf("sensing")).toBeCloseTo(shape, 5);
+  expect(await badgeOf("plant")).toBe(1);
 });

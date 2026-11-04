@@ -128,7 +128,7 @@ export const KEYS: [string[], string][] = [
   [["0"], "fit the level"],
   [["+", "="], "zoom in"],
   [["-"], "zoom out"],
-  [["/", "Cmd-K"], "focus the search"],
+  [["/", "Cmd-K", "Ctrl-K"], "focus the search"],
   [["d"], "toggle the drawer"],
   [["r"], "switch between tier and rate colors"],
   [["y"], "type labels on or off"],

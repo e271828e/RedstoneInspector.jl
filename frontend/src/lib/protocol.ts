@@ -4,7 +4,7 @@
 // download's name.
 
 /** The descriptor format's major this bundle reads. */
-export const MAJOR = 1;
+export const MAJOR = __FORMAT_MAJOR__;
 
 /** The greeting: the channel from the `tab` parameter of a URL's search text, `""` without one. */
 export function helloMessage(search: string): string {

@@ -928,8 +928,8 @@
   .legend .swatch { width: 12px; height: 10px; border: 1px solid; border-radius: 2px; }
   .legend .number { min-width: 20px; padding: 0 2px; border: 1px solid; border-radius: 6px; font-size: 9px; line-height: 10px; text-align: center; }
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
-  /* The order badge (workspace.md answer 7): the text color on the background; it never takes the pointer. */
-  .order-badge { pointer-events: none; }
+  /* The order badge (workspace.md answer 7): the text color on the background; it carries its title, a click on it
+     selecting the block. */
   .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
