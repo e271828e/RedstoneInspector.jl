@@ -105,6 +105,27 @@ or under Unordered, judged by whether a date orders them:
   `pending.md`; a changelog preamble, which git holds). Say the map is
   read whole before a frontend change and kept under about 700 lines.
 
+## Loose ends from the records' pass
+
+The records' pass (its section in `increments/20261104_design_move/notes.md`)
+left these, which are yours:
+
+- `visual_grammar.md` answers 1 and 7 still say they "ask for" the alias
+  bump, and its preamble says a schema change "lands as a minor bump",
+  while `alias` and `name` joined version one unbumped. State the current
+  fact in each place with a dated note, the one exception to the rule
+  that this job touches no answered question.
+- `live_session.md`'s hand-on item 4 and `roadmap.md`'s increment 9 say
+  "four `inspect` methods"; the hand-on section retires, and the roadmap's
+  landed note gets "five" with the increment 9 clause that added the
+  fifth.
+- The amendment convention lives only in `brief_records.md`. Add it to
+  `rules.md` as a short section "Amending a record": the answer states
+  the current rule; one trailing italic note per answer collects the
+  amendments in date order, each with its date, source and what changed;
+  no parenthetical amendment mid-sentence; *Why* and *Rejected* stay
+  whole; answer numbers never change.
+
 ## Bookkeeping
 
 - Append a section "The pending pass" to
