@@ -39,20 +39,18 @@ b6f08b1.
 - **Four stages, in working order.** The static inspector, the
   bridge, the live inspector, the cockpit. Each is a visible result, and
   nothing built for one is discarded by the next.
-- **No graphical authoring, ever.** The client never writes model
-  structure, whether by code generation or by round-trip editing. Julia
-  source stays the only model, as §8.1 requires. A model editor is out for
-  good: it would be a second source of truth for structure.
-- **Independence.** The core never depends on the client. What the core
-  gains is `descriptor`, the carrier change and, with stage 2, the handle's
-  control verbs.
+- **No graphical authoring; independence.** Answers 2 and 3 hold for
+  every stage: Julia source stays the only model, and the core never
+  depends on the client.
 - **The handle-only rule.** The bridge reaches the framework through
   the device handle and nothing else, so what it needs is what every client
   needs. A feature any front end needs that the handle lacks is added to
   the handle first.
-- **Parked.** The built-in Julia GUI (D-310). The analysis view, plots over
+- **Parked.** The built-in Julia GUI (D-310). The plots view, plots over
   the log after a run with trace scrubbing and run comparison, is open and
-  not scheduled, and Makie stays the right tool for it.
+  not scheduled, and Makie stays the right tool for it. It was called the
+  analysis view until 2026-11-04; that name now belongs to answer 9's
+  analysis tier alone.
 
 ## Stage 1: the static inspector
 
@@ -153,13 +151,18 @@ b6f08b1.
    - *Analysis:* execution-order badges with port classes, the anchor and
      component tables, the schedule and hyperperiod chart for a deployment
      descriptor, and the root-input surface.
-   - *Face routes:* selecting a root face highlights its chain through every
-     level. `face_routes` derives the chain from the declared wires
+   - *Face routes:* an explicit trace action on a face or a wire highlights
+     its route through every level; `workspace.md` answer 8 names the
+     action. `face_routes` derives the chain from the declared wires
      (D-315), so the data is at hand.
    - *Later, deferred and not refused:* a diff of two builds drawn on the
-     diagram, and a general view of what feeds an output instantaneously.
+     diagram, a general view of what feeds an output instantaneously, and
+     answer 10's standalone HTML export.
 
    The first release carries the core, analysis and face-route tiers.
+   *Amended 2026-10-27 (`workspace.md` answer 8): a route started by
+   selecting a root face. Amended 2026-10-28 (`live_session.md` answer 9):
+   the standalone export, deferred whole there, joined the deferred tier.*
    *Why:* the first two tiers need no new data from the core. They turn what
    `show` prints today into something to navigate. The general feedthrough
    view needs dependence maps that only a failed loop's tracing produces, or
@@ -204,12 +207,16 @@ b6f08b1.
     struct's fields and of each connection list, so the code steers the
     picture. When `inspect` pushes a new descriptor, surviving blocks keep
     their places by ELK's determinism and a dragged one keeps its dragged
-    place; ELK takes no position hints (amended 2026-11-01, `workspace.md`
-    answer 9). A user may drag a block or a pin to untangle a view, Shift held at any moment
-    keeping the move to the axis of greater travel (amended 2026-11-02,
-    increment 6's look pass). The change lasts until the page reloads
-    and is never saved. Hand arrangement saved beside the code is refused for
-    now. It could be added on top later.
+    place; ELK takes no position hints. A user may drag a block or a pin to
+    untangle a view, Shift held at any moment keeping the move to the axis
+    of greater travel. The change lasts until the page reloads and is never
+    saved. Hand arrangement saved beside the code is refused for now. It
+    could be added on top later, as a sidecar file keyed by path,
+    presentation state and never model state.
+    *Amended 2026-11-01 (`workspace.md` answer 9): after a push the previous
+    positions went to ELK as hints, and only a block could be dragged.
+    Amended 2026-11-02 (increment 6's look pass): Shift's one-axis drag
+    joined.*
     *Why:* a saved arrangement is a second file to version that drifts from
     the code, and it would bring back through layout the second source of
     truth that answer 2 removed. Computed layout works the same in the live
@@ -267,21 +274,28 @@ b6f08b1.
     descriptors all use them. Stating the refusals spares a Simulink user from
     hunting for a Run button.
 16. **The kind marker is a requirement, not a question.** Every leaf face
-    carries a small tag beside its printed Julia type: number, Boolean,
-    enum, vector, struct with named fields, opaque; function-valued signals
-    of §4.4 are opaque. Answer 15's wire styles need it, and stage 4's
-    generic panels need it to choose a widget with no Julia at hand. The
-    value type schema for struct faces stays with stage 2.
-    *Amended 2026-10-07.* The marker is an object, not a word, so that
-    stage 2 extends it additively. The vector kind carries its length and
-    its element's marker; without it a static vector reads as a struct with
+    carries a kind marker beside its printed Julia type: an object, not a
+    word, so that stage 2 extends it additively. Its kinds are boolean,
+    enum with its instance names, symbol, integer, float, number for the
+    other `Real`s, vector with its `shape` and its element's marker, struct
+    with its `fields`, and opaque; function-valued signals of §4.4 are
+    opaque, and `descriptor_design.md` answer 6 gives the rule that assigns
+    a kind. Without the vector kind a static vector reads as a struct with
     one field named `data`, which is what `fieldnames` returns for it, and
     answer 15's thicker line has nothing to key on. A struct marker carries
     its field names now and its per-field markers in stage 2. A `Pinned`
     entry unwraps to its leaf for the marker and sets a separate `pinned`
     flag, since pinning is a contract fact and not a value kind. The marker
     is computed in the core, inside `descriptor`, beside the contract
-    readers that already walk these types.
+    readers that already walk these types. Answer 15's wire styles need
+    it, and stage 4's generic panels need it to choose a widget with no
+    Julia at hand. The value type schema for struct faces stays with stage
+    2.
+    *Amended 2026-10-07 (the third session): the marker was a word, so it
+    carried no vector length, element marker, field names or `pinned`
+    flag. Amended 2026-10-26 (`descriptor_design.md` answer 6): `number`
+    split into `integer`, `float` and `number`, `symbol` joined, an enum
+    gained its `values`, and the vector's length became its `shape`.*
 17. **Nodes are components, in walk order; containers are attributes.** A
     descriptor's node list is the tree's pre-order walk with assemblies
     included, one entry per component keyed by its path, the parent implied
@@ -358,10 +372,12 @@ cited by number. Couplings are named where they exist.
    opaque. Ran on 2026-10-27; its record is `visual_grammar.md`. *Builds on*
    answers 6, 9 and 15. *Coupled to* axis 4.
 4. **Layout and rendering.** ELK configuration: one level at a time, model
-   order, port constraints, right-angle routing, and stability hints across
-   pushes. It also covers the rendering spike, hand-rolled SVG against Svelte
-   Flow, and performance on the largest expected subsystem. *Builds on*
-   answers 11 and 12.
+   order, port constraints and right-angle routing; ELK takes no position
+   hints (`workspace.md` answer 9, 2026-11-01). It also covers the
+   rendering spike, hand-rolled SVG against Svelte Flow, and performance on
+   the largest expected subsystem. Ran on 2026-10-26; its record is
+   `design/prototypes/render_spike/report.md`. *Builds on* answers 11 and
+   12.
 5. **Workspace and interaction.** The tree, canvas, detail pane and drawer;
    search; selection; view state kept by path across pushes; the analysis
    views (execution order, anchor and component tables, schedule and
@@ -590,11 +606,6 @@ Panels over the bridge, so that the page commands the model it shows.
 - Whether FlightApps panels are worth porting as a test of the convention.
   Migration is not a priority (memory, 2026-09-23).
 
-**Deferred, not refused:** a diff of two builds; a general view of what feeds
-an output instantaneously; saved hand layout, which would take the form of a
-sidecar file keyed by path, presentation state and never model state;
-author-supplied icons; the standalone HTML export; the analysis view.
-
 ## Glossary
 
 - **Authored panel.** A component's own panel, given by a method on its
@@ -633,9 +644,9 @@ author-supplied icons; the standalone HTML export; the analysis view.
   explains a model's structure from descriptors; live, it shows a run on
   the diagram; as the cockpit, it commands the run.
 - **Kind marker.** A small object per leaf face beside its printed Julia
-  type (number, Boolean, enum, vector with its length, struct with its field
-  names, opaque) so a client with no Julia can choose a widget or a wire
-  style.
+  type (boolean, enum, symbol, integer, float, number, vector with its
+  `shape`, struct with its `fields`, opaque) so a client with no Julia can
+  choose a widget or a wire style.
 - **Live inspector.** Stage 3: the page connected to the bridge,
   showing runtime data on the diagram.
 - **Live session.** The inspector package's local web server and the tab it

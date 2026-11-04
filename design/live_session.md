@@ -29,9 +29,10 @@ Left open on purpose, each with its owner.
   earns more than the `Origin` check (answer 6).
 - **A protocol version.** Stage 2's, needed only if a third client ever
   speaks the protocol (answer 5).
-- **A raw user exception escaping a probe.** The failure bump's. Until it
-  rules, `inspect(root)` lets it propagate and the tab keeps its previous
-  descriptor (answer 7).
+- **A raw user exception escaping a probe.** Settled on 2026-10-28 by
+  `failure_descriptor.md`'s preamble: D-248 frames every user throw, so
+  none escapes. The failure bump's. Until it rules, `inspect(root)` lets
+  it propagate and the tab keeps its previous descriptor (answer 7).
 
 ## Answered questions
 
@@ -44,9 +45,11 @@ Left open on purpose, each with its owner.
    error thrown elsewhere, which at the REPL is the `err` binding after a
    failed `Model(root)`; `err` holds an exception stack, so the package
    accepts a `Base.ExceptionStack` as a fifth form and takes the last
-   `DiagnosticError` in it (increment 9). Stage 2 adds `inspect(sim)`. Every method takes
-   `name` and returns `nothing`. The root form builds a `Build` only; a
-   user who wants concrete `Δt` builds the `Deployment` and passes it.
+   `DiagnosticError` in it. Stage 2 adds `inspect(sim)`. Every method
+   takes `name` and returns `nothing`. The root form builds a `Build` only;
+   a user who wants concrete `Δt` builds the `Deployment` and passes it.
+   *Amended 2026-10-30 (increment 9): four forms, the `ExceptionStack` form
+   not among them.*
    *Why:* the root form serves the edit loop with one call per iteration,
    the artifact forms serve a user with one in hand, and the `err` form
    costs one method. Rethrowing keeps the REPL's report beside the diagram
@@ -214,12 +217,14 @@ Left open on purpose, each with its owner.
    answer 13 left to the failure bump together with the carrier's
    `structure` field and the encoding of a diagnostic as data. The bump,
    a short session and a small core increment, lands at any point before
-   the package is built, so the package's first increment ships all four
+   the package is built, so the package's first increment ships all five
    `inspect` methods; the page side is already settled by `workspace.md`'s
    answer 10. The Vimium pattern prints once per process on the first
    `inspect`, in the same `@info` line as the URL, with the fuller
    explanation on the help page's keyboard section; nothing detects the
    extension.
+   *Amended 2026-10-30 (increment 9): four methods, before answer 1's
+   `ExceptionStack` form.*
    *Why:* a first package increment whose root form rethrows without
    pushing would split the edit loop's main value, a failure drawn, across
    two increments. `@info` respects the session's logger, so a user who
@@ -230,8 +235,7 @@ Left open on purpose, each with its owner.
    Julia.** The production server reads the `bundle` artifact, the folder
    Pkg unpacks on install from the release asset `Artifacts.toml` names,
    through `artifact_hash` and `artifact_path` at runtime, since the
-   `artifact"bundle"` macro refuses to load while the entry is absent
-   (increment 9). The
+   `artifact"bundle"` macro refuses to load while the entry is absent. The
    preference `bundle_dir` makes it serve that directory instead, each
    file read from disk on every request, so `vite build --watch` in
    `frontend/` and a browser reload show an edit against the real server,
@@ -245,6 +249,8 @@ Left open on purpose, each with its owner.
    `stop!`, which closes the server and clears the slot, reached by
    qualified name. The greeting's version warning of answer 4 is this
    loop's only user.
+   *Amended 2026-10-30 (increment 9): the server read the bundle through
+   the `artifact"bundle"` macro.*
    *Why:* serving a folder is what the production server already does, so
    the preference adds no code path. *Rejected:* Vite's dev server
    proxying `/ws`, which needs a second preference for the extra origin

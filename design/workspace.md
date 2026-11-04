@@ -30,11 +30,13 @@ Left open on purpose, each with its owner.
    status bar below, the detail pane on the right and the drawer at the
    bottom, in a grid with draggable splitters; each side pane collapses to
    a thin strip with its icon. The status bar carries the block and wire
-   counts, the color mode and, from stage 2, the connection state. No
-   docking library in stage 1: the panes are self-contained components with
-   no knowledge of their position, so stage 4's dock hosts them as nodes and
-   replaces only the grid. Splitter positions and collapsed panes persist
-   per browser in local storage, presentation state and never model state.
+   counts, the color mode and the connection state. No docking library in
+   stage 1: the panes are self-contained components with no knowledge of
+   their position, so stage 4's dock hosts them as nodes and replaces only
+   the grid. Splitter positions and collapsed panes persist per browser in
+   local storage, presentation state and never model state.
+   *Amended 2026-10-28 (`live_session.md` answer 5): the connection state
+   waited for stage 2.*
    *Why:* a dock carries its weight and upgrade exposure through two stages
    with nothing to dock, the spike's lesson on a dependency held for a later
    need; the grid is a few dozen lines to replace. Answer 12's refusal of
@@ -62,8 +64,9 @@ Left open on purpose, each with its owner.
    `k` move the selection one row, `l` expands an assembly row or, when it
    is expanded, steps to its first child, `h` collapses a row or, when it
    is collapsed or a leaf, steps to its parent's row, and `Shift+j` opens
-   the selected assembly, the canvas following as for a click (amended
-   2026-11-01, increment 5's look pass).
+   the selected assembly, the canvas following as for a click.
+   *Amended 2026-11-01 (increment 5's look pass): the tree had no keys of
+   its own.*
    *Why:* the tree is the descriptor's node list, so it costs nothing to
    derive and always agrees with the canvas; selecting a closed assembly to
    read its detail must not force opening it. *Rejected:* root inputs as
@@ -81,10 +84,9 @@ Left open on purpose, each with its owner.
    labelled as the tree labels it; Backspace or Alt-Up goes to the parent.
    A move to an ancestor of the level left, by these keys, the breadcrumb
    or back, selects the ancestor's child on the path, so the keyboard
-   continues from it (amended 2026-11-02, increment 6's look pass).
-   The open level is the page's URL hash, `#level=aircraft/loops`, so back
-   and forward move between levels, a reload reopens the level and a level
-   is linkable in the hosted copy; the file is never in the URL. On load
+   continues from it. The open level is the page's URL hash,
+   `#level=aircraft/loops`, so back and forward move between levels, a
+   reload reopens the level and a level is linkable in the hosted copy; the file is never in the URL. On load
    the root opens, fitted, the tree one level deep, nothing selected; a
    failure descriptor opens the same way with the drawer on its
    diagnostics. After a push the open level stays by path and otherwise
@@ -92,74 +94,88 @@ Left open on purpose, each with its owner.
    worst, noted in the status bar; a surviving level keeps its view, a
    fallback fits. Drag pans, the wheel zooms about the pointer, a corner
    button and `0` fit, `+` and `-` zoom.
+   *Amended 2026-11-02 (increment 6's look pass): the selection of the
+   ancestor's child on a move up joined.*
    *Why:* a single click must select, including a closed assembly, so
    opening needs a second gesture everywhere. *Rejected:* a history entry
    per selection, which turns the back button into an undo of clicks.
 
 4. **Selection and the detail pane: one element, the level when none.**
-   Single selection, a block, a region's folder, a wire, a pin or a port
-   square, Escape clearing it; with nothing selected the pane shows the
-   open level, its path, display name, counts, faces and scope timing. A
-   leaf block shows, in order: the header with segment, display name and
-   path, a copy button and, on an assembly, the open button beside it; a
-   short list of labelled facts, each label carrying a hover title that
-   says what it means: the qualified type with the alias beside it, the
-   class and tier, the rate read out as a phrase ("every 4th base tick,
-   offset 1", "every tick of `q_ctl`, 1/50 s") with the anchor, `m` and
-   `c` in its hover title and no row for a continuous leaf, which no rate
-   gates, and the membership when `key` is present, its container's kind
-   written out, "transparent container `children`, key `plant`" or "keyed
-   container `gains`, key `a`"; the signature wrapped
-   in monospace and collapsed under the title "signature"; the docstring
-   collapsed under the title "docstring" alone,
-   then rendered from Markdown by a bundled renderer, a Documenter `@ref`
-   link rendered as its code text, linking being axis 7's (the header's
-   buttons, the labelled facts and the two titles amended 2026-11-01,
-   increment 5's look pass); the locations one per
-   declaration, a click opening the file in the editor through the server
-   in the live session (axis 6) and copying the path in the hosted copy;
-   the parameters as a name and summary table, each summary under its
-   name when the pane is narrow; the faces, inputs then
-   outputs, each with name, type, the kind marker as a short phrase,
-   "vector 3 of float", "struct {x, y}", the pinned mark and an output's
-   stage, an input naming its terminal producer and an output its
-   consumers as clickable paths, a row click selecting the port, each
-   face's facts stacked when the pane is narrow (the membership's kind,
-   the docstring's bare title and the narrow pane's stacked rows amended
-   2026-11-02, increment 6's look pass). A closed
-   assembly shows the same without tier and timing, with its child count,
-   its faces typed through the resolution and an open button; a folder its
-   field, count and keys as links; a wire its declared endpoints, the
-   terminal leaf port behind an assembly face, the type and kind phrase
-   from the terminal producer and its level; a pin or port its face's
-   facts, what feeds it, the `root_inputs` row and later the claim for a
-   root input, and a trace button starting the route of question 8.
+   Selection is single: a block, a region's folder, a wire, a pin or a
+   port square, Escape clearing it. With nothing selected the pane shows
+   the open level: its path, display name, counts, faces and scope timing.
+   A leaf block shows, in order:
+   - the header: segment, display name and path, a copy button and, on an
+     assembly, the open button beside it;
+   - a short list of labelled facts, each label carrying a hover title
+     that says what it means: the qualified type with the alias beside it;
+     the class and tier; the rate read out as a phrase, "every 4th base
+     tick, offset 1" or "every tick of `q_ctl`, 1/50 s", with the anchor,
+     `m` and `c` in its hover title and no row for a continuous leaf,
+     which no rate gates; and, when `key` is present, the membership with
+     its container's kind written out, "transparent container `children`,
+     key `plant`" or "keyed container `gains`, key `a`";
+   - the signature in monospace, wrapped and collapsed under the title
+     "signature";
+   - the docstring, collapsed under the bare title "docstring" and
+     rendered from Markdown by a bundled renderer, a Documenter `@ref` link
+     rendered as its code text, linking being axis 7's;
+   - the locations, one per declaration, a click opening the file in the
+     editor through the server in the live session (axis 6) and copying
+     the path in the hosted copy;
+   - the parameters as a name and summary table, each summary under its
+     name when the pane is narrow;
+   - the faces, inputs then outputs, each with name, type, the kind marker
+     as a short phrase, "vector 3 of float" or "struct {x, y}", the pinned
+     mark and an output's stage; an input names its terminal producer and
+     an output its consumers as clickable paths, a row click selects the
+     port, and each face's facts stack when the pane is narrow.
+
+   A closed assembly shows the same without tier and timing, with its
+   child count, its faces typed through the resolution and an open button.
+   A folder shows its field, count and keys as links. A wire shows its
+   declared endpoints, the terminal leaf port behind an assembly face, the
+   type and kind phrase from the terminal producer, and its level. A pin or
+   a port shows its face's facts, what feeds it, the `root_inputs` row and
+   later the claim for a root input, and a trace button starting the route
+   of question 8.
+   *Amended 2026-11-01 (increment 5's look pass): the header had the copy
+   button alone; the facts were one line with the timing read out, the
+   alias and qualified type below it; the signature was collapsed with no
+   title and the docstring shown open. Amended 2026-11-02 (increment 6's
+   look pass): the membership did not name its container's kind, the
+   docstring's title carried its first line, and the narrow pane stacked
+   nothing.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
    hover, which fights reading.
 
 5. **Search: a substring over path, type and face names, on the tree.** A
-   field at the top of the tree pane, focused by `/` or Cmd-K, its results
-   replacing the outline while a query is active. Case-insensitive
-   substring over the whole model's paths, types with their aliases and
-   face names, never a regular expression and never a parse of a name
-   (D-418); a bare query matches all three fields, the prefixes `path:`,
-   `type:` and `face:` narrow to one, space-separated terms all match. One
-   row per hit grouped under nodes and faces, the matched text emphasised,
-   the count in the group header, capped at a hundred rows with a refine
-   note; arrows move, Enter selects as a tree click does and returns focus
-   to the canvas, Escape clears; while a query stands, `n` and `N` on the
-   canvas select the next and the previous hit in the list's order, opening
-   its level and the view following; a prefix with no text after it is no
-   term, so `face:` alone lists nothing until a character follows; the
-   query survives a push (`n`, `N` and the empty prefix amended 2026-11-01,
-   increment 5's look pass). Hits take the dashed halo on the open level,
-   blocks for nodes and port squares for faces, the rest of the level
-   dimming; tree rows take the dashed marker with the count propagating up
-   collapsed subtrees; the tree never filters. Docstrings and parameter
-   summaries are not searched in stage 1; a `doc:` prefix can join later.
-   Diagnostics have the drawer's own filter.
+   field at the top of the tree pane, focused by `/` or Cmd-K; while it has
+   focus and a query stands, its results stand in the outline's place, and
+   the outline comes back with its markers when focus leaves. The match is
+   a case-insensitive substring over the whole model's paths, types with
+   their aliases and face names, never a regular expression and never a
+   parse of a name (D-418); a bare query matches all three fields, the
+   prefixes `path:`, `type:` and `face:` narrow to one, space-separated
+   terms all match. One row per hit grouped under nodes and faces, the
+   matched text emphasised, the count in the group header, capped at a
+   hundred rows with a refine note; arrows move, Enter selects as a tree
+   click does and returns focus to the canvas, Escape clears; while a query
+   stands, `n` and `N` on the canvas select the next and the previous hit
+   in the list's order, opening its level and the view following; a prefix
+   with no text after it is no term, so `face:` alone lists nothing until a
+   character follows; the query survives a push. Hits take the dashed halo
+   on the open level, blocks for nodes and port squares for faces, the rest
+   of the level dimming; tree rows take the dashed marker with the count
+   propagating up collapsed subtrees; the tree never filters. Docstrings
+   and parameter summaries are not searched in stage 1; a `doc:` prefix can
+   join later. Diagnostics have the drawer's own filter.
+   *Amended 2026-11-01 (increment 5's look pass): Enter's return of focus
+   to the canvas, `n` and `N`, and the empty prefix's rule joined. Amended
+   2026-11-04 (the records' pass, to the page increment 5 built): the
+   results replaced the outline whenever a query was active.*
    *Why:* a face named `q` matches half a model without a prefix; the block
    searched for is usually on a level the user cannot see. *Rejected:* a
    fuzzy matcher, which ranks guesses where the user typed a name they
@@ -250,11 +266,14 @@ Left open on purpose, each with its owner.
    blocks is unchanged, and fits otherwise, so a different model pushed
    over another is never drawn through the old one's view. A push of a
    different model otherwise follows the same rules, since the session
-   cannot tell a rebuild from a same-shaped model (amended 2026-11-01,
-   increment 5's look pass). A second
-   tab is a second session: `inspect(world; name = "variant")` pushes to
-   the tab bound to that name, opening one if none is, the unnamed call to
-   the default tab; axis 6 owns the API.
+   cannot tell a rebuild from a same-shaped model. A second tab is a
+   second session: `inspect(world; name = "variant")` pushes to the tab
+   bound to that name, opening one if none is, the unnamed call to the
+   default tab; axis 6 owns the API.
+   *Amended 2026-11-01 (increment 5's look pass): a push sent the previous
+   positions to ELK as hints, positions were keyed by level and node path,
+   and the rule keeping a level's view only for an unchanged set of blocks
+   joined.*
    *Why:* a renamed block is a different node to the format, so losing its
    selection is the honest outcome. *Rejected:* persisting session state
    across reloads, which resurrects a selection into a descriptor that may
@@ -283,8 +302,10 @@ Left open on purpose, each with its owner.
     the model again, nor does the development server. The privacy
     statement, on the landing panel and the help page: the file is read
     inside the browser and never uploaded, and the page loads nothing from
-    any other site (the leave prompt and the statement's last clause
-    amended 2026-11-01, increment 5's look pass).
+    any other site.
+    *Amended 2026-11-01 (increment 5's look pass): the leave prompt joined,
+    and the statement's last clause read "loads nothing from the
+    network".*
     *Why:* a wrong file should fail in words, and the structural check is
     the cheapest thing that does it; the hosted copy and the live session
     share one bundle, so the statement holds for both. *Rejected:* a
@@ -293,20 +314,24 @@ Left open on purpose, each with its owner.
 
 11. **The help page and the keyboard: five sections, Vim's cursor on the
     diagram.** A page in the bundle at `#help`, reached from the landing
-    panel, `?` and a status-bar link. Its sections: reading the diagram, a
-    legend of `visual_grammar.md`'s terms with their drawings, one line
-    each; coming from Simulink, the vocabulary map as a table, assembly and
-    subsystem, `Group` and virtual subsystem, leaf and block, face and
-    port, root input and Inport, root output and Outport, rate scope and
-    sample time, kind marker and data type, a stage 1 output and a
-    non-direct-feedthrough output, `Junction` and Sum or the logical
-    operators, `Pack` and `Unpack` against Mux and Demux, a face route and
-    signal highlighting, the tree and the model browser; what the page does
-    not do, the refusals with one reason each, editing, saved layout,
-    author icons, then what is not here yet, run control, live values and
-    panels, stages 3 and 4; the keyboard; about, with the privacy
-    statement, the bundle and format versions and the links. The keys,
-    single and outside text fields:
+    panel, `?` and a status-bar link. Its five sections:
+    - reading the diagram, a legend of `visual_grammar.md`'s terms with
+      their drawings, one line each;
+    - coming from Simulink, the vocabulary map as a table: assembly and
+      subsystem, `Group` and virtual subsystem, leaf and block, face and
+      port, root input and Inport, root output and Outport, rate scope and
+      sample time, kind marker and data type, a stage 1 output and a
+      non-direct-feedthrough output, `Junction` and Sum or the logical
+      operators, `Pack` and `Unpack` against Mux and Demux, a face route
+      and signal highlighting, the tree and the model browser;
+    - what the page does not do: the refusals with one reason each,
+      editing, saved layout and author icons, then what is not here yet,
+      run control, live values and panels, stages 3 and 4;
+    - the keyboard;
+    - about, with the privacy statement, the bundle and format versions
+      and the links.
+
+    The keys, single and outside text fields:
 
     | key | action |
     |---|---|
@@ -322,18 +347,24 @@ Left open on purpose, each with its owner.
     | `t` | trace the selected face or wire |
     | `r` `y` `o` | rate mode, type labels, order badges |
     | `d`, `?` | toggle the drawer, the help page |
-    | Escape | clear the route, then the legend's focus, then the search, then the selection |
+    | Escape | clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
     | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
 
     Focus shows as the halo, for the keyboard only, and every control is a
-    real button or link; a push keeps focus in the region that held it
-    (the table's Shift row, `z`, `n`, the tree's keys and the focus rules
-    amended 2026-11-01, increment 5's look pass).
+    real button or link; a push keeps focus in the region that held it.
     Dragging has no keyboard form in stage 1. The keyboard section says
     that Vimium owns many of these keys by default and that the user
     excludes the inspector's origins, `localhost` on the server's port and
     the hosted address, or uses its insert mode; the live session printing
     the pattern once is axis 6's.
+    *Amended 2026-11-01 (increment 5's look pass): Shift with `h j k l`
+    panned like the arrows, Enter and Backspace or Alt-Up alone opened and
+    went up, Shift with `h` and `l`, `z`, `n`, `N` and the tree's own keys
+    did not exist, and focus had neither its keyboard-only ring nor its
+    rule across a push. Amended 2026-11-02 (increment 6's look pass):
+    Escape's chain gained the legend's focus. Amended 2026-11-03
+    (increment 7, `roadmap.md`'s landed note): it gained the focused
+    diagnostic.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

@@ -125,18 +125,23 @@ Left open on purpose, each with the axis or the bump that owns it.
    trunk that branches, a filled dot at each branch; the mechanism, ELK's
    edge merging, is axis 4's. A feedback wire gets no special style, since
    the port glyph of answer 2 shows where the loop is legal. The type-label
-   toggle, off by default, writes the type once per producer port with its module qualifiers dropped, `SVector{5, Float64}` for
+   toggle, off by default, writes the type once per producer port with its
+   module qualifiers dropped, `SVector{5, Float64}` for
    `StaticArraysCore.SVector{5, Float64}`, uncut, at the port's own wire
    start, just below the wire, the full string in the hover title and the
-   detail pane; the label is an ELK edge label placed at the tail and
+   detail pane. The label is an ELK edge label placed at the tail and
    present in every layout, overlay on or off, so the layout reserves its
-   room and no block moves with the toggle, at the cost of wider layer gaps
-   (the placement amended 2026-11-02, increment 6's look pass, and again
-   2026-11-03, ELK's labels replacing the longest-segment rule); the kind
-   marker is never written out. A wire's key is its
-   consumer endpoint, unique within a level because a consumer port has one
-   producer and a fan-out is one wire per target; the selection, ELK's
-   position hints and the keyed loops use it across pushes.
+   room and no block moves with the toggle, at the cost of wider layer
+   gaps; the kind marker is never written out. A wire's key is its
+   consumer endpoint, unique within a level because a consumer port has
+   one producer and a fan-out is one wire per target; the selection and
+   the keyed loops use it across pushes.
+   *Amended 2026-11-01 (`workspace.md` answer 9): ELK's position hints were
+   among the key's users. Amended 2026-11-02 (increment 6's look pass): the
+   label was the full type string cut with an ellipsis at a fixed width.
+   Amended 2026-11-03 (increment 6's type-label probe): the label sat on
+   the longest horizontal segment among the port's wires, cut to that
+   segment's length and drawn above the blocks.*
    *Why:* the dashed discrete-valued kinds tell the mode, the flags and the
    stop requests from the data path at a glance, which is what the closed
    loop needs. Answer 18 already commits the client to resolve every face
@@ -174,51 +179,54 @@ Left open on purpose, each with the axis or the bump that owns it.
    every deployment; the authored chain of `Relative` entries is not shown,
    and where an anchored clock lands on the base grid is the deployment
    overlay's fact, not the build's. Continuous leaves keep the continuous
-   color. The palette is categorical, at most eight steps, constructed rather than
-   searched: eight hues evenly spread round the OKLCh hue circle at one
-   chroma, the fills alternating two lightness bands by step and light
-   enough for the text at AA contrast, each stroke its fill's hue darkened,
-   step 0 a warm peach opposite the continuous blue; distinct under normal
-   vision, never identical under simulated weak color vision, the legend
-   focus telling any two apart (the construction and the bar amended
-   2026-11-02, increment 6's look pass, second round). It is assigned
-   fastest first with anchor 0 first, and a model with more triples than
-   colors gets a text badge on the extra blocks, its number in the model's
-   order; the first four extras take colors distinct under normal vision
-   only, the number telling them apart for every reader, and the rest a
-   shared neutral (the four colored extras amended 2026-11-02, increment
-   6's look pass). A closed assembly takes the one triple its discrete
-   leaves share, the assembly gray when they tick on several, and the
-   continuous color with none; whenever a discrete leaf lies beneath it, it
-   wears a clock-count badge in one corner, "1 clock" on a colored one, the
-   count on a gray one. Its `scopes` row colors nothing: an assembly ticks
-   on nothing, the row is the frame its `Relative` children compose
-   against, and the detail pane lists it (the assembly rule and the badge
-   amended 2026-11-02, increment 6's look pass, second round). Wires take
-   their terminal producer's fill, a continuous producer's wires a blue of
-   their own since the continuous fill is too pale for a line, a root input
-   pin leaving its wires neutral, so a rate transition shows as a color
-   change at a block's input and a wire names the block it leaves (the fill
-   amended 2026-11-02, increment 6's look pass, second round). A legend in
-   a canvas corner lists first a line for the continuous color when a
-   continuous leaf, an assembly with no discrete leaf or a continuous
-   producer's wire is visible, then every triple visible on the open level,
-   on a block or a wire, each read out, "anchor 1 (1/10 s) × 2, phase 1";
-   the overlay bump adds the concrete `Δt` and `(D, Φ)` per line. The rate
-   palette's fills, which also color the wires, keep their distance from
-   the error, warning and highlight colors and the wire gray under every
-   vision, and the strokes, borders only, follow their fills (the legend's
-   wire and continuous lines amended 2026-11-02, increment 6's look pass;
-   the continuous line first and the fills' part amended the same day,
-   second round). A click on a legend line focuses its triple, the
-   continuous line its color: the blocks on it, the closed assemblies with a leaf of it
-   beneath and the wires it tints are lit, the rest dimmed as for a search,
-   and the tree marks its rows with counts up collapsed ones; a second
-   click, Escape or leaving rate mode clears it, and it holds across levels
-   and across a push that keeps the triple; while a query also stands, the
-   canvas shows the legend's focus and the tree the search's markers
-   (amended 2026-11-02, increment
-   6's look pass).
+   color. The palette is categorical, at most eight steps, constructed
+   rather than searched: eight hues evenly spread round the OKLCh hue
+   circle at one chroma, the fills alternating two lightness bands by step
+   and light enough for the text at AA contrast, each stroke its fill's
+   hue darkened, step 0 a warm peach opposite the continuous blue. The
+   steps are distinct under normal vision and never identical under
+   simulated weak color vision, the legend focus telling any two apart.
+   The fills, which also color the wires, keep their distance from the
+   error, warning and highlight colors and the wire gray under every
+   vision, and the strokes, borders only, follow their fills. Colors are
+   assigned fastest first with anchor 0 first. A model with more triples
+   than colors gets a text badge on the extra blocks, its number in the
+   model's order; the first four extras take colors distinct under normal
+   vision only, the number telling them apart for every reader, and the
+   rest a shared neutral. A closed assembly takes the one triple its
+   discrete leaves share, the assembly gray when they tick on several, and
+   the continuous color with none; whenever a discrete leaf lies beneath
+   it, it wears a clock-count badge in one corner, "1 clock" on a colored
+   one, the count on a gray one. Its `scopes` row colors nothing: an
+   assembly ticks on nothing, the row is the frame its `Relative` children
+   compose against, and the detail pane lists it. Wires take their
+   terminal producer's fill, a continuous producer's wires a blue of their
+   own since the continuous fill is too pale for a line, and a root input
+   pin leaves its wires neutral, so a rate transition shows as a color
+   change at a block's input and a wire names the block it leaves. A
+   legend in a canvas corner lists first a line for the continuous color
+   when a continuous leaf, an assembly with no discrete leaf or a
+   continuous producer's wire is visible, then every triple visible on the
+   open level, on a block or a wire, each read out, "anchor 1 (1/10 s) ×
+   2, phase 1"; the overlay bump adds the concrete `Δt` and `(D, Φ)` per
+   line. A click on a legend line focuses its triple, the continuous line
+   its color: the blocks on it, the closed assemblies with a leaf of it
+   beneath and the wires it tints are lit, the rest dimmed as for a
+   search, and the tree marks its rows with counts up collapsed ones. A
+   second click, Escape or leaving rate mode clears the focus; it holds
+   across levels and across a push that keeps the triple, and while a
+   query also stands the canvas shows the legend's focus and the tree the
+   search's markers.
+   *Amended 2026-11-02 (increment 6's look pass): every extra took the
+   shared neutral and its badge's number was unstated; the legend listed
+   closed assemblies' triples but no wire's and no continuous line, and
+   none of its lines could be focused; the whole palette kept off red and
+   the halo hue. Amended the same day (the pass's second round): the
+   palette was searched for eight steps distinct under weak color vision;
+   a closed assembly took its scope triple's color, with a multi-rate
+   badge when its leaves ticked otherwise; wires took their producer's
+   color at a lighter tint; the continuous line came last in the legend;
+   and the strokes, not the fills, kept off the reserved hues.*
    *Why:* two blocks under different anchors are two clocks by design, and
    a color keyed on the deployment's `(D, Φ)` would merge or split them per
    deployment. An assembly ticks on nothing, so its scope row is a frame,
@@ -291,6 +299,8 @@ Left open on purpose, each with the axis or the bump that owns it.
    carries them. The rate palette's fills, the wires' colors too, keep
    their distance from red, amber and the highlight hue (answer 6).
    A structure-step failure has no diagram, only the list (answer 6).
+   *Amended 2026-11-02 (increment 6's look pass, both rounds): the whole
+   palette kept off the reserved hues, then its strokes alone.*
    *Why:* the two questions a loop raises, where it closes and which hop is
    false, become things seen rather than reconstructed from slash paths:
    the chord names the member whose contract to question and the wire into
@@ -317,6 +327,8 @@ Left open on purpose, each with the axis or the bump that owns it.
    bottom to top: dim, normal, route casing, selection halo, error overlay,
    so the error hue always wins; a dragged block draws above its neighbours
    with its halo on; the keyboard focus ring is the halo.
+   *Amended 2026-11-02 (increment 6's look pass): a legend line's focus
+   joined the dimming foci.*
    *Why:* a halo composes with a tier fill, a filled root tag and an
    outlined pin alike, which a fill or stroke change does not; a route and
    a selection differ in shape, a chain with an origin against one element,
@@ -339,12 +351,13 @@ Left open on purpose, each with the axis or the bump that owns it.
     legibility floor the levels drop in order, face names first, then the
     display name with its icon, the segment last; wires and port squares
     never drop. Paths print in slash form verbatim; the root's label is the
-    envelope's `name` when present, else the root type's display name
-    (axis 5 puts a dropped file's name between the two, `workspace.md`,
-    answer 10), which asks for the envelope `name` bump, written by `inspect` and
-    `write_descriptor` and never by `descriptor`. Rationals print as
-    `1/10 s`, multiples and phases as integers. Every element carries a
-    hover title with its full text.
+    envelope's `name` when present, else a dropped or picked file's base
+    name, else the root type's display name; the `name` field is written by
+    `inspect` and `write_descriptor` and never by `descriptor`. Rationals
+    print as `1/10 s`, multiples and phases as integers. Every element
+    carries a hover title with its full text.
+    *Amended 2026-10-27 (`workspace.md` answer 10): the file's base name
+    joined between the two.*
     *Why:* layout is computed per client, so a system font costs nothing in
     sameness and removes the spike's measurement-before-fonts risk; the
     names the author wrote are the text the diagram exists to show, and a

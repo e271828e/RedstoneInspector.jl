@@ -111,12 +111,11 @@ Left open on purpose, each with its owner.
    dependency list. The revision is spelled twice because Pkg reads the
    `[sources]` of the workspace's own projects and ignores a dependency's,
    so Redstone cannot ride in through the examples' `path` entry; without
-   the root's entry instantiation fails from both projects. *Amended
-   2026-10-30 (increment 1):* with no manifest, `Pkg.instantiate()` fails
-   from both members even with the root's entry, and only the root
-   instantiates, resolving the one manifest every member loads; CI and the
-   README instantiate from the root. The fixture
-   script reads both files and refuses to run when the revisions differ.
+   the root's entry instantiation fails from both projects. Even with it,
+   when no manifest exists `Pkg.instantiate()` fails from both members, and
+   only the root instantiates, resolving the one manifest every member
+   loads; CI and the README instantiate from the root. The fixture script
+   reads both files and refuses to run when the revisions differ.
    A pin bump is one commit: both revisions, the regenerated fixtures and
    schema copy, and whatever the inspector needs to follow the core. The
    workspace `Manifest.toml` stays unversioned, as the core's does.
@@ -131,6 +130,8 @@ Left open on purpose, each with its owner.
    against one Redstone. In both states the pin moves only when a commit
    moves it, which is answer 14's "never silently". The inspector's own
    registration waits for Redstone's.
+   *Amended 2026-10-30 (increment 1): with the root's entry in place, both
+   members were to instantiate.*
    *Why:* `[sources]` with `subdir` is what Pkg offers for exactly this,
    and keeping the examples out of the package's dependencies spares every
    user ControlSystemsBase. *Rejected:* including the examples' source
@@ -183,7 +184,13 @@ Left open on purpose, each with its owner.
    the wire styles, an `Absolute` anchor with keyed rates for the rate
    colors, a model with an algebraic cycle for `failure_cycle.json`, and
    one that fails the structure step for `failure_structure.json`, which
-   draws the list alone. These cover what the drawing distinguishes; the
+   draws the list alone. Five more join them: `library.json`, one instance
+   of every shipped block for the icons and the legend's forms, and four
+   for the overlay, each ported from the core's suite, `failure_nested.json`
+   with the cycle closed one level down, `failure_dead.json` with a dead
+   hop, `failure_probe.json` with a probe throw beside an
+   `EmptyFaceSelection` warning, and `warning.json` with that warning
+   alone, sixteen in all. These cover what the drawing distinguishes; the
    core's suite covers what the format does. The schema copy, the fixtures
    and the lock file are committed, so the frontend builds and tests with
    no Julia; `dist/`, `node_modules/`, the generated types and the
@@ -191,13 +198,19 @@ Left open on purpose, each with its owner.
    start, since the artifact macro refuses to load a package without one,
    and names no bundle until the release workflow writes the entry; until
    then the server finds no bundle and its error names the `bundle_dir`
-   preference. The design records stay in the core repo under
-   `design/inspector/`, where they cite the spec (they moved to this
-   repo's `design/` on 2026-11-04); the inspector repo
-   carries `frontend/PROTOCOL.md` and a README documenting the four
-   `inspect` methods, `write_descriptor` and the three preferences, with
-   no Documenter site in stage 1, the help page inside the bundle being
-   the user manual.
+   preference. The design records live in this repo under `design/`,
+   citing the core's spec by its repo-prefixed path; the repo also carries
+   `frontend/PROTOCOL.md` and a README documenting the five `inspect`
+   methods, `write_descriptor` and the three preferences, with no
+   Documenter site in stage 1, the help page inside the bundle being the
+   user manual.
+   *Amended 2026-10-30 (increment 9): the README was to document four
+   `inspect` methods, before `live_session.md` answer 1's `ExceptionStack`
+   form. Amended 2026-11-03 (increments 6 and 7, `roadmap.md`): the roster
+   stopped at eleven, before `library` and the four overlay models.
+   Amended 2026-11-04 (the records' move,
+   `design/increments/20261104_design_move/notes.md`): the records stayed
+   in the core repo under `design/inspector/`, where they cite the spec.*
    *Rejected:* the synthetic models under `test/`, shared by include from
    the script, which ties the package suite to a file that exists for the
    fixtures; a `docs/` folder for two functions and three preferences.

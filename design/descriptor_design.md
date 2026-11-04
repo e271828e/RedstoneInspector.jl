@@ -67,14 +67,19 @@ Left open on purpose, each with the bump or the axis that owns it.
 ## Answered questions
 
 1. **The envelope: a header and one body.** Every descriptor is one object
-   with `format_version`, `redstone_version`, `kind`, and the body under a
-   key named by the kind, `build` or `deployment`, later `failure`.
-   `format_version` is an object, `{"major": 1, "minor": 0}`, and
-   `redstone_version` a string for information only.
+   with `format_version`, `redstone_version`, `kind`, an optional `name`,
+   and the body under a key named by the kind, `build`, `deployment` or
+   `failure`. `format_version` is an object, `{"major": 1, "minor": 0}`,
+   and `redstone_version` a string for information only. `name`, right
+   after `kind`, labels the model; the inspector package writes it and
+   `descriptor` never does.
    ```json
    {"format_version": {"major": 1, "minor": 0}, "redstone_version": "0.3.1",
     "kind": "deployment", "deployment": {"build": {…}}}
    ```
+   *Amended 2026-10-27 (`visual_grammar.md` answer 10, commit 86ff8cc): the
+   envelope had no `name`. Amended 2026-10-28 (`failure_descriptor.md`
+   answer 1): the `failure` kind was still to come.*
    *Why:* a deployment descriptor embeds its build descriptor whole and a
    failure descriptor embeds a `Structure` projection, so the embedded thing
    is a body, the same object whether it stands alone or nested, and one
@@ -84,14 +89,18 @@ Left open on purpose, each with the bump or the axis that owns it.
    reader compares integers and parses nothing. *Rejected:* three unrelated
    schemas, which give up the shared version check the bridge will rely on.
 2. **The build body mirrors the artifact.** A `structure` section projects
-   the `Structure`, an `outputs` section projects `Outputs`, and later bumps
-   add `events` and the deployment's own sections. The failure body embeds
-   `structure` unchanged. Face types and kind markers live in `structure`:
-   the declaration reader takes an instance and its tier, both held by the
-   `Structure`, so they exist after the structure step without the nominal
-   activation. Only the port classes come from probing, and they live in
-   `outputs`. This corrects `initial_design.md`'s axis 2 note, which had
-   `descriptor` read the types from the activation's tables.
+   the `Structure`, an `outputs` section projects `Outputs`, `warnings`
+   holds the `Build`'s own warnings, an empty array when none, and later
+   bumps add `events` and the deployment's own sections. The failure body
+   embeds `structure` unchanged when the carrier holds one. Face types and
+   kind markers live in `structure`: the declaration reader takes an
+   instance and its tier, both held by the `Structure`, so they exist
+   after the structure step without the nominal activation. Only the port
+   classes come from probing, and they live in `outputs`. This corrects
+   `initial_design.md`'s axis 2 note, which had `descriptor` read the
+   types from the activation's tables.
+   *Amended 2026-10-28 (`failure_descriptor.md` answer 1): the build body
+   had no `warnings`.*
    *Why:* the boundary falls where the build's own steps fall, so what a
    failure descriptor can carry is what the schema says it carries, with no
    subset rule to maintain. *Rejected:* flat concept sections at the body
@@ -102,17 +111,21 @@ Left open on purpose, each with the bump or the axis that owns it.
    It keys the `types` table, labels the diagram by its last segment and
    matches answer 15's icons. Beside it each node carries `signature`, the
    instance's full printed type, untruncated, for the detail pane.
+   *Amended 2026-10-27 (`visual_grammar.md` answer 7, commit 86ff8cc): the
+   alias was a cost accepted as lost.*
    *Why:* the docstring and the declaration methods attach to the
    unparameterized name, so stripping is what makes the lookup work, and a
    heavily parameterized block would otherwise print its parameters on the
    diagram. A bare name would collide across modules. *Cost accepted:* a
    `const` alias such as `SumJunction{V, N}` is a `Junction` to `typename`,
-   so the node says `Redstone.Junction` and carries that docstring; the
-   signature's `typeof(+)` still tells it from an `Or`. Recovering the alias
-   would mean searching modules for bindings equal to the type.
+   so the node's `type` says `Redstone.Blocks.Junction` and carries that
+   docstring. The optional node `alias` of answer 4 recovers the name,
+   `Redstone.Blocks.SumJunction`, by `visual_grammar.md` answer 7's rule,
+   and the diagram's label and icon key on it ahead of `type`.
 4. **The node entry.** One object per component in walk order, assemblies
    included (answer 17): `path`, `field`, `key`, `class`, `tier`, `type`,
-   `signature`, `timing`, `inputs`, `outputs`, `wires` and `parameters`.
+   `alias`, `signature`, `timing`, `inputs`, `outputs`, `wires` and
+   `parameters`.
    ```json
    {"path": "aircraft/loops/l1", "field": "loops", "key": "l1",
     "class": "leaf", "tier": "continuous",
@@ -132,7 +145,8 @@ Left open on purpose, each with the bump or the axis that owns it.
    The root has `path` `""` and neither `field` nor `key`. An assembly node
    has `class` `"assembly"`, no `tier` or `timing`, name-only faces and its
    `wires` (answer 5); a leaf node has `class` `"leaf"`, typed faces and no
-   `wires`.
+   `wires`. `alias` is present only when a `const` of the type's own module
+   binds a parameterization of it, as answer 3 says.
    Two conventions fixed here for the whole format. *Omission:* a field that
    does not apply is left out, never written as `null`, so presence is the
    test and the schema can require fields per class; an empty collection
@@ -140,6 +154,8 @@ Left open on purpose, each with the bump or the axis that owns it.
    assembly's faces are `{"name": …}` objects, not bare strings, so a later
    bump can add fields without a second shape; the schema defines
    `LeafFace` and `AssemblyFace` apart, and `class` says which a node uses.
+   *Amended 2026-10-27 (`visual_grammar.md` answer 7, commit 86ff8cc): the
+   node had no `alias`.*
    *Why:* `segment` and `membership` were in the first sketch and were
    dropped as derivable: the parent is the longest node path that is a
    proper prefix, which skips a container's non-node path such as
@@ -182,7 +198,8 @@ Left open on purpose, each with the bump or the axis that owns it.
    | `T <: AbstractFloat` | `{"kind": "float"}` |
    | `T <: Real` | `{"kind": "number"}` |
    | `T <: StaticArray` | `{"kind": "vector", "shape": [3], "element": {…}}` |
-   | a `NamedTuple` or a concrete struct with fields | `{"kind": "struct", "fields": ["x", "y"]}` |
+   | `T <: Function`, or a field handle | `{"kind": "opaque"}` |
+   | an isbits `NamedTuple` or struct with fields | `{"kind": "struct", "fields": ["x", "y"]}` |
    | anything else | `{"kind": "opaque"}` |
 
    This amends answer 16's vocabulary: `number` splits into `integer`,
@@ -192,10 +209,12 @@ Left open on purpose, each with the bump or the axis that owns it.
    replaces `length` so a static matrix reads `[3, 3]`; `values` carries an
    enum's instance names; `element` recurses. `opaque` holds the
    function-valued signals and field handles of §4.4, `String`, abstract or
-   `Any` declarations, and whatever the struct test rejects.
-   *Amended 2026-10-26 (D-433):* the `struct` row is an isbits value, what
-   the leaf walk opens, and a field handle or a function type is opaque
-   ahead of it; an abstract declaration takes the first row it matches.
+   `Any` declarations, and whatever the struct test rejects. The `struct`
+   row is an isbits value, what the leaf walk opens, and a field handle or
+   a function type is opaque ahead of it; an abstract declaration takes
+   the first row it matches.
+   *Amended 2026-10-26 (D-433): the `struct` row took any `NamedTuple` or
+   concrete struct with fields, with no opaque row ahead of it.*
    *Why the marker exists at all:* the type string stays beside it, but a
    client cannot evaluate `Angle <: Real`, reflect `fieldnames(Pose)` or
    call `instances(FlightPhase)`, and printed type names are not stable
@@ -304,16 +323,20 @@ Left open on purpose, each with the bump or the axis that owns it.
     against the omission rule fails here, where validating the Julia value
     directly would not catch it. The inspector repo generates its
     TypeScript types from the same file at build time.
-13. **Two methods in version one.** `descriptor(build::Build)` returns the
-    build envelope, and `descriptor(deployment::Deployment)` the deployment
-    envelope whose body holds `build` alone until the overlay's bump. Both
-    return the value of answer 11, with `redstone_version` from
-    `pkgversion`. The core offers no text, no file and no `Simulation`
-    method; `write_descriptor` and `inspect` are the inspector package's
-    under axis 6, and stage 2's `inspect(sim)` reaches the deployment
-    through the simulation. The code is a new `src/descriptor.jl` beside
-    `show.jl`, included after the deployment's file. The failure method
-    waits for its bump.
+13. **Three methods in version one.** `descriptor(build::Build)` returns
+    the build envelope, `descriptor(deployment::Deployment)` the
+    deployment envelope whose body holds `build` alone until the overlay's
+    bump, and `descriptor(err::DiagnosticError)` the failure envelope of
+    any carrier, a build's with its structure or a service's with its list
+    alone. All three return the value of answer 11, with
+    `redstone_version` from `pkgversion`. The core offers no text, no file
+    and no `Simulation` method; `write_descriptor` and `inspect` are the
+    inspector package's under axis 6, and stage 2's `inspect(sim)` reaches
+    the deployment through the simulation. The code is a new
+    `src/descriptor.jl` beside `show.jl`, included after the deployment's
+    file.
+    *Amended 2026-10-28 (`failure_descriptor.md` answer 3): two methods,
+    the failure method waiting for its bump.*
     *Why:* the deployment envelope costs one method and exercises the
     embedding and the `kind` tag from the first fixture, and a deployment
     is what a user has in hand.
@@ -340,12 +363,17 @@ Left open on purpose, each with the bump or the axis that owns it.
 15. **The carrier change: a third field.** `DiagnosticError` gains
     `structure`, `nothing` everywhere except on a throw past the structure
     step, where it holds the complete `Structure`. One site fills it: the
-    build's door catches the carrier leaving the nominal step and rethrows
-    it with the structure attached, so no probe or cycle site changes. §13.2
-    states it now, as recorded and unbuilt, and the failure descriptor's
-    bump builds it as its first consumer. A raw user exception escaping a
-    probe is not the carrier and carries nothing; what the bump does with it
-    is the bump's question.
+    build's door, whose one catch rebuilds every carrier leaving it past
+    the structure step with the warnings and the structure, a throw from
+    an activation requested at build included, so no probe or cycle site
+    changes. §13.2 states it as built, and the failure descriptor is its
+    first consumer. No raw user exception escapes a probe: D-248 frames
+    every user-authored method the build invokes, so a throw arrives
+    inside the carrier as a `UserCodeFraming` diagnostic.
+    *Amended 2026-10-28 (`failure_descriptor.md`'s preamble and answer 3):
+    the field was recorded and unbuilt, the door caught the carrier
+    leaving the nominal step alone, and a raw user exception escaping a
+    probe was left to the failure bump.*
     *Why:* it follows `warnings`' pattern on the same carrier (D-250) and
     keeps §13.2's one-carrier rule. *Rejected:* a wrapper exception for build
     failures, a second type; a build door returning the structure on
@@ -398,12 +426,13 @@ This session closed axes 1 and 2. What it hands on, in working order:
 ## Glossary
 
 - **Body.** The object under the key named by the descriptor's `kind`: the
-  build body, the deployment body that embeds a build body, later the
-  failure body that embeds a `structure` section.
+  build body, the deployment body that embeds a build body, and the
+  failure body that embeds a `structure` section when the carrier holds
+  one.
 - **Endpoint.** One end of a wire, `{"path", "port"}` in full paths, the
   level's own path on a boundary face and `""` for a root input.
 - **Envelope.** The top-level object: `format_version`, `redstone_version`,
-  `kind` and the body.
+  `kind`, the optional `name` and the body.
 - **Face object.** A face as the node carries it: a *leaf face* with `name`,
   `type`, `kind` and `pinned`, or an *assembly face* with `name` alone.
 - **Field and key.** On a node, the field that contributed it to its parent
@@ -440,8 +469,9 @@ This session closed axes 1 and 2. What it hands on, in working order:
 - **Schema of record.** `src/descriptor.json`, shipped with the package:
   the exact shape of the format, draft 7, strict about the writer's output,
   cited from §13.9 and never restated field by field in prose.
-- **Section.** A top-level key of a body: `structure` and `outputs` in the
-  build body of version one.
+- **Section.** A top-level key of a body: `structure`, `outputs` and
+  `warnings` in the build body, and `policy`, `structure`, `diagnostics`
+  and `warnings` in the failure body.
 - **Signature.** A node's full printed concrete type, beside its qualified
   base name, untruncated.
 - **Timing.** A leaf node's or a scope's `{"anchor", "m", "c"}`: the anchor
