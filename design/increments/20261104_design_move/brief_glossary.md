@@ -41,6 +41,14 @@ API; touch no answered question's text or number.
   are defined in `glossary.md`." Keep the heading.
 - `AGENTS.md`'s "Where things live" table gains a row for the glossary.
 
+## The traps
+
+`design/increments/20261104_design_move/traps.md`, if present, holds the
+frontend's traps condensed out of `frontend/MAP.md`. Fold them into
+`design/rules.md` under a heading "Frontend traps" after the frontend
+rules, keeping each as one bullet, and delete `traps.md`. If the file is
+absent, say so in your report and leave `rules.md` as it is.
+
 ## Bookkeeping
 
 - Append a section "The glossary pass" to

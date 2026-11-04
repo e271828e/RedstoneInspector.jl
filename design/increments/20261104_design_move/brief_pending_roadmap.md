@@ -44,13 +44,15 @@ or under Unordered, judged by whether a date orders them:
   later-stages pointer, not as bullets.
 - **The open items of the landed increments.** Gather every item from
   `roadmap.md`'s landed notes (increments 4 to 7, "Open items") and from
-  `frontend/MAP.md`'s "Open items" section as it stands on master. Merge
-  duplicates, drop any the map or a later increment shows fixed (check
-  the roadmap's later notes and the map's sections, not the code), and
-  write each as one bullet under Unordered with the increment it came
-  from. Leave `MAP.md` untouched: its cut is a later job that waits for
-  increment 8's merge, and it will then drop its section in favor of
-  this list.
+  the "Open items" section of `frontend/MAP.md` as it stands on the
+  `increment-8` branch before its cut, read with `git show
+  bb2511f:frontend/MAP.md`, which supersets master's. Merge duplicates,
+  drop any the map or a later increment shows fixed (check the roadmap's
+  later notes and the map's sections, not the code), and write each as
+  one bullet under Unordered with the increment it came from. Leave
+  `MAP.md` untouched on every branch: its cut is a separate job running
+  on the `increment-8` branch, which drops the section in favor of this
+  list.
 - **Record maintenance**: whatever the records' pass reported as not
   placed, from the "The records' pass" section of
   `increments/20261104_design_move/notes.md`.
