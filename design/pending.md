@@ -10,19 +10,36 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **The inspector, stage 1**: the static inspector over the descriptor.
-  Its records, none normative, are `initial_design.md` and one per axis
-  beside it: `descriptor_design.md` (axes 1 and 2, §13.9, D-432),
+- **Increment 8's look pass and merge.** Increment 8, the analysis views
+  and the help page, is in its look-and-adjust pass: its review's fixes
+  landed at `bb2511f` on the `increment-8` branch, checked out in a
+  worktree, and `increments/inspector_08_analysis_help/look_inspector_08.md`
+  is the pass's checklist; the merge follows the pass.
+- **The class value at the next pin.** The core renamed the descriptor's
+  class value `"leaf"` to `"primitive"` at `c894949` on 2026-11-05, with
+  `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
+  since the spec spells a node's class as assembly or primitive and *leaf*
+  is the value leaf. It follows the merge because the branch touches seven
+  files that spell the old names. When the pin moves: the schema copy
+  follows and `npm run types` regenerates `descriptor.d.ts`; every
+  comparison on the descriptor's `class` in `src/lib`, `src/canvas`,
+  `src/frame` and the e2e specs reads `"primitive"`, while an internal role
+  string such as `role: "leaf"` in `level.test.ts` is this repo's own call;
+  every fixture carrying `"class": "leaf"` is regenerated from the core,
+  since the regenerated schema refuses them; and the records that spell the
+  old names, `descriptor_design.md`, `build_release.md`, `initial_design.md`
+  answer 17 and `frontend/MAP.md`, are treated under the rule on frozen
+  records.
+- **The inspector, stage 1, its remaining increments**: the static
+  inspector over the descriptor. Its records, none normative, are
+  `initial_design.md` and one per axis beside it: `descriptor_design.md`
+  (axes 1 and 2, §13.9, D-432),
   `visual_grammar.md` (axis 3), `prototypes/render_spike/report.md`
   (axis 4), `workspace.md` (axis 5), `live_session.md` (axis 6),
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 7
-  and 9 have landed. Increment 8, the analysis views and the help page, is
-  in its look-and-adjust pass: its review's fixes landed at `bb2511f` on
-  the `increment-8` branch, checked out in a worktree, and
-  `increments/inspector_08_analysis_help/look_inspector_08.md` is the
-  pass's checklist; the merge follows the pass. Then 10, the deployment
+  and 9 have landed. After increment 8 and the pin, 10, the deployment
   overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
@@ -61,9 +78,9 @@ the increment it came from.
   a `String` port appears, and `min`/`max` on an integer marker if stage
   4's widgets want bounds. Locations beyond the declarations: the stage
   functions `y_state`, `y_direct`, `x_deriv`, `s_update` and the event
-  functions; the core's `pending.md` bullet "Stage-function locations in
-  the descriptor" owns the `y_direct` case. Each is a minor bump ruled in
-  the core's spec and log first (D-433).
+  functions, none of them owed for a loop, whose row takes the structural
+  reading below. Each is a minor bump ruled in the core's spec and log
+  first (D-433).
 - **Names the export audit may change.** `descriptor` is provisional
   until the core's audit (D-226), and a diagnostic's `kind` is its type's
   name, which the audit may rename; the core's `pending.md` bullet "The
@@ -171,11 +188,17 @@ the increment it came from.
   focus held onto a level with no line of its color, and a route on a
   level it does not cross, dim the whole level; Escape or another focus
   clears it, and the status bar still names the route.
-- **A loop's drawer row has no location** (increment 7). The loop's
-  feedthrough is in its members' `y_direct`, which the format does not
-  locate yet (the core's bullet named under "Format bumps still open").
-  Once it does, the row links one location per member and the location
-  link moves under the message.
+- **A loop's drawer row has no location** (increment 7). The row was to
+  link each member's `y_direct`, which the format does not locate; the
+  user dropped that on 2026-11-05, since the remedy for a loop is
+  structural (§5.5: insert dynamics, a unit delay, or restructure) and a
+  member is often a library block the user cannot edit. The descriptor
+  already carries what the row wants: `cycle` holds the wires as terminal
+  pairs, the classification and each member's tracing mode, and an
+  assembly's `types` row holds the location of its wire declarations. The
+  row links each wire to the declaration of the assembly that holds it,
+  labels a member traced structurally as presumed, and moves the location
+  link under the message.
 - **A loop's chain through a pin** (increment 7). Where the chain leaves a
   level through a pin there is no badge, `visual_grammar.md` answer 8
   giving the loop none, so the reader climbs by the breadcrumb.
