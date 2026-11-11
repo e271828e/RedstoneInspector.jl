@@ -371,3 +371,59 @@ on a scratch copy to show a check goes red, the mutants above first. It
 reads every screenshot against the rulings. It greps the rendered text for
 the two retired words. A surviving mutant is a missing check or an
 acceptable survivor named with its reason. Empty is acceptable.
+
+## The review's record
+
+The three stages landed as `ce09ebf`, `8e51de4` and `a6404da`. One
+independent reviewer covered `e2385b3..a6404da` from a clean `npm ci` in a
+scratch worktree: the type check 398 files with no error, 510 unit tests,
+204 browser checks. Its own derivation of the two groups and the badges
+agreed with the oracle, the module and the page on the eleven fixtures
+that have `outputs`. Every entry of "What is settled" held on the running
+page, every literal text matched its source, and every mutant this brief
+names turned a check red, with twenty-three of its own.
+
+Three findings, none high, each accepted:
+
+1. **The help page said a struct's wire is a triple line**, where the
+   canvas, the page's own sample and the README show two. The line
+   predates the pass. The text follows the page, and a check ties the
+   sample's struct lines to the canvas's.
+2. **No check pinned that other keys do nothing under the help page**,
+   which matters once the frame stays mounted. A check presses twelve keys
+   under the page and reads six states before and after.
+3. **The yield check wrote in that `rates`' `fast` and `slow` meet**, a
+   margin of one unit that depends on the font. It asserts the rule alone
+   there, and `failure_nested`'s `ctl`, 17 units over, is the one case
+   written in.
+
+Two rulings of the coordinator's joined the fix: the pill's five constants
+moved to `src/canvas/size.ts`, ending the help page's copy; and a root
+input's pin says nothing about pinning in the detail pane, by the reason
+of the first look's 1.1. The fixer landed all five as `06176a1`: 511 unit
+tests, 206 browser checks.
+
+The reviewer, resumed, verified the delta from a clean install at the same
+tallies and saw its mutants turn red for each of the five. Survivors, all
+accepted and named:
+
+- **A wording change in a help line** other than those pinned by property.
+  The help texts are checked by counts, first and absent rows and the
+  lead's last sentence; the reviewer's literal comparison stood in.
+- **The focus fallback to the region's root** when the remembered element
+  is gone. Nothing in the suite disconnects it under the page.
+- **A second handler on a row's button**, which would select twice. The
+  selection is idempotent and the page shows no difference.
+- **`0` and `t` let through under the help page.** Fit and trace change
+  none of the six states the check reads. The shell's guard is one branch,
+  whose removal turns the check red on ten other keys; neither leak loses
+  anything, and Escape or `0` undoes it.
+- **`BADGE_TOP` moved by one unit**, inside the place pins' tolerance of a
+  pixel. The canvas and the help sample now share the constant.
+
+Left for the user's second look, `look2_inspector_08.md`: an assembly's
+face still reads "not pinned"; the tab's count of 24; the clock count
+going while a route is traced; a text selection in a row selecting the
+row; the level's child count stated twice; a location's label breaking
+inside its line number; the help page's sideways scroll at a narrow
+window; the README's status line.

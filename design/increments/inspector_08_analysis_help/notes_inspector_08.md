@@ -421,3 +421,47 @@ assembly's badge, over every fixture with `outputs`. Its figures are the
 brief's pins. One consequence to look at: `large` has 160 primitives, all
 with stage 1 outputs alone, so its second group is empty and it shows no
 badge anywhere.
+
+## The fixes' outcome, 2026-11-11
+
+Three builders ran in sequence in the one worktree, each from the brief
+and its predecessors' handoff, and each committed once with the four
+checks green.
+
+- **Stage 1, `ce09ebf`**: `orderGroups` and the two sections of the order
+  tab, the badges' numbers, the root inputs without the pinned column, the
+  whole row taking the click. 509 unit tests, 196 browser checks.
+  Departures, accepted: the first group is a `ul` and the second an `ol`;
+  a `div.line` wraps a step's own line, so an edge keeps its own click;
+  1.4's backticks render as a `code` element.
+- **Stage 2, `8e51de4`**: the badges' titles, the rate pill at the
+  bottom-left with the yield, the open level in the assembly layout, the
+  docstring's code blocks scrolling, the words in the canvas and the pane.
+  510 and 201. Its measurement: 53 rate pills over 40 levels of 15
+  fixtures; one block meets as loaded, `failure_nested`'s `ctl`, and five
+  more would with a route entering. Departures, accepted: `LevelFacts`
+  extends the node's facts and loses `label`; the type fact's title says
+  "the node's Julia type", since the pane shows it for a level too.
+- **Stage 3, `a6404da`**: the help page's four sections, lead, fifteen
+  samples and nineteen rows, the frame mounted and inert under it with
+  focus returned at the close, `tagD` shared, the README, the map, the two
+  stale comments and the test names. 510 and 204. Departures, accepted:
+  the focus memory also notes the region and falls back to its root; the
+  two new samples carry invented names that fit, "Airframe" and "err";
+  the check for the two retired words lives in `help.spec.ts`.
+
+The cold review and its fix are in the brief's "The review's record": three
+findings, none high, landed with two rulings of this session as `06176a1`
+at 511 unit tests and 206 browser checks, the delta verified by the
+reviewer from a clean install.
+
+Two rulings this session made at the fix, both on the second look's
+checklist: the help page's wire line follows the page and says "double",
+where `visual_grammar.md` answer 4 says triple; and a root input's pin says
+nothing about pinning in the pane, extending the first look's 1.1 from the
+tab. The second raised a wider question the reviewer confirmed: an
+assembly's face still reads "not pinned" through a flag that is not its
+own.
+
+The branch stands at `06176a1`, not pushed and not merged, for the second
+look by `look2_inspector_08.md`.

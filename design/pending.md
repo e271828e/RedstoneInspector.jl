@@ -13,11 +13,13 @@ The bullets stand in working order, the first one next.
 - **Increment 8's second look and merge.** Increment 8, the analysis views
   and the help page, had its look pass on 2026-11-11, and
   `increments/inspector_08_analysis_help/look_inspector_08.md` holds the
-  rulings under their entries. The fixes run on the `increment-8` branch,
-  checked out in a worktree at `e2385b3`, by
-  `brief_inspector_08_look_fixes.md` in the same folder: three stages, a
-  cold review and its fix. The user asked for a second look, whose
-  checklist is `look2_inspector_08.md`; the merge follows it.
+  rulings under their entries. The fixes landed on the `increment-8`
+  branch, checked out in a worktree, as `ce09ebf`, `8e51de4`, `a6404da`
+  and the review's fix `06176a1`, by `brief_inspector_08_look_fixes.md` in
+  the same folder, which holds the review's record. Not pushed, not
+  merged. The user asked for a second look, whose checklist is
+  `look2_inspector_08.md`; the merge follows it, a rebase onto `master`
+  and a fast-forward.
 - **Increment 8b, the keyboard by region.** After the merge and before the
   pin: `m` and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to
   open a file, and the keys following the focused region. `roadmap.md`
@@ -255,16 +257,3 @@ the increment it came from.
   the row shows it, under "seedable" rather than "pinned", and whether the
   client derives it from the consumers' flags, which miss a discrete
   consumer's wholesale pin, or the core carries it, a format change.
-- **Increment 8's merge: stale citations and test names.** The map's cut
-  on the `increment-8` branch (`e2385b3`) left two code comments citing
-  text that left the map: `frontend/src/lib/level.ts:124`, "MAP.md's traps
-  hold the table", the table now only in `bb2511f`'s map, and
-  `frontend/e2e/draw.spec.ts:21`, "MAP.md's open items". With the map's
-  test inventory gone, these test names no longer say what they pin:
-  `frontend/src/lib/detail.test.ts`'s five bare element names,
-  `frontend/e2e/detail.spec.ts`'s "plant: the leaf layout" and "the level
-  layout at load", `frontend/e2e/tree.spec.ts`'s "closed_loop: rows,
-  selection and opening", `frontend/e2e/draw.spec.ts`'s "draws" template,
-  the "the other queries" clause in `frontend/e2e/search.spec.ts`'s
-  `closed_loop` test, and `frontend/e2e/help.spec.ts`'s landing check. The
-  look pass's fixer fixes the comments and renames the tests.

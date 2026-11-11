@@ -286,9 +286,16 @@ full text stays.
   `help.spec.ts`'s.
 - **The consumers' order.** `terminalConsumers` walks depth-first, the oracle
   breadth-first, so `analysis.test.ts` compares `mode`'s as a set.
-- **Two pills on one top edge.** With nothing reserved in `sizeBlock`, four of
-  `closed_loop`'s root assemblies are too narrow for both pills, so the rate
-  pill rides higher there; `orderWidth` serves the badge and the fit test.
+- **Pills sharing an edge.** `sizeBlock` reserves nothing for a pill, so two
+  on one edge can meet on a narrow block: the order badge and the rate pill
+  did on the top edge, and the rate pill moved to the bottom-left
+  (increment 8's look pass). There it shares a row with the overlay's
+  pills and is left out where they meet, a margin of one unit on some
+  blocks, so the check asserts the rule recomputed from the DOM and writes
+  in no block's outcome but one that misses by many units.
+- **A key under the help page.** The frame stays mounted and `inert` under
+  the page, and `inert` does not stop the window's `keydown`: the shell's
+  own guard keeps every key but `?` and Escape from the frame.
 - **An exact pin by `npm install`.** `npm install pkg@x.y.z` writes a caret;
   remove it and install again so the lock and `package.json` agree.
 - **`marked`'s instance and its type.** The renderer is one module-level
