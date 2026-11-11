@@ -55,7 +55,7 @@
       {/each}
     </div>
     <button class="type-labels" aria-pressed={labels} title="Show the type of every wire" onclick={() => onlabels?.()}>types</button>
-    <button class="order-badges" aria-pressed={order} title="Number every leaf by its position in the execution order" onclick={() => onorder?.()}>order</button>
+    <button class="order-badges" aria-pressed={order} title="Number every primitive with a stage 2 output by its position among the stage 2 calls" onclick={() => onorder?.()}>order</button>
   </div>
 </nav>
 

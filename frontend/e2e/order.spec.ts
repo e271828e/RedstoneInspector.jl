@@ -1,10 +1,11 @@
 // The execution-order badges (workspace.md answers 7, 9 and 11): off at load, `o`
-// and the breadcrumb's toggle turning them on, a leaf's position and a closed
-// assembly's ranges over the whole model, straddling the top edge at the left
+// and the breadcrumb's toggle turning them on, a leaf's position among the
+// stage 2 rows and a closed assembly's ranges over the whole model, none on a
+// leaf with stage 1 outputs alone, straddling the top edge at the left
 // with the rate pill at the right, kept per browser across a reload and a drop,
 // none on a pin or a tag or on a model without an order, taking the pointer for
-// its title and dimming with its block. The texts are the oracle's
-// (`analysis.py`); the geometric pins are recomputed here from the DOM.
+// its title and dimming with its block. The texts are the oracles'
+// (`analysis.py`, `stage2.py`); the geometric pins are recomputed here from the DOM.
 import { test, type Page } from "@playwright/test";
 import { drop, dropOver, effectiveOpacity, expect, openPath, press, shot } from "./fixtures";
 
@@ -30,20 +31,20 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await expect(svg(page)).not.toHaveAttribute("data-order");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await expect(toggle(page)).toHaveText("order");
-  await expect(toggle(page)).toHaveAttribute("title", "Number every leaf by its position in the execution order");
+  await expect(toggle(page)).toHaveAttribute("title", "Number every primitive with a stage 2 output by its position among the stage 2 calls");
 
   await press(page, "o");
   await expect(svg(page)).toHaveAttribute("data-order", "");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+  // the positions among the stage 2 rows; plant, with stage 1 outputs alone, carries none
   const texts = {
-    plant: "1", sensing: "2–3", pid_controller: "4–5, 15, 17, 19", lqr_controller: "6–10, 16, 18, 20",
-    selection: "11–12, 21–22", actuators: "13–14, 23–24",
+    sensing: "1", pid_controller: "2, 7, 9, 11", lqr_controller: "3–6, 8, 10, 12", selection: "13–14", actuators: "15–16",
   };
   for (const [id, text] of Object.entries(texts)) await expect(badge(page, id), id).toHaveText(text);
-  await expect(badges(page)).toHaveCount(6);
+  await expect(badges(page)).toHaveCount(5);
+  await expect(page.locator('g.order-badge[data-id="plant"]')).toHaveCount(0);
   await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
-  await expect(page.locator('g.order-badge[data-id="plant"] > title')).toHaveText("Position 1 in the execution order");
-  await expect(page.locator('g.order-badge[data-id="sensing"] > title')).toHaveText("Positions 2–3 in the execution order: the leaves inside");
+  await expect(page.locator('g.order-badge[data-id="pid_controller"] > title')).toHaveText("Positions 2, 7, 9, 11 in the execution order: the leaves inside");
   // the badge straddles the block's top edge, its left edge by the block's
   for (const b of await boxes(page)) {
     expect(b.order.top, b.id).toBeLessThan(b.block.top);
@@ -52,10 +53,10 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   }
   // the background fill and the text color, compared with the page's elements
   const bg = await page.locator(".viewport").evaluate((e) => getComputedStyle(e).backgroundColor);
-  expect(await page.locator('g.order-badge[data-id="plant"] > rect').evaluate((e) => getComputedStyle(e).fill)).toBe(bg);
-  const segment = await page.locator('g.block[data-id="plant"] text.segment').evaluate((e) => getComputedStyle(e).fill);
-  expect(await badge(page, "plant").evaluate((e) => getComputedStyle(e).fill)).toBe(segment);
-  expect(await page.locator('g.order-badge[data-id="plant"] > rect').evaluate((e) => getComputedStyle(e).stroke)).toBe(segment);
+  expect(await page.locator('g.order-badge[data-id="sensing"] > rect').evaluate((e) => getComputedStyle(e).fill)).toBe(bg);
+  const segment = await page.locator('g.block[data-id="sensing"] text.segment').evaluate((e) => getComputedStyle(e).fill);
+  expect(await badge(page, "sensing").evaluate((e) => getComputedStyle(e).fill)).toBe(segment);
+  expect(await page.locator('g.order-badge[data-id="sensing"] > rect').evaluate((e) => getComputedStyle(e).stroke)).toBe(segment);
   // the badge takes the pointer for its title: its upper half, above the block, hits it
   const sensing = (await boxes(page)).find((b) => b.id === "sensing")!;
   const sensingBadge = page.locator('g.order-badge[data-id="sensing"]');
@@ -73,8 +74,8 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await press(page, "r");
   const withPills = (await boxes(page)).filter((b) => b.pill);
   expect(withPills.map((b) => b.id).sort()).toEqual(["actuators", "lqr_controller", "pid_controller", "selection", "sensing"]);
-  // on the four assemblies too narrow for both side by side the pill rides above the badge's row; sensing's straddles
-  const raised = ["actuators", "lqr_controller", "pid_controller", "selection"];
+  // on the two assemblies too narrow for both side by side the pill rides above the badge's row; the others' straddle
+  const raised = ["lqr_controller", "pid_controller"];
   for (const b of withPills) {
     expect(Math.abs(b.pill!.right - b.block.right), b.id).toBeLessThanOrEqual(6);
     expect(overlaps(b.order, b.pill!), b.id).toBe(false);
@@ -82,36 +83,38 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
     else {
       expect(b.pill!.top, b.id).toBeLessThan(b.block.top);
       expect(b.pill!.bottom, b.id).toBeGreaterThan(b.block.top);
-      expect(b.pill!.left, b.id).toBeGreaterThan(b.order.right);
+      // actuators' "15–16" and its pill fill the width exactly, so the two touch
+      expect(b.pill!.left, b.id).toBeGreaterThanOrEqual(b.order.right);
     }
   }
   await press(page, "r");
 
   await openPath(page, "pid_controller");
   await expect(svg(page)).toHaveAttribute("data-order", "");
-  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
-  await expect(badge(page, "pid_controller/free")).toHaveText("5");
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("7");
+  await expect(badge(page, "pid_controller/V_ctl")).toHaveText("2");
+  await expect(page.locator('g.order-badge[data-id="pid_controller/free"]')).toHaveCount(0);
   await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
-  await expect(page.locator('g.order-badge[data-id="pid_controller/h_ctl"] > title')).toHaveText("Position 15 in the execution order");
+  await expect(page.locator('g.order-badge[data-id="pid_controller/h_ctl"] > title')).toHaveText("Position 7 in the execution order");
 
   await page.reload();
   await dropOver(page, "closed_loop");
   await expect(svg(page)).toHaveAttribute("data-order", "");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
   // the hash keeps the level across the reload
-  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("7");
 
   await toggle(page).click();
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await expect(svg(page)).not.toHaveAttribute("data-order");
   await expect(badges(page)).toHaveCount(0);
   await press(page, "o");
-  await expect(badge(page, "pid_controller/free")).toHaveText("5");
+  await expect(badge(page, "pid_controller/V_ctl")).toHaveText("2");
 
   await dropOver(page, "closed_loop_deployment");
   await expect(svg(page)).toHaveAttribute("data-order", "");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
-  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("15");
+  await expect(badge(page, "pid_controller/h_ctl")).toHaveText("7");
 });
 
 test("primitive, rates and failure_cycle: the root's own leaf badged, the scopes' ranges, no badge without an order", async ({ page }) => {
@@ -121,10 +124,11 @@ test("primitive, rates and failure_cycle: the root's own leaf badged, the scopes
   await expect(badge(page, "")).toHaveText("1");
 
   await dropOver(page, "rates");
-  await expect(badge(page, "fast")).toHaveText("2–3");
-  await expect(badge(page, "slow")).toHaveText("4");
+  await expect(badge(page, "fast")).toHaveText("1–2");
+  await expect(badge(page, "slow")).toHaveText("3");
+  await expect(page.locator('g.order-badge[data-id="src"]')).toHaveCount(0);
   await openPath(page, "fast");
-  await expect(badge(page, "fast/outer")).toHaveText("3");
+  await expect(badge(page, "fast/outer")).toHaveText("2");
 
   await dropOver(page, "failure_cycle");
   await expect(svg(page)).toHaveAttribute("data-order", "");
@@ -141,12 +145,12 @@ test("closed_loop: under a search the badge dims with its block, a hit's badge s
   await drop(page, "closed_loop");
   await press(page, "o");
   await press(page, "/");
-  await page.locator("input.query").fill("plant");
-  await expect(page.locator('g.block.search-hit[data-id="plant"]')).toHaveCount(1);
+  await page.locator("input.query").fill("actuators");
+  await expect(page.locator('g.block.search-hit[data-id="actuators"]')).toHaveCount(1);
   await expect(svg(page)).toHaveClass(/searching/);
   const badgeOf = (id: string) => effectiveOpacity(page, `g.order-badge[data-id="${id}"]`);
   const shape = await effectiveOpacity(page, 'g.block[data-id="sensing"] > .shape');
   expect(shape).toBeLessThan(1);
   expect(await badgeOf("sensing")).toBeCloseTo(shape, 5);
-  expect(await badgeOf("plant")).toBe(1);
+  expect(await badgeOf("actuators")).toBe(1);
 });

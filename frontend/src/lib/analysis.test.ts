@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  anchorRows, componentRows, orderBadge, orderRows, ranges, rootInputRows, rowTarget, scheduleNote, scopeRows,
+  anchorRows, componentRows, orderBadge, orderGroups, ranges, rootInputRows, rowTarget, scheduleNote, scopeRows,
 } from "./analysis";
 import { fixtureModel } from "./fixtures";
 import type { Model } from "./model";
 import type { Face } from "./resolve";
 
-// Counts from the oracle, `scratchpad/oracle/analysis.py` over the committed fixtures.
+// Counts from the oracles over the committed fixtures: `scratchpad/oracle/analysis.py`, and `stage2.py` for the two
+// groups and the badges.
 const cl = fixtureModel("closed_loop");
 const rates = fixtureModel("rates");
 const lib = fixtureModel("library");
@@ -14,39 +15,91 @@ const prim = fixtureModel("primitive");
 const text = (f: Face) => `${f.path}/${f.port}`;
 /** A copy of a model whose execution order lacks some leaves. */
 const without = (m: Model, ...paths: string[]): Model => ({ ...m, outputs: { ...m.outputs!, order: m.outputs!.order.filter((p) => !paths.includes(p)) } });
+/** A copy of a model in which some leaves publish no output port, which no fixture has. */
+const portless = (m: Model, ...paths: string[]): Model => ({
+  ...m, outputs: { ...m.outputs!, components: m.outputs!.components.map((c) => (paths.includes(c.path) ? { ...c, stage1: [], stage2: [] } : c)) },
+});
+const groups = (m: Model) => orderGroups(m)!;
+/** The group sizes: the order, the first group, the second, and the paths in both. */
+const sizes = (m: Model) => {
+  const g = groups(m), one = new Set(g.stage1.map((r) => r.path));
+  return [m.outputs!.order.length, g.stage1.length, g.stage2.length, g.stage2.filter((r) => one.has(r.path)).length];
+};
 
-describe("orderRows", () => {
-  it("numbers closed_loop's 24 leaves from 1 with their stage ports as the components rows spell them", () => {
-    const rows = orderRows(cl);
-    expect(rows).toHaveLength(24);
-    expect(rows.map((r) => r.position)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
-    expect(rows[0]).toMatchObject({ position: 1, path: "plant", stage1: ["V", "γ", "θ", "q", "h", "α"], stage2: [] });
-    expect(rows[14]).toMatchObject({ position: 15, path: "pid_controller/h_ctl", stage1: ["saturated"], stage2: ["u", "u_raw"] });
-    expect(rows[23]).toMatchObject({ position: 24, path: "actuators/δt_limiter", stage1: [], stage2: ["y"] });
+describe("orderGroups", () => {
+  it("splits closed_loop's 24 into 13 with a stage 1 port and 16 with a stage 2 port, 5 in both, in outputs.order's order", () => {
+    expect(sizes(cl)).toEqual([24, 13, 16, 5]);
+    const g = groups(cl);
+    const order = cl.outputs!.order;
+    for (const rows of [g.stage1, g.stage2]) {
+      const at = rows.map((r) => order.indexOf(r.path));
+      expect(at).toEqual([...at].sort((a, b) => a - b));
+    }
+    expect(g.stage1[0]).toEqual({ kind: "order", stage: 1, path: "plant", ports: ["V", "γ", "θ", "q", "h", "α"] });
   });
 
-  it("puts closed_loop's 16 feedthrough edges under their consumers' rows, five under the tracker's", () => {
-    const rows = orderRows(cl);
+  it("numbers closed_loop's second group from 1 in outputs.order's order", () => {
+    const g = groups(cl);
+    expect(g.stage2.map((r) => r.path)).toEqual([
+      "sensing/altimeter", "pid_controller/V_ctl", "lqr_controller/state_pack", "lqr_controller/z_ref_pack",
+      "lqr_controller/command_pack", "lqr_controller/engaged", "pid_controller/h_ctl", "lqr_controller/z_pack",
+      "pid_controller/θ_ctl", "lqr_controller/tracker", "pid_controller/q_ctl", "lqr_controller/u_unpack",
+      "selection/select_δe", "selection/select_δt", "actuators/δe_limiter", "actuators/δt_limiter",
+    ]);
+    expect(g.stage2.map((r) => r.position)).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
+  });
+
+  it("shows a row in both groups with that group's ports alone: h_ctl's saturated first, its u and u_raw at 7", () => {
+    const g = groups(cl);
+    expect(g.stage1.find((r) => r.path === "pid_controller/h_ctl")).toEqual({ kind: "order", stage: 1, path: "pid_controller/h_ctl", ports: ["saturated"] });
+    expect(g.stage2.find((r) => r.path === "pid_controller/h_ctl")).toMatchObject({ position: 7, ports: ["u", "u_raw"] });
+  });
+
+  it("puts closed_loop's 16 feedthrough edges under their consumers' stage 2 rows, five under the tracker's at 10", () => {
+    const rows = groups(cl).stage2;
     expect(rows.flatMap((r) => r.edges)).toHaveLength(16);
-    const by = Object.fromEntries(rows.filter((r) => r.edges.length).map((r) => [r.position, r.edges.length]));
-    expect(by).toEqual({ 15: 1, 16: 1, 17: 1, 18: 5, 19: 1, 20: 1, 21: 2, 22: 2, 23: 1, 24: 1 });
-    expect(rows[17].path).toBe("lqr_controller/tracker");
-    expect(rows[16].edges.map((e) => [text(e.from), text(e.to)])).toEqual([["pid_controller/h_ctl/u", "pid_controller/θ_ctl/r"]]);
+    const tracker = rows.find((r) => r.path === "lqr_controller/tracker")!;
+    expect([tracker.position, tracker.edges.length]).toEqual([10, 5]);
+    expect(rows[8].edges.map((e) => [text(e.from), text(e.to)])).toEqual([["pid_controller/h_ctl/u", "pid_controller/θ_ctl/r"]]);
     // every edge ends at its row's leaf, in feedthroughEdges' order
     for (const r of rows) for (const e of r.edges) expect(e.to.path).toBe(r.path);
     expect(rows.flatMap((r) => r.edges).map((e) => [e.from, e.to])).toEqual(cl.feedthrough!.map((e) => [e.from, e.to]));
+    // a first-group row carries no edges
+    for (const r of groups(cl).stage1) expect(r).not.toHaveProperty("edges");
   });
 
-  it("gives library 32 rows and 14 edges, three under rows 28, 29 and 31", () => {
-    const rows = orderRows(lib);
-    expect(rows).toHaveLength(32);
+  it("gives library 32 as 20 and 14 with 2 in both and its 14 edges, three under d_lqr, lqr and switch at 10, 11 and 13", () => {
+    expect(sizes(lib)).toEqual([32, 20, 14, 2]);
+    const rows = groups(lib).stage2;
     expect(rows.flatMap((r) => r.edges)).toHaveLength(14);
-    expect([28, 29, 31].map((p) => rows[p - 1].edges.length)).toEqual([3, 3, 3]);
+    expect([10, 11, 13].map((p) => [rows[p - 1].path, rows[p - 1].edges.length])).toEqual([["d_lqr", 3], ["lqr", 3], ["switch", 3]]);
   });
 
-  it("gives a failure no rows and a primitive root its leaf", () => {
-    expect(orderRows(fixtureModel("failure_cycle"))).toEqual([]);
-    expect(orderRows(prim)).toMatchObject([{ position: 1, path: "", stage1: ["y"], stage2: ["power"], edges: [] }]);
+  it("gives rates 4 as 1 and 3, containers 6 as 0 and 6, large 160 as 160 and 0, primitive's leaf in both", () => {
+    expect(sizes(rates)).toEqual([4, 1, 3, 0]);
+    expect(groups(rates).stage2.map((r) => [r.position, r.path])).toEqual([[1, "fast/inner"], [2, "fast/outer/hold"], [3, "slow/hold"]]);
+    expect(sizes(fixtureModel("containers"))).toEqual([6, 0, 6, 0]);
+    expect(sizes(fixtureModel("large"))).toEqual([160, 160, 0, 0]);
+    expect(groups(prim)).toEqual({
+      stage1: [{ kind: "order", stage: 1, path: "", ports: ["y"] }],
+      stage2: [{ kind: "order", stage: 2, position: 1, path: "", ports: ["power"], edges: [] }],
+    });
+  });
+
+  it("leaves a leaf with no output port out of both groups and out of the numbering", () => {
+    const m = portless(cl, "plant", "pid_controller/h_ctl");
+    expect(sizes(m)).toEqual([24, 11, 15, 4]);
+    const g = groups(m);
+    expect([...g.stage1, ...g.stage2].map((r) => r.path)).not.toContain("plant");
+    expect([...g.stage1, ...g.stage2].map((r) => r.path)).not.toContain("pid_controller/h_ctl");
+    expect(g.stage2.map((r) => r.position)).toEqual(Array.from({ length: 15 }, (_, i) => i + 1));
+    expect(g.stage2[6].path).toBe("lqr_controller/z_pack");
+    expect(orderBadge(m, "pid_controller/h_ctl")).toBeUndefined();
+    expect(orderBadge(m, "pid_controller")).toBe("2, 8, 10");
+  });
+
+  it("gives a model without outputs no groups", () => {
+    expect(orderGroups(fixtureModel("failure_cycle"))).toBeUndefined();
   });
 });
 
@@ -57,25 +110,30 @@ describe("orderBadge", () => {
     expect(ranges([3])).toBe("3");
   });
 
-  it("badges closed_loop's assemblies by their leaves' positions and its leaves by their own", () => {
+  it("badges closed_loop's root assemblies by their stage 2 primitives' positions, and plant, with stage 1 alone, not at all", () => {
     expect(Object.fromEntries(["sensing", "pid_controller", "lqr_controller", "selection", "actuators", "plant"].map((p) => [p, orderBadge(cl, p)]))).toEqual({
-      sensing: "2–3", pid_controller: "4–5, 15, 17, 19", lqr_controller: "6–10, 16, 18, 20", selection: "11–12, 21–22",
-      actuators: "13–14, 23–24", plant: "1",
+      sensing: "1", pid_controller: "2, 7, 9, 11", lqr_controller: "3–6, 8, 10, 12", selection: "13–14", actuators: "15–16", plant: undefined,
     });
-    expect(orderBadge(cl, "pid_controller/h_ctl")).toBe("15");
-    expect(orderBadge(cl, "pid_controller/free")).toBe("5");
   });
 
-  it("badges rates' nested assemblies and primitive's root leaf", () => {
-    expect(["fast", "fast/outer", "slow"].map((p) => orderBadge(rates, p))).toEqual(["2–3", "3", "4"]);
+  it("badges pid_controller's primitives by their own positions and free, with stage 1 alone, not at all", () => {
+    expect(Object.fromEntries(["V_ctl", "h_ctl", "θ_ctl", "q_ctl", "free"].map((p) => [p, orderBadge(cl, `pid_controller/${p}`)]))).toEqual({
+      V_ctl: "2", h_ctl: "7", θ_ctl: "9", q_ctl: "11", free: undefined,
+    });
+  });
+
+  it("badges rates' nested assemblies and none on src, primitive's root leaf, and nothing in large", () => {
+    expect(["fast", "fast/outer", "slow", "src"].map((p) => orderBadge(rates, p))).toEqual(["1–2", "2", "3", undefined]);
     expect(orderBadge(prim, "")).toBe("1");
+    const large = fixtureModel("large");
+    for (const n of large.structure!.nodes) expect(orderBadge(large, n.path), n.path).toBeUndefined();
   });
 
   it("gives no badge to a leaf absent from the order, an assembly with none beneath, or a model without outputs", () => {
-    const m = without(cl, "plant", "sensing/noise", "sensing/altimeter");
-    expect(orderBadge(m, "plant")).toBeUndefined();
+    const m = without(cl, "sensing/altimeter");
+    expect(orderBadge(m, "sensing/altimeter")).toBeUndefined();
     expect(orderBadge(m, "sensing")).toBeUndefined();
-    expect(orderBadge(m, "pid_controller")).toBe("1–2, 12, 14, 16");
+    expect(orderBadge(m, "pid_controller")).toBe("1, 6, 8, 10");
     const fc = fixtureModel("failure_cycle");
     for (const n of fc.structure!.nodes) expect(orderBadge(fc, n.path), n.path).toBeUndefined();
   });
@@ -84,8 +142,8 @@ describe("orderBadge", () => {
 describe("rootInputRows", () => {
   it("lists closed_loop's three with their kind phrases and terminal consumers", () => {
     const rows = rootInputRows(cl);
-    expect(rows.map((r) => [r.name, r.type, r.phrase, r.pinned, r.consumers.length])).toEqual([
-      ["h_ref", "Float64", "float", false, 2], ["V_ref", "Float64", "float", false, 2], ["mode", "Bool", "boolean", false, 7],
+    expect(rows.map((r) => [r.name, r.type, r.phrase, r.consumers.length])).toEqual([
+      ["h_ref", "Float64", "float", 2], ["V_ref", "Float64", "float", 2], ["mode", "Bool", "boolean", 7],
     ]);
     expect(rows[0].consumers.map(text)).toEqual(["pid_controller/h_ctl/r", "lqr_controller/z_ref_pack/in1"]);
     expect(new Set(rows[2].consumers.map(text))).toEqual(new Set([
@@ -164,10 +222,10 @@ describe("scheduleNote", () => {
 
 describe("rowTarget", () => {
   it("selects each row kind's element on its level, as a tree click does", () => {
-    const order = orderRows(cl);
-    expect(rowTarget(cl, order[23])).toEqual({ level: "actuators", target: { kind: "block", id: "actuators/δt_limiter" } });
-    expect(rowTarget(cl, order[0])).toEqual({ level: "", target: { kind: "block", id: "plant" } });
-    expect(rowTarget(cl, order[16].edges[0])).toEqual({ level: "pid_controller", target: { kind: "port", id: "pid_controller/θ_ctl|in|r" } });
+    const g = groups(cl);
+    expect(rowTarget(cl, g.stage2[15])).toEqual({ level: "actuators", target: { kind: "block", id: "actuators/δt_limiter" } });
+    expect(rowTarget(cl, g.stage1[0])).toEqual({ level: "", target: { kind: "block", id: "plant" } });
+    expect(rowTarget(cl, g.stage2[8].edges[0])).toEqual({ level: "pid_controller", target: { kind: "port", id: "pid_controller/θ_ctl|in|r" } });
     expect(rowTarget(cl, rootInputRows(cl)[0])).toEqual({ level: "", target: { kind: "block", id: "⟨in⟩h_ref" } });
     const anchors = anchorRows(cl);
     expect(rowTarget(cl, anchors[0])).toBeUndefined();
@@ -178,7 +236,8 @@ describe("rowTarget", () => {
   });
 
   it("selects a primitive root's leaf on the root level, and its root input's tag there", () => {
-    expect(rowTarget(prim, orderRows(prim)[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
+    expect(rowTarget(prim, groups(prim).stage1[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
+    expect(rowTarget(prim, groups(prim).stage2[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
     expect(rowTarget(prim, rootInputRows(prim)[0])).toEqual({ level: "", target: { kind: "block", id: "⟨in⟩u" } });
   });
 });
@@ -186,9 +245,10 @@ describe("rowTarget", () => {
 describe("a structureless model", () => {
   it("gives every function its empty result", () => {
     const m = fixtureModel("failure_structure");
-    expect([orderRows(m), rootInputRows(m), anchorRows(m), scopeRows(m), componentRows(m), componentRows(m, true)]).toEqual([[], [], [], [], [], []]);
+    expect(orderGroups(m)).toBeUndefined();
+    expect([rootInputRows(m), anchorRows(m), scopeRows(m), componentRows(m), componentRows(m, true)]).toEqual([[], [], [], [], []]);
     expect(orderBadge(m, "")).toBeUndefined();
     expect(scheduleNote(m)).toBeUndefined();
-    expect(rowTarget(m, { kind: "order", position: 1, path: "", stage1: [], stage2: [], edges: [] })).toBeUndefined();
+    expect(rowTarget(m, { kind: "order", stage: 2, position: 1, path: "", ports: [], edges: [] })).toBeUndefined();
   });
 });

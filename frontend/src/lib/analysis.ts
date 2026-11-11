@@ -15,22 +15,37 @@ export interface EdgeRow {
   from: Face;
   to: Face;
 }
-export interface OrderRow {
+/** A primitive with a stage 1 port, in `outputs.order`'s order but unnumbered: stage 1 runs in any order. */
+export interface Stage1Row {
   kind: "order";
-  /** 1-based. */
+  stage: 1;
+  path: string;
+  /** Its stage 1 ports alone. */
+  ports: string[];
+}
+/** A primitive with a stage 2 port, numbered within the second group. */
+export interface Stage2Row {
+  kind: "order";
+  stage: 2;
+  /** 1-based, among the stage 2 rows. */
   position: number;
   path: string;
-  stage1: string[];
-  stage2: string[];
-  /** The feedthrough edges into this leaf, in `feedthroughEdges`'s order. */
+  /** Its stage 2 ports alone. */
+  ports: string[];
+  /** The feedthrough edges into this primitive, in `feedthroughEdges`'s order. */
   edges: EdgeRow[];
+}
+export type OrderRow = Stage1Row | Stage2Row;
+/** The execution order's two groups, as the core runs a sweep (spec §5.3): stage 1 in any order, then stage 2 in order. */
+export interface OrderGroups {
+  stage1: Stage1Row[];
+  stage2: Stage2Row[];
 }
 export interface RootInputRow {
   kind: "root-input";
   name: string;
   type: string;
   phrase: string;
-  pinned: boolean;
   /** The terminal consumers: leaf inputs and root outputs; none on a primitive root, whose inputs are its leaf's. */
   consumers: Face[];
 }
@@ -73,16 +88,26 @@ export type Row = OrderRow | EdgeRow | RootInputRow | BaseRow | AnchorRow | Scop
 const rational = (r: Rational) => `${r.num}/${r.den} s`;
 const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
 
-/** One row per entry of `outputs.order`, with its stage ports and the edges it consumes; none without `outputs`. */
-export function orderRows(model: Model): OrderRow[] {
+/**
+ * The two groups over `outputs.order`: every path with a stage 1 port, then every path with a stage 2 port numbered
+ * from 1 with the edges it consumes. A path with both stages stands in both, one with no output port in neither;
+ * `undefined` without `outputs`.
+ */
+export function orderGroups(model: Model): OrderGroups | undefined {
   const o = model.outputs;
-  if (!o) return [];
+  if (!o) return undefined;
   const stages = new Map(o.components.map((c) => [c.path, c]));
   const edges = model.feedthrough ?? [];
-  return o.order.map((path, i) => ({
-    kind: "order", position: i + 1, path, stage1: stages.get(path)?.stage1 ?? [], stage2: stages.get(path)?.stage2 ?? [],
-    edges: edges.filter((e) => e.to.path === path).map((e) => ({ kind: "edge", from: e.from, to: e.to })),
-  }));
+  const stage1: Stage1Row[] = [], stage2: Stage2Row[] = [];
+  for (const path of o.order) {
+    const c = stages.get(path);
+    if (c?.stage1.length) stage1.push({ kind: "order", stage: 1, path, ports: c.stage1 });
+    if (c?.stage2.length) stage2.push({
+      kind: "order", stage: 2, position: stage2.length + 1, path, ports: c.stage2,
+      edges: edges.filter((e) => e.to.path === path).map((e) => ({ kind: "edge", from: e.from, to: e.to })),
+    });
+  }
+  return { stage1, stage2 };
 }
 
 /** Sorted 1-based positions as runs: `3–5, 8`, a run of two `2–3`, a single `3`. */
@@ -99,13 +124,14 @@ export function ranges(positions: number[]): string {
 }
 
 /**
- * A block's order badge (answer 7): a leaf's position, a closed assembly's the positions of the leaves beneath it as
- * ranges; `undefined` for a leaf absent from the order, an assembly with no leaf in it and a model without `outputs`.
+ * A block's order badge (answer 7): a primitive's position among the stage 2 rows, a closed assembly's the positions
+ * of the primitives beneath it as ranges; `undefined` for a primitive with no stage 2 port, an assembly with none
+ * beneath it and a model without `outputs`.
  */
 export function orderBadge(model: Model, path: string): string | undefined {
-  const tree = model.tree, o = model.outputs;
-  if (!tree || !o) return undefined;
-  const pos = new Map(o.order.map((p, i) => [p, i + 1]));
+  const tree = model.tree, groups = orderGroups(model);
+  if (!tree || !groups) return undefined;
+  const pos = new Map(groups.stage2.map((r) => [r.path, r.position]));
   const found: number[] = [];
   const walk = (p: string) => {
     const n = tree.byPath.get(p);
@@ -123,7 +149,7 @@ export function rootInputRows(model: Model): RootInputRow[] {
   const s = model.structure;
   if (!s) return [];
   return s.root_inputs.map((f) => ({
-    kind: "root-input", name: f.name, type: f.type, phrase: kindPhrase(f.kind), pinned: f.pinned,
+    kind: "root-input", name: f.name, type: f.type, phrase: kindPhrase(f.kind),
     consumers: faceFacts(model, { path: "", side: "in", port: f.name }).consumers ?? [],
   }));
 }
@@ -185,7 +211,7 @@ const nodeSelection = (model: Model, path: string): Selection | undefined =>
   model.tree?.byPath.has(path) ? { level: model.tree.parent.get(path) ?? "", target: { kind: "block", id: path } } : undefined;
 
 /**
- * What a row's click selects: an order or component row its leaf, an edge row its consumer's input port, a root
+ * What a row's click selects: an order or component row its leaf, in either group, an edge row its consumer's input port, a root
  * input its root tag, an anchor row its declaring scope's node and a scope
  * row its assembly; nothing for the base grid's row and a root scope.
  */
