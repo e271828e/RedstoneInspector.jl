@@ -26,7 +26,7 @@
   import { labelledPorts, levelWireClasses, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
-  import { GLYPHS } from "./glyphs";
+  import { GLYPHS, tagD } from "./glyphs";
   import type { Mode } from "../state/prefs.svelte";
   import type { LevelHits } from "../lib/search";
   import type { Lit } from "../lib/focus";
@@ -471,11 +471,6 @@
       title.push(k === 1 ? "Every discrete primitive inside ticks on this one clock." : `Multi-rate: the discrete primitives inside tick on ${clocks}; open it to see which.`);
     }
     return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
-  }
-  /** A root tag: rounded at its outer end past the empty slot, pointed at its inner end. */
-  function tagD(w: number, grow = 0): string {
-    const r = PIN_HEIGHT / 2 + grow, x0 = SLOT + PIN_HEIGHT / 2, y0 = -grow, y1 = PIN_HEIGHT + grow;
-    return `M${x0},${y0} L${w - POINT},${y0} L${w + grow},${PIN_HEIGHT / 2} L${w - POINT},${y1} L${x0},${y1} A${r},${r} 0 0 1 ${x0},${y0} Z`;
   }
   /** A pinned face's mark, a small diamond centered at (x, y). */
   const markD = (x: number, y: number) => `M${x},${y - 3} L${x + 3},${y} L${x},${y + 3} L${x - 3},${y} Z`;

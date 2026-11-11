@@ -121,7 +121,7 @@ export interface EdgeLabel {
 }
 
 // Greedy cycle breaking, with declaration order as the tie-break. The thoroughness is increment 6's ELK pass:
-// fewer crossings on closed_loop's root without more on large's or lqr_controller's (MAP.md's traps hold the table).
+// fewer crossings on closed_loop's root without more on large's or lqr_controller's, of fourteen option sets measured.
 const ROOT_OPTIONS = {
   "elk.algorithm": "layered",
   "elk.direction": "RIGHT",

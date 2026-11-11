@@ -19,7 +19,7 @@ async function search(page: Page, text: string) {
   await field(page).fill(text);
 }
 
-test("closed_loop: h listed, walked and picked; the markers; the other queries; Escape and the clear button", async ({ page }) => {
+test("closed_loop: h listed, walked and picked; the markers; type:, path:, face: and two terms each hitting their field, zzz nothing; Escape and the clear button", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "/");
   expect(await isFocused(page, "input.query")).toBe(true);

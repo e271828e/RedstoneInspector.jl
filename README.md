@@ -8,6 +8,16 @@ from Julia to an open tab.
 
 **Status:** the writing half and the live session; the page is coming.
 
+## By design
+
+- **The code is the model.** The inspector reads it and never edits it.
+- **The layout is computed.** Every load derives it from the declaration
+  order, so two readers of one model see the same diagram.
+- **The icons are the inspector's.** It draws them from the type. A model
+  carries none.
+- **Coming in stages 3 and 4:** run control, live values on the diagram,
+  panels.
+
 ## Writing a descriptor
 
 ```julia
@@ -101,7 +111,7 @@ synthetic models in `scripts/synthetic.jl`, and `frontend/schema/` a copy of
 the pinned Redstone's `src/descriptor.json`. Among the synthetic models,
 `kinds` declares a face of every kind marker and wires each of its outputs to a
 root output of the same name, so its root draws a wire of every style, and
-`library` holds one instance of every shipped block, plus a `Junction` over a
+`library` holds one instance of every shipped component, plus a `Junction` over a
 user function, on two anchors with a relative and a phased rate, so every icon
 and every legend form has something to show. Four models give the overlay
 something to show, each ported from the core's suite. `failure_nested` closes
@@ -149,7 +159,7 @@ TypeScript types are generated from the schema copy into
 each of `dev`, `build`, `check` and `test`. Before a file is open the page shows
 a landing panel with its privacy statement: the file is read in the browser and
 never uploaded, and the page loads nothing from any other site. The page reads a
-picked or dropped descriptor and draws its root level: blocks, the level's
+picked or dropped descriptor and draws its root level: components, the level's
 boundary pins and the wires, laid out by ELK. Around the canvas sit the model
 tree on the left, the detail pane on the right, the breadcrumb above, the
 drawer's tab strip with its counts and the status bar below; the splitters
@@ -157,47 +167,52 @@ between them drag, the side panes collapse, and both are kept per browser.
 Drag pans, the wheel zooms, the corner button fits; a double-click or Enter
 opens a closed assembly, from the canvas or the tree, and Backspace, Alt-Up or
 the breadcrumb returns, selecting the assembly it came from; a click selects a
-block, pin, wire or port square, or a row in the tree, the tree and the canvas
-following each other and the detail pane showing what is selected; Escape
-clears. A narrow detail pane stacks each parameter and each face's facts.
+component, pin, wire or port square, or a row in the tree, the tree and the canvas
+following each other and the detail pane showing what is selected, or, with
+nothing selected, the open level as it shows a closed assembly, its docstring,
+locations, parameters and faces under the level's counts; Escape clears. A
+narrow detail pane stacks each parameter and each face's facts.
 
-The canvas draws the visual grammar. Blocks are colored by tier, or, after `r`
-or the switch at the right of the breadcrumb, by rate: each timing gets one of
-eight colors, fastest first with the base grid first, the rest a neutral fill
-with a numbered badge; a closed assembly takes the color its discrete leaves
-share, gray when they tick on several, with a badge counting their clocks; and
-a legend in the canvas's corner reads first a line for the continuous color,
-then each rate on the level. A click on a legend line lights the blocks, assemblies and wires of
-that rate and dims the rest, marking the tree; a second click, Escape or tier
-colors clear it. The eight colors are evenly spaced hues, distinct under
-normal vision; under weak color vision a legend line's click tells any two
-apart. Wires show their kind by weight and
-pattern (thin for a scalar, dashed for a flag, thick for a vector, a double
-line for a struct, dotted for an opaque value), take their producer's fill in
-rate mode, and branch from a shared trunk with a dot at each split;
-`y` or the toggle beside the switch writes each output's type, its module
-names dropped, whole beside its port, below the wire leaving it. The layout
-leaves room for the types whether they show or not, so the toggle moves
-nothing, and a dragged block carries them. Library blocks show an icon in place of their type's name, a glyph
-or a short formula, a `Constant` its value. A keyed container's elements sit
-inside a dashed region captioned with the field, each labelled by its key; a
-click on the region's frame selects the container as the tree's folder row
-does. Zoomed out, the text drops in three steps, face names first, then the
-type names and icons, the block names last; wires and ports always show. The
-color mode and the labels are kept per browser.
+The canvas draws the visual grammar. Components are colored by tier, or, after
+`r` or the switch at the right of the breadcrumb, by rate: each timing gets
+one of eight colors, fastest first with the base grid first, the rest a
+neutral fill with a numbered badge; a closed assembly takes the color its
+discrete primitives share, gray when they tick on several, with a badge
+counting their clocks; and a legend in the canvas's corner reads first a line
+for the continuous color, then each rate on the level. The rate badge, a
+number or a clock count, sits on the component's bottom edge at the left, and
+is left out while a diagnostic, loop or route pill on that edge needs its
+room. A click on a legend line lights the components and wires of that rate
+and dims the rest, marking the tree; a second click, Escape or tier colors
+clear it. The eight colors are evenly spaced hues, distinct under normal
+vision; under weak color vision a legend line's click tells any two apart.
+Wires show their kind by weight and pattern (thin for a scalar, dashed for a
+flag, thick for a vector, a double line for a struct, dotted for an opaque
+value), take their producer's fill in rate mode, and branch from a shared
+trunk with a dot at each split; `y` or the toggle beside the switch writes
+each output's type, its module names dropped, whole beside its port, below the
+wire leaving it. The layout leaves room for the types whether they show or
+not, so the toggle moves nothing, and a dragged component carries them.
+Library components show an icon in place of their type's name, a glyph or a
+short formula, a `Constant` its value. A keyed container's elements sit inside
+a dashed region captioned with the field, each labelled by its key; a click on
+the region's frame selects the container as the tree's folder row does. Zoomed
+out, the text drops in three steps, face names first, then the type names and
+icons, the component names last; wires and ports always show. The color mode
+and the labels are kept per browser.
 
 The open level is the URL's hash, `#level=sensing`, none at the root, so back
 and forward move between levels and a reload or a link reopens one. Each
-level keeps its zoom, pan and layout for the session, and a block or pin
+level keeps its zoom, pan and layout for the session, and a component or pin
 dragged on the canvas keeps its place until the page reloads; only its own
 wires are re-routed, and Shift held keeps the move to one axis. A second descriptor dropped or pushed over the first keeps
 the open level, the selection, the expansion, the views and the search by path
 and name, and the keyboard's focus; a level's view is kept only while its
-blocks are unchanged, else it fits; what the new model lacks is dropped, and a
+components are unchanged, else it fits; what the new model lacks is dropped, and a
 level that is gone falls back to its nearest ancestor with a note in the status
 bar. While a model opened from a file is loaded, the page asks before it
 unloads; a pushed one does not. The keyboard: on the canvas `h` `j` `k` `l`
-move the selection to the nearest block or pin in that direction, the view
+move the selection to the nearest component or pin in that direction, the view
 following; in the tree they move a row, expand and collapse; the arrows pan;
 Shift-`h` and Shift-`l` go back and forward between the levels this page load
 opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
@@ -218,12 +233,12 @@ A failed build explains itself on the diagram. A failure opens with the drawer
 on its diagnostics tab, one row per diagnostic and warning with its kind, path,
 message and, but for a loop, source location, a filter over the three, and
 the count on the
-tab. On the canvas a diagnostic halos the block it names in red, a warning in
+tab. On the canvas a diagnostic halos the component it names in red, a warning in
 amber, with a pill reading the kind or the function that threw; a marked port
 square and a heavier wire show an unfed input. A loop halos its members and
 draws its chain over the declared wires on every level it crosses, a `loop`
 pill opening the closed assembly it continues into, and a dead hop draws as a
-dashed chord with a cross across its block. The tree carries a red or amber
+dashed chord with a cross across its component. The tree carries a red or amber
 dot on every row with a diagnostic at it or beneath, its counts on hover. A
 click on a row, or on a pill, focuses that diagnostic: what it involves stays,
 the rest dims; a row's click also selects its element on its level. A face
@@ -241,30 +256,36 @@ first, then a focused diagnostic, then a legend line's focus, then the search,
 then the selection.
 
 The drawer's other three tabs analyse the build. Root inputs lists each input
-of the root with its type, its kind and the leaves and root outputs it finally
-reaches. Timing lists the anchors, the base grid first, the keyed rate scopes
-and every discrete leaf with its timing, its rate color and its period,
-sortable by period; the schedule rows and the hyperperiod chart wait for a
-deployment format that carries them, and the tab says so. Execution order
-numbers every leaf with its stage 1 and stage 2 ports, and under a leaf the
-feedthrough edges into it, labelled presumed, since they come from the stage
-lists and can overstate what a block reads. A click on any row selects what
-it names and opens its level. `o`, or the `order` toggle beside the type
-labels', numbers every leaf on the canvas by its position in that order, and
-a closed assembly by its leaves' ranges, "4–5, 15, 17, 19"; the setting is
-kept per browser. The detail pane renders a docstring from Markdown: a
-glossary or API reference in a Redstone docstring links to the core's
-documentation in a new tab, a reference in any other type's docstring stays
-code text, and raw HTML, images and links other than `http` ones are shown
-as text. The help page, at `#help`, opens from the landing panel's link, `?`
-and the `?` at the right of the status bar, and closes by its button, `?`,
-Escape or back. It holds a legend of the diagram's terms with small
-drawings, a table mapping Simulink's vocabulary to Redstone's, what the page
-refuses and what is not here yet, the keyboard table with the two Vimium
-exclusions, `http://localhost:8601/*` and
-`https://e271828e.github.io/RedstoneInspector.jl/*`, and the privacy
-statement with the inspector's version, read from `Project.toml` at build
-time, the format's major and the links.
+of the root with its type, its kind and, one to a line, the primitives and
+root outputs it finally reaches. Timing lists the anchors, the base grid
+first, the keyed rate scopes and every discrete primitive with its timing, its
+rate color and its period, sortable by period; the schedule rows and the
+hyperperiod chart wait for a deployment format that carries them, and the tab
+says so. Execution order shows two groups: every primitive with a stage 1
+output, unnumbered, since stage 1 runs in any order, then every primitive with
+a stage 2 output, numbered in the order the build calls them, with the
+feedthrough edges into it beneath, labelled presumed, since they come from the
+stage lists and can overstate what a component reads. A primitive with both
+stages stands in both, each time with that stage's ports. A click anywhere on
+a row selects what it names and opens its level. `o`, or the `order` toggle
+beside the type labels', numbers every primitive with a stage 2 output on the
+canvas by its position in the second group, and a closed assembly by the
+ranges of the positions beneath it, "2, 7, 9, 11"; a primitive with stage 1
+outputs alone has no number; the setting is kept per browser. The detail pane
+renders a docstring from Markdown, its code blocks scrolling sideways rather
+than wrapping: a glossary or API reference in a Redstone docstring links to
+the core's documentation in a new tab, a reference in any other type's
+docstring stays code text, and raw HTML, images and links other than `http`
+ones are shown as text. The help page, at `#help`, opens from the landing
+panel's link, `?` and the `?` at the right of the status bar, and closes by
+its button, `?`, Escape or back. It shows over the page, which keeps its state
+beneath it, and the close returns the focus where it was. Its four sections
+hold a lead paragraph and a legend of the diagram's terms, each with a small
+drawing; a table mapping Simulink's vocabulary to Redstone's; the keyboard
+table with the two Vimium exclusions, `http://localhost:8601/*` and
+`https://e271828e.github.io/RedstoneInspector.jl/*`; and the privacy statement
+with the inspector's version, read from `Project.toml` at build time, the
+format's major and the links.
 
 In the live session the page connects to the server's socket on load and
 greets with its tab's channel. The status bar reads "connected, waiting for

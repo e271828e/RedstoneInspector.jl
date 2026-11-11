@@ -95,7 +95,7 @@ describe("ratePhrase", () => {
 });
 
 describe("closed_loop's elements", () => {
-  it("the root level", () => {
+  it("the root level's facts: label, display name, counts, the root inputs as faces, no outputs, no scopes", () => {
     const l = levelFacts(cl, "") as LevelFacts;
     expect([l.kind, l.path, l.segment, l.displayName, l.children, l.wires]).toEqual(["level", "", "closed_loop", "Group", 6, 30]);
     expect(l.inputs.map((f) => f.name)).toEqual(["h_ref", "V_ref", "mode"]);
@@ -116,7 +116,7 @@ describe("closed_loop's elements", () => {
     expect(by(pid.inputs, "h_ref").producer).toEqual(face("", "in", "h_ref"));
   });
 
-  it("plant, a leaf", () => {
+  it("plant's facts as a leaf: tier, membership, parameters, locations, each input's producer, each output's stage and consumers", () => {
     const p = nodeFacts(cl, "plant");
     expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.rate, p.alias, p.type])
       .toEqual(["leaf", "plant", "Longitudinal", "plant", "continuous", undefined, undefined, "RedstoneExamples.Longitudinal"]);
@@ -140,7 +140,7 @@ describe("closed_loop's elements", () => {
     expect(by(a.outputs, "y").stage).toBe(2);
   });
 
-  it("sensing, a closed assembly", () => {
+  it("sensing's facts as a closed assembly: its child count, no tier or rate, its faces typed through the resolution", () => {
     const s = nodeFacts(cl, "sensing");
     expect([s.kind, s.displayName, s.children, s.tier, s.rate]).toEqual(["assembly", "Group", 2, undefined, undefined]);
     expect(s.inputs.map((f) => [f.name, f.type, f.phrase])).toEqual([["h", "Float64", "float"]]);
@@ -148,7 +148,7 @@ describe("closed_loop's elements", () => {
     expect(by(s.inputs, "h").producer).toEqual(face("plant", "out", "h"));
   });
 
-  it("the root wire into sensing|in|h", () => {
+  it("the root wire into sensing|in|h: declared endpoints, terminal producer and consumers, type, phrase and level", () => {
     const w = wireFacts(cl, "", "sensing|in|h")!;
     expect([w.from, w.to]).toEqual([{ path: "plant", port: "h" }, { path: "sensing", port: "h" }]);
     expect(w.producer).toEqual(face("plant", "out", "h"));
@@ -163,7 +163,7 @@ describe("closed_loop's elements", () => {
     expect(w.producer).toEqual(face("plant", "out", "h"));
   });
 
-  it("the root input h_ref, as a pin and as its port", () => {
+  it("the root input h_ref as a pin and as its port: type, phrase, its consumers, its root_inputs row, no producer", () => {
     const p = pinFacts(cl, "", "⟨in⟩h_ref")!;
     expect([p.kind, p.name, p.type, p.phrase, p.pinned]).toEqual(["pin", "h_ref", "Float64", "float", false]);
     expect(p.consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);

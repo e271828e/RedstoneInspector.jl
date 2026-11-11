@@ -1,7 +1,9 @@
 // The glyph icons' artwork (visual_grammar.md answer 7), drawn by the canvas as
 // one `<symbol>` each, `icon-<id>`, in the text color: a stroked path, with a
 // short text for the integrators. Each is ICON_HEIGHT (12) high and at most
-// ICON_WIDTH (44) wide; the look pass tunes them.
+// ICON_WIDTH (44) wide; the look pass tunes them. Also the root tag's outline,
+// shared by the canvas and the help page's sample.
+import { PIN_HEIGHT, POINT, SLOT } from "./size";
 
 export interface Glyph {
   /** The symbol's width in its own units, its height being 12. */
@@ -35,3 +37,9 @@ export const GLYPHS: Record<string, Glyph> = {
   freeze: { width: 14, d: "M1.5,1.5 H12.5 L7,10.5 Z M1,11.5 L13,0.5" },
   stop: { width: 12, d: "M3.7,0.5 H8.3 L11.5,3.7 V8.3 L8.3,11.5 H3.7 L0.5,8.3 V3.7 Z" },
 };
+
+/** A root tag: rounded at its outer end past the empty slot, pointed at its inner end; `grow` widens it for a halo. */
+export function tagD(w: number, grow = 0): string {
+  const r = PIN_HEIGHT / 2 + grow, x0 = SLOT + PIN_HEIGHT / 2, y0 = -grow, y1 = PIN_HEIGHT + grow;
+  return `M${x0},${y0} L${w - POINT},${y0} L${w + grow},${PIN_HEIGHT / 2} L${w - POINT},${y1} L${x0},${y1} A${r},${r} 0 0 1 ${x0},${y0} Z`;
+}

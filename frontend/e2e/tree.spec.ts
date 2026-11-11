@@ -8,7 +8,7 @@ const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path=
 const levelPath = (page: Page) => page.locator("nav.breadcrumb");
 const pane = (page: Page) => page.locator("aside.detail");
 
-test("closed_loop: rows, selection and opening", async ({ page }) => {
+test("closed_loop: seven rows with the root open; a click selects without opening, the chevron expands and collapses, a deeper row shows its parent's level, a block click selects its row, a double-click opens", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(rows(page)).toHaveCount(7);
   await expect(row(page, "")).toHaveClass(/\bopen\b/);

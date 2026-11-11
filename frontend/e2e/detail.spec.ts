@@ -29,7 +29,7 @@ test.describe("closed_loop", () => {
     await drop(page, "closed_loop");
   });
 
-  test("the level layout at load", async ({ page }) => {
+  test("at load the pane shows the root level: its label, display name, path, the level's line and the root inputs as faces", async ({ page }) => {
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
     await expect(pane(page)).toHaveAttribute("data-id", "");
     await expect(pane(page).locator("h2 .segment")).toHaveText("closed_loop");
@@ -77,7 +77,7 @@ test.describe("closed_loop", () => {
     await expect(pane(page)).toHaveAttribute("data-kind", "pin");
   });
 
-  test("plant: the leaf layout", async ({ page }) => {
+  test("plant: the leaf layout's header, facts without a rate row, closed docstring, parameters, locations, and faces with stages and links", async ({ page }) => {
     await page.locator('g.block[data-id="plant"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "leaf");
     await expect(pane(page)).toHaveAttribute("data-id", "plant");

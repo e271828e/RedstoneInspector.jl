@@ -1,14 +1,13 @@
 <script lang="ts">
-  // The help page at `#help` (workspace.md answer 11), in place of the frame or
-  // the landing: the legend of the diagram's terms with small static drawings in
-  // the canvas's shapes and colors, the Simulink vocabulary, the refusals and what
-  // is not here yet, the keyboard, and the about section. It scrolls on its own,
-  // focused on mount so the browser's keys scroll it.
+  // The help page at `#help` (workspace.md answer 11), over the frame or the
+  // landing, which the shell keeps mounted and inert beneath it: the lead paragraph
+  // and the legend of the diagram's terms with small static drawings in the canvas's
+  // shapes and colors, the Simulink vocabulary, the keyboard, and the about section.
+  // It scrolls on its own, focused on mount so the browser's keys scroll it.
+  import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
-  import { BADGE_FONT, FACE_FONT, LABEL_FONT, NAME_FONT, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
-  import {
-    KEYS, KEYS_NOTE, LINKS, NOT_YET, NOT_YET_WHEN, PRIVACY, REFUSALS, TERMS, VIMIUM, VIMIUM_PATTERNS, VOCABULARY,
-  } from "../lib/help";
+  import { BADGE_FONT, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
+  import { KEYS, KEYS_NOTE, LEAD, LINKS, PRIVACY, TERMS, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
   let { onclose }: { onclose: () => void } = $props();
@@ -16,8 +15,7 @@
   onMount(() => article?.focus({ preventScroll: true }));
 
   const SECTIONS: [string, string][] = [
-    ["reading", "Reading the diagram"], ["simulink", "Coming from Simulink"], ["refusals", "What the page does not do"],
-    ["keyboard", "The keyboard"], ["about", "About"],
+    ["reading", "Reading the diagram"], ["simulink", "Coming from Simulink"], ["keyboard", "The keyboard"], ["about", "About"],
   ];
   /** A section's link scrolls to it, the hash left as `#help`. */
   function jump(e: MouseEvent, id: string) {
@@ -31,13 +29,17 @@
   const sq = (x: number, y: number) => ({ x: x - PORT / 2, y: y - PORT / 2, width: PORT, height: PORT });
   /** An arrowhead ending at a point, pointing right. */
   const head = (x: number, y: number) => `M${x - 7},${y - 3.5} L${x},${y} L${x - 7},${y + 3.5} z`;
-  /** The canvas's root tag, rounded at its outer end past the slot, pointed at its inner end. */
-  const tagD = (w: number) => {
-    const r = PIN_HEIGHT / 2, x0 = SLOT + r;
-    return `M${x0},0 L${w - POINT},0 L${w},${r} L${w - POINT},${PIN_HEIGHT} L${x0},${PIN_HEIGHT} A${r},${r} 0 0 1 ${x0},0 Z`;
-  };
+  /** The canvas's pill constants: its inset from the left edge, height, padding and its rise below the bottom edge. */
+  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7;
   const pillText = "2 clocks";
-  const pillWidth = Math.ceil(textWidth(pillText, BADGE_FONT)) + 8;
+  const pillWidth = Math.ceil(textWidth(pillText, BADGE_FONT)) + 2 * BADGE_PAD;
+  /** The badge sample's assembly, the clock pill straddling its bottom edge at the left as the canvas draws it. */
+  const BADGE_BOX = { x: 8, y: 4, width: 104, height: 32 };
+  const pillTop = BADGE_BOX.y + BADGE_BOX.height - BADGE_HEIGHT - BADGE_TOP;
+  /** The legend sample's two lines, as the canvas's legend reads two triples, and its box in the legend's CSS sizes. */
+  const LEGEND_FONT = "11px system-ui, sans-serif";
+  const legendLines = ["base grid", "anchor 1 (1/4 s)"];
+  const legendWidth = Math.ceil(Math.max(...legendLines.map((t) => textWidth(t, LEGEND_FONT)))) + 38;
   const wires = [["number", ""], ["flag", "flag"], ["vector", "vector"], ["struct", "struct"]];
 </script>
 
@@ -45,7 +47,7 @@
 
 {#snippet sample(key: string)}
   <svg class="sample" data-sample={key} width={W} height={H} viewBox="0 0 {W} {H}" aria-hidden="true">
-    {#if key === "block"}
+    {#if key === "component"}
       <rect x="12" y="4" width="96" height="40" rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
       <text x="20" y="19" style="font:{SEGMENT_FONT}">plant</text>
       <text class="display" x="20" y="33" style="font:{NAME_FONT}">Longitudinal</text>
@@ -83,11 +85,28 @@
       <rect x="24" y="21" width="72" height="20" rx="4" fill={palette.discrete.fill} stroke={palette.discrete.stroke} />
       <text x="32" y="35" style="font:{SEGMENT_FONT}">imu</text>
     {:else if key === "badge"}
-      <rect x="8" y="12" width="104" height="32" rx="4" fill={palette.assembly.fill} stroke={palette.assembly.stroke} />
-      <rect x="11" y="15" width="98" height="26" rx="2" fill="none" stroke={palette.assembly.stroke} />
-      <text x="16" y="33" style="font:{SEGMENT_FONT}">selection</text>
-      <rect class="pill" x={108 - pillWidth} y="5" width={pillWidth} height="12" rx="6" stroke={palette.assembly.stroke} />
-      <text x={104} y="14" text-anchor="end" style="font:{BADGE_FONT}">{pillText}</text>
+      {@const b = BADGE_BOX}
+      <rect x={b.x} y={b.y} width={b.width} height={b.height} rx="4" fill={palette.assembly.fill} stroke={palette.assembly.stroke} />
+      <rect x={b.x + 3} y={b.y + 3} width={b.width - 6} height={b.height - 6} rx="2" fill="none" stroke={palette.assembly.stroke} />
+      <text x={b.x + PAD} y={b.y + 19} style="font:{SEGMENT_FONT}">selection</text>
+      <rect class="pill" x={b.x + BADGE_INSET} y={pillTop} width={pillWidth} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={palette.assembly.stroke} />
+      <text x={b.x + BADGE_INSET + BADGE_PAD} y={pillTop + 9} style="font:{BADGE_FONT}">{pillText}</text>
+    {:else if key === "display-name"}
+      <rect x="4" y="4" width="58" height="40" rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
+      <text x={4 + PAD} y="19" style="font:{SEGMENT_FONT}">plant</text>
+      <text class="display" x={4 + PAD} y="33" style="font:{NAME_FONT}">Airframe</text>
+      <rect x="68" y="4" width="48" height="40" rx="4" fill={palette.discrete.fill} stroke={palette.discrete.stroke} />
+      <text x={68 + PAD} y="19" style="font:{SEGMENT_FONT}">err</text>
+      <g class="icon" transform="translate({68 + PAD},23)">
+        <path d={GLYPHS.sum.d} fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" />
+      </g>
+    {:else if key === "legend"}
+      <rect class="legend" x="0.5" y="3.5" width={legendWidth - 1} height="41" rx="4" />
+      {#each legendLines as line, i (line)}
+        {@const y = 8 + i * 16}
+        <rect x="9.5" y={y + 2.5} width="13" height="11" rx="2" fill={stepPair(i).fill} stroke={stepPair(i).stroke} />
+        <text x="29" y={y + 12} style="font:{LEGEND_FONT}">{line}</text>
+      {/each}
     {:else if key === "halo"}
       <rect class="halo" x="11" y="5" width="98" height="38" rx="7" />
       <rect x="14" y="8" width="92" height="32" rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
@@ -139,10 +158,11 @@
 
     <section data-section="reading">
       <h2>Reading the diagram</h2>
+      <p class="lead">{@render text(LEAD)}</p>
       <ul class="terms">
         {#each TERMS as t (t.key)}
           <li data-term={t.key}>
-            {#if t.sample}{@render sample(t.sample)}{/if}
+            {@render sample(t.sample)}
             <p><b class="term">{t.term}</b> {@render text(t.line)}</p>
           </li>
         {/each}
@@ -159,18 +179,6 @@
           {/each}
         </tbody>
       </table>
-    </section>
-
-    <section data-section="refusals">
-      <h2>What the page does not do</h2>
-      <ul class="refusals">
-        {#each REFUSALS as r (r.what)}<li><b>{r.what}</b>: {r.why}</li>{/each}
-      </ul>
-      <h3>Not here yet</h3>
-      <ul class="not-yet">
-        {#each NOT_YET as line (line)}<li>{line}</li>{/each}
-      </ul>
-      <p>{NOT_YET_WHEN}</p>
     </section>
 
     <section data-section="keyboard">
@@ -206,7 +214,11 @@
 </article>
 
 <style>
-  .help { height: 100%; overflow: auto; box-sizing: border-box; outline: none; line-height: 1.45; font-size: 14px; }
+  /* Over the inert frame or landing, which stay laid out beneath it. */
+  .help {
+    position: absolute; inset: 0; z-index: 10; overflow: auto; box-sizing: border-box; outline: none; line-height: 1.45; font-size: 14px;
+    background: var(--bg);
+  }
   .page { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
   header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
   h1 { font-size: 1.3rem; margin: 0; }
@@ -215,7 +227,7 @@
   nav a, dd a { color: var(--highlight); }
   section { padding-top: 0.5rem; }
   h2 { font-size: 1.1rem; margin: 1.5rem 0 0.75rem; }
-  h3 { font-size: 0.95rem; margin: 1rem 0 0.25rem; }
+  .lead { margin: 0 0 1rem; }
   code, kbd { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.9em; }
   kbd { padding: 0 4px; border: 1px solid var(--border); border-radius: 3px; background: var(--strip); white-space: nowrap; }
 
@@ -229,7 +241,6 @@
   th { font-weight: 600; }
   td.note { color: var(--text-light); }
   td.keys { white-space: nowrap; width: 1%; }
-  .refusals li, .not-yet li { margin: 0 0 4px; }
   dl.about { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
   dt { color: var(--text-light); }
   dd { margin: 0; }
@@ -248,6 +259,8 @@
   .sample .head { fill: var(--wire); }
   .sample .region { fill: none; stroke: var(--wire); stroke-dasharray: 3 3; }
   .sample .pill { fill: var(--bg); }
+  .sample .icon { color: var(--text); }
+  .sample .legend { fill: var(--bg); stroke: var(--wire); }
   .sample .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0.5; }
   .sample .casing { fill: none; stroke: var(--highlight); stroke-width: 7; opacity: 0.4; stroke-linejoin: round; }
   .sample .chord { fill: none; stroke: var(--error); stroke-width: 1.5; stroke-dasharray: var(--dash); }

@@ -1,7 +1,8 @@
 <script lang="ts">
   // The shell: a file picked or dropped anywhere on the page, the landing panel
   // before a model, the frame over the session once one loads; the window's
-  // title, the hash and back and forward, the help page in place of either, and
+  // title, the hash and back and forward, the help page over either, which stays
+  // mounted and inert beneath it, and
   // the keyboard table outside text fields (workspace.md answer 11); the live
   // tab's socket, its descriptors fed
   // to the loader a dropped file goes through (live_session.md answer 5).
@@ -33,7 +34,7 @@
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder } from "./state/prefs.svelte";
-  import { onMount, tick } from "svelte";
+  import { onMount, tick, untrack } from "svelte";
 
   let refusal = $state<string | undefined>();
   let dragging = $state(false);
@@ -153,6 +154,26 @@
   function traceFrom(face: Face | undefined) {
     if (face && (sameFace(face, session.route) || routeOf(model!, face))) trace(face);
   }
+
+  // The help page leaves the frame or the landing mounted and inert, which drops the focus inside it: the element
+  // focused at the open, and its region, get it back at the close, whichever way the page closes.
+  let before: { element: HTMLElement; region: Region | undefined } | undefined;
+  $effect.pre(() => {
+    const shown = session.help;
+    untrack(() => {
+      if (shown) {
+        const a = document.activeElement;
+        before = a instanceof HTMLElement && a !== document.body ? { element: a, region: session.focus } : undefined;
+      } else if (before) {
+        const { element, region } = before;
+        before = undefined;
+        tick().then(() => {
+          if (element.isConnected) element.focus({ preventScroll: true });
+          else if (region) rootOf(region)?.focus({ preventScroll: true });
+        });
+      }
+    });
+  });
 
   /** A location click: sent to the editor while connected, else false and the pane copies it. */
   const onlocation = (file: string, line: number) => sendOpenLocation(file, line);
@@ -324,7 +345,9 @@
 >
   {#if session.help}
     <Help onclose={closeHelp} />
-  {:else if model}
+  {/if}
+  <div class="under" inert={session.help}>
+  {#if model}
     <Frame drawerOpen={session.drawer.open}>
       {#snippet tree()}
         <Tree
@@ -390,11 +413,13 @@
       {/if}
     </div>
   {/if}
+  </div>
 </main>
 
 <style>
   :global(html, body) { margin: 0; height: 100%; }
-  main { font-family: system-ui, sans-serif; height: 100vh; box-sizing: border-box; color: var(--text); background: var(--bg); }
+  main { position: relative; font-family: system-ui, sans-serif; height: 100vh; box-sizing: border-box; color: var(--text); background: var(--bg); }
+  .under { height: 100%; }
   main.dragging { outline: 2px dashed gray; outline-offset: -2px; }
   pre.outcome { white-space: pre-wrap; margin: 1rem; }
   .waiting { display: flex; flex-direction: column; height: 100%; }

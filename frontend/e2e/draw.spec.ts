@@ -17,8 +17,8 @@ const CLOSED_LOOP: Record<string, Pins> = {
   actuators: row(8, 6, 2, 2, 0, 2, 0),
 };
 // large's root draws its two output pins in reverse declaration order. Increment 6's ELK pass found one option
-// that fixes it, forceNodeModelOrder, and it raises large's crossings (663 to 699), so the order check was
-// dropped (MAP.md's open items).
+// that fixes it, forceNodeModelOrder, and it raises large's crossings (663 to 699), so the option stays off, the
+// reversed order is accepted and no check pins the pins' order.
 const LARGE_INNER = ["b008", "b023", "b038", "b053", "b068", "b083", "b098", "b113", "b128", "b143"];
 const TABLE: Record<string, Record<string, Pins>> = {
   aircraft: { "": row(3, 2, 2, 0, 0, 6, 0) },
@@ -45,7 +45,7 @@ const TABLE: Record<string, Record<string, Pins>> = {
 
 for (const [fixture, levels] of Object.entries(TABLE)) {
   for (const [level, pins] of Object.entries(levels)) {
-    test(`${fixture} draws ${level || "the root"}`, async ({ page }) => {
+    test(`${fixture} at ${level || "the root"}: the oracle's blocks, wires, pins, closed assemblies, open squares and pinned marks, each root input a tag`, async ({ page }) => {
       const t0 = Date.now();
       await drop(page, fixture);
       await page.locator(readyLevel("")).waitFor();
