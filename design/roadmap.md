@@ -285,6 +285,20 @@ chart moved to increment 10 on 2026-11-04. Visible: the static page
 complete. Draws on `workspace.md` answers 7 and 11, `build_release.md`
 answer 7.
 
+**Increment 8b: the keyboard by region.** Added 2026-11-11 from increment
+8's look pass (its 4.7 and additional comment), lettered so the eleven keep
+their numbers. It follows increment 8's merge, since it builds on the frame
+kept mounted under the help page, and precedes the pin. `m` toggles the
+model tree and `i` the detail pane, over the frame's collapse buttons and
+their prefs; Cmd-O and Ctrl-O open a file. The keys follow the focused
+region: in the tree the arrows follow `h j k l`; in the detail pane and the
+drawer `j`, `k` and the vertical arrows scroll, and `h` and `l` scroll
+sideways or do nothing; on the help page `j` and `k` scroll; on the canvas,
+or with nothing focused, the keys act as before. A pane's focused state
+shows clearly. Its docs commit amends `workspace.md` answer 11's key table.
+Visible: a page one can drive from the keyboard pane by pane. Draws on
+`workspace.md` answer 11.
+
 **Increment 9: the server.** On the Julia track after increment 1, in
 parallel with 2 to 8: the module slot, HTTP.jl on the fixed port and
 loopback, channels, the four `inspect` methods, the protocol's stage 1

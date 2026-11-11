@@ -93,8 +93,10 @@ Open items live in `pending.md`.
 4. **Selection and the detail pane: one element, the level when none.**
    Selection is single: a block, a region's folder, a wire, a pin or a
    port square, Escape clearing it. With nothing selected the pane shows
-   the open level: its path, display name, counts, faces and scope timing.
-   A leaf block shows, in order:
+   the open level as it shows a closed assembly, under a line with the
+   level's counts and its scope timing, with no open button and with a face
+   row selecting the level's pin; the root so gains its docstring,
+   locations and parameters. A leaf block shows, in order:
    - the header: segment, display name and path, a copy button and, on an
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
@@ -135,7 +137,9 @@ Open items live in `pending.md`.
    title and the docstring shown open. Amended 2026-11-02 (increment 6's
    look pass): the membership did not name its container's kind, the
    docstring's title carried its first line, and the narrow pane stacked
-   nothing.*
+   nothing. Amended 2026-11-11 (increment 8's look pass, 3.5): the open
+   level showed its path, display name, counts, faces and scope timing
+   alone, so a root's docstring was out of reach.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -176,21 +180,33 @@ Open items live in `pending.md`.
    message, the error hue and amber, a text filter, the count on the tab, a
    click selecting the element and navigating to it, a loop opening its
    first member's level with the chain lit; the empty state says so. Root
-   inputs: name, type, kind phrase, pinned mark, terminal consumers and,
+   inputs: name, type, kind phrase, terminal consumers one to a line and,
    from stage 2, the claiming writer, a row selecting the root pin; the
    home of stage 3's input widgets. Timing: anchors with index, `T`, `tau`
    and the declaring scope and key, anchor 0 as the base grid; scopes with
    path, key and triple; components, every discrete leaf with its triple in
    walk order, sortable by period, with its rate-mode swatch; the
    deployment overlay's schedule rows and hyperperiod chart join here, a
-   build descriptor saying they need a deployment. Execution order: the
-   `outputs.order` numbered, each row the leaf's path with its stage 1 and
-   stage 2 ports. The drawer opens on load only when a diagnostic exists,
-   on that tab, and otherwise stays collapsed to its tab strip with the
-   counts readable; its height is a remembered splitter; every row in
+   build descriptor saying they need a deployment. Execution order: two
+   groups, as the core's §5.3 runs a sweep. The first lists every leaf with
+   a stage 1 port, unnumbered, since stage 1 runs in any order. The second
+   lists every leaf with a stage 2 port in `outputs.order`'s order,
+   numbered from 1 over that group, and under a row the feedthrough edges
+   into it, labelled presumed. A leaf with both stages stands in both
+   groups, each time with that stage's ports. The drawer opens on load
+   only when a diagnostic exists, on that tab, and otherwise stays
+   collapsed to its tab strip with the counts readable; its height is a
+   remembered splitter; every row in
    every tab selects on the canvas and navigates as a tree click does; each
    tab is a self-contained component for stage 3's panels and stage 4's
    dock.
+   *Amended 2026-11-11 (increment 8's look pass, 1.1 and 1.7): the root
+   inputs carried a pinned mark, dropped because a root input's `pinned` is
+   false in version 1 of the format, the wire pass having stripped the
+   marker, with the question of seedability handed to `pending.md`; and the
+   execution order was `outputs.order` numbered in one list, each row with
+   both stages' ports, which gave a leaf with stage 1 outputs alone a
+   position that orders nothing.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -202,13 +218,18 @@ Open items live in `pending.md`.
    badges, nothing else; the fit button and the legend stay in the canvas
    corner, and the port-class glyphs are not a toggle. The settings persist
    per browser and survive a push. With the badges on, every leaf block
-   carries its position in `outputs.order` in its top-left corner, numbered
-   over the whole model, and a closed assembly the range or ranges of its
-   leaves' positions, "3–5, 8"; the badges use the text color. A
+   with a stage 2 output carries its position among the stage 2 calls, in
+   `outputs.order`'s order, in its top-left corner, numbered over the
+   whole model, and a closed assembly the range or ranges of those
+   positions beneath it, "3–5, 8"; a leaf with stage 1 outputs alone
+   carries none; the badges use the text color. A
    deployment descriptor adds the concrete `Δt` and `(D, Φ)` to the legend
    and the schedule rows and the hyperperiod chart, a timeline over one
    hyperperiod with a row per triple and a mark per firing, to the drawer's
    timing tab, all waiting on the overlay bump.
+   *Amended 2026-11-11 (increment 8's look pass, 1.7): every leaf carried
+   its position in `outputs.order`, stage 1 leaves among them, though the
+   core runs stage 1 in any order.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.
@@ -302,21 +323,27 @@ Open items live in `pending.md`.
     recent-files list, which stores contents in the browser; a URL naming a
     local file.
 
-11. **The help page and the keyboard: five sections, Vim's cursor on the
+11. **The help page and the keyboard: four sections, Vim's cursor on the
     diagram.** A page in the bundle at `#help`, reached from the landing
-    panel, `?` and a status-bar link. Its five sections:
-    - reading the diagram, a legend of `visual_grammar.md`'s terms with
-      their drawings, one line each;
-    - coming from Simulink, the vocabulary map as a table: assembly and
-      subsystem, `Group` and virtual subsystem, leaf and block, face and
-      port, root input and Inport, root output and Outport, rate scope and
-      sample time, kind marker and data type, a stage 1 output and a
-      non-direct-feedthrough output, `Junction` and Sum or the logical
-      operators, `Pack` and `Unpack` against Mux and Demux, a face route
-      and signal highlighting, the tree and the model browser;
-    - what the page does not do: the refusals with one reason each,
-      editing, saved layout and author icons, then what is not here yet,
-      run control, live values and panels, stages 3 and 4;
+    panel, `?` and a status-bar link, shown over the frame, which stays
+    mounted and inert beneath it so the close returns focus where it was.
+    Its four sections:
+    - reading the diagram, a lead paragraph on the level, the order in
+      which text drops when zooming out and the computed layout, then a
+      legend of `visual_grammar.md`'s terms that name a drawn thing, each
+      with its drawing and one line;
+    - coming from Simulink, the vocabulary map as a table, Simulink's term
+      first: block and primitive, subsystem and assembly, block port and
+      face, signal and port, signal line and wire, the Inport and Outport
+      blocks and an assembly's faces, data type and the face's type, the
+      line styles and the kind marker, continuous and discrete sample
+      times and the tier, sample time and the triple, the sample time
+      colors and legend against rate mode and the legend, direct
+      feedthrough and a stage 2 output, sorted execution order and the
+      execution order, algebraic loop and a loop diagnostic, Sum or the
+      logical operators and `Junction`, Mux and Demux against `Pack` and
+      `Unpack`, Bus Selector and `Fields`, the highlight to source and
+      destination and a face route, the model browser and the tree;
     - the keyboard;
     - about, with the privacy statement, the bundle and format versions
       and the links.
@@ -354,7 +381,13 @@ Open items live in `pending.md`.
     rule across a push. Amended 2026-11-02 (increment 6's look pass):
     Escape's chain gained the legend's focus. Amended 2026-11-03
     (increment 7, `roadmap.md`'s landed note): it gained the focused
-    diagnostic.*
+    diagnostic. Amended 2026-11-11 (increment 8's look pass, 4.2, 4.5,
+    4.6 and 4.10): the page had five sections and replaced the frame; the
+    legend listed every term, drawn or not; the vocabulary map was thirteen
+    pairs, several of them wrong, `Group` against virtual subsystem, rate
+    scope against sample time and kind marker against data type among
+    them; and a section stated the refusals and what is not here yet,
+    which the README now states.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

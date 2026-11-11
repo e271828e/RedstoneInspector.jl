@@ -41,6 +41,10 @@ no entry here.
 - **Bundle directory.** The folder the server serves the page from: the
   artifact Pkg unpacked on install, or the `bundle_dir` preference's
   folder in the development loop (`live_session.md` answer 8).
+- **Block.** A box on the open level, a child component's or a pin's; a
+  word of the records, the code and the frontend's map. The text a user
+  reads says "component" for a child's box, since the core retires its
+  own term *block* (`workspace.md` answers 4 and 11).
 - **Casing.** The highlight of a line: a wider translucent band under a
   wire in the highlight hue (`visual_grammar.md` answer 9).
 - **Channel.** The server's record for one name: the name, the latest

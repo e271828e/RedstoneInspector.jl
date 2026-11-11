@@ -352,3 +352,72 @@ the help check counts the table's rows and not their keys. The coordinating
 session landed the three leftover "Cmd-K alone" mentions (the README, a
 comment in `App.svelte`, `search.spec.ts`'s header) as `bb2511f`, the type
 check green. The branch stands at `bb2511f` for the look pass.
+
+## The look pass, 2026-11-11
+
+The user ran the look over `bb2511f` and wrote a comment under most
+entries; the discussion that followed settled each, and
+`look_inspector_08.md` holds the rulings under their entries with the
+settled texts in its section 7. No reading is struck. Readings 8, 11, 14
+and 15 are amended by 1.7, 1.1, 4.2 and 4.5, and reading 19 is withdrawn by
+2.3. The docs commit on `master` amends `workspace.md` answers 4, 6, 7 and
+11 and `initial_design.md` answer 15, adds the glossary's entry "Block" and
+the roadmap's increment 8b, and brings `pending.md` to the outcome.
+
+Accepted as built, with no change: a row's click does not pan the canvas to
+a tag or a port (1.2); the base grid's anchor row (1.3); an extra triple's
+swatch without its number (1.5); the about section naming the format's
+major alone (4.8); a typed level hash stamped one deeper (0.5). The Fit
+button over a badge is struck (2.8). A bare `@ref` to a parent module's
+name still lands at the API page's top, increment 10's to settle (3.3).
+
+Two rulings reach beyond this increment. The core retires the term *block*,
+from its prose and its names, entered at the top of the core's work order
+at `9604747` and `ddca615`; the text a user reads here says "component" at
+once, and the code keeps `block` for a box on the level. The keyboard by
+region becomes increment 8b, after the merge and before the pin.
+
+## The look pass's fixes
+
+The user asked on 2026-11-11 for the fixes to be built without further
+review and for a second look, with a new checklist, over the result. The
+rules cap a frontend increment at one look; the second is the user's own
+request. `brief_inspector_08_look_fixes.md` is the brief: three stages by
+concern in the one worktree, then one cold review and its fix. Nothing is
+pushed and nothing is merged.
+
+The coordinating session's own rulings, each on the second look's
+checklist:
+
+1. **The first group keeps `outputs.order`'s order.** §5.3 allows any
+   order, and this one matches the core's printout row for row.
+2. **A component with no output port stands in neither group.** The tab
+   lists output stages; no fixture has such a component, so a synthetic
+   model pins it.
+3. **The wording is the session's**: the two headings, the two empty-group
+   sentences, the badge's titles, the order toggle's title, the help
+   page's lead paragraph and six of its legend lines. The user settled
+   7.1 to 7.3 in substance during the pass.
+4. **The rate pill yields to the overlay's pills where they meet.** The
+   look ruled the bottom-left and asked for a measurement. A rule was
+   needed before the measurement, the user being away: the overlay is what
+   a reader follows at that moment, and the clock count returns when the
+   focus or the route clears.
+5. **The open level's pane keeps `data-kind="level"`** and the level's own
+   line above the assembly's facts, so the contract's selectors hold and
+   the pane still says that nothing is selected.
+6. **The legend's line drops "later with its concrete `Δt`"**, increment
+   10's promise.
+7. **"Leaf" becomes "primitive" in every text a user reads**, by the user's
+   word on 2026-11-11, with "block" to "component". The descriptor's class
+   value, the code's comparisons, the identifiers, the test names and the
+   map's selector tables wait for the pin.
+8. **Answer 11's key table is not amended yet.** Increment 8b's keys land
+   in that increment's docs commit, the increment conforming to it.
+
+The oracle for 1.7 is `scratchpad/oracle/stage2.py` of the coordinating
+session: the two groups' sizes, the second group's order and each
+assembly's badge, over every fixture with `outputs`. Its figures are the
+brief's pins. One consequence to look at: `large` has 160 primitives, all
+with stage 1 outputs alone, so its second group is empty and it shows no
+badge anywhere.

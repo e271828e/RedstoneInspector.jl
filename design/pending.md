@@ -10,17 +10,38 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8's look pass and merge.** Increment 8, the analysis views
-  and the help page, is in its look-and-adjust pass: its review's fixes
-  landed at `bb2511f` on the `increment-8` branch, checked out in a
-  worktree, and `increments/inspector_08_analysis_help/look_inspector_08.md`
-  is the pass's checklist; the merge follows the pass.
-- **The class value at the next pin.** The core renamed the descriptor's
-  class value `"leaf"` to `"primitive"` at `c894949` on 2026-11-05, with
+- **Increment 8's second look and merge.** Increment 8, the analysis views
+  and the help page, had its look pass on 2026-11-11, and
+  `increments/inspector_08_analysis_help/look_inspector_08.md` holds the
+  rulings under their entries. The fixes run on the `increment-8` branch,
+  checked out in a worktree at `e2385b3`, by
+  `brief_inspector_08_look_fixes.md` in the same folder: three stages, a
+  cold review and its fix. The user asked for a second look, whose
+  checklist is `look2_inspector_08.md`; the merge follows it.
+- **Increment 8b, the keyboard by region.** After the merge and before the
+  pin: `m` and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to
+  open a file, and the keys following the focused region. `roadmap.md`
+  holds its entry; its brief amends `workspace.md` answer 11's key table in
+  its docs commit.
+- **The class value and the module's name at the next pin.** The core
+  renamed the descriptor's class value `"leaf"` to `"primitive"` at
+  `c894949` on 2026-11-05, with
   `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
   since the spec spells a node's class as assembly or primitive and *leaf*
   is the value leaf. It follows the merge because the branch touches seven
-  files that spell the old names. When the pin moves: the schema copy
+  files that spell the old names, and by the user's ruling of 2026-11-11 it
+  also follows increment 8b and the core's retirement of the term *block*
+  (`Redstone.jl/design/pending.md`, first bullet), so one pin carries both
+  renames; if the core's rename is late, the pin goes ahead and a second
+  follows. The core's rename gives `Redstone.Blocks` a new name, which a
+  node's `type` carries: every fixture regenerates, the icon table's keys
+  in `frontend/src/lib/icons.ts`, the tests' literals and the README
+  follow, and the pin's brief verifies that the docstring link rule's
+  anchors follow the data. The text a user reads already says "primitive"
+  and "component" since increment 8's look pass; the code keeps `block`
+  for a box on the level (`glossary.md`). The same pin moves the six
+  construction sites from `h =` to `Δt_frame =`, as the core's bullet on
+  this repo says. When the pin moves: the schema copy
   follows and `npm run types` regenerates `descriptor.d.ts`; every
   comparison on the descriptor's `class` in `src/lib`, `src/canvas`,
   `src/frame` and the e2e specs reads `"primitive"`, while an internal role
@@ -39,7 +60,7 @@ The bullets stand in working order, the first one next.
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 7
-  and 9 have landed. After increment 8 and the pin, 10, the deployment
+  and 9 have landed. After increment 8, 8b and the pin, 10, the deployment
   overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
@@ -226,19 +247,14 @@ the increment it came from.
   drawer's rows and filter are outside Tab's cycle of the four region
   roots. The right-click menu has no keyboard path, `t` being the
   keyboard's trace, and its button takes no focus on opening.
-- **Increment 8's items, before its look pass.** Each sits on
-  `look_inspector_08.md`; what the pass leaves open becomes a bullet of
-  its own. The rate pill riding above the order badge on a narrow block,
-  and on the wire along `closed_loop`'s top (2.3; the rate badge's
-  straddle is increment 6's). The root-inputs tab's pinned column, empty
-  since version 1.0 writes no pinned face (1.1). An analysis row's click
-  does not pan to a tag or a port, and a port selection does not expand
-  the tree (1.2). The base grid's anchor row (1.3). The root's pane never
-  shows its type's docstring (3.5). The help page's samples and wording
-  (4.2 to 4.5). The about section naming the format's major alone (4.8).
-  The help page unmounting the frame, the tree's scroll and the keyboard's
-  region lost on the close (4.10). A typed level hash stamped one deeper,
-  so Shift-`h` walks back from it (0.5).
+- **A root input's seedability** (increment 8's look pass, 1.1). The
+  root-inputs tab lost its pinned column, since version 1 writes a root
+  input's `pinned` false, the wire pass having stripped the marker. The
+  spec gives the fact a rule, a meet over the consumers: a root input pins
+  when any consumer's entry pins, and is then unseedable. Open: whether
+  the row shows it, under "seedable" rather than "pinned", and whether the
+  client derives it from the consumers' flags, which miss a discrete
+  consumer's wholesale pin, or the core carries it, a format change.
 - **Increment 8's merge: stale citations and test names.** The map's cut
   on the `increment-8` branch (`e2385b3`) left two code comments citing
   text that left the map: `frontend/src/lib/level.ts:124`, "MAP.md's traps

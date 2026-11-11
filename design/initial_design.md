@@ -265,10 +265,14 @@ b6f08b1.
       subsystem, face ≈ port, root input ≈ inport). The interface itself keeps
       Redstone's terms everywhere.
 
-    The help page states the refusals: editing (answer 2), saved hand layout
+    The README states the refusals: editing (answer 2), saved hand layout
     (answer 12), and author-supplied icons or masks, for now. A Run button,
-    scopes and runtime data are stage 3's and stage 4's, and the page says
-    so until they arrive.
+    scopes and runtime data are stage 3's and stage 4's, and the README
+    says so until they arrive.
+    *Amended 2026-11-11 (increment 8's look pass, 4.6): the help page
+    stated them. The help page explains how to read and operate the page,
+    and the refusals are positioning, which a reader wants before choosing
+    the tool.*
     *Why:* the additions are front-end work on data the descriptor already
     carries. Redstone's terms stay because diagnostics, the spec and
     descriptors all use them. Stating the refusals spares a Simulink user from
