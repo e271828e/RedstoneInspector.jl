@@ -52,7 +52,8 @@ export function buildResolution(tree: Tree, structure: StructureSection): Resolu
   return { tree, structure, feeder, fanout };
 }
 
-const isRootInput = (f: Face) => f.path === "" && f.side === "in";
+/** A root input's face, `("", "in", name)`. */
+export const isRootInput = (f: Face) => f.path === "" && f.side === "in";
 const isLeaf = (res: Resolution, f: Face) => res.tree.byPath.get(f.path)?.class === "leaf";
 const isRootOutput = (res: Resolution, f: Face) => f.path === "" && f.side === "out" && !isLeaf(res, f);
 

@@ -163,14 +163,27 @@ describe("closed_loop's elements", () => {
     expect(w.producer).toEqual(face("plant", "out", "h"));
   });
 
-  it("the root input h_ref as a pin and as its port: type, phrase, its consumers, its root_inputs row, no producer", () => {
+  it("the root input h_ref as a pin and as its port: type, phrase, no pinned flag, its consumers, its root_inputs row, no producer", () => {
     const p = pinFacts(cl, "", "⟨in⟩h_ref")!;
-    expect([p.kind, p.name, p.type, p.phrase, p.pinned]).toEqual(["pin", "h_ref", "Float64", "float", false]);
+    expect([p.kind, p.name, p.type, p.phrase, p.pinned]).toEqual(["pin", "h_ref", "Float64", "float", undefined]);
     expect(p.consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
     expect(p.rootInput?.name).toBe("h_ref");
     expect(p.producer).toBeUndefined();
     const q = portFacts(cl, "", "⟨in⟩h_ref|out|h_ref")!;
-    expect([q.kind, q.consumers?.length, q.rootInput?.type]).toEqual(["port", 2, "Float64"]);
+    expect([q.kind, q.consumers?.length, q.rootInput?.type, q.pinned]).toEqual(["port", 2, "Float64", undefined]);
+  });
+
+  it("the pinned flag: none on a root input, a primitive root's inputs included; a primitive's own, an assembly's and a lower level's pin through the producer elsewhere", () => {
+    const prim = fixtureModel("primitive");
+    expect(levelFacts(prim, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined]);
+    expect(levelFacts(cl, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined, undefined]);
+    expect(portFacts(cl, "pid_controller", "pid_controller/free|out|y")!.pinned).toBe(true);
+    expect(portFacts(cl, "", "plant|out|V")!.pinned).toBe(false);
+    expect(portFacts(cl, "", "sensing|out|h_meas")!.pinned).toBe(false);
+    expect(pinFacts(cl, "pid_controller", "⟨out⟩δe")!.pinned).toBe(false);
+    const lib = fixtureModel("library");
+    const pinned = ["constant", "step", "source", "relay", "freeze"].map((p) => portFacts(lib, "", `${p}|out|y`)!.pinned);
+    expect(pinned).toEqual([true, true, true, true, true]);
   });
 
   it("a leaf's input port names its producer", () => {

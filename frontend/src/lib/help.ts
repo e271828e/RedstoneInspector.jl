@@ -27,7 +27,7 @@ export const TERMS: Term[] = [
   },
   {
     key: "wire", term: "wire", sample: "wire",
-    line: "A gray right-angle line with an arrowhead at its consumer, the value's kind as weight and pattern: thin for a number, dashed for a flag, thick for a vector, a triple line for a struct.",
+    line: "A gray right-angle line with an arrowhead at its consumer, the value's kind as weight and pattern: thin for a number, dashed for a flag, thick for a vector, a double line for a struct.",
   },
   {
     key: "badge", term: "badge", sample: "badge",

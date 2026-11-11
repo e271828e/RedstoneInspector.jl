@@ -6,7 +6,7 @@
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
-  import { BADGE_FONT, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
+  import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
   import { KEYS, KEYS_NOTE, LEAD, LINKS, PRIVACY, TERMS, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
@@ -29,8 +29,6 @@
   const sq = (x: number, y: number) => ({ x: x - PORT / 2, y: y - PORT / 2, width: PORT, height: PORT });
   /** An arrowhead ending at a point, pointing right. */
   const head = (x: number, y: number) => `M${x - 7},${y - 3.5} L${x},${y} L${x - 7},${y + 3.5} z`;
-  /** The canvas's pill constants: its inset from the left edge, height, padding and its rise below the bottom edge. */
-  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7;
   const pillText = "2 clocks";
   const pillWidth = Math.ceil(textWidth(pillText, BADGE_FONT)) + 2 * BADGE_PAD;
   /** The badge sample's assembly, the clock pill straddling its bottom edge at the left as the canvas draws it. */

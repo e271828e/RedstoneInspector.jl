@@ -4,7 +4,7 @@ import type { Anchor, KindMarker, LeafFace, Location, Parameter, Rational, Timin
 import { inPinId, levelOf, outPinId, portId } from "./level";
 import type { Model } from "./model";
 import { folderOf } from "./outline";
-import { faceInfo, faceKey, terminalConsumers, terminalProducer, type Face, type Side } from "./resolve";
+import { faceInfo, faceKey, isRootInput, terminalConsumers, terminalProducer, type Face, type Side } from "./resolve";
 import { displayName, type Membership, type Tree } from "./tree";
 
 /** What a click selects: the canvas's targets and a tree folder; a block or folder by path or pin id, a wire by wire id, a port by port id. */
@@ -94,7 +94,8 @@ export interface FaceFacts {
   type?: string;
   /** The kind marker as a phrase. */
   phrase?: string;
-  pinned: boolean;
+  /** None for a root input, whose `pinned` version 1 of the format writes false whatever the model declares. */
+  pinned?: boolean;
   /** A leaf output's stage, from `outputs.components`. */
   stage?: 1 | 2;
   /** The terminal producer, when another face. */
@@ -166,7 +167,8 @@ export function faceFacts(model: Model, face: Face): FaceFacts {
   const res = model.resolution!, tree = res.tree;
   const info = faceInfo(res, face.path, face.side, face.port);
   const out: FaceFacts = {
-    face, name: face.port, type: info?.type, phrase: info && kindPhrase(info.kind), pinned: info?.pinned ?? false,
+    face, name: face.port, type: info?.type, phrase: info && kindPhrase(info.kind),
+    pinned: isRootInput(face) ? undefined : info?.pinned ?? false,
   };
   const leaf = isLeaf(tree, face.path);
   if (leaf && face.side === "out") {

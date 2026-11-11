@@ -207,16 +207,21 @@ test.describe("closed_loop", () => {
     await shot(page, "closed_loop", "", "detail-wire");
   });
 
-  test("the pin h_ref: the pin layout with its two consumers", async ({ page }) => {
+  test("the pin h_ref: the pin layout with its two consumers, nothing said of pinning; a pinned output's port says so", async ({ page }) => {
     await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "pin");
     await expect(pane(page).locator(".type")).toContainText("Float64");
     await expect(pane(page).locator(".type")).toContainText("float");
-    await expect(pane(page).locator(".facts")).toContainText("not pinned");
-    await expect(pane(page).locator(".root-input")).toContainText("h_ref");
+    await expect(pane(page).locator(".facts")).toHaveText("pin");
+    await expect(pane(page).locator(".root-input")).toHaveText("root input: h_ref Float64");
+    await expect(pane(page)).not.toContainText(/pinned/i);
     await expect(pane(page).locator("a.consumer")).toHaveCount(2);
     await expect(link(page, "consumer", "pid_controller/h_ctl", "r")).toHaveCount(1);
     await expect(link(page, "consumer", "lqr_controller/z_ref_pack", "in1")).toHaveCount(1);
+    await openPath(page, "pid_controller");
+    await page.locator('rect.port[data-port="pid_controller/free|out|y"]').click();
+    await expect(pane(page)).toHaveAttribute("data-kind", "port");
+    await expect(pane(page).locator(".facts")).toHaveText(/ · pinned$/);
   });
 
   test("a face row selects its port on the canvas", async ({ page }) => {

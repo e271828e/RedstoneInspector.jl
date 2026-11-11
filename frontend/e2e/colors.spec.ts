@@ -36,14 +36,17 @@ const pillRule = (page: Page, texts: Record<string, string>) => page.evaluate(({
     return [id, { drawn: !!drawn, drawnWidth: drawn ? Number(drawn.getAttribute("width")) : undefined, rate, overlay: overlay.length, meets }];
   }));
 }, { texts, INSET: BADGE_INSET, GAP: BADGE_GAP, PAD: BADGE_PAD });
-/** Expects each block's rate pill drawn exactly when it does not meet an overlay pill, at the measured width. */
-async function expectRule(page: Page, texts: Record<string, string>, meets: Record<string, boolean>) {
+/**
+ * Expects each block's rate pill drawn exactly when it does not meet an overlay pill, at the measured width; returns
+ * the rule's readings. Whether two pills meet turns on the font, so a caller asserts it only where the margin is wide.
+ */
+async function expectRule(page: Page, texts: Record<string, string>) {
   const rule = await pillRule(page, texts);
   for (const [id, r] of Object.entries(rule)) {
-    expect(r.meets, id).toBe(meets[id]);
     expect(r.drawn, id).toBe(!r.meets);
     if (r.drawn) expect(r.drawnWidth, id).toBe(r.rate);
   }
+  return rule;
 }
 const modeButton = (page: Page, mode: string) => page.locator(`nav.breadcrumb .controls .mode button[data-mode="${mode}"]`);
 const wireStroke = (page: Page, id: string) => page.locator(`path.wire[data-wire="${id}"]`).evaluate((w) => getComputedStyle(w).stroke);
@@ -213,31 +216,34 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its leaf'
   await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2"]);
 });
 
-test("the rate pill yields where it meets the overlay's pills: failure_nested's ctl under its loop pill, rates' fast and slow under a route and back after it, closed_loop's two controllers keeping both", async ({ page }) => {
-  // failure_nested: ctl, 60 wide, carries "1 clock" and the loop's pill; the two meet
+test("the rate pill yields where it meets the overlay's pills: failure_nested's ctl under its loop pill; rates' fast and slow by the rule under a route, back after it; closed_loop's two controllers by the rule", async ({ page }) => {
+  // failure_nested: ctl, 60 wide, carries "1 clock" and the loop's pill; the two meet, 17 units over
   await drop(page, "failure_nested");
   await press(page, "r");
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
   await expect(page.locator('g.overlay g.badge[data-id="ctl"][data-role="continues"]')).toHaveCount(1);
-  await expectRule(page, { ctl: "1 clock" }, { ctl: true });
+  const ctl = (await expectRule(page, { ctl: "1 clock" })).ctl;
+  expect([ctl.meets, ctl.drawn]).toEqual([true, false]);
 
-  // rates: both pills drawn with no overlay, gone while the route from src enters fast and slow, back once it is cleared
+  // rates: both pills drawn with no overlay; by the rule while the route from src enters fast and slow; drawn again once
+  // it is cleared
   await dropOver(page, "rates");
   const clocks = { fast: "2 clocks", slow: "1 clock" };
   for (const [id, text] of Object.entries(clocks)) await expect(badge(page, id), id).toHaveText(text);
-  await expectRule(page, clocks, { fast: false, slow: false });
+  for (const [id, r] of Object.entries(await expectRule(page, clocks))) expect([r.overlay, r.drawn], id).toEqual([0, true]);
   await page.locator('rect.port[data-port="src|out|out"]').click();
   await press(page, "t");
   await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(2);
-  await expectRule(page, clocks, { fast: true, slow: true });
+  for (const [id, r] of Object.entries(await expectRule(page, clocks))) expect(r.overlay, id).toBe(1);
   await press(page, "Escape");
   await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(0);
-  await expectRule(page, clocks, { fast: false, slow: false });
+  for (const [id, r] of Object.entries(await expectRule(page, clocks))) expect([r.overlay, r.drawn], id).toEqual([0, true]);
 
-  // closed_loop: the route from h_ref enters both controllers, wide enough for both pills
+  // closed_loop: the route from h_ref enters both controllers
   await dropOver(page, "closed_loop");
   await block(page, "⟨in⟩h_ref").click();
   await press(page, "t");
   await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(2);
-  await expectRule(page, { pid_controller: "4 clocks", lqr_controller: "1 clock" }, { pid_controller: false, lqr_controller: false });
+  const controllers = await expectRule(page, { pid_controller: "4 clocks", lqr_controller: "1 clock" });
+  for (const [id, r] of Object.entries(controllers)) expect(r.overlay, id).toBe(1);
 });

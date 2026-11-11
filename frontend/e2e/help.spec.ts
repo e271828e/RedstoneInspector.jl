@@ -123,6 +123,26 @@ test("before a drop: the landing's link opens four sections over the inert landi
   expect(await hash(page)).toBe("");
 });
 
+test("kinds: the wire term says a double line for a struct, and its sample draws the struct as the canvas does, one background core over a wider line", async ({ page }) => {
+  await drop(page, "kinds");
+  /** A struct's line and its cores: the core count, then each's computed stroke and width. */
+  const struct = (root: string, line: string) => page.evaluate(({ root, line }) => {
+    const wires = [...document.querySelectorAll(`${root} ${line}.wire[data-kind="struct"]`)];
+    const w = wires[0], cores = [...document.querySelectorAll(`${root} ${line}.wire-core`)];
+    const look = (e: Element) => [getComputedStyle(e).stroke, getComputedStyle(e).strokeWidth];
+    return { wires: wires.length, cores: cores.length, wire: look(w), core: cores.length ? look(cores[0]) : [] };
+  }, { root, line });
+  const canvas = await struct("svg.canvas", "path");
+  expect([canvas.wires, canvas.cores]).toEqual([1, 1]);
+  expect(parseFloat(canvas.core[1])).toBeLessThan(parseFloat(canvas.wire[1]));
+  expect(canvas.core[0]).not.toBe(canvas.wire[0]);
+  await press(page, "?");
+  await expect(help(page)).toHaveCount(1);
+  await expect(help(page).locator('li[data-term="wire"] p')).toContainText("thick for a vector, a double line for a struct.");
+  await expect(help(page).locator('li[data-term="wire"] p')).not.toContainText("triple");
+  expect(await struct('svg.sample[data-sample="wire"]', "line")).toEqual(canvas);
+});
+
 test("closed_loop at pid_controller: ? and Escape, ? twice, ? and back, a push under it, the status bar's link", async ({ page }) => {
   await drop(page, "closed_loop");
   await openPath(page, "pid_controller");
@@ -167,6 +187,38 @@ test("closed_loop at pid_controller: ? and Escape, ? twice, ? and back, a push u
   await help(page).locator("button.close").click();
   await atLevel();
   await expect(selected(page)).toHaveCount(0);
+});
+
+test("closed_loop, at pid_controller with a primitive selected and at the root with an assembly: under the help page the frame's keys do nothing, the drawer, the modes, the badges, the labels, the selection and the level as before", async ({ page }) => {
+  await drop(page, "closed_loop");
+  /** The six states a leaked key would change. */
+  const state = () => page.evaluate(() => {
+    const svg = document.querySelector("svg.canvas")!;
+    return {
+      drawer: document.querySelector("section.drawer")!.getAttribute("data-open"),
+      mode: svg.getAttribute("data-mode"),
+      order: svg.getAttribute("data-order"),
+      labels: svg.getAttribute("data-labels"),
+      selection: document.querySelector("aside.detail")!.getAttribute("data-id"),
+      level: svg.getAttribute("data-level"),
+    };
+  });
+  // Backspace would climb from pid_controller; Enter would open sensing; j and k would move from either.
+  for (const [level, id] of [["pid_controller", "pid_controller/θ_ctl"], ["", "sensing"]]) {
+    if (level) await openPath(page, level);
+    else await page.locator('nav.breadcrumb a[data-path=""]').click();
+    await page.locator(readyLevel(level)).waitFor();
+    await page.locator(`g.block[data-id="${id}"]`).click();
+    const before = await state();
+    expect([before.selection, before.level]).toEqual([id, level]);
+    await press(page, "?");
+    await expect(help(page)).toHaveCount(1);
+    for (const key of ["j", "k", "h", "l", "d", "r", "o", "y", "t", "0", "Enter", "Backspace"]) await press(page, key);
+    await press(page, "?");
+    await expect(help(page)).toHaveCount(0);
+    await page.locator(readyLevel(level)).waitFor();
+    expect(await state(), level).toEqual(before);
+  }
 });
 
 test("a load at #help with no model shows the help page over the inert landing, its close the landing", async ({ page }) => {

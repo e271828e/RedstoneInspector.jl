@@ -203,10 +203,10 @@
       <ul class="consumers">{#each facts.consumers as c, i (i)}<li>{@render faceLink("consumer", c)}</li>{:else}<li>none</li>{/each}</ul>
     {:else}
       {@render header(facts.name, facts.kind === "pin" ? `${facts.face.side === "in" ? "input" : "output"} pin of ${facts.level || model.label}` : `${facts.face.side === "in" ? "input" : "output"} of ${facts.face.path || model.label}`, facts.face.path, false, true)}
-      <p class="facts">{[facts.kind, facts.stage && `stage ${facts.stage}`, facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}</p>
+      <p class="facts">{[facts.kind, facts.stage && `stage ${facts.stage}`, facts.pinned === undefined ? undefined : facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}</p>
       <p class="type"><code>{facts.type ?? "?"}</code> <span class="face-kind">{facts.phrase ?? ""}</span></p>
       {#if facts.rootInput}
-        <p class="root-input">root input: <code>{facts.rootInput.name}</code> <code>{facts.rootInput.type}</code>{facts.rootInput.pinned ? " · pinned" : " · not pinned"}</p>
+        <p class="root-input">root input: <code>{facts.rootInput.name}</code> <code>{facts.rootInput.type}</code></p>
       {/if}
       <h3>Fed by</h3>
       <p>{#if facts.producer}{@render faceLink("producer", facts.producer)}{:else if facts.rootInput}the model's input{:else}itself{/if}</p>

@@ -39,7 +39,7 @@
   import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
@@ -93,14 +93,6 @@
   } = $props();
 
   const FIT_PADDING = 24;
-  /**
-   * The badge pill: its inset from the block's edge, its height and its text's side padding. The order badge
-   * straddles the top edge at the left, so it never covers the segment, which answer 10 never truncates. The
-   * overlay's pills straddle the bottom edge as far below as the order badge rises above, stacked leftward from the
-   * right end `BADGE_GAP` apart; the rate pill sits on the same row at the left end, whatever the toggles, and is not
-   * drawn while an overlay pill it would meet is (the look pass's 2.3). No block's size depends on the pills.
-   */
-  const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
   /** The wheel's zoom per pixel of scroll. */
