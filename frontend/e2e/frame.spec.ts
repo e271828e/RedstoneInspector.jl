@@ -14,7 +14,7 @@ test("closed_loop: the status bar reads the kind and the model's totals, the hel
   await expect(status(page)).toHaveAttribute("data-kind", "build");
   await expect(status(page)).toContainText("build");
   const counts = status(page).locator(".counts");
-  for (const t of ["24 leaves", "6 assemblies", "94 wires"]) await expect(counts).toContainText(t);
+  for (const t of ["24 primitives", "6 assemblies", "94 wires"]) await expect(counts).toContainText(t);
   await expect(status(page).locator(".note")).toHaveCount(0);
   const link = status(page).locator('a.help[href="#help"]');
   await expect(link).toHaveText("?");

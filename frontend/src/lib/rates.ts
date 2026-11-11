@@ -123,7 +123,7 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
   const lines: LegendLine[] = [...visible.values()]
     .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
     .sort((a, b) => a.step! - b.step!);
-  if (continuous) lines.unshift({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous leaves, assemblies with no discrete leaf, and their wires" });
+  if (continuous) lines.unshift({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous primitives, assemblies with no discrete primitive, and their wires" });
   return lines;
 }
 

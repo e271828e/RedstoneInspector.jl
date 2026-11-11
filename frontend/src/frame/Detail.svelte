@@ -4,7 +4,8 @@
   // through the session; nothing here is truncated, the pane scrolls. A pin, a
   // port and a wire carry the trace button.
   import {
-    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type Selection,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
+    type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
   import type { Model } from "../lib/model";
@@ -106,6 +107,62 @@
   {/if}
 {/snippet}
 
+{#snippet node(f: NodeFacts | LevelFacts)}
+  <dl class="facts">
+    <dt title={FACT_TITLES.type}>type</dt>
+    <dd data-fact="type">
+      <code class="type">{f.type}</code>{#if f.alias}<span class="aside">alias</span><code class="alias">{f.alias}</code>{/if}
+    </dd>
+    <dt title={FACT_TITLES.class}>class</dt>
+    <dd data-fact="class">{classPhrase(f.kind === "leaf" ? "leaf" : "assembly", f.tier)}</dd>
+    {#if f.rate}
+      <dt title={FACT_TITLES.rate}>rate</dt>
+      <dd data-fact="rate" title={f.rate.title}>{f.rate.phrase}</dd>
+    {/if}
+    {#if f.children !== undefined}
+      <dt title={FACT_TITLES.children}>children</dt>
+      <dd data-fact="children">{f.children}</dd>
+    {/if}
+    {#if f.membership}
+      <dt title={FACT_TITLES.member}>member</dt>
+      <dd data-fact="member" title={memberTitle(f.membership)}>
+        {memberKind(f.membership.how)} <code>{f.membership.field}</code>, key <code>{f.membership.key}</code>
+      </dd>
+    {/if}
+  </dl>
+  {#if f.signature !== f.type}{#key f.path}<details class="signature"><summary>signature</summary><code>{f.signature}</code></details>{/key}{/if}
+  {#if f.docstring}
+    {#key f.path}
+      <details class="docstring">
+        <summary><span class="title">docstring</span></summary>
+        <!-- renderDocstring escapes raw HTML and keeps only http links, so the HTML is safe to insert -->
+        <div class="docstring">{@html renderDocstring(f.docstring, f.type)}</div>
+      </details>
+    {/key}
+  {/if}
+  {#if f.locations.length}
+    <h3>Locations</h3>
+    <ul class="locations">
+      {#each f.locations as l, i (i)}
+        <li>
+          <button
+            class="location" class:editor title={editor ? "Open in the editor" : "Copy the file label"}
+            onclick={() => onlocation(l.file, l.line) || copy(fileLabel(l.file, l.line))}
+          >
+            <code class="function">{l.function}</code> <code class="file">{fileLabel(l.file, l.line)}</code>
+          </button>{#if copied === fileLabel(l.file, l.line)} <span class="copied">copied</span>{/if}
+        </li>
+      {/each}
+    </ul>
+  {/if}
+  {#if f.parameters.length}
+    <h3>Parameters</h3>
+    <table class="parameters"><tbody>{#each f.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
+  {/if}
+  {#if f.inputs.length + f.outputs.length}<h3>Faces</h3>{/if}
+  {@render faces(f.inputs, f.outputs, f.kind === "leaf", true)}
+{/snippet}
+
 {#if !facts}
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
   <aside class="detail" class:focused data-kind="level" data-id="" tabindex="0">
@@ -116,68 +173,16 @@
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
   <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
     {#if facts.kind === "level"}
-      {@render header(facts.label ?? model.tree!.segment.get(facts.path)!, facts.displayName, facts.path)}
+      {@render header(facts.segment, facts.displayName, facts.path)}
       <p class="facts">{levelLine(facts)}</p>
       {#if facts.scopes.length}
         <h3>Rate scopes</h3>
         <ul class="scopes">{#each facts.scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>
       {/if}
-      {@render faces(facts.inputs, facts.outputs, false, false)}
+      {@render node(facts)}
     {:else if "signature" in facts}
       {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly")}
-      <dl class="facts">
-        <dt title={FACT_TITLES.type}>type</dt>
-        <dd data-fact="type">
-          <code class="type">{facts.type}</code>{#if facts.alias}<span class="aside">alias</span><code class="alias">{facts.alias}</code>{/if}
-        </dd>
-        <dt title={FACT_TITLES.class}>class</dt>
-        <dd data-fact="class">{classPhrase(facts.kind, facts.tier)}</dd>
-        {#if facts.rate}
-          <dt title={FACT_TITLES.rate}>rate</dt>
-          <dd data-fact="rate" title={facts.rate.title}>{facts.rate.phrase}</dd>
-        {/if}
-        {#if facts.children !== undefined}
-          <dt title={FACT_TITLES.children}>children</dt>
-          <dd data-fact="children">{facts.children}</dd>
-        {/if}
-        {#if facts.membership}
-          <dt title={FACT_TITLES.member}>member</dt>
-          <dd data-fact="member" title={memberTitle(facts.membership)}>
-            {memberKind(facts.membership.how)} <code>{facts.membership.field}</code>, key <code>{facts.membership.key}</code>
-          </dd>
-        {/if}
-      </dl>
-      {#if facts.signature !== facts.type}{#key facts.path}<details class="signature"><summary>signature</summary><code>{facts.signature}</code></details>{/key}{/if}
-      {#if facts.docstring}
-        {#key facts.path}
-          <details class="docstring">
-            <summary><span class="title">docstring</span></summary>
-            <!-- renderDocstring escapes raw HTML and keeps only http links, so the HTML is safe to insert -->
-            <div class="docstring">{@html renderDocstring(facts.docstring, facts.type)}</div>
-          </details>
-        {/key}
-      {/if}
-      {#if facts.locations.length}
-        <h3>Locations</h3>
-        <ul class="locations">
-          {#each facts.locations as l, i (i)}
-            <li>
-              <button
-                class="location" class:editor title={editor ? "Open in the editor" : "Copy the file label"}
-                onclick={() => onlocation(l.file, l.line) || copy(fileLabel(l.file, l.line))}
-              >
-                <code class="function">{l.function}</code> <code class="file">{fileLabel(l.file, l.line)}</code>
-              </button>{#if copied === fileLabel(l.file, l.line)} <span class="copied">copied</span>{/if}
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      {#if facts.parameters.length}
-        <h3>Parameters</h3>
-        <table class="parameters"><tbody>{#each facts.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
-      {/if}
-      {#if facts.inputs.length + facts.outputs.length}<h3>Faces</h3>{/if}
-      {@render faces(facts.inputs, facts.outputs, facts.kind === "leaf", true)}
+      {@render node(facts)}
     {:else if facts.kind === "folder"}
       {@render header(facts.field, "folder", facts.path)}
       <p class="facts">folder of <code>{facts.parent || model.label}</code> · field <code>{facts.field}</code> · {count(facts.keys.length, "key", "keys")}</p>
@@ -235,12 +240,12 @@
   .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
   .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
   details.docstring { margin: 8px 0; }
-  /* The rendered docstring keeps the pane's font; code blocks in monospace on the strip, links in the highlight. */
+  /* The rendered docstring keeps the pane's font; code blocks in monospace on the strip, unwrapped and scrolling sideways, links in the highlight. */
   div.docstring { margin: 4px 0 8px; }
   div.docstring :global(p), div.docstring :global(ul), div.docstring :global(ol) { margin: 6px 0; }
   div.docstring :global(ul), div.docstring :global(ol) { padding-left: 18px; }
   div.docstring :global(:is(h1, h2, h3, h4, h5, h6)) { font-size: 13px; margin: 10px 0 4px; }
-  div.docstring :global(pre) { white-space: pre-wrap; background: var(--strip); padding: 6px 8px; margin: 6px 0; border-radius: 3px; }
+  div.docstring :global(pre) { white-space: pre; overflow-x: auto; background: var(--strip); padding: 6px 8px; margin: 6px 0; border-radius: 3px; }
   div.docstring :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
   div.docstring :global(a) { color: var(--highlight); text-decoration: none; }
   div.docstring :global(a:hover) { text-decoration: underline; }

@@ -61,8 +61,11 @@ export function ratePhrase(t: Timing, anchors: Anchor[]): string {
   return t.c > 0 ? `${head}, offset ${t.c}` : head;
 }
 
-/** The class and, on a leaf, the tier: "leaf, continuous", "assembly". */
-export const classPhrase = (kind: "leaf" | "assembly", tier?: string): string => (tier ? `${kind}, ${tier}` : kind);
+/** The class in the reader's words and, on a leaf, the tier: "primitive, continuous", "assembly". */
+export function classPhrase(kind: "leaf" | "assembly", tier?: string): string {
+  const word = kind === "leaf" ? "primitive" : kind;
+  return tier ? `${word}, ${tier}` : word;
+}
 
 /** The member row's lead before the field: the container's kind, or "field" for a membership of neither form. */
 export const memberKind = (how: Membership | undefined): string =>
@@ -77,9 +80,9 @@ export function memberTitle(m: { how: Membership | undefined; field: string; key
 
 /** What each fact's label means, its hover title. */
 export const FACT_TITLES = {
-  type: "The block's Julia type, qualified by its module, with the alias the library gives it when it gives one.",
-  class: "Whether the node is a leaf or an assembly and, for a leaf, its tier: continuous or discrete.",
-  rate: "When the discrete leaf runs: every m-th tick of its anchor's grid, offset by c ticks.",
+  type: "The node's Julia type, qualified by its module, with the alias the library gives it when it gives one.",
+  class: "Whether the node is a primitive or an assembly and, for a primitive, its tier: continuous or discrete.",
+  rate: "When the discrete primitive runs: every m-th tick of its anchor's grid, offset by c ticks.",
   children: "How many child nodes the assembly holds directly.",
   member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
 } as const;
@@ -100,15 +103,10 @@ export interface FaceFacts {
   consumers?: Face[];
 }
 
-export interface LevelFacts {
+/** The open level: its node's facts as a closed assembly's (workspace.md answer 4), its wire count and its rate scopes. */
+export interface LevelFacts extends Omit<NodeFacts, "kind"> {
   kind: "level";
-  path: string;
-  /** The model's label, at the root. */
-  label?: string;
-  displayName: string;
   children: number;
-  inputs: FaceFacts[];
-  outputs: FaceFacts[];
   wires: number;
   scopes: { key: string; timing: string }[];
 }
@@ -211,19 +209,13 @@ export const count = (n: number, one: string, many: string): string => `${n} ${n
 export const levelLine = (f: LevelFacts): string =>
   `open level · ${count(f.children, "child", "children")} · ${count(f.wires, "wire", "wires")}`;
 
-/** The open level's facts; a primitive root's level is its leaf. */
+/** The open level's facts: its node's as a closed assembly's, with its wires and scopes; a primitive root's level is its leaf. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
-  const s = model.structure!, tree = model.tree!;
-  const n = tree.byPath.get(path)!;
-  if (n.class === "leaf") return nodeFacts(model, path);
-  const typed = (side: Side) => (f: { name: string }): FaceFacts => {
-    const info = faceInfo(model.resolution!, path, side, f.name);
-    return { face: { path, side, port: f.name }, name: f.name, type: info?.type, phrase: info && kindPhrase(info.kind), pinned: info?.pinned ?? false };
-  };
+  const s = model.structure!, n = model.tree!.byPath.get(path)!;
+  const node = nodeFacts(model, path);
+  if (n.class === "leaf") return node;
   return {
-    kind: "level", path, label: path === "" ? model.label : undefined, displayName: displayName(n),
-    children: tree.children.get(path)!.length, inputs: n.inputs.map(typed("in")), outputs: n.outputs.map(typed("out")),
-    wires: n.wires.length,
+    ...node, kind: "level", children: node.children!, wires: n.wires.length,
     scopes: s.scopes.filter((x) => x.path === path).map((x) => ({ key: x.key, timing: timingPhrase(x.timing, s.anchors) })),
   };
 }

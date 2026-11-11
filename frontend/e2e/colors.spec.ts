@@ -15,6 +15,36 @@ const badgeTitle = (page: Page, id: string) => block(page, id).locator("g.badge-
 /** The computed fill and stroke of a block's shape. */
 const look = (page: Page, id: string) => shape(page, id).evaluate((e) => [getComputedStyle(e).fill, getComputedStyle(e).stroke]);
 const legendLines = (page: Page) => page.locator(".viewport .legend li");
+/** The canvas's pill constants, read back by the check: the inset from a block's edge, the gap between pills, a pill's side padding. */
+const BADGE_INSET = 4, BADGE_GAP = 2, BADGE_PAD = 4;
+/**
+ * The rule recomputed from the DOM for each block named with its rate pill's text: the pill's width measured in the
+ * badges' font, the overlay's pills drawn on the block, and whether the rate pill is drawn. The two meet when the
+ * rate pill, the overlay's pills, the gaps and both insets exceed the block's width.
+ */
+const pillRule = (page: Page, texts: Record<string, string>) => page.evaluate(({ texts, INSET, GAP, PAD }) => {
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  const font = document.querySelector<SVGTextElement>("svg.canvas text.badge-text, svg.canvas text.badge, svg.canvas text.order")!.style.font;
+  return Object.fromEntries(Object.entries(texts).map(([id, text]) => {
+    const g = document.querySelector(`svg.canvas g.block[data-id="${CSS.escape(id)}"]`)!;
+    const width = (g.querySelector(":scope > .shape") as SVGGraphicsElement).getBBox().width;
+    ctx.font = font;
+    const rate = Math.ceil(ctx.measureText(text).width) + 2 * PAD;
+    const drawn = g.querySelector(":scope > g.badge-pill > rect");
+    const overlay = [...document.querySelectorAll(`svg.canvas g.overlay g.badge[data-id="${CSS.escape(id)}"] > rect`)].map((r) => Number(r.getAttribute("width")));
+    const meets = overlay.length > 0 && rate + overlay.reduce((a, w) => a + w, 0) + overlay.length * GAP + 2 * INSET > width;
+    return [id, { drawn: !!drawn, drawnWidth: drawn ? Number(drawn.getAttribute("width")) : undefined, rate, overlay: overlay.length, meets }];
+  }));
+}, { texts, INSET: BADGE_INSET, GAP: BADGE_GAP, PAD: BADGE_PAD });
+/** Expects each block's rate pill drawn exactly when it does not meet an overlay pill, at the measured width. */
+async function expectRule(page: Page, texts: Record<string, string>, meets: Record<string, boolean>) {
+  const rule = await pillRule(page, texts);
+  for (const [id, r] of Object.entries(rule)) {
+    expect(r.meets, id).toBe(meets[id]);
+    expect(r.drawn, id).toBe(!r.meets);
+    if (r.drawn) expect(r.drawnWidth, id).toBe(r.rate);
+  }
+}
 const modeButton = (page: Page, mode: string) => page.locator(`nav.breadcrumb .controls .mode button[data-mode="${mode}"]`);
 const wireStroke = (page: Page, id: string) => page.locator(`path.wire[data-wire="${id}"]`).evaluate((w) => getComputedStyle(w).stroke);
 /** The fill of the arrowhead a wire's line ends in: its own marker, or its core's for a struct. */
@@ -55,7 +85,7 @@ test("closed_loop: tier at load, r to rate mode with two assemblies on their lea
   const clocks = { sensing: "1 clock", pid_controller: "4 clocks", lqr_controller: "1 clock", selection: "2 clocks", actuators: "2 clocks" };
   for (const [id, text] of Object.entries(clocks)) await expect(badge(page, id), id).toHaveText(text);
   await expect(page.locator("text.badge")).toHaveCount(5);
-  await expect(badgeTitle(page, "sensing")).toHaveText("Every discrete leaf inside ticks on this one clock.");
+  await expect(badgeTitle(page, "sensing")).toHaveText("Every discrete primitive inside ticks on this one clock.");
   await expect(badgeTitle(page, "pid_controller")).toHaveText(/^Multi-rate: .*4 clocks/);
   await expect(shape(page, "plant")).not.toHaveAttribute("data-step");
   await expect(badge(page, "plant")).toHaveCount(0);
@@ -171,7 +201,7 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its leaf'
   await expect(shape(page, "slow")).toHaveAttribute("data-step", "2");
   await expect(badge(page, "fast")).toHaveText("2 clocks");
   await expect(badge(page, "slow")).toHaveText("1 clock");
-  await expect(badgeTitle(page, "slow")).toHaveText("Every discrete leaf inside ticks on this one clock.");
+  await expect(badgeTitle(page, "slow")).toHaveText("Every discrete primitive inside ticks on this one clock.");
   await expect(badgeTitle(page, "fast")).toHaveText(/^Multi-rate: .*2 clocks/);
   await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2", "anchor 2 (1/10 s)"]);
   await openPath(page, "fast");
@@ -181,4 +211,33 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its leaf'
   // no continuous block on fast: its line comes from the wires out of src
   await expect(page.locator("g.block:not(.pin) .shape:not([data-step])")).toHaveCount(0);
   await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "anchor 1 (1/50 s)", "anchor 1 (1/50 s) × 2"]);
+});
+
+test("the rate pill yields where it meets the overlay's pills: failure_nested's ctl under its loop pill, rates' fast and slow under a route and back after it, closed_loop's two controllers keeping both", async ({ page }) => {
+  // failure_nested: ctl, 60 wide, carries "1 clock" and the loop's pill; the two meet
+  await drop(page, "failure_nested");
+  await press(page, "r");
+  await expect(svg(page)).toHaveAttribute("data-mode", "rate");
+  await expect(page.locator('g.overlay g.badge[data-id="ctl"][data-role="continues"]')).toHaveCount(1);
+  await expectRule(page, { ctl: "1 clock" }, { ctl: true });
+
+  // rates: both pills drawn with no overlay, gone while the route from src enters fast and slow, back once it is cleared
+  await dropOver(page, "rates");
+  const clocks = { fast: "2 clocks", slow: "1 clock" };
+  for (const [id, text] of Object.entries(clocks)) await expect(badge(page, id), id).toHaveText(text);
+  await expectRule(page, clocks, { fast: false, slow: false });
+  await page.locator('rect.port[data-port="src|out|out"]').click();
+  await press(page, "t");
+  await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(2);
+  await expectRule(page, clocks, { fast: true, slow: true });
+  await press(page, "Escape");
+  await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(0);
+  await expectRule(page, clocks, { fast: false, slow: false });
+
+  // closed_loop: the route from h_ref enters both controllers, wide enough for both pills
+  await dropOver(page, "closed_loop");
+  await block(page, "⟨in⟩h_ref").click();
+  await press(page, "t");
+  await expect(page.locator('g.overlay g.badge[data-role="route"]')).toHaveCount(2);
+  await expectRule(page, { pid_controller: "4 clocks", lqr_controller: "1 clock" }, { pid_controller: false, lqr_controller: false });
 });

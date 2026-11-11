@@ -3,7 +3,9 @@
 // button, the links and face rows that select, the copy button; rates' scope line and
 // rate row, containers' folder keys and keyed member; the narrow pane's stacked rows;
 // the docstring rendered from Markdown with the `@ref` link rule (build_release.md
-// answer 7), a hostile source's HTML, image and script link inert.
+// answer 7), its code blocks scrolling sideways (the look pass's 3.2), a hostile
+// source's HTML, image and script link inert; the open level in the assembly
+// layout under its line (answer 4 as amended by the look pass's 3.5).
 import { test, type Page } from "@playwright/test";
 import { clickWire, drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
@@ -33,10 +35,46 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator("h2 .segment")).toHaveText("closed_loop");
     await expect(pane(page).locator("h2 .name")).toHaveText("Group");
     await expect(pane(page).locator(".path")).toHaveText("/");
-    await expect(pane(page).locator(".facts")).toContainText("6 children");
-    await expect(pane(page).locator(".facts")).toContainText("30 wires");
+    await expect(pane(page).locator("p.facts")).toHaveText("open level · 6 children · 30 wires");
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["h_ref", "V_ref", "mode"]);
     await expect(pane(page).locator("table.faces tr.out")).toHaveCount(0);
+  });
+
+  test("the open level takes the assembly layout: the root's facts, docstring, locations and parameters under the level's line, no open button", async ({ page }) => {
+    await expect(pane(page)).toHaveAttribute("data-kind", "level");
+    await expect(pane(page)).toHaveAttribute("data-id", "");
+    await expect(pane(page).locator("button.open-level")).toHaveCount(0);
+    await expect(pane(page).locator("p.facts")).toHaveText("open level · 6 children · 30 wires");
+    await expectLabels(page, ["type", "class", "children"]);
+    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Blocks.Group");
+    await expect(fact(page, "class")).toHaveText("assembly");
+    await expect(fact(page, "children")).toHaveText("6");
+    await expect(pane(page).locator("details.signature")).toHaveCount(1);
+    await expect(pane(page).locator("details.docstring div.docstring")).toHaveCount(1);
+    await expect(pane(page).locator(".locations li")).toHaveCount(5);
+    await expect(pane(page).locator(".parameters tr")).toHaveCount(4);
+    // the level's line first, then the assembly's facts, signature, docstring, locations, parameters and faces
+    const order = await pane(page).evaluate((aside) => ["p.facts", "dl.facts", "details.signature", "details.docstring", ".locations", ".parameters", "table.faces"]
+      .map((s) => [...aside.querySelectorAll("*")].indexOf(aside.querySelector(s)!)));
+    expect(order.every((i) => i >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    // the faces carry the assembly layout's links column; a root input has no producer to name
+    await expect(pane(page).locator("table.faces td.links")).toHaveCount(3);
+    await expect(pane(page).locator("table.faces a.producer")).toHaveCount(0);
+    await shot(page, "closed_loop", "", "detail-level");
+  });
+
+  test("inside pid_controller with nothing selected, a face row selects the level's pin and the row links its producer", async ({ page }) => {
+    await openPath(page, "pid_controller");
+    await expect(pane(page)).toHaveAttribute("data-kind", "level");
+    await expect(pane(page)).toHaveAttribute("data-id", "pid_controller");
+    await expect(pane(page).locator("h2 .segment")).toHaveText("pid_controller");
+    await expect(fact(page, "member")).toHaveText("transparent container children, key pid_controller");
+    await expect(faceRow(page, "pid_controller|in|h_ref").locator('a.producer[data-path=""][data-port="h_ref"]')).toHaveCount(1);
+    await faceRow(page, "pid_controller|in|h_ref").locator(".face-name").click();
+    await expect(page.locator('svg.canvas g.block.selected[data-id="⟨in⟩h_ref"]')).toHaveCount(1);
+    await expect(page.locator(readyLevel("pid_controller"))).toHaveCount(1);
+    await expect(pane(page)).toHaveAttribute("data-kind", "pin");
   });
 
   test("plant: the leaf layout", async ({ page }) => {
@@ -48,7 +86,7 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator(".path")).toHaveText("plant");
     // the labelled facts: a continuous leaf has no rate row
     await expectLabels(page, ["type", "class", "member"]);
-    await expect(fact(page, "class")).toHaveText("leaf, continuous");
+    await expect(fact(page, "class")).toHaveText("primitive, continuous");
     await expect(fact(page, "rate")).toHaveCount(0);
     await expect(fact(page, "member")).toHaveText("transparent container children, key plant");
     await expect(fact(page, "member")).toHaveAttribute("title", /^Transparent: /);
@@ -148,7 +186,7 @@ test.describe("closed_loop", () => {
     await openPath(page, "pid_controller");
     await page.locator('g.block[data-id="pid_controller/q_ctl"]').click();
     await expectLabels(page, ["type", "class", "rate", "member"]);
-    await expect(fact(page, "class")).toHaveText("leaf, discrete");
+    await expect(fact(page, "class")).toHaveText("primitive, discrete");
     await expect(fact(page, "rate")).toHaveText("every tick of q_ctl, 1/50 s");
     await expect(fact(page, "rate")).toHaveAttribute("title", "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0");
   });
@@ -303,9 +341,9 @@ test("a narrow pane stacks each parameter's summary under its name and each face
 
 test("the level facts count in the singular and the plural: aircraft's one child, kinds' ten wires", async ({ page }) => {
   await drop(page, "aircraft");
-  await expect(pane(page).locator(".facts")).toHaveText("open level · 1 child · 2 wires");
+  await expect(pane(page).locator("p.facts")).toHaveText("open level · 1 child · 2 wires");
   await drop(page, "kinds");
-  await expect(pane(page).locator(".facts")).toHaveText("open level · 9 children · 10 wires");
+  await expect(pane(page).locator("p.facts")).toHaveText("open level · 9 children · 10 wires");
 });
 
 test("library: integrator's docstring rendered, the signature a code block, seven @ref links opening the core's docs in a new tab", async ({ page }) => {
@@ -321,6 +359,22 @@ test("library: integrator's docstring rendered, the signature a code block, seve
   await expect(body.locator('a[href$="api/#Redstone.Blocks.LimitedIntegrator"]')).toHaveCount(1);
   await expect(body.locator("pre code").first()).toHaveText("Integrator(; x0 = 0.0) -> Integrator");
   await expect(body).not.toContainText("@ref");
+});
+
+test("library: lqr's long signatures stay on their lines, the code block scrolling sideways at the default pane", async ({ page }) => {
+  await drop(page, "library");
+  await page.locator('g.block[data-id="lqr"]').click();
+  const docstring = pane(page).locator("details.docstring");
+  await docstring.locator("summary").click();
+  await expect(docstring).toHaveAttribute("open");
+  const pre = docstring.locator("div.docstring pre").first();
+  const m = await pre.evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth, space: getComputedStyle(e).whiteSpace, overflow: getComputedStyle(e).overflowX }));
+  expect(m.space).toBe("pre");
+  expect(m.overflow).toBe("auto");
+  expect(m.scroll).toBeGreaterThan(m.client);
+  // the pane itself does not scroll sideways
+  const body = await page.locator('.pane[data-pane="detail"] .body').evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth }));
+  expect(body.scroll).toBe(body.client);
 });
 
 test("a hostile docstring: raw HTML shown as text, the image as its text, the script link as text", async ({ page }) => {

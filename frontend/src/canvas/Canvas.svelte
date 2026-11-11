@@ -94,11 +94,11 @@
 
   const FIT_PADDING = 24;
   /**
-   * The badge pill: its inset from the block's right edge, its height and its text's side padding. The rate pill
-   * straddles the top edge, so it never covers the segment, which answer 10 never truncates; the overlay's pills
-   * straddle the bottom edge as far below as the rate pill rises above, `BADGE_GAP` apart. The order badge is the
-   * rate pill mirrored, `BADGE_INSET` from the left edge; on a block too narrow for both side by side the rate pill rides
-   * one row higher, above the badge's row (reading 19), so no block's size depends on the toggles.
+   * The badge pill: its inset from the block's edge, its height and its text's side padding. The order badge
+   * straddles the top edge at the left, so it never covers the segment, which answer 10 never truncates. The
+   * overlay's pills straddle the bottom edge as far below as the order badge rises above, stacked leftward from the
+   * right end `BADGE_GAP` apart; the rate pill sits on the same row at the left end, whatever the toggles, and is not
+   * drawn while an overlay pill it would meet is (the look pass's 2.3). No block's size depends on the pills.
    */
   const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
   /** A fitted small level stops at twice its natural size. */
@@ -137,7 +137,8 @@
     }
     return out;
   });
-  const orderWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+  /** A pill's width around its text: the order badge's and the rate pill's. */
+  const pillWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
   /** Each wire's class by wire id, the drawn level's. */
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
@@ -467,7 +468,7 @@
     if (k > 0) {
       const clocks = `${k} ${k === 1 ? "clock" : "clocks"}`;
       text.push(clocks);
-      title.push(k === 1 ? "Every discrete leaf inside ticks on this one clock." : `Multi-rate: the discrete leaves inside tick on ${clocks}; open it to see which.`);
+      title.push(k === 1 ? "Every discrete primitive inside ticks on this one clock." : `Multi-rate: the discrete primitives inside tick on ${clocks}; open it to see which.`);
     }
     return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
   }
@@ -559,6 +560,17 @@
         out.push({ ...q, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
         right -= w + BADGE_GAP;
       }
+    }
+    return out;
+  });
+  /** The left end of the overlay's pills on each child, in its own coordinates, while the overlay is drawn: where the rate pill must stop. */
+  const overlayLeft = $derived.by(() => {
+    const out = new Map<string, number>();
+    if (!shown || shown.level.path !== path) return out;
+    for (const q of overlayBadges) {
+      const b = byId.get(q.block), box = shown.geometry.boxes.get(q.block);
+      if (!box || !b || b.role === "in" || b.role === "out") continue;
+      out.set(q.block, Math.min(out.get(q.block) ?? Infinity, q.x - box.x));
     }
     return out;
   });
@@ -767,19 +779,22 @@
                 </g>
               {/if}
               {#if badge}
-                {@const w = Math.ceil(textWidth(badge.text, BADGE_FONT)) + 2 * BADGE_PAD}
-                {@const top = orders.has(b.id) && orderWidth(orders.get(b.id)!) + w + 2 * BADGE_INSET > box.width ? BADGE_TOP - BADGE_HEIGHT - BADGE_GAP : BADGE_TOP}
-                <g class="badge-pill">
-                  <title>{badge.title}</title>
-                  <rect x={box.width - BADGE_INSET - w} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
-                  <text class="badge" x={box.width - BADGE_INSET - BADGE_PAD} y={top + 9} text-anchor="end" style="font:{BADGE_FONT}">{badge.text}</text>
-                </g>
+                {@const w = pillWidth(badge.text)}
+                {@const right = overlayLeft.get(b.id)}
+                {#if right === undefined || BADGE_INSET + w + BADGE_GAP <= right}
+                  {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
+                  <g class="badge-pill">
+                    <title>{badge.title}</title>
+                    <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
+                    <text class="badge" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{badge.text}</text>
+                  </g>
+                {/if}
               {/if}
               {#if orders.has(b.id)}
                 {@const text = orders.get(b.id)!}
-                {@const w = orderWidth(text)}
+                {@const w = pillWidth(text)}
                 <g class="order-badge" data-id={b.id}>
-                  <title>{b.role === "leaf" ? `Position ${text} in the execution order` : `Positions ${text} in the execution order: the leaves inside`}</title>
+                  <title>{b.role === "leaf" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
                   <rect x={BADGE_INSET} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
                   <text class="order" x={BADGE_INSET + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{text}</text>
                 </g>

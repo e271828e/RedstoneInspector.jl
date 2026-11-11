@@ -80,7 +80,8 @@ describe("ratePhrase", () => {
   it("a continuous leaf has no rate; the class phrase names the tier", () => {
     const p = nodeFacts(cl, "plant");
     expect(p.rate).toBeUndefined();
-    expect(classPhrase(p.kind, p.tier)).toBe("leaf, continuous");
+    expect(classPhrase(p.kind, p.tier)).toBe("primitive, continuous");
+    expect(classPhrase("leaf", "discrete")).toBe("primitive, discrete");
     expect(classPhrase("assembly")).toBe("assembly");
   });
   it("the member row names the container's kind, the field alone for neither form", () => {
@@ -96,11 +97,23 @@ describe("ratePhrase", () => {
 describe("closed_loop's elements", () => {
   it("the root level", () => {
     const l = levelFacts(cl, "") as LevelFacts;
-    expect([l.kind, l.path, l.label, l.displayName, l.children, l.wires]).toEqual(["level", "", "closed_loop", "Group", 6, 30]);
+    expect([l.kind, l.path, l.segment, l.displayName, l.children, l.wires]).toEqual(["level", "", "closed_loop", "Group", 6, 30]);
     expect(l.inputs.map((f) => f.name)).toEqual(["h_ref", "V_ref", "mode"]);
     expect(l.outputs).toEqual([]);
     expect(by(l.inputs, "mode").phrase).toBe("boolean");
     expect(l.scopes).toEqual([]);
+  });
+
+  it("the open level carries its node's facts as a closed assembly's: the root's docstring, locations, parameters and faces' consumers", () => {
+    const l = levelFacts(cl, "") as LevelFacts;
+    const { kind, wires, scopes, ...rest } = l;
+    expect([kind, wires, scopes]).toEqual(["level", 30, []]);
+    expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined, children: 6 });
+    expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Blocks.Group"]);
+    expect(by(l.inputs, "h_ref").consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
+    const pid = levelFacts(cl, "pid_controller") as LevelFacts;
+    expect([pid.kind, pid.segment, pid.membership?.field]).toEqual(["level", "pid_controller", "children"]);
+    expect(by(pid.inputs, "h_ref").producer).toEqual(face("", "in", "h_ref"));
   });
 
   it("plant, a leaf", () => {

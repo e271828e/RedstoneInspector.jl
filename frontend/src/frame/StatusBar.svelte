@@ -61,7 +61,7 @@
     <span class="kind">{model.kind}</span>
     <span class="counts" title="over the whole model">
       {#if totals}
-        {count(totals.leaves, "leaf", "leaves")}, {count(totals.assemblies, "assembly", "assemblies")}, {count(totals.wires, "wire", "wires")}
+        {count(totals.leaves, "primitive", "primitives")}, {count(totals.assemblies, "assembly", "assemblies")}, {count(totals.wires, "wire", "wires")}
       {:else}
         no structure
       {/if}
