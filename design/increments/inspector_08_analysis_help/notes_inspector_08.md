@@ -465,3 +465,43 @@ own.
 
 The branch stands at `06176a1`, not pushed and not merged, for the second
 look by `look2_inspector_08.md`.
+
+## The second look, 2026-11-12
+
+The user ran the second look over `06176a1` and wrote a comment under
+fifteen entries; `look2_inspector_08.md` holds the rulings under their
+entries and the two settled texts in its section 7. Of this session's eight
+rulings in its section 0, six stand, the yield is struck by 2.4 and the
+level's line is amended by 3.1. The docs commit on `master` amends
+`workspace.md` answers 4, 6 and 7 and `visual_grammar.md` answers 4 and 6.
+
+Two entries the user's browser did not show, 3.5 and 4.9, are Chromium's:
+measured against the dev server, a location's label breaks inside its line
+number at pane widths from about 360 to 380 px, and the help page scrolls
+sideways below 528 px. Chromium takes no break after a slash; Firefox does,
+which is inferred, Playwright's Firefox not starting on this machine. The
+user ruled both fixed now.
+
+The user then delegated the rest of the arc: the fixes, the review, the
+merge and the bookkeeping, without a third look and without seeing the
+amendments, a stop reserved for an unexpected design decision.
+`brief_inspector_08_look2_fixes.md` is the brief: one fixer in the
+worktree, one cold review and its fix.
+
+This session's own rulings under that delegation:
+
+1. **A closed assembly's facts gain "wires" too.** The user asked for it on
+   the open level; with it on both, the two layouts differ by the Open
+   button and the "open level" mark alone, which is what the first look's
+   3.5 wanted.
+2. **The selection guard reads the pointer's click alone and asks that the
+   selection touch the row.** A selection left in another row must not
+   block a click, and the row's button pressed from the keyboard must act.
+3. **A location's label keeps the file's name with its line number** and
+   breaks after a slash, so both browsers break where Firefox already does.
+4. **The help page holds at 360 px.** Past the About section's addresses,
+   the Vimium paragraph's patterns set the next floor at 388 px, so both
+   may break.
+5. **A pin's or a port's line with nothing to say is not drawn.**
+6. **The push waits for the user's word**, as `AGENTS.md` says; the
+   delegation names the bullet's steps, which end at the merge.

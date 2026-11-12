@@ -104,7 +104,7 @@ Open items live in `pending.md`.
    | `integer`, `float`, `number` | thin solid |
    | `boolean`, `enum`, `symbol` | thin dashed |
    | `vector`, any shape | thick solid |
-   | `struct` | triple line, Simulink's bus |
+   | `struct` | double line |
    | `opaque` | thin dotted, gray |
 
    A vector of structs is thick: the outer kind wins. At a leaf endpoint
@@ -130,7 +130,9 @@ Open items live in `pending.md`.
    label was the full type string cut with an ellipsis at a fixed width.
    Amended 2026-11-03 (increment 6's type-label probe): the label sat on
    the longest horizontal segment among the port's wires, cut to that
-   segment's length and drawn above the blocks.*
+   segment's length and drawn above the blocks. Amended 2026-11-12
+   (increment 8's second look, 4.3): the struct's line was a triple line,
+   Simulink's bus, which the canvas never drew.*
    *Why:* the dashed discrete-valued kinds tell the mode, the flags and the
    stop requests from the data path at a glance, which is what the closed
    loop needs. Answer 18 already commits the client to resolve every face
@@ -185,8 +187,9 @@ Open items live in `pending.md`.
    rest a shared neutral. A closed assembly takes the one triple its
    discrete leaves share, the assembly gray when they tick on several, and
    the continuous color with none; whenever a discrete leaf lies beneath
-   it, it wears a clock-count badge in one corner, "1 clock" on a colored
-   one, the count on a gray one. Its `scopes` row colors nothing: an
+   it, it wears a clock-count badge on its top edge at the left, where an
+   extra's number also sits, "1 clock" on a colored one, the count on a
+   gray one. Its `scopes` row colors nothing: an
    assembly ticks on nothing, the row is the frame its `Relative` children
    compose against, and the detail pane lists it. Wires take their
    terminal producer's fill, a continuous producer's wires a blue of their
@@ -215,7 +218,10 @@ Open items live in `pending.md`.
    a closed assembly took its scope triple's color, with a multi-rate
    badge when its leaves ticked otherwise; wires took their producer's
    color at a lighter tint; the continuous line came last in the legend;
-   and the strokes, not the fills, kept off the reserved hues.*
+   and the strokes, not the fills, kept off the reserved hues. Amended
+   2026-11-12 (increment 8's second look, 2.3): the badge's place was "one
+   corner", built at the top edge's right and moved to the bottom edge's
+   left by the first look.*
    *Why:* two blocks under different anchors are two clocks by design, and
    a color keyed on the deployment's `(D, Φ)` would merge or split them per
    deployment. An assembly ticks on nothing, so its scope row is a frame,

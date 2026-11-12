@@ -10,16 +10,15 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8's second look and merge.** Increment 8, the analysis views
-  and the help page, had its look pass on 2026-11-11, and
-  `increments/inspector_08_analysis_help/look_inspector_08.md` holds the
-  rulings under their entries. The fixes landed on the `increment-8`
-  branch, checked out in a worktree, as `ce09ebf`, `8e51de4`, `a6404da`
-  and the review's fix `06176a1`, by `brief_inspector_08_look_fixes.md` in
-  the same folder, which holds the review's record. Not pushed, not
-  merged. The user asked for a second look, whose checklist is
-  `look2_inspector_08.md`; the merge follows it, a rebase onto `master`
-  and a fast-forward.
+- **Increment 8's second look's fixes and merge.** Increment 8, the
+  analysis views and the help page, had its second look on 2026-11-12 over
+  `06176a1` of the `increment-8` branch, checked out in a worktree, and
+  `increments/inspector_08_analysis_help/look2_inspector_08.md` holds the
+  rulings under their entries. The user delegated the rest: the fixes by
+  `brief_inspector_08_look2_fixes.md` in the same folder, one cold review
+  and its fix, then the merge, a rebase onto `master` and a fast-forward,
+  with no third look. Not pushed, not merged; the push waits for the
+  user's word.
 - **Increment 8b, the keyboard by region.** After the merge and before the
   pin: `m` and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to
   open a file, and the keys following the focused region. `roadmap.md`

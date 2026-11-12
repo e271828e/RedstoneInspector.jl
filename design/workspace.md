@@ -93,10 +93,10 @@ Open items live in `pending.md`.
 4. **Selection and the detail pane: one element, the level when none.**
    Selection is single: a block, a region's folder, a wire, a pin or a
    port square, Escape clearing it. With nothing selected the pane shows
-   the open level as it shows a closed assembly, under a line with the
-   level's counts and its scope timing, with no open button and with a face
-   row selecting the level's pin; the root so gains its docstring,
-   locations and parameters. A leaf block shows, in order:
+   the open level as it shows a closed assembly, with the words "open
+   level" where the open button stands, its rate scopes after the
+   locations and a face row selecting the level's pin; the root so gains
+   its docstring, locations and parameters. A leaf block shows, in order:
    - the header: segment, display name and path, a copy button and, on an
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
@@ -124,13 +124,16 @@ Open items live in `pending.md`.
      port, and each face's facts stack when the pane is narrow.
 
    A closed assembly shows the same without tier and timing, with its
-   child count, its faces typed through the resolution and an open button.
+   child and wire counts, its faces typed through the resolution with no
+   pinned mark, and an open button.
    A folder shows its field, count and keys as links. A wire shows its
    declared endpoints, the terminal leaf port behind an assembly face, the
    type and kind phrase from the terminal producer, and its level. A pin or
    a port shows its face's facts, what feeds it, the `root_inputs` row and
    later the claim for a root input, and a trace button starting the route
-   of question 8.
+   of question 8. Its facts name an output's stage and whether the face is
+   pinned on a primitive's own face alone: an assembly's face declares
+   neither, and the header already says pin or port.
    *Amended 2026-11-01 (increment 5's look pass): the header had the copy
    button alone; the facts were one line with the timing read out, the
    alias and qualified type below it; the signature was collapsed with no
@@ -139,7 +142,13 @@ Open items live in `pending.md`.
    docstring's title carried its first line, and the narrow pane stacked
    nothing. Amended 2026-11-11 (increment 8's look pass, 3.5): the open
    level showed its path, display name, counts, faces and scope timing
-   alone, so a root's docstring was out of reach.*
+   alone, so a root's docstring was out of reach. Amended 2026-11-12
+   (increment 8's second look, 3.1, 3.2 and 3.4): the open level stood
+   under a line of its counts with its rate scopes above the facts; a
+   closed assembly showed no wire count; an assembly's face read its
+   terminal producer's pinned flag, "not pinned" for one a root input
+   feeds; and a pin's or a port's line opened with the word "pin" or
+   "port".*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -197,16 +206,19 @@ Open items live in `pending.md`.
    only when a diagnostic exists, on that tab, and otherwise stays
    collapsed to its tab strip with the counts readable; its height is a
    remembered splitter; every row in
-   every tab selects on the canvas and navigates as a tree click does; each
-   tab is a self-contained component for stage 3's panels and stage 4's
-   dock.
+   every tab selects on the canvas and navigates as a tree click does, a
+   release that leaves a text selection inside an analysis row excepted;
+   each tab is a self-contained component for stage 3's panels and stage
+   4's dock.
    *Amended 2026-11-11 (increment 8's look pass, 1.1 and 1.7): the root
    inputs carried a pinned mark, dropped because a root input's `pinned` is
    false in version 1 of the format, the wire pass having stripped the
    marker, with the question of seedability handed to `pending.md`; and the
    execution order was `outputs.order` numbered in one list, each row with
    both stages' ports, which gave a leaf with stage 1 outputs alone a
-   position that orders nothing.*
+   position that orders nothing. Amended 2026-11-12 (increment 8's second
+   look, 1.8): a drag selecting a row's text also selected the row's
+   target.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -219,17 +231,20 @@ Open items live in `pending.md`.
    corner, and the port-class glyphs are not a toggle. The settings persist
    per browser and survive a push. With the badges on, every leaf block
    with a stage 2 output carries its position among the stage 2 calls, in
-   `outputs.order`'s order, in its top-left corner, numbered over the
-   whole model, and a closed assembly the range or ranges of those
+   `outputs.order`'s order, on its bottom edge at the left, numbered over
+   the whole model, and a closed assembly the range or ranges of those
    positions beneath it, "3–5, 8"; a leaf with stage 1 outputs alone
-   carries none; the badges use the text color. A
+   carries none; the badges use the text color, and the overlay's pills on
+   that edge draw over a badge they meet. A
    deployment descriptor adds the concrete `Δt` and `(D, Φ)` to the legend
    and the schedule rows and the hyperperiod chart, a timeline over one
    hyperperiod with a row per triple and a mark per firing, to the drawer's
    timing tab, all waiting on the overlay bump.
    *Amended 2026-11-11 (increment 8's look pass, 1.7): every leaf carried
    its position in `outputs.order`, stage 1 leaves among them, though the
-   core runs stage 1 in any order.*
+   core runs stage 1 in any order. Amended 2026-11-12 (increment 8's second
+   look, 2.3 and 2.4): the badge sat in the top-left corner, and the rate
+   pill on the bottom edge was left out where it met the overlay's pills.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.
