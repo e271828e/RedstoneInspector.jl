@@ -331,9 +331,23 @@ region: in the tree the arrows follow `h j k l`; in the detail pane and the
 drawer `j`, `k` and the vertical arrows scroll, and `h` and `l` scroll
 sideways or do nothing; on the help page `j` and `k` scroll; on the canvas,
 or with nothing focused, the keys act as before. A pane's focused state
-shows clearly. Its docs commit amends `workspace.md` answer 11's key table.
+shows clearly. Added 2026-11-12 by the user's ruling: `u` puts the last
+dragged component or pin of the open level back in its computed place, the
+one dragged before it on the next press, and `U` puts back every one. The
+view stays where it is, as after a push, `0` fitting when wanted, and a
+button beside Fit, shown while the level holds a drag, does what `U` does.
+A drag is otherwise kept through a push and a second drop of the file, so
+only a reload undid one. The session already holds a level's dragged ids
+in drag order, and a push already relays the level out and puts a list of
+them back, so `u` is that path with the list less its last id and `U` with
+none. A component's computed place does not depend on the other drags,
+ELK reading none of them. Rejected: an undo per gesture, back to the place
+before the last drag, which needs a history of positions per level, its
+rule across a push and a redo, for the one case of a component dragged
+twice, which a new drag covers. Its docs commit amends `workspace.md`
+answer 11's key table and answer 9's sentence on a drag's lifetime.
 Visible: a page one can drive from the keyboard pane by pane. Draws on
-`workspace.md` answer 11.
+`workspace.md` answers 9 and 11.
 
 **Increment 9: the server.** On the Julia track after increment 1, in
 parallel with 2 to 8: the module slot, HTTP.jl on the fixed port and

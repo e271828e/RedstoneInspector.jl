@@ -10,13 +10,36 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8b, the keyboard by region.** Next, and before the pin: `m`
-  and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to open a
-  file, and the keys following the focused region. `roadmap.md` holds its
-  entry and, in increment 8's landed note, the facts its brief takes; the
-  brief amends `workspace.md` answer 11's key table in its docs commit.
-  Increment 8 merged into `master` on 2026-11-12 at `af55fe5` and was
-  pushed that day, its CI run green.
+- **Increment 8b, the keyboard by region.** Next, and before the pin. Not
+  started: no brief, no branch, no worktree. The user ruled its scope in
+  increment 8's first look,
+  `increments/inspector_08_analysis_help/look_inspector_08.md`, entry 4.7
+  and the additional comment under its section 6, and `roadmap.md` holds its
+  entry. `m` toggles the model tree and `i` the detail pane, over the
+  frame's collapse buttons and their prefs. Cmd-O and Ctrl-O open a file. `h
+  j k l` and the arrows follow the focused region: the tree's rows in the
+  tree, scrolling in the detail pane, the drawer and the help page, and as
+  today on the canvas or with nothing focused. A pane's focused state must
+  show clearly, since a key then changes meaning with the focus. By the
+  user's ruling of 2026-11-12 it also undoes drags on the open level: `u`
+  puts the last dragged component or pin back in its computed place, and `U`
+  every one, by the push's relayout with a shorter list of dragged ids; the
+  view stays, and a button beside Fit, shown while the level holds a drag,
+  does what `U` does; an undo per gesture was rejected, and the roadmap's
+  entry says why. It builds on the frame kept mounted and `inert` under the
+  help page, and increment 8's landed note in the roadmap lists the facts
+  its brief takes. Its docs commit amends `workspace.md` answer 11's key
+  table and answer 9 on a drag's lifetime, the help page's lead says how a
+  drag is undone, and each key goes into `help.ts`'s `KEYS` and the map's
+  keyboard table together, since a check counts one against the other. The
+  rulings leave four things to the brief, each put to the user before
+  anything lands: whether `h` and `l` scroll sideways or do nothing in the
+  detail pane and the drawer; how a focused pane shows, the ring being drawn
+  today for a focus the keyboard gave and for none the mouse gave; how Cmd-O
+  and Ctrl-O sit with the shell's rule that leaves every Ctrl and Meta key
+  but Cmd-K and Ctrl-K to the browser, whose own binding they take; and
+  whether it takes the two unordered items its keys touch, "`j` and `k` in
+  an unselected tree" and "Keyboard paths and buttons".
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
