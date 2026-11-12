@@ -27,19 +27,30 @@ The bullets stand in working order, the first one next.
   its docs commit.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
-  `c894949` on 2026-11-05, with
-  `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
+  `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
   since the spec spells a node's class as assembly or primitive and *leaf*
   is the value leaf. It follows the merge because the branch touches seven
   files that spell the old names, and by the user's ruling of 2026-11-11 it
-  also follows increment 8b and the core's retirement of the term *block*
-  (`Redstone.jl/design/pending.md`, first bullet), so one pin carries both
-  renames; if the core's rename is late, the pin goes ahead and a second
-  follows. The core's rename gives `Redstone.Blocks` a new name, which a
-  node's `type` carries: every fixture regenerates, the icon table's keys
-  in `frontend/src/lib/icons.ts`, the tests' literals and the README
-  follow, and the pin's brief verifies that the docstring link rule's
-  anchors follow the data. The text a user reads already says "primitive"
+  also follows increment 8b and the core's retirement of the term *block*,
+  so one pin carries both renames. The core's rename landed on its
+  `master` at `c8a15b9` on 2026-11-12, not pushed, as increment 94 (D-453,
+  `Redstone.jl/design/increments/094_retire_block/notes_increment_94.md`);
+  its names are that session's overnight rulings and await the user's
+  confirmation, so the pin's brief takes them from the core at its own
+  tip and not from here. As landed: the module is `Redstone.Library` in
+  `src/library.jl`, so a node's `type` reads `Redstone.Library.PID` and an
+  alias `Redstone.Library.SumJunction`, and `signature` changes with them;
+  the schema changes in one description string; a `types` row's `file`,
+  `line` and `docstring` change as content; the hosted API anchors follow
+  the module, `api/#Redstone.Library.<name>`; the glossary anchor
+  `g-block` is gone and the library's docstrings link
+  `@ref g-library-component`. Here every fixture regenerates, and the
+  icon table's keys in `frontend/src/lib/icons.ts`, the tests' literals
+  and the README follow. The pin's brief verifies that the docstring link
+  rule's anchors follow the data and that no test or check cites
+  `g-block`, and it drops the two exclusions for `Blocks.` names and
+  `blocks.jl` paths from `help.spec.ts`'s check on the retired words,
+  which the new names make needless. The text a user reads already says "primitive"
   and "component" since increment 8's look pass; the code keeps `block`
   for a box on the level (`glossary.md`). The same pin moves the six
   construction sites from `h =` to `Δt_frame =`, as the core's bullet on
