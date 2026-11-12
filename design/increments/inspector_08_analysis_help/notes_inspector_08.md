@@ -505,3 +505,19 @@ This session's own rulings under that delegation:
 5. **A pin's or a port's line with nothing to say is not drawn.**
 6. **The push waits for the user's word**, as `AGENTS.md` says; the
    delegation names the bullet's steps, which end at the merge.
+
+The fixer stopped once, having committed nothing, on 1.8: the brief's rule
+read the selection at the click, and Chromium keeps a selection through a
+click on the selected text, clearing it only after, so the brief's own
+check, a plain click on the cell after the drag, selected nothing. Ruled,
+and the brief amended: the guard blocks a click only when its press began
+with no selection touching the row and the click finds one there. The
+user's ruling was about the drag, "a release that leaves a text
+selection", and a plain click must act as before. A double-click's second
+click is blocked by the same rule, the first having selected already.
+Three leftovers the fixer named are ruled with it: the helper
+`rowClick.ts` joins the map's tabs row; the stale comments at `size.ts:19`,
+"top-right corner", and in `Canvas.svelte`'s wire styles, "triple line",
+are corrected, each being about a place or a line this pass settles; the
+README's sentence on a row's click stays, the exception being too fine
+for it.

@@ -51,10 +51,14 @@ the path says otherwise.
 - **The row click and a text selection**, the three tabs:
   `RootInputs.svelte:26`, `Timing.svelte:38`, `:65` and `:87`,
   `Order.svelte:28`, `:49` and `:62`. A click made by the pointer selects
-  nothing when, at the click, the document's selection is not collapsed and
-  touches the row. A plain click, a click on a row while text is selected
+  nothing when its press began with no selection touching the row and the
+  click finds one there, not collapsed: the drag made it. A plain click, a
+  click on text selected earlier, a click on a row while text is selected
   elsewhere, and the inner `button.row` pressed from the keyboard all
-  select as today. One shared helper, not seven copies.
+  select as today. One shared helper, not seven copies. Amended at the
+  fixer's stop: the rule first read the selection at the click alone, and
+  Chromium keeps a selection through a click on it, so a plain click on
+  selected text would have selected nothing.
 - `src/canvas/Canvas.svelte`, the rate pill (768 to 779) and the order
   badge (780 to 790), with the constants' comment at
   `src/canvas/size.ts:21` to `:27`. The two swap rows. The rate pill sits
@@ -119,7 +123,8 @@ Ruled on 2026-11-12 under the user's delegation, each in the notes.
    closed assembly differ by the button and the mark alone.
 2. The selection guard reads the pointer's click alone and asks that the
    selection touch the row, so a selection left elsewhere blocks nothing
-   and the keyboard's path is untouched.
+   and the keyboard's path is untouched. It compares the press with the
+   click, so only the drag that made the selection is blocked.
 3. A location's label keeps the file's name with its line number, since
    that pair is what a reader copies or looks for.
 4. The help page holds at 360 px, the narrowest phone width in common use.
