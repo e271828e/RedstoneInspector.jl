@@ -11,7 +11,7 @@
 // face alone (3.4); a location's file name kept whole with its line number (3.5);
 // the pane's own keys, h j k l and the arrows scrolling it (increment 8b).
 import { test, type Page } from "@playwright/test";
-import { clickWire, drop, expect, expectScrollKeys, fixtureText, openPath, readyLevel, shot, viewBox, widen } from "./fixtures";
+import { clickWire, drop, expect, expectScrollKeys, fixtureText, openPath, paneRing, press, readyLevel, shot, viewBox, widen } from "./fixtures";
 
 /** The docs constant of `src/lib/docstring.ts`, read back by the check. */
 const DOCS_URL = "https://e271828e.github.io/Redstone.jl/dev/";
@@ -486,4 +486,19 @@ test("large: with the detail pane focused, j k and the vertical arrows scroll it
   const before = await state();
   await expectScrollKeys(page, body);
   expect(await state()).toEqual(before);
+});
+
+test("closed_loop: a producer link's click re-renders the pane, which keeps the focus and its ring; j then scrolls it, the selection unchanged", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await page.locator('g.block[data-id="plant"]').click();
+  await pane(page).locator("table.faces a.producer").first().click();
+  await expect(pane(page)).toHaveAttribute("data-kind", "port");
+  const id = await pane(page).getAttribute("data-id");
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+  expect(await page.evaluate(() => document.activeElement?.matches("aside.detail"))).toBe(true);
+  expect(await paneRing(page, "detail")).toBe(true);
+  const level = await page.locator("svg.canvas").getAttribute("data-level");
+  await press(page, "j");
+  await expect(pane(page)).toHaveAttribute("data-id", id!);
+  await expect(page.locator(`svg.canvas[data-level="${level}"] g.block.selected`)).toHaveCount(0);
 });

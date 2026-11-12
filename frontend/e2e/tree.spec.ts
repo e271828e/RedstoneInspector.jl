@@ -2,7 +2,7 @@
 // expansion, selection shared both ways, the chevron expanding, the double-click
 // opening, the open level's row, the tree's own h j k l and arrows.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, openPath, press, readyLevel, rows, shot, viewBox } from "./fixtures";
+import { drop, expect, openPath, paneRing, press, readyLevel, rows, shot, viewBox } from "./fixtures";
 
 const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path="${path}"]`);
 const levelPath = (page: Page) => page.locator("nav.breadcrumb");
@@ -228,4 +228,32 @@ test("closed_loop: with the tree focused the arrows do what h j k l do, Down fro
   // on the root level the view stays as fitted: no arrow panned it
   const atRoot = byArrow.filter((s) => s.level === "");
   for (const s of atRoot) expect(s.view, s.key).toEqual(atRoot[0].view);
+});
+
+test("closed_loop: entered by a row's click, h h or Left Left collapsing the root keep the tree focused with its ring, and l then expands the root, the canvas untouched", async ({ page }) => {
+  for (const back of ["h", "ArrowLeft"]) {
+    await drop(page, "closed_loop");
+    const all = await rows(page).count();
+    await row(page, "sensing").locator(".segment").click();
+    await press(page, back);
+    await press(page, back);
+    await expect(rows(page), back).toHaveCount(1);
+    await expect(page.locator("nav.tree.focused"), back).toHaveCount(1);
+    expect(await page.evaluate(() => document.activeElement?.matches("nav.tree")), back).toBe(true);
+    expect(await paneRing(page, "tree"), back).toBe(true);
+    await press(page, "l");
+    await expect(rows(page), `${back}: l expands the root`).toHaveCount(all);
+    await expect(page.locator("svg.canvas g.block.selected"), `${back}: the canvas's l stays out`).toHaveCount(0);
+  }
+});
+
+test("closed_loop: after a row's click and j j no row draws a ring of its own, the tree's pane draws its ring", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await row(page, "plant").locator(".segment").click();
+  await press(page, "j");
+  await press(page, "j");
+  await expect(page.locator("nav.tree .row.selected")).not.toHaveAttribute("data-path", "plant");
+  const outlined = await rows(page).evaluateAll((els) => els.filter((e) => getComputedStyle(e).outlineStyle !== "none").length);
+  expect(outlined).toBe(0);
+  expect(await paneRing(page, "tree")).toBe(true);
 });

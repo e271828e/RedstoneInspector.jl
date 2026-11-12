@@ -288,12 +288,12 @@ test("a level hash typed on a loaded closed_loop is this load's entry: Shift-h r
   expect(await hash(page)).toBe("");
 });
 
-test("closed_loop: focus on a tree row comes back to that row whichever way the page closes, and j then walks the tree", async ({ page }) => {
+test("closed_loop: focus in the tree, from a row's click, comes back to the tree whichever way the page closes, and j then walks the tree", async ({ page }) => {
   await drop(page, "closed_loop");
   const row = 'nav.tree .row[data-path="sensing"]';
   await page.locator(row).click();
-  // the very element, marked, so a remounted row would not pass for it
-  await page.locator(row).evaluate((e) => { (e as any).__before = true; });
+  // the very element, marked, so a remounted tree would not pass for it; a row takes no focus of its own
+  await page.locator("nav.tree").evaluate((e) => { (e as any).__before = true; });
   const back = () => page.evaluate(() => (document.activeElement as any)?.__before === true);
   const close: Record<string, () => Promise<void>> = {
     "?": () => press(page, "?"),

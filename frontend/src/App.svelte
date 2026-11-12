@@ -362,8 +362,20 @@
     const t = e.target instanceof Element ? e.target : null;
     setFocus(REGIONS.find(([, sel]) => t?.closest(sel))?.[0]);
   }
+  /**
+   * Focus leaving for no element clears the region. When the focused element was removed, its region keeps the
+   * focus on its root while one stands: Chromium fires this before the removal, so the check waits a microtask.
+   */
   function focusout(e: FocusEvent) {
-    if (e.relatedTarget === null) setFocus(undefined);
+    if (e.relatedTarget !== null) return;
+    setFocus(undefined);
+    const t = e.target instanceof Element ? e.target : null;
+    const region = REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
+    if (!t || !region) return;
+    queueMicrotask(() => {
+      const a = document.activeElement;
+      if (!t.isConnected && (!a || a === document.body)) rootOf(region)?.focus({ preventScroll: true });
+    });
   }
   function drop(e: DragEvent) {
     e.preventDefault();

@@ -93,14 +93,14 @@
   {@render search?.()}
   {#each listing ? [] : rows as r (r.path)}
     {@const under = hitsBeneath(r)}
-    <!-- svelte-ignore a11y_click_events_have_key_events (the keyboard table is increment 5's) -->
+    <!-- svelte-ignore a11y_click_events_have_key_events, a11y_interactive_supports_focus (the selection is the tree's cursor; a click focuses nav.tree) -->
     <div
       class={["row", r.kind, r.class, {
         expanded: r.expandable && expanded.has(r.path), selected: r.path === selectedRow, open: r.kind === "node" && r.path === level,
         hit: r.kind === "node" && !!marks?.has(r.path),
       }]}
       data-path={r.path} data-depth={r.depth} style:padding-left="{4 + 14 * r.depth}px"
-      title={r.kind === "folder" ? `${r.path} (folder)` : r.path || "/"} role="treeitem" aria-selected={r.path === selectedRow} tabindex="-1"
+      title={r.kind === "folder" ? `${r.path} (folder)` : r.path || "/"} role="treeitem" aria-selected={r.path === selectedRow}
       onclick={() => click(r)} ondblclick={() => r.class === "assembly" && onopen(r.path)}
     >
       {#if r.expandable}

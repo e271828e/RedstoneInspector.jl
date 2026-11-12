@@ -62,7 +62,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/frame/Landing.svelte` | the privacy statement (`PRIVACY`), the open control, the drop hint, the help link, a refusal |
 | `src/frame/Help.svelte` | the help page, over the shell's `div.under`: the four sections over `help.ts`, the lead, the legend's fifteen static SVG samples in the canvas's shapes and the palette's colors, the about section's versions from the defines; scrolls on its own, focused on mount |
 | `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `paneRing`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
@@ -466,8 +466,7 @@ What the records do not fix, or where the page differs:
   node row's 7 px `span.mark` is red while its errors count, else amber,
   titled "1 error", "2 warnings", "1 error, 1 warning", plus ", beneath"
   when its own node carries none (`treeMarks`); the route's blue, "on the
-  route" or "on the route, beneath" (`routeLevels`); folders carry none. Rows
-  have `tabindex="-1"`.
+  route" or "on the route, beneath" (`routeLevels`); folders carry none.
 - **The search.** `.results` replaces the outline while the field has focus
   and the query is not blank; past the cap `.refine` reads `<total> hits;
   showing 100, refine the query`, else `no hits`. A node hit's label is the
@@ -524,11 +523,12 @@ What the records do not fix, or where the page differs:
   `dl.about` reads `__INSPECTOR_VERSION__` and `__FORMAT_MAJOR__`.
 - **Focus.** `focusin` sets the region from the nearest root, `nav.tree` and
   `aside.detail` filling their pane's body; a `focusout` with no related
-  target clears it. The ring, 2 px inset in the highlight hue, is on a pane's
-  box while it holds the focus, mouse or key, and on `.viewport` for
-  `:focus-visible` alone. A push or a drop over a model refocuses the noted
-  region's root after `tick()` when focus fell to the body; `m`, `i` or `d`
-  hiding the pane holding it focuses `.viewport`.
+  target clears it, and if a microtask later the target is gone, removed,
+  its region's root takes the focus (`preventScroll`). Rows take no focus: a
+  row's click focuses `nav.tree`. The ring, 2 px inset in the highlight hue,
+  is on a pane's box while it holds the focus, mouse or key, and on
+  `.viewport` for `:focus-visible` alone. A push or a drop refocuses the noted
+  region's root; `m`, `i` or `d` hiding the pane holding it focus `.viewport`.
 
 **The frame's DOM contract**, which the harness and the reviewer select on:
 
@@ -567,7 +567,7 @@ Cmd-O and Ctrl-O come first. The help page then takes `?`, Escape, `j` and
 from the search field too, cycling only with a model; every other key is
 ignored in a text field, where the search field has its own Down, Up, Enter
 and Escape. Ctrl or Meta leaves a key to the browser but Cmd-K, Ctrl-K, Cmd-O
-and Ctrl-O; with Alt only Alt-Up acts. Shift with a letter is lower-cased
+and Ctrl-O; with Alt only Alt-Up and Alt-Backspace act, climbing. Shift with a letter is lower-cased
 before Shift is read, `N` read from `e.key`. `?` and Cmd-O act with or
 without a model, every other row only with one. `help.spec.ts` counts this
 table's rows against `table.keys` (`KEYS` in `help.ts`): change both.

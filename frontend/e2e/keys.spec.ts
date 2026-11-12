@@ -350,10 +350,17 @@ test("the ring outlines the tree's, the detail pane's and the drawer's box after
   await shot(page, "closed_loop", "", "ring-canvas");
 });
 
-test("a click below the tree's rows or the detail pane's facts focuses that region", async ({ page }) => {
+test("a click below the tree's rows or a pin's short facts in the detail pane, past their last element, focuses that region", async ({ page }) => {
+  // closed_loop's seven rows and a pin's pane are short at any font, and the click's point is checked to lie below them
+  await page.locator('g.block[data-id="⟨in⟩mode"]').click();
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "pin");
   for (const [pane, root] of [["tree", "nav.tree"], ["detail", "aside.detail"]] as const) {
     const body = (await page.locator(`.pane[data-pane="${pane}"] .body`).boundingBox())!;
-    await page.mouse.click(body.x + body.width / 2, body.y + body.height - 4);
+    const y = body.y + body.height - 4;
+    const last = await page.locator(root).evaluate((r) => Math.max(...[...r.children].map((c) => c.getBoundingClientRect().bottom)));
+    expect(last, `${pane}'s content ends above the click`).toBeLessThan(y - 20);
+    await expect(page.locator(`${root}.focused`), `${pane} not yet focused`).toHaveCount(0);
+    await page.mouse.click(body.x + body.width / 2, y);
     await expect(page.locator(`${root}.focused`), pane).toHaveCount(1);
   }
 });

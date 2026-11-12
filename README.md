@@ -208,7 +208,7 @@ and forward move between levels and a reload or a link reopens one. Each
 level keeps its zoom, pan and layout for the session, and a component or pin
 dragged on the canvas keeps its place until the page reloads; only its own
 wires are re-routed, and Shift held keeps the move to one axis. `u` puts the
-level's last dragged component back in its computed place, the one before it
+level's last dragged component or pin back in its computed place, the one before it
 on the next press, and `U` or the Undo drags button beside Fit every one, the
 view staying where it is. A second descriptor dropped or pushed over the first keeps
 the open level, the selection, the expansion, the views and the search by path

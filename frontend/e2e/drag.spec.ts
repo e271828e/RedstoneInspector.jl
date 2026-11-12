@@ -343,3 +343,31 @@ test("closed_loop: the undo button shows beside Fit only while the drawn level h
   expect(await viewBox(page)).toEqual(view);
   await expect(undoButton(page)).toHaveCount(0);
 });
+
+test("closed_loop: the undo button's click, which unmounts it, leaves the focus on the canvas, so Tab goes on to the detail pane", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await dragBlock(page, "plant", 0, 120);
+  await undoButton(page).click();
+  await page.locator(readyLevel("")).waitFor();
+  await expect(undoButton(page)).toHaveCount(0);
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
+  await pressKey(page, "Tab");
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+});
+
+test("closed_loop: u pressed while another level lays out leaves that level to draw, the root's drag kept", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await dragBlock(page, "plant", 0, 120);
+  const plant = await boxOf(page, "plant");
+  // the double-click starts sensing's layout; the key comes one task later, while the canvas still shows the root
+  await page.evaluate(() => {
+    document.querySelector('svg.canvas g.block[data-id="sensing"]')!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    setTimeout(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "u", bubbles: true })), 0);
+  });
+  await page.locator(readyLevel("sensing")).waitFor({ timeout: 5000 });
+  await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "sensing");
+  await page.keyboard.press("Backspace");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await boxOf(page, "plant")).toEqual(plant);
+});

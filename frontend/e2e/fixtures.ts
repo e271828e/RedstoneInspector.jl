@@ -126,6 +126,10 @@ export const widen = (el: Locator) => el.evaluate((e) => {
   e.append(d);
 });
 
+/** Whether a pane, `tree`, `detail` or `drawer`, draws the focus ring on its box. */
+export const paneRing = (page: Page, pane: string) =>
+  page.locator(`.pane[data-pane="${pane}"]`).evaluate((p) => getComputedStyle(p).outlineStyle !== "none");
+
 /** Every element under the canvas carrying `selected`. */
 export const selected = (page: Page) => page.locator("svg.canvas .selected");
 
