@@ -521,3 +521,28 @@ Three leftovers the fixer named are ruled with it: the helper
 are corrected, each being about a place or a line this pass settles; the
 README's sentence on a row's click stays, the exception being too fine
 for it.
+
+## The second look's fixes and the merge, 2026-11-12
+
+One fixer built the brief in the worktree and landed it as `41ffedd`; one
+cold reviewer covered it from a clean install and found six things, five
+accepted, which the fixer landed as `6323d80` and the reviewer verified.
+The brief's "The review's record" holds the findings and the survivors.
+The one medium finding was this session's own rule again: the guard as
+amended at the fixer's stop let a second drag through in a row that
+already held a selection, and it now compares the selection at the press
+with the one at the click. `rules.md` gains the lesson, that a rule on a
+gesture is probed event by event before a brief states it, and two traps.
+
+The branch rebased onto `master` with no conflict, the two commits becoming
+`50cd2db` and `af55fe5`, and `master` fast-forwarded to it. The gate ran
+green on the result: the package suite and the fixtures' drift check on
+`master`, and on the rebased branch the type check, 511 unit tests, the
+build and 210 browser checks in Chromium. Nothing is pushed. The roadmap
+carries increment 8's landed note, and `pending.md`'s first bullet is
+increment 8b.
+
+Left open for the user: the push and its CI run; whether a primitive
+root's pane takes the "open level" mark, an item of `pending.md`; and the
+`increment-8` worktree and branch, which the dev server of the look still
+runs from.

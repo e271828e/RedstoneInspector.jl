@@ -242,4 +242,63 @@ survivor named with its reason. Empty is acceptable.
 
 ## The review's record
 
-To be filled after the review.
+The fixer stopped once, having committed nothing, on the selection guard's
+rule against its own check, was resumed with the ruling, and landed the
+brief as `41ffedd`: the type check with no error, 511 unit tests, 210
+browser checks. Every mutant this brief names turned its check red. Its
+departures, accepted: the guard is a new file,
+`src/frame/tabs/rowClick.ts`, since it touches the DOM and `src/lib/`
+stays pure; `MAP.md` stands at 704 lines; two stale comments were
+corrected, `size.ts:19` and the wire styles' in `Canvas.svelte`.
+
+One independent reviewer covered `06176a1..41ffedd` from a clean `npm ci`
+in a scratch worktree, at the same tallies. Every entry of "What is
+settled" held on the running page, and each literal matched its source.
+Its sweeps: a location's label breaks only after a slash at every pane
+width from 240 to 800 px on three fixtures; the help page does not scroll
+sideways from 310 px up, `table.keys` setting that floor; no pill covers a
+face name, a display name, an icon, a port square or a segment's ink on
+any level of four fixtures; on `closed_loop`, a route traced from a root
+input puts `lqr_controller`'s route pill over its order badge, the overlay
+on top.
+
+Six findings, five accepted:
+
+1. **A second drag in a row that already held a selection selected the
+   row's target** (medium). The brief's rule let it through. The guard now
+   compares the selection at the press with the one at the click, and the
+   brief's rule is amended.
+2. **No check pinned the row's button pressed from the keyboard under a
+   standing selection** (medium). A check presses Enter on it.
+3. **No drag check ran on the timing tab** (low). One runs on a component's
+   period cell.
+4. **The "wires" fact's title was unpinned** (low). Its literal is pinned.
+5. **`src/lib/wires.ts:9` still said "the triple line"** (low). Corrected.
+6. **The README's sentence on a row's click omits the exception** (low).
+   Not accepted: the exception is too fine for the README.
+
+The fixer landed the five as `6323d80`, at the same tallies. The reviewer,
+resumed, verified the delta from a clean install: each finding held, every
+case that must still select did, a Shift-click that extends a selection
+inside the row selects nothing, as the ruling reads, and its mutants for
+the five turned a check red. Survivors, all accepted and named:
+
+- **Either half of the label's guard removed alone**, the `<wbr>` after
+  each slash or the file name's inline block. Each alone keeps the name
+  whole at every width swept; both removed turns the check red.
+- **The guard without its test that the selection touches the row.** In
+  Chromium a press elsewhere collapses the selection first.
+- **The guard bypassed on an edge row.** Its text is inside a button, which
+  Chromium does not let a drag select.
+- **The ranges compared by their start alone.** The one case it misses, a
+  second drag from the old selection's start, begins on selected text,
+  where Chromium starts a drag-and-drop and no selection.
+- **A root input given a pinned flag**, in the browser checks alone; the
+  unit test pins it.
+
+Two observations left as they are: the rate pill sits 0.8 to 2 units above
+the segment's ink, where the order badge sat before the swap; and a
+primitive root's pane shows no "open level" mark, an item of `pending.md`.
+
+The branch was rebased onto `master` with no conflict, the two commits
+becoming `50cd2db` and `af55fe5`, and `master` fast-forwarded to it.

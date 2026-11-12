@@ -10,27 +10,19 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8's second look's fixes and merge.** Increment 8, the
-  analysis views and the help page, had its second look on 2026-11-12 over
-  `06176a1` of the `increment-8` branch, checked out in a worktree, and
-  `increments/inspector_08_analysis_help/look2_inspector_08.md` holds the
-  rulings under their entries. The user delegated the rest: the fixes by
-  `brief_inspector_08_look2_fixes.md` in the same folder, one cold review
-  and its fix, then the merge, a rebase onto `master` and a fast-forward,
-  with no third look. Not pushed, not merged; the push waits for the
-  user's word.
-- **Increment 8b, the keyboard by region.** After the merge and before the
-  pin: `m` and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to
-  open a file, and the keys following the focused region. `roadmap.md`
-  holds its entry; its brief amends `workspace.md` answer 11's key table in
-  its docs commit.
+- **Increment 8b, the keyboard by region.** Next, and before the pin: `m`
+  and `i` for the tree and the detail pane, Cmd-O and Ctrl-O to open a
+  file, and the keys following the focused region. `roadmap.md` holds its
+  entry and, in increment 8's landed note, the facts its brief takes; the
+  brief amends `workspace.md` answer 11's key table in its docs commit.
+  Increment 8 merged into `master` on 2026-11-12 at `af55fe5`, not pushed:
+  the push and its CI run wait for the user's word.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
   since the spec spells a node's class as assembly or primitive and *leaf*
-  is the value leaf. It follows the merge because the branch touches seven
-  files that spell the old names, and by the user's ruling of 2026-11-11 it
-  also follows increment 8b and the core's retirement of the term *block*,
+  is the value leaf. By the user's ruling of 2026-11-11 it follows
+  increment 8b and the core's retirement of the term *block*,
   so one pin carries both renames. The core's rename landed on its
   `master` at `c8a15b9` on 2026-11-12, not pushed, as increment 94 (D-453,
   `Redstone.jl/design/increments/094_retire_block/notes_increment_94.md`);
@@ -71,8 +63,8 @@ The bullets stand in working order, the first one next.
   (axis 4), `workspace.md` (axis 5), `live_session.md` (axis 6),
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
-  each landed one with the facts the next briefs take. Increments 1 to 7
-  and 9 have landed. After increment 8, 8b and the pin, 10, the deployment
+  each landed one with the facts the next briefs take. Increments 1 to 9
+  have landed. After 8b and the pin, 10, the deployment
   overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
@@ -267,3 +259,9 @@ the increment it came from.
   the row shows it, under "seedable" rather than "pinned", and whether the
   client derives it from the consumers' flags, which miss a discrete
   consumer's wholesale pin, or the core carries it, a format change.
+- **A primitive root's pane has no "open level" mark** (increment 8's
+  second look). With nothing selected its pane is the primitive's own
+  layout, the same as with the primitive selected, so nothing says that
+  nothing is selected; `workspace.md` answer 4 puts the mark on an open
+  assembly. Whether a primitive root's level takes it is the user's to
+  rule.

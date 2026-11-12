@@ -283,7 +283,42 @@ component tables, and the help page's five sections with the docstring
 link rule and the bundled Markdown renderer; the schedule and hyperperiod
 chart moved to increment 10 on 2026-11-04. Visible: the static page
 complete. Draws on `workspace.md` answers 7 and 11, `build_release.md`
-answer 7.
+answer 7. *Landed on 2026-11-12 at `af55fe5` of `RedstoneInspector.jl`, not
+pushed, so with no CI run yet; the local gate was green there: the package
+suite, the fixtures' drift check, the type check, 511 unit tests and 210
+browser checks in Chromium. Its folder,
+`increments/inspector_08_analysis_help/`, records the shape, the nineteen
+readings, the reviews and two looks, the second at the user's request:
+`brief_inspector_08_analysis_help.md`, `notes_inspector_08.md`, the
+checklists `look_inspector_08.md` and `look2_inspector_08.md` with the
+rulings under their entries, and the two fix briefs. The looks amended
+`workspace.md` answers 4, 6, 7 and 11, `visual_grammar.md` answers 4 and 6
+and `initial_design.md` answer 15, and added increment 8b. The help page
+has four sections, the refusals having moved to the README's "By design".
+Facts the next briefs take from it: the frame stays mounted and `inert`
+in `div.under` beneath the help page, the shell noting the focused element
+and its region at the open and returning focus at the close, and the
+shell's own guard keeps every key but `?` and Escape from the frame, since
+`inert` does not stop the window's `keydown`; `src/lib/help.ts` holds the
+page's text as data, its `KEYS` mirroring the map's keyboard table, whose
+row count `help.spec.ts` checks, so a key is added to both;
+`src/lib/analysis.ts` holds the drawer's rows, `orderGroups` with the
+stage 1 group and the numbered stage 2 group, `orderBadge` and
+`rowTarget`; a click anywhere on an analysis row selects, through
+`src/frame/tabs/rowClick.ts`, which blocks a click whose text selection
+differs from its press's; the prefs gain `order`, `o` toggling the badges;
+the rate pill straddles a component's top edge at the left, the order
+badge its bottom edge at the left, the overlay's pills stack from the
+bottom edge's right end and draw over a badge they meet, and nothing
+yields; the open level's pane is the closed assembly's layout with the
+mark "open level" for the Open button, and the pane states pinning on a
+primitive's own face alone; a docstring renders through
+`src/lib/docstring.ts`, `marked` pinned exactly, `DOCS_URL` the one
+constant naming the core's docs; the build defines `__INSPECTOR_VERSION__`
+and `__FORMAT_MAJOR__`; a reader's text says "component" and "primitive"
+while the code keeps `block` and `leaf` until the pin. Open items, each in
+`pending.md`: a root input's seedability; a primitive root's pane without
+the "open level" mark; Firefox's two `leave.spec.ts` checks.*
 
 **Increment 8b: the keyboard by region.** Added 2026-11-11 from increment
 8's look pass (its 4.7 and additional comment), lettered so the eleven keep

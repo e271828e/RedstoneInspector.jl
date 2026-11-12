@@ -68,6 +68,11 @@ increments run the pipeline unchanged.
   reading with the evidence, never a shape the builder discovers.
 - Before launch, walk each check's narrative against the brief's own
   prose and the oracle's definitions; a builder follows the check.
+- A rule on a gesture (a click, a drag, a text selection, focus) is probed
+  in Chromium event by event before the brief states it, and walked
+  against the same gesture made twice: the selection guard of increment
+  8's second look was amended twice after launch, once at the fixer's stop
+  and once at the review.
 - A geometric pin (nearest block, a pan) is a rule the check recomputes
   from the DOM; the brief states the rule, not numbers. An opacity pin
   reads the effective opacity, the product up to the svg, wherever a
@@ -287,12 +292,22 @@ full text stays.
 - **The consumers' order.** `terminalConsumers` walks depth-first, the oracle
   breadth-first, so `analysis.test.ts` compares `mode`'s as a set.
 - **Pills sharing an edge.** `sizeBlock` reserves nothing for a pill, so two
-  on one edge can meet on a narrow block: the order badge and the rate pill
-  did on the top edge, and the rate pill moved to the bottom-left
-  (increment 8's look pass). There it shares a row with the overlay's
-  pills and is left out where they meet, a margin of one unit on some
-  blocks, so the check asserts the rule recomputed from the DOM and writes
-  in no block's outcome but one that misses by many units.
+  on one edge can meet on a narrow block. The rate pill and the order badge
+  take the top and the bottom edge at the left and share none (increment
+  8's second look); the overlay's pills stack from the bottom edge's right
+  end and draw over an order badge they meet. A check on a pill's place
+  asserts the rule recomputed from the DOM, never a block's outcome that a
+  font's width decides.
+- **A selection through a click.** Chromium keeps a text selection through
+  a click on the selected text and collapses it only after the `click`
+  event, so a guard on a row's click compares the range at the press with
+  the range at the click (`rowClick.ts`); reading the click alone blocks a
+  plain click, and reading the press alone lets a second drag through.
+- **A break after a slash.** Chromium takes no line break after a slash,
+  where Firefox does, so a path or an address is one word that
+  `overflow-wrap: anywhere` cuts wherever the line ends, inside a line
+  number or past a narrow page. A path takes a `<wbr>` after each slash. A
+  look in Firefox shows neither fault.
 - **A key under the help page.** The frame stays mounted and `inert` under
   the page, and `inert` does not stop the window's `keydown`: the shell's
   own guard keeps every key but `?` and Escape from the frame.
