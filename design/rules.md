@@ -352,6 +352,10 @@ full text stays.
 - **The undo's sync point.** An undo clears `data-ready` while ELK runs, so
   a check waits for it after `u`; a `MutationObserver` on the attribute
   shows that no layout ran.
+- **A focused node removed.** Chromium fires the same `focusout` for a
+  focused node's removal and for a click on a non-focusable place: a null
+  related target, the target still connected. A microtask later the removed
+  one is disconnected, which is how the shell tells them apart.
 - **A mutant runner in place.** A runner that swaps source files in place
   shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
   until it has restored the last one.

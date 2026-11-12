@@ -157,7 +157,8 @@ files, the build, 224 of 224 browser checks in Chromium.
 - `workspace.md` answers 2, 9 and 11, the docs commit.
 - `design/rules.md`: six traps, the drawer's scroller, a root shorter than
   its pane, a key right after `goto`, the view after a resize, the undo's
-  sync point, a mutant runner in place.
+  sync point, a mutant runner in place; a seventh after the review, a
+  focused node removed.
 - `frontend/MAP.md` and `README.md`, in the code commit.
 - At the landing: `roadmap.md`'s note under increment 8b, the pending
   bullet retired, the item "`j` and `k` in an unselected tree" retired, and
@@ -181,4 +182,65 @@ the code for style, and an empty review is acceptable.
 
 ## The review's record
 
-To be filled after the review.
+The reviewer ran `9788433` from a clean `npm ci`: 511 unit tests,
+svelte-check clean over 399 files, 224 of 224 browser checks in Chromium,
+three runs with no flake. Of its 37 mutants 35 went red. The builder,
+resumed as the fixer, landed `9939957`, five checks more, 229 in all.
+
+- **F1, a defect, fixed.** Focus fell to the page's body when the focused
+  element left the DOM, so the region and its ring went and the next key
+  acted on the canvas: a clicked row removed by `h h` collapsing the root,
+  a producer link's click re-rendering the detail pane, the undo button
+  unmounting on its own click. A focused node's removal and a click on a
+  non-focusable place fire the same `focusout`, null related target and
+  the target still connected, so the shell looks one microtask later and
+  focuses the region's root when the target is gone and the body holds
+  the focus. One check per case, in `tree.spec.ts`, `detail.spec.ts` and
+  `drag.spec.ts`.
+- **F2, a visual defect, fixed.** A clicked row kept the DOM focus and drew
+  the browser's ring at the first key, inside the pane's ring and off the
+  selected row. Rows lose `tabindex="-1"`: a row's click focuses
+  `nav.tree`, the selection is the tree's cursor and the pane's ring says
+  where the focus is. The chevron and every button in a pane keep the
+  browser's ring, Enter pressing a focused button. A check in
+  `tree.spec.ts`; `help.spec.ts`'s focus-return check marks `nav.tree`.
+- **F3, left to the user.** After a click on the canvas the first key turns
+  its ring on, Chromium counting the key as keyboard use. The canvas's
+  rule is the one from before this increment. The look's 2.2.
+- **F4, a missing check, added.** The mutant removing `undrag`'s guard
+  against another level's layout survived: `u` pressed while `sensing`
+  lays out left the canvas on the root. A check in `drag.spec.ts`.
+- **F5 and F6, texts, fixed.** The map's `e2e/fixtures.ts` row lacked the
+  new helpers, and its sentence on Alt left out Alt-Backspace, which
+  climbs. The README said `u` puts back a component; it says "component
+  or pin".
+- **A weak check, fixed.** The click below the detail pane's facts could
+  pass without testing the root's height under wider fonts; it selects a
+  pin and asserts the content ends above the click.
+- **An accepted survivor.** The `mine !== run` check in `relayout`: ELK
+  resolves in start order on the main thread, so a superseded result is
+  drawn over at once.
+- **Readings the reviewer took otherwise, for the look.** A click on a
+  pane's head as focusing the pane (reading 10, the look's 2.4); Shift with
+  an arrow, unruled (1.8).
+- **Not covered.** Firefox and Safari; the browser's own Cmd-O dialog; the
+  live tab's push under each region.
+
+The reviewer, resumed, verified `9939957`: every finding closed, each
+reproduction replayed twice, 229 of 229 in three runs, and its probes of
+what the fix could break found no case where the removal rule takes the
+focus back from where the user put it. Of seven mutants on the delta five
+went red and two survived.
+
+- **A second missing check, added.** The mutant dropping the disconnected
+  test from the removal rule passed every check while pulling the focus
+  back after a click on the status bar or on another pane's head. A check
+  in `keys.spec.ts`, landed at `68e0e87`, now pins that a click outside
+  every region clears the region, which also pins reading 10; the mutant
+  turns it red. The branch stands at 230 browser checks.
+- **A second accepted survivor.** The rule's condition that the body holds
+  the focus: no probe told it apart, the shell's own focus moves running
+  after the microtask.
+- The tree's `h h` check stays green under either revert alone, rows
+  taking no focus being enough for that case; the detail and the undo
+  checks pin the removal rule.

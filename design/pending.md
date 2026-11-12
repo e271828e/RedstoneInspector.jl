@@ -13,10 +13,14 @@ The bullets stand in working order, the first one next.
 - **Increment 8b, the keyboard by region.** Next, and before the pin.
   Built on 2026-11-12 on the branch `increment-8b`, in the worktree
   `~/.julia/dev/RedstoneInspector.jl-inc8b`, the prototype being the
-  implementation; `increments/inspector_08b_keyboard/` holds its brief with
-  the ten readings the user has not yet seen. Owed, in order: the cold
-  review and its fix, the user's look, the merge, the roadmap's landed
-  note. The user ruled its scope in
+  implementation, and reviewed: the branch stands at `68e0e87`, three
+  commits above the docs commit `dfdc089`, with 511 unit tests and 230
+  browser checks green in Chromium. `increments/inspector_08b_keyboard/`
+  holds its brief with the ten readings and the review's record, and the
+  checklist `look_inspector_08b.md` for the user's look. Owed, in order:
+  the user's look with Firefox and Safari tried by hand for Cmd-O, its
+  fixes, the merge by a rebase onto `master`, the push, the roadmap's
+  landed note. The user ruled its scope in
   increment 8's first look,
   `increments/inspector_08_analysis_help/look_inspector_08.md`, entry 4.7
   and the additional comment under its section 6, and `roadmap.md` holds its
