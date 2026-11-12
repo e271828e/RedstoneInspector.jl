@@ -239,10 +239,12 @@ with its reason. Strike any, and a fixer reverts it.
 - [x] **6.2** The merge: rebase `increment-8` onto `master`, fast-forward.
   Done on 2026-11-12 after the fixes and their review: `master` stands at
   `af55fe5`, the local gate green.
-- [ ] **6.3** The push and its CI run. The clock pill's check recomputes its
+- [x] **6.3** The push and its CI run. The clock pill's check recomputes its
   rule from the page, so CI's wider fonts should not flip it; the Firefox
   `leave.spec.ts` item stands from increment 6.
-  Open: the push waits for the user's word.
+  Done on 2026-11-12 at the user's word: `4cb4c64` pushed, CI run
+  43201633564 green on all four jobs. Firefox passed 205 checks, the new
+  ones among them, and failed the two of `leave.spec.ts` alone.
 - [x] **6.4** The roadmap's landed note for increment 8, `pending.md`'s
   first bullet, and the brief for increment 8b.
   Done but for the brief, which opens increment 8b's own bullet in

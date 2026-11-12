@@ -546,3 +546,12 @@ Left open for the user: the push and its CI run; whether a primitive
 root's pane takes the "open level" mark, an item of `pending.md`; and the
 `increment-8` worktree and branch, which the dev server of the look still
 runs from.
+
+The user asked for the push the same day, with the look's dev server
+stopped and the `increment-8` worktree removed. `master` went up at
+`4cb4c64`, and CI run 43201633564 was green on all four jobs. The Firefox
+project passed 205 checks, the location labels' and the help page's new
+ones among them, and failed only `leave.spec.ts`'s two, so the fixes of
+3.5 and 4.9 hold in both browsers; that Firefox never showed either fault
+remains inferred from the user's look. The branch `increment-8`, merged,
+was deleted at the user's word.

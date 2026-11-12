@@ -15,8 +15,8 @@ The bullets stand in working order, the first one next.
   file, and the keys following the focused region. `roadmap.md` holds its
   entry and, in increment 8's landed note, the facts its brief takes; the
   brief amends `workspace.md` answer 11's key table in its docs commit.
-  Increment 8 merged into `master` on 2026-11-12 at `af55fe5`, not pushed:
-  the push and its CI run wait for the user's word.
+  Increment 8 merged into `master` on 2026-11-12 at `af55fe5` and was
+  pushed that day, its CI run green.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,

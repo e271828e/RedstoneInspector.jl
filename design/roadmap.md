@@ -283,10 +283,11 @@ component tables, and the help page's five sections with the docstring
 link rule and the bundled Markdown renderer; the schedule and hyperperiod
 chart moved to increment 10 on 2026-11-04. Visible: the static page
 complete. Draws on `workspace.md` answers 7 and 11, `build_release.md`
-answer 7. *Landed on 2026-11-12 at `af55fe5` of `RedstoneInspector.jl`, not
-pushed, so with no CI run yet; the local gate was green there: the package
-suite, the fixtures' drift check, the type check, 511 unit tests and 210
-browser checks in Chromium. Its folder,
+answer 7. *Landed on 2026-11-12 at `af55fe5` of `RedstoneInspector.jl`,
+pushed with its records at `4cb4c64`, CI run 43201633564 green on all four
+jobs (frontend 6 min 12 s): 511 unit tests, 210 browser checks in
+Chromium, and the non-blocking Firefox project failing only increment 6's
+two `leave.spec.ts` checks, 205 passing. Its folder,
 `increments/inspector_08_analysis_help/`, records the shape, the nineteen
 readings, the reviews and two looks, the second at the user's request:
 `brief_inspector_08_analysis_help.md`, `notes_inspector_08.md`, the
