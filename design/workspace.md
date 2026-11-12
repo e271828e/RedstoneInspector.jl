@@ -54,9 +54,13 @@ Open items live in `pending.md`.
    `k` move the selection one row, `l` expands an assembly row or, when it
    is expanded, steps to its first child, `h` collapses a row or, when it
    is collapsed or a leaf, steps to its parent's row, and `Shift+j` opens
-   the selected assembly, the canvas following as for a click.
+   the selected assembly, the canvas following as for a click. The arrows
+   do there what `h j k l` do, and with no row selected `j`, `k`, Down and
+   Up each take the first row.
    *Amended 2026-11-01 (increment 5's look pass): the tree had no keys of
-   its own.*
+   its own. Amended 2026-11-12 (increment 8b, the user's rulings): the
+   arrows panned the canvas from the tree, and no rule covered a tree with
+   no row selected.*
    *Why:* the tree is the descriptor's node list, so it costs nothing to
    derive and always agrees with the canvas; selecting a closed assembly to
    read its detail must not force opening it. *Rejected:* root inputs as
@@ -288,18 +292,25 @@ Open items live in `pending.md`.
    steering and no position hints, and a dragged block or pin keeps its
    dragged place: ELK honors hints only with the model-order steering off,
    and then moves blocks nobody dragged (probed 2026-10-30, increment 5's
-   reading 1). A surviving level keeps its view only when its set of
-   blocks is unchanged, and fits otherwise, so a different model pushed
-   over another is never drawn through the old one's view. A push of a
-   different model otherwise follows the same rules, since the session
-   cannot tell a rebuild from a same-shaped model. A second tab is a
-   second session: `inspect(world; name = "variant")` pushes to the tab
+   reading 1). A drag lasts until it is undone or the page reloads: `u`
+   puts the last dragged block or pin of the open level back in its
+   computed place, the one dragged before it on the next press, and `U`,
+   or the button beside Fit that shows while the level holds a drag, puts
+   back every one. The undo is the push's relayout with a shorter list of
+   dragged ids, and the view stays. A surviving level keeps its view only
+   when its set of blocks is unchanged, and fits otherwise, so a different
+   model pushed over another is never drawn through the old one's view. A
+   push of a different model otherwise follows the same rules, since the
+   session cannot tell a rebuild from a same-shaped model. A second tab is
+   a second session: `inspect(world; name = "variant")` pushes to the tab
    bound to that name, opening one if none is, the unnamed call to the
    default tab; axis 6 owns the API.
    *Amended 2026-11-01 (increment 5's look pass): a push sent the previous
    positions to ELK as hints, positions were keyed by level and node path,
    and the rule keeping a level's view only for an unchanged set of blocks
-   joined.*
+   joined. Amended 2026-11-12 (increment 8b, the user's ruling, with the
+   rejected undo per gesture in `roadmap.md`'s entry): only a reload undid
+   a drag.*
    *Why:* a renamed block is a different node to the format, so losing its
    selection is the honest outcome. *Rejected:* persisting session state
    across reloads, which resurrects a selection into a descriptor that may
@@ -363,12 +374,13 @@ Open items live in `pending.md`.
     - about, with the privacy statement, the bundle and format versions
       and the links.
 
-    The keys, single and outside text fields:
+    The keys, single and outside text fields but for Cmd-O and Ctrl-O.
+    `h j k l` and the arrows follow the region that holds the focus:
 
     | key | action |
     |---|---|
-    | `h` `j` `k` `l` | on the canvas, move the selection to the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys |
-    | arrows | pan the canvas |
+    | `h` `j` `k` `l` | on the canvas or with nothing focused, move the selection to the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, scroll, `h` and `l` sideways; on the help page, `j` and `k` scroll |
+    | arrows | on the canvas or with nothing focused, pan the canvas; in the tree, the detail pane and the drawer, what `h j k l` do there |
     | Shift with `h`, `l` | back, forward between levels; nothing before the first |
     | Shift with `j`, Enter | open the selected assembly |
     | Shift with `k`, Backspace or Alt-Up | go to the parent |
@@ -379,11 +391,23 @@ Open items live in `pending.md`.
     | `t` | trace the selected face or wire |
     | `r` `y` `o` | rate mode, type labels, order badges |
     | `d`, `?` | toggle the drawer, the help page |
+    | `m`, `i` | toggle the model tree, the detail pane |
+    | Cmd-O, Ctrl-O | open a file |
+    | `u`, `U` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
     | Escape | clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
     | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
 
-    Focus shows as the halo, for the keyboard only, and every control is a
-    real button or link; a push keeps focus in the region that held it.
+    Focus shows as a ring in the halo's hue. The tree, the detail pane and
+    the drawer show it on the pane's box whenever they hold the focus, the
+    mouse's or the keyboard's, since `h j k l` and the arrows change meaning
+    there; the canvas shows it for the keyboard only, its keys meaning what
+    they mean with nothing focused. Every control is a real button or link;
+    a push keeps focus in the region that held it. Cmd-O and Ctrl-O take
+    the browser's own binding on purpose and wherever the page shows, in
+    the search field, on the landing panel and under the help page, where
+    the model loads beneath as a drop's does: the browser's would open the
+    file in place of the page. Every other key with Ctrl or Cmd but Cmd-K
+    and Ctrl-K stays the browser's.
     Dragging has no keyboard form in stage 1. The keyboard section says
     that Vimium owns many of these keys by default and that the user
     excludes the inspector's origins, `localhost` on the server's port and
@@ -402,7 +426,12 @@ Open items live in `pending.md`.
     pairs, several of them wrong, `Group` against virtual subsystem, rate
     scope against sample time and kind marker against data type among
     them; and a section stated the refusals and what is not here yet,
-    which the README now states.*
+    which the README now states. Amended 2026-11-12 (increment 8b, the
+    user's rulings of increment 8's look pass, 4.7 and the additional
+    comment, and of 2026-11-12): `h j k l` jumped on the canvas and the
+    arrows panned it whatever held the focus, the tree's `h j k l` apart;
+    `m`, `i`, Cmd-O, Ctrl-O, `u` and `U` did not exist; and the ring showed
+    for the keyboard only in every region.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

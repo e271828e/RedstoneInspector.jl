@@ -336,6 +336,25 @@ full text stays.
 - **The map's keyboard table is read by a check.** `help.spec.ts` counts the
   map's keyboard rows against `table.keys`, so a row added to one alone
   turns it red.
+- **The drawer's scroller.** The drawer's focused root is its scroller's
+  parent, so the browser's arrows scroll nothing there, where they scroll a
+  side pane's body by 40 px; the pane keys scroll with `scrollBy`.
+- **A root shorter than its pane.** A click in a side pane's body below its
+  region root focused the page's body and cleared the region, so the tree's
+  and the detail pane's roots fill the body; a pane's head is still outside
+  every region.
+- **A key right after `goto`.** A key pressed the instant `page.goto`
+  resolves raises no file chooser; the check waits for an element first.
+- **The view after a resize.** Closing the drawer or a pane resizes the
+  canvas, and its `viewBox` follows a frame later; a check comparing views
+  polls until the `viewBox`'s aspect matches `.viewport`'s, the svg's own
+  client size being no sync point.
+- **The undo's sync point.** An undo clears `data-ready` while ELK runs, so
+  a check waits for it after `u`; a `MutationObserver` on the attribute
+  shows that no layout ran.
+- **A mutant runner in place.** A runner that swaps source files in place
+  shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
+  until it has restored the last one.
 
 ## Amending a record
 
