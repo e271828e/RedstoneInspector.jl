@@ -139,7 +139,8 @@
 </nav>
 
 <style>
-  .tree { padding: 2px 0 8px; user-select: none; }
+  /* The region fills the pane's body, so a click below the rows lands in it. */
+  .tree { padding: 2px 0 8px; user-select: none; min-height: 100%; box-sizing: border-box; }
   .row {
     display: flex; align-items: center; gap: 5px; height: 22px; padding-right: 6px; white-space: nowrap;
     cursor: pointer; border-left: 3px solid transparent;

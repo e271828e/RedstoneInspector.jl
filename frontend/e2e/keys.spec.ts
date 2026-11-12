@@ -2,9 +2,10 @@
 // move the selection by quadrant and center distance with the view following,
 // the arrows pan, Shift-h and Shift-l walk the levels back and forward, Shift-j and
 // Shift-k open and climb, z centres the selection, 0 + - fit and zoom, d toggles
-// the drawer, Tab cycles the four regions with the ring for the keyboard only, t
-// with nothing selected does nothing, Escape clears the query before the selection;
-// ? is help.spec.ts's. The geometric pins are recomputed here from the
+// the drawer, Tab cycles the four regions, the ring on a focused pane's box for the
+// mouse and the keyboard and on the canvas for the keyboard only, t with nothing
+// selected does nothing, Escape clears the query before the selection; ? is
+// help.spec.ts's, the keys of the other regions the tree's, the pane's and the drawer's files. The geometric pins are recomputed here from the
 // DOM, by the brief's rules.
 import { test, type Page } from "@playwright/test";
 import { blockBoxes, clickWire, drop, expect, hash, press, readyLevel, shot, viewBox } from "./fixtures";
@@ -313,4 +314,46 @@ test("Escape clears a standing query first, leaving the selection, then the sele
   await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
   await press(page, "Escape");
   await expect(selectedBlock(page)).toHaveCount(0);
+});
+
+/** Where the ring shows: each pane's box by name, the canvas's root, and how many of the other three roots carry one. */
+const rings = (page: Page) => page.evaluate(() => {
+  const on = (e: Element) => getComputedStyle(e).outlineStyle !== "none";
+  const pane = (p: string) => on(document.querySelector(`.pane[data-pane="${p}"]`)!);
+  return {
+    tree: pane("tree"), detail: pane("detail"), drawer: pane("drawer"), canvas: on(document.querySelector(".viewport")!),
+    roots: [...document.querySelectorAll("nav.tree, aside.detail, section.drawer")].filter(on).length,
+  };
+});
+const ringOn = (where?: "tree" | "detail" | "drawer" | "canvas") =>
+  ({ tree: where === "tree", detail: where === "detail", drawer: where === "drawer", canvas: where === "canvas", roots: 0 });
+
+test("the ring outlines the tree's, the detail pane's and the drawer's box after a click and after Tab, the canvas only after Tab", async ({ page }) => {
+  await press(page, "d");
+  await page.locator('nav.tree .row[data-path="plant"] .segment').click();
+  expect(await rings(page), "a row's click").toEqual(ringOn("tree"));
+  await shot(page, "closed_loop", "", "ring-tree");
+  await page.locator("aside.detail h2").click();
+  expect(await rings(page), "the pane's text clicked").toEqual(ringOn("detail"));
+  await shot(page, "closed_loop", "", "ring-detail");
+  await page.locator("section.drawer .tab-body").click({ position: { x: 400, y: 60 } });
+  expect(await rings(page), "the drawer's body clicked").toEqual(ringOn("drawer"));
+  await shot(page, "closed_loop", "", "ring-drawer");
+  const canvas = (await page.locator("svg.canvas").boundingBox())!;
+  await page.mouse.click(canvas.x + 5, canvas.y + canvas.height - 5);
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  expect(await rings(page), "the canvas pressed").toEqual(ringOn());
+  for (const where of ["detail", "drawer", "tree", "canvas"] as const) {
+    await press(page, "Tab");
+    expect(await rings(page), `Tab to ${where}`).toEqual(ringOn(where));
+  }
+  await shot(page, "closed_loop", "", "ring-canvas");
+});
+
+test("a click below the tree's rows or the detail pane's facts focuses that region", async ({ page }) => {
+  for (const [pane, root] of [["tree", "nav.tree"], ["detail", "aside.detail"]] as const) {
+    const body = (await page.locator(`.pane[data-pane="${pane}"] .body`).boundingBox())!;
+    await page.mouse.click(body.x + body.width / 2, body.y + body.height - 4);
+    await expect(page.locator(`${root}.focused`), pane).toHaveCount(1);
+  }
 });

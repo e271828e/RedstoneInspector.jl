@@ -1,8 +1,8 @@
 // The model tree (workspace.md answer 2): rows and folders, the default
 // expansion, selection shared both ways, the chevron expanding, the double-click
-// opening, the open level's row, the tree's own h j k l.
+// opening, the open level's row, the tree's own h j k l and arrows.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, openPath, press, readyLevel, rows, shot } from "./fixtures";
+import { drop, expect, openPath, press, readyLevel, rows, shot, viewBox } from "./fixtures";
 
 const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path="${path}"]`);
 const levelPath = (page: Page) => page.locator("nav.breadcrumb");
@@ -197,4 +197,35 @@ test("large: j walking the tree scrolls the selected row into view", async ({ pa
   const [b, r] = [(await body.boundingBox())!, (await row(page, at).boundingBox())!];
   expect(r.y).toBeGreaterThanOrEqual(b.y);
   expect(r.y + r.height).toBeLessThanOrEqual(b.y + b.height);
+});
+
+test("closed_loop: with the tree focused the arrows do what h j k l do, Down from no selection the first row, the view never panned", async ({ page }) => {
+  /** The tree's state after each key: the selected row, the visible rows, the level, the view. */
+  const walk = async (keys: string[]) => {
+    await drop(page, "closed_loop");
+    await press(page, "Tab");
+    await expect(page.locator("nav.tree.focused")).toHaveCount(1);
+    const out = [];
+    for (const key of keys) {
+      await press(page, key);
+      out.push({
+        key, selected: await page.locator("nav.tree .row.selected").getAttribute("data-path"),
+        rows: await rows(page).evaluateAll((els) => els.map((e) => e.getAttribute("data-path"))),
+        level: await levelPath(page).getAttribute("data-level-path"), view: await viewBox(page),
+      });
+    }
+    return out;
+  };
+  // the first row, down to sensing, expanded, its first child (its level), back to it, collapsed, up a row
+  const letters = ["j", "j", "j", "l", "l", "h", "h", "k"];
+  const arrows = ["ArrowDown", "ArrowDown", "ArrowDown", "ArrowRight", "ArrowRight", "ArrowLeft", "ArrowLeft", "ArrowUp"];
+  const byLetter = await walk(letters);
+  const byArrow = await walk(arrows);
+  expect(byArrow.map(({ key, ...s }) => s)).toEqual(byLetter.map(({ key, ...s }) => s));
+  expect(byArrow[0].selected, "Down with nothing selected").toBe("");
+  expect(byArrow[2].selected).toBe("sensing");
+  expect(byArrow[3].rows.length, "Right expands").toBeGreaterThan(byArrow[2].rows.length);
+  // on the root level the view stays as fitted: no arrow panned it
+  const atRoot = byArrow.filter((s) => s.level === "");
+  for (const s of atRoot) expect(s.view, s.key).toEqual(atRoot[0].view);
 });

@@ -230,7 +230,8 @@
 {/if}
 
 <style>
-  .detail { padding: 2px 10px 16px; font-size: 13px; overflow-wrap: break-word; container-type: inline-size; }
+  /* The region fills the pane's body, so a click below the facts lands in it. */
+  .detail { padding: 2px 10px 16px; font-size: 13px; overflow-wrap: break-word; container-type: inline-size; min-height: 100%; box-sizing: border-box; }
   h2 { font-size: 15px; margin: 4px 0 2px; font-weight: 400; }
   h2 .segment { font-weight: 600; }
   h2 .name { color: var(--text-light); }

@@ -122,6 +122,9 @@
   .splitter:not(.active) { pointer-events: none; }
   /* The four regions take focus at their roots; the one holding it shows the ring, the halo's hue (answer 11). */
   .frame :global([tabindex="0"]:focus) { outline: none; }
-  /* The ring shows for keyboard focus only (workspace.md answer 11); `focused` marks the region either way. */
-  .frame :global(.focused[tabindex="0"]:focus-visible) { outline: 2px solid var(--highlight); outline-offset: -2px; }
+  /* A pane holding the focus, the mouse's or the keyboard's, shows the ring on its own box, still while its body
+     scrolls; the canvas shows it for keyboard focus only (workspace.md answer 11). */
+  .pane:has(:global(.focused[tabindex="0"])), .frame :global(.viewport.focused:focus-visible) {
+    outline: 2px solid var(--highlight); outline-offset: -2px;
+  }
 </style>

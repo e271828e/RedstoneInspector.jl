@@ -6,11 +6,12 @@
 // shown over the frame or the landing, kept mounted and inert, the focus, the tree's
 // scroll and the drawer's sort surviving it; a history entry `#help` over the
 // level's, closed by its button, Escape, `?` and back, a link-opened page too; a
-// load under it read when it closes; the keys the browser's while it shows; a typed
+// load under it read when it closes; the keys the browser's while it shows but `j`
+// and `k`, which scroll it, and Cmd-O, landing.spec.ts's; a typed
 // level hash this load's entry; no text a reader sees saying "block" or "leaf".
 import { readFileSync } from "node:fs";
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, hash, openPath, press, readyLevel, selected, shot, status } from "./fixtures";
+import { drop, expect, fixtureText, hash, openPath, press, readyLevel, SCROLL_STEP, selected, shot, status } from "./fixtures";
 
 /** The inspector's version, read from the package's `Project.toml` as the build reads it. */
 const VERSION = /^version\s*=\s*"([^"]+)"/m.exec(readFileSync(new URL("../../Project.toml", import.meta.url), "utf8"))![1];
@@ -60,7 +61,7 @@ test("before a drop: the landing's link opens four sections over the inert landi
   const lead = h.locator('section[data-section="reading"] > h2 + p.lead + ul.terms');
   await expect(lead).toHaveCount(1);
   await expect(h.locator("p.lead")).toContainText("Double-click a closed assembly to open its level.");
-  await expect(h.locator("p.lead")).toContainText("A dragged component keeps its place for the session only.");
+  await expect(h.locator("p.lead")).toContainText("A dragged component keeps its place for the session only: u puts the last one dragged back in its computed place, and U or the Undo drags button every one.");
   // fifteen terms in their order, each with its drawing
   expect(await h.locator("ul.terms li[data-term]").evaluateAll((l) => l.map((e) => (e as HTMLElement).dataset.term))).toEqual(TERM_KEYS);
   await expect(h.locator("ul.terms li[data-term] > svg.sample")).toHaveCount(15);
@@ -90,7 +91,7 @@ test("before a drop: the landing's link opens four sections over the inert landi
   for (const gone of ["virtual subsystem", "rate scope"]) await expect(vocabulary.filter({ hasText: gone })).toHaveCount(0);
   expect(MAP_KEYS).toBeGreaterThan(10);
   await expect(h.locator("table.keys tr")).toHaveCount(MAP_KEYS);
-  await expect(h.locator("table.keys tr").nth(1)).toContainText("select the nearest component or pin in that direction");
+  await expect(h.locator("table.keys tr").nth(3)).toContainText("select the nearest component or pin in that direction");
   await expect(h.locator('table.keys kbd:text-is("?")')).toHaveCount(1);
   await expect(h.locator('table.keys kbd:text-is("o")')).toHaveCount(1);
   await expect(h.locator("p.vimium code")).toHaveText([
@@ -210,6 +211,7 @@ test("closed_loop, at pid_controller with a primitive selected and at the root w
       labels: svg.getAttribute("data-labels"),
       selection: document.querySelector("aside.detail")!.getAttribute("data-id"),
       level: svg.getAttribute("data-level"),
+      collapsed: [...document.querySelectorAll(".pane.side.collapsed")].map((p) => p.getAttribute("data-pane")),
     };
   });
   // Backspace would climb from pid_controller; Enter would open sensing; j and k would move from either.
@@ -222,7 +224,7 @@ test("closed_loop, at pid_controller with a primitive selected and at the root w
     expect([before.selection, before.level]).toEqual([id, level]);
     await press(page, "?");
     await expect(help(page)).toHaveCount(1);
-    for (const key of ["j", "k", "h", "l", "d", "r", "o", "y", "t", "0", "Enter", "Backspace"]) await press(page, key);
+    for (const key of ["j", "k", "h", "l", "d", "r", "o", "y", "t", "0", "m", "i", "u", "Shift+U", "Enter", "Backspace"]) await press(page, key);
     await press(page, "?");
     await expect(help(page)).toHaveCount(0);
     await page.locator(readyLevel(level)).waitFor();
@@ -370,4 +372,16 @@ test("closed_loop: no text a reader sees says block or leaf, over each drawer ta
   seen.push(...await readerTexts(page));
   expect(seen.length).toBeGreaterThan(100);
   expect(seen.filter((t) => RETIRED.test(strip(t)))).toEqual([]);
+});
+
+test("closed_loop: on the help page j and k scroll it by the step, down and back", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "?");
+  await expect(help(page)).toHaveCount(1);
+  const top = () => help(page).evaluate((e) => e.scrollTop);
+  expect(await top()).toBe(0);
+  for (const [key, at] of [["j", 1], ["j", 2], ["k", 1], ["k", 0], ["k", 0]] as const) {
+    await press(page, key);
+    expect(await top(), key).toBe(at * SCROLL_STEP);
+  }
 });

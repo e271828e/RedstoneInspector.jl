@@ -3,7 +3,8 @@
   // before a model, the frame over the session once one loads; the window's
   // title, the hash and back and forward, the help page over either, which stays
   // mounted and inert beneath it, and
-  // the keyboard table outside text fields (workspace.md answer 11); the live
+  // the keyboard table outside text fields (workspace.md answer 11), its `h j k l`
+  // and arrows by the focused region, Cmd-O's file input of its own; the live
   // tab's socket, its descriptors fed
   // to the loader a dropped file goes through (live_session.md answer 5).
   import Canvas, { type Target } from "./canvas/Canvas.svelte";
@@ -33,18 +34,22 @@
     setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
-  import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder } from "./state/prefs.svelte";
+  import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
   import { onMount, tick, untrack } from "svelte";
 
   let refusal = $state<string | undefined>();
   let dragging = $state(false);
   let canvasView = $state<ReturnType<typeof Canvas>>();
   let listing = $state(false);
+  /** The shell's own file input, outside the frame, for Cmd-O and Ctrl-O wherever the page shows. */
+  let picker = $state<HTMLInputElement>();
   /** The model came over the socket, so `live.text` holds its bytes for the download. */
   let pushed = $state(false);
 
   /** Screen pixels a panning key moves the view by. */
   const PAN_STEP = 48;
+  /** Pixels a scrolling key moves a pane's body or the help page by, the browser's own arrow step. */
+  const SCROLL_STEP = 40;
   /** The zoom keys' factor, about the viewport's center. */
   const ZOOM_STEP = 1.25;
   /** The four regions in Tab's order, by their roots. */
@@ -206,6 +211,28 @@
   }
   const focusCanvas = () => document.querySelector<HTMLElement>(".viewport")?.focus();
 
+  /** `m` and `i`: a side pane collapsed or expanded; the focus a collapsing pane held moves to the canvas. */
+  async function togglePane(side: Side) {
+    const held = session.focus === side;
+    toggleCollapsed(side);
+    if (!held || !prefs.collapsed[side]) return;
+    await tick();
+    focusCanvas();
+  }
+
+  /** `d`: the drawer toggled on its tab; the focus the closing drawer held moves to the canvas. */
+  async function toggleDrawerKey() {
+    const held = session.focus === "drawer" && session.drawer.open;
+    toggleDrawer(session.drawer.tab);
+    if (!held) return;
+    await tick();
+    focusCanvas();
+  }
+
+  /** What the detail pane's and the drawer's keys scroll: the side pane's body, the drawer's open tab body. */
+  const scrollerOf = (region: "detail" | "drawer") =>
+    document.querySelector<HTMLElement>(region === "detail" ? '.pane[data-pane="detail"] .body' : "section.drawer .tab-body");
+
   /** The block a direction key starts from: the selected block or pin, a port's block, a wire's consumer. */
   function origin(): string | undefined {
     const t = drawn;
@@ -257,12 +284,21 @@
   }
 
   function onkeydown(e: KeyboardEvent) {
-    // The help page takes `?` and Escape alone; Tab and every other key are the browser's, so the page scrolls.
-    if (session.help) {
-      if (e.ctrlKey || e.metaKey || (e.key !== "?" && e.key !== "Escape")) return;
+    // Cmd-O and Ctrl-O pick a file wherever the page shows: a text field, the landing, under the help page.
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "o") {
       e.preventDefault();
+      picker?.click();
+      return;
+    }
+    // The help page takes `?`, Escape, `j` and `k`; Tab and every other key are the browser's, so the page scrolls.
+    if (session.help) {
+      if (e.ctrlKey || e.metaKey) return;
       if (e.key === "?") toggleHelp();
-      else escape();
+      else if (e.key === "Escape") escape();
+      else if ((e.key === "j" || e.key === "k") && !e.altKey) {
+        document.querySelector("article.help")?.scrollBy(0, e.key === "j" ? SCROLL_STEP : -SCROLL_STEP);
+      } else return;
+      e.preventDefault();
       return;
     }
     if (e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -283,11 +319,12 @@
     }
     if (e.ctrlKey || e.metaKey) return;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-    const inTree = e.target instanceof Element && !!e.target.closest("nav.tree");
-    const arrows: Record<string, [number, number]> = {
-      ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1], ArrowRight: [1, 0],
-    };
-    const vim: Record<string, [number, number]> = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] };
+    // `h j k l` and the arrows follow the focused region: the tree's rows, the detail pane's or the drawer's
+    // scrolling, else the canvas's cursor and pan.
+    const arrows: Record<string, Direction> = { ArrowLeft: "h", ArrowDown: "j", ArrowUp: "k", ArrowRight: "l" };
+    const steps: Record<Direction, [number, number]> = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] };
+    const vim = key in steps ? (key as Direction) : undefined;
+    const region = session.focus;
     let handled = true;
     if (e.key === "Backspace" || (e.key === "ArrowUp" && e.altKey) || (key === "k" && e.shiftKey && !e.altKey)) climb();
     else if (e.altKey) handled = false;
@@ -296,15 +333,21 @@
     else if (e.key === "Escape") escape();
     else if (key === "h" && e.shiftKey) back();
     else if (key === "l" && e.shiftKey) forward();
-    else if (key in vim && inTree) treeMove(key as Direction);
-    else if (key in vim) move(key as Direction);
-    else if (e.key in arrows) canvasView?.panBy(arrows[e.key][0] * PAN_STEP, arrows[e.key][1] * PAN_STEP);
+    else if ((vim || e.key in arrows) && region === "tree") treeMove(vim ?? arrows[e.key]);
+    else if ((vim || e.key in arrows) && (region === "detail" || region === "drawer")) {
+      const [dx, dy] = steps[vim ?? arrows[e.key]];
+      scrollerOf(region)?.scrollBy(dx * SCROLL_STEP, dy * SCROLL_STEP);
+    } else if (vim) move(vim);
+    else if (e.key in arrows) canvasView?.panBy(steps[arrows[e.key]][0] * PAN_STEP, steps[arrows[e.key]][1] * PAN_STEP);
     else if (e.key === "0") canvasView?.fit();
     else if (key === "z" && !e.shiftKey) { if (drawn) canvasView?.centre(drawn); }
     else if (key === "n") stepSearch(e.key === "N" ? -1 : 1);
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
-    else if (key === "d" && !e.shiftKey) toggleDrawer(session.drawer.tab);
+    else if (key === "d" && !e.shiftKey) toggleDrawerKey();
+    else if (key === "m" && !e.shiftKey) togglePane("tree");
+    else if (key === "i" && !e.shiftKey) togglePane("detail");
+    else if (key === "u") canvasView?.undrag(e.shiftKey);
     else if (e.key === "/") focusSearch();
     else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
     else if (key === "y" && !e.shiftKey) toggleLabels();
@@ -346,6 +389,10 @@
   {#if session.help}
     <Help onclose={closeHelp} />
   {/if}
+  <input
+    class="pick" type="file" accept=".json,application/json" hidden bind:this={picker}
+    onchange={(e) => { openFile(e.currentTarget.files?.[0]); e.currentTarget.value = ""; }}
+  />
   <div class="under" inert={session.help}>
   {#if model}
     <Frame drawerOpen={session.drawer.open}>

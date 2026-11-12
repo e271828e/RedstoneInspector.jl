@@ -1,8 +1,9 @@
 // The frame (workspace.md answers 1, 6, 10 and 11): the status bar's kind, totals and help link,
 // the drawer's strip, counts and open rule, the splitters and the collapsed panes
-// kept per browser across a reload and a new drop.
+// kept per browser across a reload and a new drop; `m` and `i` collapsing the side
+// panes, and the ring fixed on a focused pane's box while its body scrolls (increment 8b).
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, shot, status } from "./fixtures";
+import { drop, expect, fixtureText, press, shot, status } from "./fixtures";
 
 const drawer = (page: Page) => page.locator("section.drawer");
 const tab = (page: Page, t: string) => drawer(page).locator(`button.tab[data-tab="${t}"]`);
@@ -111,4 +112,74 @@ test("a minor 1 copy of descent shows the note in the status bar", async ({ page
   d.format_version = { major: 1, minor: 1 };
   await drop(page, "descent", JSON.stringify(d));
   await expect(status(page).locator(".note")).toContainText("format 1.1");
+});
+
+test("closed_loop: m and i collapse and expand the tree and the detail pane, kept across a reload; collapsing the pane holding the focus moves it to the canvas; Shift-m and Shift-i do nothing", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const collapsed = /\bcollapsed\b/;
+  const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem("redstone-inspector/prefs") ?? "null")?.collapsed);
+  const onCanvas = async (what: string) => {
+    await expect(page.locator(".viewport.focused"), what).toHaveCount(1);
+    expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport")), what).toBe(true);
+  };
+  await press(page, "Shift+M");
+  await press(page, "Shift+I");
+  await expect(treePane(page)).not.toHaveClass(collapsed);
+  await expect(detailPane(page)).not.toHaveClass(collapsed);
+
+  await page.locator('nav.tree .row[data-path="plant"] .segment').click();
+  await press(page, "m");
+  await expect(treePane(page)).toHaveClass(collapsed);
+  await expect(page.locator("nav.tree")).toHaveCount(0);
+  await onCanvas("m with the tree focused");
+  await page.locator("aside.detail h2").click();
+  await press(page, "i");
+  await expect(detailPane(page)).toHaveClass(collapsed);
+  await expect(page.locator("aside.detail")).toHaveCount(0);
+  await onCanvas("i with the detail pane focused");
+  expect(await stored()).toEqual({ tree: true, detail: true });
+  await shot(page, "closed_loop", "", "frame-collapsed-keys");
+
+  await page.reload();
+  await drop(page, "closed_loop");
+  await expect(treePane(page)).toHaveClass(collapsed);
+  await expect(detailPane(page)).toHaveClass(collapsed);
+  // expanding leaves the focus where it was
+  await press(page, "Tab");
+  await onCanvas("Tab");
+  await press(page, "m");
+  await expect(treePane(page)).not.toHaveClass(collapsed);
+  await press(page, "i");
+  await expect(detailPane(page)).not.toHaveClass(collapsed);
+  await onCanvas("after m and i expanded the panes");
+  expect(await stored()).toEqual({ tree: false, detail: false });
+  // collapsing a pane that does not hold the focus leaves it too
+  await page.locator("aside.detail h2").click();
+  await press(page, "m");
+  await expect(treePane(page)).toHaveClass(collapsed);
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+});
+
+test("large: the ring stays on the pane's box while its body scrolls, for the tree, the detail pane and the drawer", async ({ page }) => {
+  await drop(page, "large");
+  await tab(page, "order").click();
+  const cases: [string, string, string][] = [
+    ["tree", '.pane[data-pane="tree"] .body', "nav.tree"],
+    ["detail", '.pane[data-pane="detail"] .body', "aside.detail"],
+    ["drawer", "section.drawer .tab-body", "section.drawer"],
+  ];
+  for (const [pane, scroller, root] of cases) {
+    await page.locator(root).focus();
+    await expect(page.locator(`${root}.focused`)).toHaveCount(1);
+    const ring = () => page.evaluate(({ pane, root }) => {
+      const p = document.querySelector(`.pane[data-pane="${pane}"]`)!, r = p.getBoundingClientRect();
+      return { pane: getComputedStyle(p).outlineStyle, root: getComputedStyle(document.querySelector(root)!).outlineStyle, box: [r.x, r.y, r.width, r.height] };
+    }, { pane, root });
+    const before = await ring();
+    expect(before.pane, pane).toBe("solid");
+    expect(before.root, pane).toBe("none");
+    await page.locator(scroller).evaluate((e) => e.scrollTo(0, 400));
+    expect(await page.locator(scroller).evaluate((e) => e.scrollTop), pane).toBe(400);
+    expect(await ring(), pane).toEqual(before);
+  }
 });

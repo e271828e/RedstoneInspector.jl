@@ -1,8 +1,9 @@
 // The landing panel and the label in the window's title (workspace.md answer 10):
 // the privacy statement and the help link before a drop, a refusal on the landing, the frame once a
-// model loads, a structureless failure in the frame.
-import { test } from "@playwright/test";
-import { drop, expect, fixtureText, readyLevel, rows, shot, status } from "./fixtures";
+// model loads, a structureless failure in the frame; Cmd-O and Ctrl-O picking a file
+// wherever the page shows (increment 8b).
+import { test, type Page } from "@playwright/test";
+import { drop, expect, fixtureText, press, readyLevel, rows, shot, status } from "./fixtures";
 
 const major2 = () => {
   const d = JSON.parse(fixtureText("descent"));
@@ -71,4 +72,42 @@ test("failure_structure: the frame, an empty tree, the sentence and the drawer o
   await expect(page.locator("aside.detail h2 .segment")).toHaveText("failure_structure");
   await expect(page).toHaveTitle("failure_structure – Redstone inspector");
   await shot(page, "failure_structure", "", "landing");
+});
+
+/** The file chooser a key raises within a second, or none. */
+async function chooserFrom(page: Page, key: string) {
+  const chooser = page.waitForEvent("filechooser", { timeout: 1000 }).catch(() => undefined);
+  await page.keyboard.press(key);
+  return chooser;
+}
+const fileOf = (name: string) => ({ name: `${name}.json`, mimeType: "application/json", buffer: Buffer.from(fixtureText(name)) });
+
+test("Cmd-O and Ctrl-O raise the file chooser on the landing, with a model, from the search field and under the help page, the picked file loading; with Shift or Alt they do not", async ({ page }) => {
+  await page.goto("/");
+  // a key pressed the moment the page loads raises no chooser in Playwright, whatever the page does
+  await page.locator(".landing").waitFor();
+  const pick = async (key: string, name: string, where: string) => {
+    const chooser = await chooserFrom(page, key);
+    expect(chooser, `${key} ${where}`).toBeDefined();
+    await chooser!.setFiles(fileOf(name));
+    await expect(page, `${key} ${where}`).toHaveTitle(`${name} – Redstone inspector`);
+  };
+  await pick("Meta+o", "closed_loop", "on the landing");
+  await page.locator(readyLevel("")).waitFor();
+  await pick("Control+o", "descent", "with a model");
+  await page.locator("input.query").focus();
+  await pick("Meta+o", "closed_loop", "from the search field");
+  await expect(page.locator("input.query")).toBeFocused();
+  await press(page, "Escape");
+  await press(page, "?");
+  await expect(page.locator("article.help")).toHaveCount(1);
+  await pick("Control+o", "descent", "under the help page");
+  await expect(page.locator("article.help")).toHaveCount(1);
+  await press(page, "Escape");
+  await expect(page.locator("article.help")).toHaveCount(0);
+  await page.locator(readyLevel("")).waitFor();
+  await expect(page.locator("nav.tree .row").first()).toHaveAttribute("data-path", "");
+  for (const key of ["Meta+Shift+o", "Control+Shift+o", "Meta+Alt+o", "Control+Alt+o"]) {
+    expect(await chooserFrom(page, key), key).toBeUndefined();
+  }
 });

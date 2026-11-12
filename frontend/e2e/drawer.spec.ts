@@ -2,9 +2,10 @@
 // diagnostic and warning, errors first, with kind, path, message and the type's
 // location; the filter; a row's click focusing it and selecting what it names
 // on its level; the empty states; the tree's propagated marks; a push dropping
-// the focus. Counts from the oracle (`overlay.py`).
+// the focus. Counts from the oracle (`overlay.py`). The drawer's own keys, h j k l
+// and the arrows scrolling its body, and `d` closing it with the focus (increment 8b).
 import { test, type Page } from "@playwright/test";
-import { drop, dropOver, expect, fixtureText, press, readyLevel, shot } from "./fixtures";
+import { drop, dropOver, expect, expectScrollKeys, fixtureText, press, readyLevel, shot, viewBox, widen } from "./fixtures";
 
 const drawer = (page: Page) => page.locator("section.drawer");
 const rowsOf = (page: Page) => page.locator("section.drawer .tab-body ul.diagnostics > li.diagnostic");
@@ -152,4 +153,46 @@ test("a push drops the focused diagnostic and keeps the drawer open on diagnosti
   await expect(drawer(page)).toHaveAttribute("data-tab", "diagnostics");
   await expect(drawer(page).locator('button.tab[data-tab="diagnostics"] .count')).toHaveText("0");
   await expect(drawer(page).locator("p.empty")).toHaveText("No diagnostics or warnings.");
+});
+
+test("large: with the drawer focused, j k and the vertical arrows scroll its body by the step, h l and the horizontal ones sideways; closed, the eight do nothing; d closing it moves the focus to the canvas", async ({ page }) => {
+  await drop(page, "large");
+  const state = async () => ({ view: await viewBox(page), selected: await page.locator("svg.canvas .selected").count(), id: await page.locator("aside.detail").getAttribute("data-id") });
+  const tab = page.locator('button.tab[data-tab="order"]');
+  await tab.click();
+  const body = page.locator("section.drawer .tab-body");
+  await widen(body);
+  // the strip's empty end: the drawer's root takes the focus
+  const strip = (await page.locator("section.drawer .strip").boundingBox())!;
+  await page.mouse.click(strip.x + strip.width - 10, strip.y + strip.height / 2);
+  await expect(page.locator("section.drawer.focused")).toHaveCount(1);
+  const before = await state();
+  await expectScrollKeys(page, body);
+  expect(await state(), "open").toEqual(before);
+  // closed by its tab, the tab keeping the focus: nothing to scroll, and the canvas's keys stay out
+  await tab.click();
+  await expect(drawer(page)).toHaveAttribute("data-open", "false");
+  await expect(page.locator("section.drawer.focused")).toHaveCount(1);
+  // the canvas grew, its view with it once its size is read back
+  await expect.poll(() => svg(page).evaluate((s: SVGSVGElement) => {
+    const v = s.viewBox.baseVal;
+    const box = s.parentElement!;
+    return Math.abs(v.width / v.height - box.clientWidth / box.clientHeight) < 1e-6;
+  })).toBe(true);
+  const closed = await state();
+  for (const key of ["j", "k", "h", "l", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"]) await press(page, key);
+  expect(await state(), "closed").toEqual(closed);
+  // d opens it, the focus kept; d closing it while it holds the focus moves the focus to the canvas
+  await press(page, "d");
+  await expect(drawer(page)).toHaveAttribute("data-open", "true");
+  await expect(page.locator("section.drawer.focused")).toHaveCount(1);
+  await press(page, "d");
+  await expect(drawer(page)).toHaveAttribute("data-open", "false");
+  await expect(page.locator(".viewport.focused")).toHaveCount(1);
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
+  // d with the focus elsewhere leaves it there
+  await page.locator("aside.detail h2").click();
+  await press(page, "d");
+  await press(page, "d");
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });

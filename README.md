@@ -207,20 +207,27 @@ The open level is the URL's hash, `#level=sensing`, none at the root, so back
 and forward move between levels and a reload or a link reopens one. Each
 level keeps its zoom, pan and layout for the session, and a component or pin
 dragged on the canvas keeps its place until the page reloads; only its own
-wires are re-routed, and Shift held keeps the move to one axis. A second descriptor dropped or pushed over the first keeps
+wires are re-routed, and Shift held keeps the move to one axis. `u` puts the
+level's last dragged component back in its computed place, the one before it
+on the next press, and `U` or the Undo drags button beside Fit every one, the
+view staying where it is. A second descriptor dropped or pushed over the first keeps
 the open level, the selection, the expansion, the views and the search by path
 and name, and the keyboard's focus; a level's view is kept only while its
 components are unchanged, else it fits; what the new model lacks is dropped, and a
 level that is gone falls back to its nearest ancestor with a note in the status
 bar. While a model opened from a file is loaded, the page asks before it
-unloads; a pushed one does not. The keyboard: on the canvas `h` `j` `k` `l`
-move the selection to the nearest component or pin in that direction, the view
-following; in the tree they move a row, expand and collapse; the arrows pan;
+unloads; a pushed one does not. The keyboard: on the canvas, or with nothing
+focused, `h` `j` `k` `l` move the selection to the nearest component or pin in
+that direction, the view following, and the arrows pan; in the tree both move
+a row, expand and collapse; in the detail pane and the drawer both scroll, as
+`j` and `k` scroll the help page;
 Shift-`h` and Shift-`l` go back and forward between the levels this page load
 opened; Shift-`j` or Enter opens the selected assembly and Shift-`k`, Backspace
 or Alt-Up climbs; `z` centres the selection; `0` fits, `+` and `-` zoom; `d`
-toggles the drawer; Tab moves between the tree, the canvas, the detail pane
-and the drawer, the focus ring showing for the keyboard only; `r` switches the
+toggles the drawer, `m` the model tree and `i` the detail pane; Cmd-O or
+Ctrl-O opens a file; Tab moves between the tree, the canvas, the detail pane
+and the drawer, the pane holding the focus outlined, the canvas only for the
+keyboard's focus; `r` switches the
 color mode and `y` the type labels; `o` the execution-order badges; `t`
 traces the selected pin, port or wire; `?` opens and closes the help page.
 Search, in the field at the top of the tree, opened

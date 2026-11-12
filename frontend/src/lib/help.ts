@@ -13,7 +13,7 @@ export interface Term {
 }
 
 /** The paragraph above the legend: the level, the zoom's text order and the computed layout. */
-export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only.";
+export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only: `u` puts the last one dragged back in its computed place, and `U` or the Undo drags button every one.";
 
 /** Component, face and wire, then the glossary's drawn terms in its order, each with its drawing. */
 export const TERMS: Term[] = [
@@ -95,9 +95,11 @@ export const VOCABULARY: [string, string, string][] = [
 
 /** The keyboard table, the map's rows in the map's order (frontend/MAP.md, "The keyboard"), each `[keys, action]`. */
 export const KEYS: [string[], string][] = [
-  [["h", "j", "k", "l"], "in the tree, the next and previous row, expand or collapse, or the child's or the parent's row"],
-  [["h", "j", "k", "l"], "elsewhere, select the nearest component or pin in that direction, the view following"],
-  [["←", "↓", "↑", "→"], "pan the canvas"],
+  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the tree, the next and previous row, expand or collapse, or the child's or the parent's row"],
+  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the detail pane or the drawer, scroll it"],
+  [["j", "k"], "on this page, scroll it"],
+  [["h", "j", "k", "l"], "on the canvas or with nothing focused, select the nearest component or pin in that direction, the view following"],
+  [["←", "↓", "↑", "→"], "on the canvas or with nothing focused, pan the canvas"],
   [["Shift-h", "Shift-l"], "back and forward between the levels opened since the page loaded; nothing before the first"],
   [["Shift-j", "Enter"], "open the selected assembly"],
   [["Shift-k", "Backspace", "Alt-↑"], "go to the parent, the child left selected"],
@@ -108,8 +110,11 @@ export const KEYS: [string[], string][] = [
   [["0"], "fit the level"],
   [["+", "="], "zoom in"],
   [["-"], "zoom out"],
+  [["u", "U"], "put the last dragged component or pin back in its computed place, or every one"],
   [["/", "Cmd-K", "Ctrl-K"], "focus the search"],
+  [["Cmd-O", "Ctrl-O"], "open a descriptor"],
   [["d"], "toggle the drawer"],
+  [["m", "i"], "collapse or expand the model tree, the detail pane"],
   [["r"], "switch between tier and rate colors"],
   [["y"], "type labels on or off"],
   [["o"], "execution-order badges on or off"],
@@ -118,7 +123,7 @@ export const KEYS: [string[], string][] = [
 ];
 
 /** The keys apply outside text fields; colors, labels and badges are kept per browser. */
-export const KEYS_NOTE = "Single keys, outside text fields. The color mode, the type labels and the order badges are kept per browser.";
+export const KEYS_NOTE = "Single keys, outside text fields, where Tab, Cmd-O and Ctrl-O still act. The color mode, the type labels, the order badges and the collapsed panes are kept per browser.";
 
 /** The hosted copy's address (build_release.md answer 7). */
 export const HOSTED_URL = "https://e271828e.github.io/RedstoneInspector.jl/";

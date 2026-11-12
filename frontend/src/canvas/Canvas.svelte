@@ -16,7 +16,7 @@
   // (workspace.md answer 7).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
-  // (initial_design.md answer 12).
+  // (initial_design.md answer 12); `u`, `U` and the undo button put drags back.
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
@@ -220,27 +220,43 @@
     pending = undefined;
   }
 
+  /** The latest ELK run; a level change or a newer run leaves an older one's result unused. */
+  let run = 0;
+  /** ELK over the level, a held layout's dragged blocks put back where it has them, drawn in the view given or fitted. */
+  function relayout(level: Level, sizes: Map<string, BlockSize>, held: LevelLayout | undefined, v: View | undefined) {
+    const mine = ++run;
+    ready = false;
+    layoutLevel(level, sizes, regionsOf(tree, level.path), sizeLabels(model, level)).then((laid) => {
+      if (mine !== run) return;
+      const r = held ? replace(laid, level, sizes, held) : { geometry: laid, dragged: new Set<string>() };
+      draw(level, sizes, r.geometry, r.dragged, v);
+      onlayout?.(r.geometry, r.dragged);
+    });
+  }
+
   $effect(() => {
     const level = levelOf(tree, model.resolution!, path);
     const sizes = sizeLevel(level, tree);
     const [saved, v] = untrack(() => [savedLayout, savedView] as const);
-    let stale = false;
+    run++;
     hovered = undefined;
     blockDrag = undefined;
     menu = undefined;
-    if (saved && !saved.stale) {
-      untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
-      return;
-    }
-    ready = false;
-    layoutLevel(level, sizes, regionsOf(tree, path), sizeLabels(model, level)).then((laid) => {
-      if (stale) return;
-      const r = saved ? replace(laid, level, sizes, saved) : { geometry: laid, dragged: new Set<string>() };
-      draw(level, sizes, r.geometry, r.dragged, v);
-      onlayout?.(r.geometry, r.dragged);
-    });
-    return () => { stale = true; };
+    if (saved && !saved.stale) untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
+    else relayout(level, sizes, saved, v);
+    return () => { run++; };
   });
+
+  /**
+   * `u` and `U`: the last dragged block, or every one, back in its computed place, the level laid out again with the
+   * other drags put back, as a push does, the view kept; false with no drag on the drawn level or one under way.
+   */
+  export function undrag(all: boolean): boolean {
+    if (!shown || shown.level.path !== path || !dragged.size || blockDrag?.moved) return false;
+    dragged = new Set(all ? [] : [...dragged].slice(0, -1));
+    relayout(shown.level, shown.sizes, { geometry: shown.geometry, dragged, stale: true }, view);
+    return true;
+  }
 
   function setView(v: View) {
     view = v;
@@ -843,7 +859,12 @@
       {/if}
     {/if}
   </svg>
-  <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
+  <div class="tools">
+    {#if dragged.size}
+      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (U)">Undo drags</button>
+    {/if}
+    <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
+  </div>
   {#if menu}
     <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px">
       <button class="trace" role="menuitem" onclick={traceMenu}>Trace</button>
@@ -893,7 +914,8 @@
   /* A double-click on the canvas must not select the page's text. */
   .viewport { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); user-select: none; }
   svg { display: block; touch-action: none; cursor: grab; }
-  .fit { position: absolute; top: 8px; right: 8px; font: 12px system-ui, sans-serif; }
+  .tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+  .tools button { font: 12px system-ui, sans-serif; }
   .menu {
     position: absolute; z-index: 1; display: flex; flex-direction: column; padding: 2px; font: 12px system-ui, sans-serif;
     background: var(--bg); border: 1px solid var(--wire); border-radius: 4px; box-shadow: 0 2px 6px color-mix(in srgb, var(--text) 20%, transparent);

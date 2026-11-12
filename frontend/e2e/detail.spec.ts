@@ -8,9 +8,10 @@
 // layout (answer 4 as amended by the look pass's 3.5), "open level" where a closed
 // assembly has its Open button, its wires among the facts and its rate scopes after
 // the locations (the second look's 3.1 and 3.2); pinning stated on a primitive's own
-// face alone (3.4); a location's file name kept whole with its line number (3.5).
+// face alone (3.4); a location's file name kept whole with its line number (3.5);
+// the pane's own keys, h j k l and the arrows scrolling it (increment 8b).
 import { test, type Page } from "@playwright/test";
-import { clickWire, drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
+import { clickWire, drop, expect, expectScrollKeys, fixtureText, openPath, readyLevel, shot, viewBox, widen } from "./fixtures";
 
 /** The docs constant of `src/lib/docstring.ts`, read back by the check. */
 const DOCS_URL = "https://e271828e.github.io/Redstone.jl/dev/";
@@ -473,4 +474,16 @@ test("a hostile docstring: raw HTML shown as text, the image as its text, the sc
   await expect(body).toContainText("<script>alert(1)</script>");
   await expect(body.locator("code")).toHaveText("alt");
   for (const tag of ["b", "img", "script", "a"]) await expect(body.locator(tag), tag).toHaveCount(0);
+});
+
+test("large: with the detail pane focused, j k and the vertical arrows scroll its body by the step, h l and the horizontal ones sideways; the view and the selection stay", async ({ page }) => {
+  await drop(page, "large");
+  const body = page.locator('.pane[data-pane="detail"] .body');
+  await widen(pane(page));
+  await pane(page).locator("h2").click();
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+  const state = async () => ({ view: await viewBox(page), id: await pane(page).getAttribute("data-id"), selected: await page.locator("svg.canvas .selected").count() });
+  const before = await state();
+  await expectScrollKeys(page, body);
+  expect(await state()).toEqual(before);
 });
