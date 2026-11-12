@@ -10,8 +10,10 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8b, the keyboard by region.** Next, and before the pin. Not
-  started: no brief, no branch, no worktree. The user ruled its scope in
+- **Increment 8b, the keyboard by region.** Next, and before the pin. In
+  prototype since 2026-11-12, in the worktree
+  `~/.julia/dev/RedstoneInspector.jl-inc8b` on the branch `increment-8b`;
+  no brief yet, nothing landed. The user ruled its scope in
   increment 8's first look,
   `increments/inspector_08_analysis_help/look_inspector_08.md`, entry 4.7
   and the additional comment under its section 6, and `roadmap.md` holds its
@@ -32,14 +34,21 @@ The bullets stand in working order, the first one next.
   table and answer 9 on a drag's lifetime, the help page's lead says how a
   drag is undone, and each key goes into `help.ts`'s `KEYS` and the map's
   keyboard table together, since a check counts one against the other. The
-  rulings leave four things to the brief, each put to the user before
-  anything lands: whether `h` and `l` scroll sideways or do nothing in the
-  detail pane and the drawer; how a focused pane shows, the ring being drawn
-  today for a focus the keyboard gave and for none the mouse gave; how Cmd-O
-  and Ctrl-O sit with the shell's rule that leaves every Ctrl and Meta key
-  but Cmd-K and Ctrl-K to the browser, whose own binding they take; and
-  whether it takes the two unordered items its keys touch, "`j` and `k` in
-  an unselected tree" and "Keyboard paths and buttons".
+  user ruled the four things the rulings left open on 2026-11-12, and the
+  brief need not be shown before it lands unless the prototype surfaces
+  another design decision. `h` and `l` scroll sideways in the detail pane
+  and the drawer, as the horizontal arrows do. The tree, the detail pane
+  and the drawer show the ring on the pane's box whenever they hold the
+  focus, the mouse's or the keyboard's, and the canvas keeps its ring for
+  the keyboard alone, its keys meaning what they mean with nothing focused.
+  The page takes Cmd-O and Ctrl-O wherever it shows, in the search field,
+  on the landing and under the help page, where the model loads beneath as
+  a drop's does, since the browser's own binding would leave the page; the
+  shell's rule then names four exceptions. It takes "`j` and `k` in an
+  unselected tree", ruled as built with the arrows alike, the sentence
+  going into `workspace.md` answer 2, and leaves "Keyboard paths and
+  buttons" to its own sweep, which needs a ruling on whether Tab enters a
+  region or each region gets a row cursor.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
