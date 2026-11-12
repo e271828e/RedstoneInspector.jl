@@ -6,7 +6,7 @@ import { portId, producerFace, type Level } from "./level";
 import type { Model } from "./model";
 import { faceInfo } from "./resolve";
 
-/** The five line styles: thin solid, thin dashed, thick, the triple line, thin dotted. */
+/** The five line styles: thin solid, thin dashed, thick, the double line, thin dotted. */
 export type WireClass = "scalar" | "flag" | "vector" | "struct" | "opaque";
 
 /** A kind marker's class; the outer kind wins, so a vector of anything is `vector`. */

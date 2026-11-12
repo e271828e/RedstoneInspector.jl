@@ -182,6 +182,7 @@ test.describe("closed_loop", () => {
     await expect(fact(page, "class")).toHaveText("assembly");
     await expect(fact(page, "children")).toHaveText("2");
     await expect(fact(page, "wires")).toHaveText("3");
+    await expect(pane(page).locator('dl.facts dt:text-is("wires")')).toHaveAttribute("title", "How many wires the assembly declares on its own level.");
     // the open button stands beside the copy button on the path line, and no mark
     await expect(pane(page).locator(".path-line button.copy + button.open-level")).toHaveCount(1);
     await expect(pane(page).locator("span.level-mark")).toHaveCount(0);

@@ -162,16 +162,20 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   expect(tier).toBe(fill);
 });
 
-/** Drags the pointer across a cell's text, from its first character's left half to its last's right half, and returns the selected text. */
-async function dragAcross(page: Page, cell: Locator): Promise<string> {
+/**
+ * Drags the pointer across a cell's first text, from the left half of its character `from` to the right half of the
+ * one before `to`, the whole text by default, and returns the selected text.
+ */
+async function dragAcross(page: Page, cell: Locator, from = 0, to?: number): Promise<string> {
   await cell.scrollIntoViewIfNeeded();
-  const r = await cell.evaluate((e) => {
+  const r = await cell.evaluate((e, [from, to]) => {
     const t = document.createTreeWalker(e, NodeFilter.SHOW_TEXT).nextNode()!;
     const range = document.createRange();
-    range.selectNodeContents(t);
+    range.setStart(t, from!);
+    range.setEnd(t, to ?? t.textContent!.length);
     const b = range.getBoundingClientRect();
     return { left: b.left, right: b.right, y: (b.top + b.bottom) / 2 };
-  });
+  }, [from, to]);
   await page.mouse.move(r.left + 1, r.y);
   await page.mouse.down();
   await page.mouse.move(r.right - 1, r.y, { steps: 5 });
@@ -179,7 +183,7 @@ async function dragAcross(page: Page, cell: Locator): Promise<string> {
   return page.evaluate(() => window.getSelection()?.toString() ?? "");
 }
 
-test("closed_loop: a drag that leaves a text selection in a row selects nothing, a plain click then selects; on the root inputs and the order tabs", async ({ page }) => {
+test("closed_loop: a drag that makes or changes a text selection in a row selects nothing, a plain click and the row's button under a selection then select; on the root inputs, order and timing tabs", async ({ page }) => {
   await drop(page, "closed_loop");
   await openTab(page, "root-inputs");
   const type = body(page).locator('tr.root-input[data-name="mode"] td.type code');
@@ -187,6 +191,19 @@ test("closed_loop: a drag that leaves a text selection in a row selects nothing,
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");
   await type.click();
+  await expect(page.locator('g.block.selected[data-id="⟨in⟩mode"]')).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  // a second drag in the same row changes the selection: nothing selected either time
+  const kind = body(page).locator('tr.root-input[data-name="mode"] td.kind');
+  expect(await dragAcross(page, kind, 0, 3)).toBe("boo");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  expect(await dragAcross(page, kind, 4, 7)).toBe("ean");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  // the row's button from the keyboard selects, the selection standing
+  await body(page).locator('tr.root-input[data-name="mode"] button.row').focus();
+  expect(await page.evaluate(() => window.getSelection()?.toString())).toBe("ean");
+  await page.keyboard.press("Enter");
   await expect(page.locator('g.block.selected[data-id="⟨in⟩mode"]')).toHaveCount(1);
   await page.keyboard.press("Escape");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
@@ -200,6 +217,16 @@ test("closed_loop: a drag that leaves a text selection in a row selects nothing,
   await port.click();
   await page.locator(readyLevel("pid_controller")).waitFor();
   await expect(page.locator('g.block.selected[data-id="pid_controller/h_ctl"]')).toHaveCount(1);
+
+  // a component's period: the drag selects nothing, a click selects the primitive on its level
+  await openTab(page, "timing");
+  const period = component(page, "sensing/noise").locator("td.period");
+  expect(await dragAcross(page, period)).toBe(await period.textContent());
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "pid_controller");
+  await expect(page.locator('g.block.selected[data-id="pid_controller/h_ctl"]')).toHaveCount(1);
+  await period.click();
+  await page.locator(readyLevel("sensing")).waitFor();
+  await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
 });
 
 test("closed_loop_deployment: the schedule note says the format carries none", async ({ page }) => {

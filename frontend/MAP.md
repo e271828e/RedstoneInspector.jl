@@ -504,13 +504,13 @@ What the records do not fix, or where the page differs:
   `rowTarget`; `Timing` binds `byPeriod`, the drawer's, never a pref. The
   body scrolls to its top on a tab switch.
 - **The analysis tabs.** A click anywhere on a row with a target selects it,
-  `button.row` kept for the keyboard, unless its press began with no selection
-  on the row and the click finds one (`rowClick`). A root input's row selects
-  its tag `⟨in⟩name`; its consumers read `path/port`, or `/port`, one to a
-  line.
-  Timing's base grid row, "0 base grid", has no target; a scope cell selects
-  its declaring node or reads "the root"; a swatch is `stepPair(step)` in
-  either mode (reading 13); `p.schedule-note` is `scheduleNote` (reading 1).
+  `button.row` kept for the keyboard, unless the pointer's click finds a
+  selection on the row other than its press's (`rowClick`). A root input's
+  row selects its tag `⟨in⟩name`; its consumers read `path/port`, or `/port`,
+  one to a line. Timing's base grid row, "0 base grid", has no target; a
+  scope cell selects its declaring node or reads "the root"; a swatch is
+  `stepPair(step)` in either mode (reading 13); `p.schedule-note` is
+  `scheduleNote` (reading 1).
   The order groups are "Stage 1, any order" and "Stage 2, in order"; a
   primitive root's step has `data-path=""`; an edge row selects its input port.
 - **The status bar.** The kind, the model's totals, `tier colors` or `rate
