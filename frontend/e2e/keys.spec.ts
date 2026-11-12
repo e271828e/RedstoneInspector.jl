@@ -364,3 +364,25 @@ test("a click below the tree's rows or a pin's short facts in the detail pane, p
     await expect(page.locator(`${root}.focused`), pane).toHaveCount(1);
   }
 });
+
+test("a click on a non-focusable place outside every region, the status bar's text or the other pane's head, clears the tree's or the detail pane's focus, and j then acts on the canvas", async ({ page }) => {
+  const boxes = await blockBoxes(page);
+  const below = nearest(boxes, "plant", "j")!;
+  const cases: [string, () => Promise<void>, string][] = [
+    ["tree", () => page.locator('nav.tree .row[data-path="plant"] .segment').click(), "footer.status .counts"],
+    ["tree", () => page.locator('nav.tree .row[data-path="plant"] .segment').click(), '.pane[data-pane="detail"] .head .title'],
+    ["detail", () => page.locator("aside.detail h2").click(), "footer.status .counts"],
+    ["detail", () => page.locator("aside.detail h2").click(), '.pane[data-pane="tree"] .head .title'],
+  ];
+  for (const [region, enter, away] of cases) {
+    const what = `${region}, then ${away}`;
+    await page.locator('g.block[data-id="plant"]').click();
+    await enter();
+    expect(await rings(page), `${what}: entered`).toEqual(ringOn(region as "tree" | "detail"));
+    await page.locator(away).click();
+    await expect(page.locator(".focused"), what).toHaveCount(0);
+    expect(await rings(page), what).toEqual(ringOn());
+    await press(page, "j");
+    await expect(selectedBlock(page), what).toHaveAttribute("data-id", below);
+  }
+});

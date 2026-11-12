@@ -523,12 +523,12 @@ What the records do not fix, or where the page differs:
   `dl.about` reads `__INSPECTOR_VERSION__` and `__FORMAT_MAJOR__`.
 - **Focus.** `focusin` sets the region from the nearest root, `nav.tree` and
   `aside.detail` filling their pane's body; a `focusout` with no related
-  target clears it, and if a microtask later the target is gone, removed,
-  its region's root takes the focus (`preventScroll`). Rows take no focus: a
-  row's click focuses `nav.tree`. The ring, 2 px inset in the highlight hue,
-  is on a pane's box while it holds the focus, mouse or key, and on
-  `.viewport` for `:focus-visible` alone. A push or a drop refocuses the noted
-  region's root; `m`, `i` or `d` hiding the pane holding it focus `.viewport`.
+  target clears it; if a microtask later the target is removed and the body
+  holds the focus, the region's root takes it (`preventScroll`). A row's
+  click focuses `nav.tree`. The ring, 2 px inset in the highlight hue, is on
+  the focused pane's box, mouse or key, and on `.viewport` for
+  `:focus-visible` alone. A push or a drop refocuses the noted region's root
+  if focus fell to the body; `m`, `i` or `d` hiding it focus `.viewport`.
 
 **The frame's DOM contract**, which the harness and the reviewer select on:
 
