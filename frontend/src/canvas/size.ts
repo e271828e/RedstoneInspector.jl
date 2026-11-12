@@ -16,14 +16,14 @@ export const PIN_FONT = `12px ${FONT_STACK}`;
 /** A wire's type label, and its line's height. */
 export const LABEL_FONT = `9px ${FONT_STACK}`;
 export const LABEL_HEIGHT = 11;
-/** Rate mode's badge in a block's top-right corner. */
+/** The badge pills' font: the rate pill, the order badge and the overlay's pills. */
 export const BADGE_FONT = `9px ${FONT_STACK}`;
 /**
- * The badge pill: its inset from the block's edge, its height and its text's side padding. The order badge
- * straddles the top edge at the left, so it never covers the segment, which answer 10 never truncates. The
- * overlay's pills straddle the bottom edge as far below as the order badge rises above, stacked leftward from the
- * right end `BADGE_GAP` apart; the rate pill sits on the same row at the left end, whatever the toggles, and is not
- * drawn while an overlay pill it would meet is (the look pass's 2.3). No block's size depends on the pills.
+ * The badge pill: its inset from the block's edge, its height and its text's side padding. The rate pill straddles
+ * the top edge at the left, so it never covers the segment, which answer 10 never truncates. The order badge
+ * straddles the bottom edge at the left, as far below as the rate pill rises above, and the overlay's pills the
+ * same row, stacked leftward from the right end `BADGE_GAP` apart. Nothing yields: an overlay pill draws over an
+ * order badge it meets (the second look's 2.3 and 2.4). No block's size depends on the pills.
  */
 export const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
 

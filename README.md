@@ -6,7 +6,9 @@ the core's rendering of the artifact to data (Redstone's spec, §13.9). Stage 1
 is a static page reading descriptor files and a live session that pushes them
 from Julia to an open tab.
 
-**Status:** the writing half and the live session; the page is coming.
+**Status:** stage 1, before its first release. The writer, the live session and
+the page work from a checkout; the deployment overlay and the release are to
+come.
 
 ## By design
 
@@ -170,8 +172,8 @@ the breadcrumb returns, selecting the assembly it came from; a click selects a
 component, pin, wire or port square, or a row in the tree, the tree and the canvas
 following each other and the detail pane showing what is selected, or, with
 nothing selected, the open level as it shows a closed assembly, its docstring,
-locations, parameters and faces under the level's counts; Escape clears. A
-narrow detail pane stacks each parameter and each face's facts.
+locations, parameters and faces; Escape clears. A narrow detail pane stacks
+each parameter and each face's facts.
 
 The canvas draws the visual grammar. Components are colored by tier, or, after
 `r` or the switch at the right of the breadcrumb, by rate: each timing gets
@@ -180,11 +182,11 @@ neutral fill with a numbered badge; a closed assembly takes the color its
 discrete primitives share, gray when they tick on several, with a badge
 counting their clocks; and a legend in the canvas's corner reads first a line
 for the continuous color, then each rate on the level. The rate badge, a
-number or a clock count, sits on the component's bottom edge at the left, and
-is left out while a diagnostic, loop or route pill on that edge needs its
-room. A click on a legend line lights the components and wires of that rate
-and dims the rest, marking the tree; a second click, Escape or tier colors
-clear it. The eight colors are evenly spaced hues, distinct under normal
+number or a clock count, sits on the component's top edge at the left, and the
+execution-order badge on its bottom edge at the left, where a diagnostic, loop
+or route pill drawn on that edge covers it. A click on a legend line lights the
+components and wires of that rate and dims the rest, marking the tree; a
+second click, Escape or tier colors clear it. The eight colors are evenly spaced hues, distinct under normal
 vision; under weak color vision a legend line's click tells any two apart.
 Wires show their kind by weight and pattern (thin for a scalar, dashed for a
 flag, thick for a vector, a double line for a struct, dotted for an opaque

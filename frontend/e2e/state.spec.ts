@@ -128,7 +128,7 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");
   await expect(page.locator("aside.detail")).toHaveAttribute("data-id", "");
   // the root's facts, not the fallback an unresolved selection also tags as level ""
-  await expect(page.locator("aside.detail .facts").first()).toContainText("open level");
+  await expect(page.locator("aside.detail span.level-mark")).toHaveText("open level");
   await expect(page.locator("input.query")).toHaveValue("h");
   expect(await hash(page)).toBe("");
   await shot(page, "rates", "", "fallback");

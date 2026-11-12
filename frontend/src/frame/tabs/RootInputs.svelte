@@ -6,6 +6,7 @@
   import type { Selection } from "../../lib/detail";
   import type { Model } from "../../lib/model";
   import type { Face } from "../../lib/resolve";
+  import { rowClick } from "./rowClick";
 
   let { model, onrow }: { model: Model; onrow: (s: Selection) => void } = $props();
 
@@ -23,7 +24,7 @@
       {#each rows as r (r.name)}
         {@const s = rowTarget(model, r)}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-        <tr class="root-input" data-name={r.name} onclick={s && (() => onrow(s))}>
+        <tr class="root-input" data-name={r.name} onclick={s && rowClick(() => onrow(s))}>
           <td class="name"><button class="row" title="Select the root input"><code>{r.name}</code></button></td>
           <td class="type"><code>{r.type}</code></td>
           <td class="kind">{r.phrase}</td>

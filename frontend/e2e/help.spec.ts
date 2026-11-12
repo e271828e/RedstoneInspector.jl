@@ -68,10 +68,10 @@ test("before a drop: the landing's link opens four sections over the inert landi
   await expect(h.locator('li[data-term="component"] .term')).toHaveText("component");
   // the tag's outline is the canvas's own
   await expect(h.locator('svg.sample[data-sample="tag"] path')).toHaveAttribute("d", TAG_D);
-  // the badge's clock pill straddles the assembly's bottom edge at its left, as the canvas draws it
+  // the badge's clock pill straddles the assembly's top edge at its left, as the canvas draws it
   const pill = await h.locator('svg.sample[data-sample="badge"]').evaluate((svg) => {
     const [box, pill] = [svg.querySelector("rect")!, svg.querySelector("rect.pill")!].map((r) => (r as SVGRectElement).getBBox());
-    return { left: pill.x - box.x, middle: pill.y + pill.height / 2 - (box.y + box.height) };
+    return { left: pill.x - box.x, middle: pill.y + pill.height / 2 - box.y };
   });
   expect(pill.left).toBe(4);
   expect(Math.abs(pill.middle)).toBeLessThanOrEqual(1);
@@ -121,6 +121,15 @@ test("before a drop: the landing's link opens four sections over the inert landi
   await expect(help(page)).toHaveCount(0);
   await expect(under(page)).not.toHaveAttribute("inert");
   expect(await hash(page)).toBe("");
+});
+
+test("at a window 360 px wide the help page does not scroll sideways, its addresses and patterns breaking", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/#help");
+  const h = help(page);
+  await expect(h.locator("dl.about")).toHaveCount(1);
+  const widths = await h.evaluate((e) => ({ scroll: e.scrollWidth, client: e.clientWidth }));
+  expect(widths.scroll).toBe(widths.client);
 });
 
 test("kinds: the wire term says a double line for a struct, and its sample draws the struct as the canvas does, one background core over a wider line", async ({ page }) => {

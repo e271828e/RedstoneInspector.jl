@@ -550,17 +550,6 @@
     }
     return out;
   });
-  /** The left end of the overlay's pills on each child, in its own coordinates, while the overlay is drawn: where the rate pill must stop. */
-  const overlayLeft = $derived.by(() => {
-    const out = new Map<string, number>();
-    if (!shown || shown.level.path !== path) return out;
-    for (const q of overlayBadges) {
-      const b = byId.get(q.block), box = shown.geometry.boxes.get(q.block);
-      if (!box || !b || b.role === "in" || b.role === "out") continue;
-      out.set(q.block, Math.min(out.get(q.block) ?? Infinity, q.x - box.x));
-    }
-    return out;
-  });
   /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, a route's on a pin the parent. */
   function badgeClick(q: (typeof overlayBadges)[number]) {
     if (q.role === "diagnostic") onbadge?.(q.index!);
@@ -767,23 +756,20 @@
               {/if}
               {#if badge}
                 {@const w = pillWidth(badge.text)}
-                {@const right = overlayLeft.get(b.id)}
-                {#if right === undefined || BADGE_INSET + w + BADGE_GAP <= right}
-                  {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
-                  <g class="badge-pill">
-                    <title>{badge.title}</title>
-                    <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
-                    <text class="badge" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{badge.text}</text>
-                  </g>
-                {/if}
+                <g class="badge-pill">
+                  <title>{badge.title}</title>
+                  <rect x={BADGE_INSET} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
+                  <text class="badge" x={BADGE_INSET + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{badge.text}</text>
+                </g>
               {/if}
               {#if orders.has(b.id)}
                 {@const text = orders.get(b.id)!}
                 {@const w = pillWidth(text)}
+                {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
                 <g class="order-badge" data-id={b.id}>
                   <title>{b.role === "leaf" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
-                  <rect x={BADGE_INSET} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
-                  <text class="order" x={BADGE_INSET + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{text}</text>
+                  <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                  <text class="order" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{text}</text>
                 </g>
               {/if}
               {#each size.ports as p (p.side + p.name)}
@@ -935,7 +921,7 @@
   .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
-  /* The kind as line weight and pattern (visual_grammar.md answer 4); the struct's triple line is a wide stroke under a core in the background color. */
+  /* The kind as line weight and pattern (visual_grammar.md answer 4); the struct's double line is a wide stroke under a core in the background color. */
   .wire[data-kind="flag"] { stroke-dasharray: 4 3; }
   .wire[data-kind="vector"] { stroke-width: 3; }
   .wire[data-kind="opaque"] { stroke-dasharray: 1 3; }

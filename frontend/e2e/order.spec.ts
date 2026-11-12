@@ -1,12 +1,12 @@
 // The execution-order badges (workspace.md answers 7, 9 and 11): off at load, `o`
 // and the breadcrumb's toggle turning them on, a leaf's position among the
 // stage 2 rows and a closed assembly's ranges over the whole model, none on a
-// leaf with stage 1 outputs alone and none on large, straddling the top edge at
-// the left, kept per browser across a reload and a drop, none on a pin or a tag
-// or on a model without an order, taking the pointer for its title and dimming
-// with its block. The rate pill straddles the bottom edge at the left whatever
-// `o` says (the look pass's 2.3). The texts are the oracles' (`analysis.py`,
-// `stage2.py`); the geometric pins are recomputed here from the DOM.
+// leaf with stage 1 outputs alone and none on large, straddling the bottom edge
+// at the left, kept per browser across a reload and a drop, none on a pin or a
+// tag or on a model without an order, taking the pointer for its title and
+// dimming with its block. The rate pill straddles the top edge at the left
+// whatever `o` says (the second look's 2.3). The texts are the oracles'
+// (`analysis.py`, `stage2.py`); the geometric pins are recomputed here from the DOM.
 import { test, type Page } from "@playwright/test";
 import { drop, dropOver, effectiveOpacity, expect, fixtureText, openPath, press, shot } from "./fixtures";
 
@@ -28,16 +28,26 @@ const boxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<
   return { id: g.dataset.id!, block: r(g.querySelector(":scope > .shape"))!, order: r(g.querySelector(":scope > g.order-badge > rect"))!, pill: r(g.querySelector(":scope > g.badge-pill > rect")) };
 }));
 const overlaps = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-/** Each rate pill's box and its block's shape, in the block's own coordinates, the world's units. */
-const pills = (page: Page) => page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.block:has(> g.badge-pill)")].map((g) => {
-  const box = (e: Element) => {
+type Box = { x: number; y: number; width: number; height: number };
+/**
+ * Each block's shape with its rate pill's box and its order badge's, when drawn, in the block's own coordinates: the
+ * world's units, a screen pixel each at scale 1.
+ */
+const pills = (page: Page) => page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.block:is(:has(> g.badge-pill), :has(> g.order-badge))")].map((g) => {
+  const box = (e: Element | null) => {
+    if (!e) return undefined;
     const b = (e as SVGGraphicsElement).getBBox();
     return { x: b.x, y: b.y, width: b.width, height: b.height };
   };
-  return [g.dataset.id!, { block: box(g.querySelector(":scope > .shape")!), pill: box(g.querySelector(":scope > g.badge-pill > rect")!) }];
-})));
+  return [g.dataset.id!, { block: box(g.querySelector(":scope > .shape"))!, pill: box(g.querySelector(":scope > g.badge-pill > rect")), order: box(g.querySelector(":scope > g.order-badge > rect")) }];
+}))) as Promise<Record<string, { block: Box; pill?: Box; order?: Box }>>;
+/** Expects a pill's left edge `BADGE_INSET` from its block's and its vertical middle on the block's top or bottom edge, to a unit. */
+function expectPlace(id: string, block: Box, pill: Box, edge: "top" | "bottom") {
+  expect(Math.abs(pill.x - (block.x + BADGE_INSET)), `${id} ${edge}`).toBeLessThanOrEqual(1);
+  expect(Math.abs(pill.y + pill.height / 2 - (edge === "top" ? block.y : block.y + block.height)), `${id} ${edge}`).toBeLessThanOrEqual(1);
+}
 
-test("closed_loop: o shows the badges at the root and inside pid_controller, on the top edge at the left, kept across a reload and a drop", async ({ page }) => {
+test("closed_loop: o shows the badges at the root and inside pid_controller, on the bottom edge at the left, the rate pill on the top edge, kept across a reload and a drop", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(badges(page)).toHaveCount(0);
   await expect(svg(page)).not.toHaveAttribute("data-order");
@@ -57,10 +67,10 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await expect(page.locator('g.order-badge[data-id="plant"]')).toHaveCount(0);
   await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
   await expect(page.locator('g.order-badge[data-id="pid_controller"] > title')).toHaveText("Stage 2 positions 2, 7, 9, 11 in the execution order: the primitives inside");
-  // the badge straddles the block's top edge, its left edge by the block's
+  // the badge straddles the block's bottom edge, its left edge by the block's
   for (const b of await boxes(page)) {
-    expect(b.order.top, b.id).toBeLessThan(b.block.top);
-    expect(b.order.bottom, b.id).toBeGreaterThan(b.block.top);
+    expect(b.order.top, b.id).toBeLessThan(b.block.bottom);
+    expect(b.order.bottom, b.id).toBeGreaterThan(b.block.bottom);
     expect(Math.abs(b.order.left - b.block.left), b.id).toBeLessThanOrEqual(6);
   }
   // the background fill and the text color, compared with the page's elements
@@ -69,34 +79,37 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   const segment = await page.locator('g.block[data-id="sensing"] text.segment').evaluate((e) => getComputedStyle(e).fill);
   expect(await badge(page, "sensing").evaluate((e) => getComputedStyle(e).fill)).toBe(segment);
   expect(await page.locator('g.order-badge[data-id="sensing"] > rect').evaluate((e) => getComputedStyle(e).stroke)).toBe(segment);
-  // the badge takes the pointer for its title: its upper half, above the block, hits it
+  // the badge takes the pointer for its title: its lower half, below the block, hits it
   const sensing = (await boxes(page)).find((b) => b.id === "sensing")!;
   const sensingBadge = page.locator('g.order-badge[data-id="sensing"]');
   expect(await sensingBadge.evaluate((e) => getComputedStyle(e).pointerEvents)).not.toBe("none");
   const x = (sensing.order.left + sensing.order.right) / 2;
   expect(await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest("g.order-badge")?.getAttribute("data-id"),
-    [x, (sensing.order.top + sensing.block.top) / 2])).toBe("sensing");
-  // a click on the badge's lower half, inside the block, selects the block
-  await page.mouse.click(x, (sensing.block.top + sensing.order.bottom) / 2);
+    [x, (sensing.order.bottom + sensing.block.bottom) / 2])).toBe("sensing");
+  // a click on the badge's upper half, inside the block, selects the block
+  await page.mouse.click(x, (sensing.block.bottom + sensing.order.top) / 2);
   await expect(page.locator("svg.canvas g.block.selected")).toHaveAttribute("data-id", "sensing");
   await page.keyboard.press("Escape");
 
-  // in rate mode the rate pill straddles the bottom edge at the left, apart from the badge, on every assembly
+  // in rate mode each assembly's rate pill straddles the top edge at the left and its order badge the bottom edge
   await press(page, "r");
   const withPills = (await boxes(page)).filter((b) => b.pill);
   expect(withPills.map((b) => b.id).sort()).toEqual(["actuators", "lqr_controller", "pid_controller", "selection", "sensing"]);
   for (const b of withPills) expect(overlaps(b.order, b.pill!), b.id).toBe(false);
-  // the same box with the badges on and off: its left edge BADGE_INSET from the block's, its middle on the bottom edge
   const on = await pills(page);
   await shot(page, "closed_loop", "", "order");
+  expect(Object.keys(on).sort()).toEqual(withPills.map((b) => b.id).sort());
+  for (const [id, { block, pill, order }] of Object.entries(on)) {
+    expectPlace(id, block, pill!, "top");
+    expectPlace(id, block, order!, "bottom");
+  }
+  // the rate pill's box the same with the badges off
   await press(page, "o");
   await expect(badges(page)).toHaveCount(0);
   const off = await pills(page);
-  expect(Object.keys(on).sort()).toEqual(withPills.map((b) => b.id).sort());
-  expect(off).toEqual(on);
-  for (const [id, { block, pill }] of Object.entries(on)) {
-    expect(Math.abs(pill.x - (block.x + BADGE_INSET)), id).toBeLessThanOrEqual(1);
-    expect(Math.abs(pill.y + pill.height / 2 - (block.y + block.height)), id).toBeLessThanOrEqual(1);
+  expect(Object.keys(off).sort()).toEqual(Object.keys(on).sort());
+  for (const [id, { block, pill, order }] of Object.entries(off)) {
+    expect([block, pill, order], id).toEqual([on[id].block, on[id].pill, undefined]);
   }
   await press(page, "o");
   await press(page, "r");
@@ -108,6 +121,8 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await expect(page.locator('g.order-badge[data-id="pid_controller/free"]')).toHaveCount(0);
   await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
   await expect(page.locator('g.order-badge[data-id="pid_controller/h_ctl"] > title')).toHaveText("Stage 2 position 7 in the execution order");
+  for (const [id, { block, order }] of Object.entries(await pills(page))) expectPlace(id, block, order!, "bottom");
+  await shot(page, "closed_loop", "pid_controller", "order");
 
   await page.reload();
   await dropOver(page, "closed_loop");

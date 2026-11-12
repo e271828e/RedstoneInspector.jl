@@ -6,15 +6,16 @@
   import { orderGroups, rowTarget, type Row } from "../../lib/analysis";
   import type { Selection } from "../../lib/detail";
   import type { Model } from "../../lib/model";
+  import { rowClick } from "./rowClick";
 
   let { model, onrow }: { model: Model; onrow: (s: Selection) => void } = $props();
 
   const groups = $derived(orderGroups(model));
-  const PRESUMED = "A stage 2 output wired into this component. Its own stage 2 output may read it in the same sweep, so the producer runs first. Presumed: the build knows the wiring and the stages, not which inputs each output reads.";
-  const click = (r: Row) => {
+  const PRESUMED = "A stage 2 output wired into this component. This component's stage 2 output may read it in the same sweep, so the producer runs first. Presumed: the build knows the wiring and the stages, not which inputs each output reads.";
+  const click = (r: Row) => rowClick(() => {
     const s = rowTarget(model, r);
     if (s) onrow(s);
-  };
+  });
 </script>
 
 {#if groups}
@@ -25,7 +26,7 @@
         {#each groups.stage1 as r (r.path)}
           <li class="step" data-stage="1" data-path={r.path}>
             <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-            <div class="line" onclick={() => click(r)}>
+            <div class="line" onclick={click(r)}>
               <button class="row" title="Select the primitive"><code class="path">{r.path || "/"}</code></button>
               <ul class="ports">
                 {#each r.ports as p (p)}<li class="port" data-stage="1" title="published from stage 1">{p}</li>{/each}
@@ -46,7 +47,7 @@
         {#each groups.stage2 as r (r.position)}
           <li class="step" data-stage="2" data-position={r.position} data-path={r.path}>
             <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-            <div class="line" onclick={() => click(r)}>
+            <div class="line" onclick={click(r)}>
               <button class="row" title="Select the primitive">
                 <span class="position">{r.position}</span>
                 <code class="path">{r.path || "/"}</code>
@@ -59,7 +60,7 @@
               <ul class="edges">
                 {#each r.edges as e (e.to.port)}
                   <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-                  <li class="edge" data-from={`${e.from.path}/${e.from.port}`} data-to={`${e.to.path}/${e.to.port}`} title={PRESUMED} onclick={() => click(e)}>
+                  <li class="edge" data-from={`${e.from.path}/${e.from.port}`} data-to={`${e.to.path}/${e.to.port}`} title={PRESUMED} onclick={click(e)}>
                     <button class="row">
                       <code>{e.from.path}/{e.from.port}</code> → <code>{e.to.port}</code>
                       <span class="presumed">presumed</span>

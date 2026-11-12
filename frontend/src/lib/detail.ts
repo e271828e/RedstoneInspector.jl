@@ -84,6 +84,7 @@ export const FACT_TITLES = {
   class: "Whether the node is a primitive or an assembly and, for a primitive, its tier: continuous or discrete.",
   rate: "When the discrete primitive runs: every m-th tick of its anchor's grid, offset by c ticks.",
   children: "How many child nodes the assembly holds directly.",
+  wires: "How many wires the assembly declares on its own level.",
   member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
 } as const;
 
@@ -94,7 +95,10 @@ export interface FaceFacts {
   type?: string;
   /** The kind marker as a phrase. */
   phrase?: string;
-  /** None for a root input, whose `pinned` version 1 of the format writes false whatever the model declares. */
+  /**
+   * On a primitive's own face alone, where the marker is declared; none on an assembly's face, which declares none,
+   * nor on a root input, whose `pinned` version 1 of the format writes false whatever the model declares.
+   */
   pinned?: boolean;
   /** A leaf output's stage, from `outputs.components`. */
   stage?: 1 | 2;
@@ -104,11 +108,9 @@ export interface FaceFacts {
   consumers?: Face[];
 }
 
-/** The open level: its node's facts as a closed assembly's (workspace.md answer 4), its wire count and its rate scopes. */
+/** The open level: its node's facts as a closed assembly's (workspace.md answer 4) and its rate scopes. */
 export interface LevelFacts extends Omit<NodeFacts, "kind"> {
   kind: "level";
-  children: number;
-  wires: number;
   scopes: { key: string; timing: string }[];
 }
 export interface NodeFacts {
@@ -128,6 +130,8 @@ export interface NodeFacts {
   locations: Location[];
   parameters: Parameter[];
   children?: number;
+  /** An assembly's own level's wires. */
+  wires?: number;
   inputs: FaceFacts[];
   outputs: FaceFacts[];
 }
@@ -168,9 +172,9 @@ export function faceFacts(model: Model, face: Face): FaceFacts {
   const info = faceInfo(res, face.path, face.side, face.port);
   const out: FaceFacts = {
     face, name: face.port, type: info?.type, phrase: info && kindPhrase(info.kind),
-    pinned: isRootInput(face) ? undefined : info?.pinned ?? false,
   };
   const leaf = isLeaf(tree, face.path);
+  if (leaf && !isRootInput(face)) out.pinned = info?.pinned ?? false;
   if (leaf && face.side === "out") {
     const c = model.outputs?.components.find((x) => x.path === face.path);
     if (c) out.stage = c.stage1.includes(face.port) ? 1 : c.stage2.includes(face.port) ? 2 : undefined;
@@ -200,6 +204,7 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
     if (n.tier === "discrete") facts.rate = { phrase: ratePhrase(n.timing, s.anchors), title: timingPhrase(n.timing, s.anchors) };
   } else {
     facts.children = tree.children.get(path)!.length;
+    facts.wires = n.wires.length;
   }
   return facts;
 }
@@ -207,17 +212,13 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
 /** A count in words, the singular for one: `1 wire`, `2 wires`. */
 export const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
 
-/** The level layout's facts line: `open level · 9 children · 1 wire`. */
-export const levelLine = (f: LevelFacts): string =>
-  `open level · ${count(f.children, "child", "children")} · ${count(f.wires, "wire", "wires")}`;
-
-/** The open level's facts: its node's as a closed assembly's, with its wires and scopes; a primitive root's level is its leaf. */
+/** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is its leaf. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
   const s = model.structure!, n = model.tree!.byPath.get(path)!;
   const node = nodeFacts(model, path);
   if (n.class === "leaf") return node;
   return {
-    ...node, kind: "level", children: node.children!, wires: n.wires.length,
+    ...node, kind: "level",
     scopes: s.scopes.filter((x) => x.path === path).map((x) => ({ key: x.key, timing: timingPhrase(x.timing, s.anchors) })),
   };
 }

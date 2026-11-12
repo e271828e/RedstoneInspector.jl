@@ -7,6 +7,7 @@
   import type { Selection } from "../../lib/detail";
   import type { Model } from "../../lib/model";
   import { tripleTitle } from "../../lib/rates";
+  import { rowClick } from "./rowClick";
 
   let { model, onrow, byPeriod = $bindable(false) }: {
     model: Model;
@@ -35,7 +36,7 @@
       {#each anchors as a (a.index)}
         {@const s = rowTarget(model, a)}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-        <tr class="anchor" class:base={a.base} data-index={a.index} onclick={s && (() => onrow(s))}>
+        <tr class="anchor" class:base={a.base} data-index={a.index} onclick={s && rowClick(() => onrow(s))}>
           {#if a.base}
             <td class="index">0 <span class="base-grid">base grid</span></td>
             <td class="T" title="The deployment's base step, which a build does not know"><code>Δt</code></td>
@@ -62,7 +63,7 @@
         {#each scopes as x (x.path)}
           {@const s = rowTarget(model, x)}
           <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-          <tr class="scope" data-path={x.path} data-key={x.key} onclick={s && (() => onrow(s))}>
+          <tr class="scope" data-path={x.path} data-key={x.key} onclick={s && rowClick(() => onrow(s))}>
             <td class="path">{@render button(s, x.path || "/", "Select the scope's assembly")}</td>
             <td class="key"><code>{x.key}</code></td>
             <td class="triple" title={tripleTitle(model, x.triple)}>{x.text}</td>
@@ -84,7 +85,7 @@
           {@const pair = stepPair(c.step)}
           {@const s = rowTarget(model, c)}
           <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-          <tr class="component" data-path={c.path} onclick={s && (() => onrow(s))}>
+          <tr class="component" data-path={c.path} onclick={s && rowClick(() => onrow(s))}>
             <td class="swatch"><span class="swatch" data-step={c.step} style:background={pair.fill} style:border-color={pair.stroke}></span></td>
             <td class="path">{@render button(s, c.path || "/", "Select the primitive")}</td>
             <td class="triple" title={tripleTitle(model, c.triple)}>{c.text}</td>

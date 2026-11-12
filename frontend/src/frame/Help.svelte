@@ -31,9 +31,9 @@
   const head = (x: number, y: number) => `M${x - 7},${y - 3.5} L${x},${y} L${x - 7},${y + 3.5} z`;
   const pillText = "2 clocks";
   const pillWidth = Math.ceil(textWidth(pillText, BADGE_FONT)) + 2 * BADGE_PAD;
-  /** The badge sample's assembly, the clock pill straddling its bottom edge at the left as the canvas draws it. */
-  const BADGE_BOX = { x: 8, y: 4, width: 104, height: 32 };
-  const pillTop = BADGE_BOX.y + BADGE_BOX.height - BADGE_HEIGHT - BADGE_TOP;
+  /** The badge sample's assembly, the clock pill straddling its top edge at the left as the canvas draws it. */
+  const BADGE_BOX = { x: 8, y: 12, width: 104, height: 32 };
+  const pillTop = BADGE_BOX.y + BADGE_TOP;
   /** The legend sample's two lines, as the canvas's legend reads two triples, and its box in the legend's CSS sizes. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
   const legendLines = ["base grid", "anchor 1 (1/4 s)"];
@@ -242,6 +242,8 @@
   dl.about { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
   dt { color: var(--text-light); }
   dd { margin: 0; }
+  /* The addresses and the Vimium patterns break anywhere, so a narrow window does not scroll sideways (the second look's 4.9). */
+  dl.about dd, p.vimium code { overflow-wrap: anywhere; }
 
   /* The samples, in the canvas's shapes and colors (visual_grammar.md answers 1 to 9). */
   .sample { display: block; overflow: visible; }

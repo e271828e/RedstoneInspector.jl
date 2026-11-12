@@ -3,7 +3,8 @@
 // feedthrough edges, the root inputs with their consumers one to a line, the
 // timing tables with the rate swatches, the period sort and the schedule note;
 // every row's click selecting on its level, the whole row taking it (look pass
-// 1.1, 1.2, 1.4, 1.7, 1.8); the empty states. Counts from the oracles
+// 1.1, 1.2, 1.4, 1.7, 1.8), a drag leaving a text selection in the row selecting
+// nothing (the second look's 1.8); the empty states. Counts from the oracles
 // (`analysis.py`, `stage2.py`).
 import { test, type Locator, type Page } from "@playwright/test";
 import { drop, dropOver, expect, readyLevel, shot } from "./fixtures";
@@ -17,7 +18,8 @@ const step = (page: Page, position: number) => group(page, 2).locator(`li.step[d
 const step1 = (page: Page, path: string) => group(page, 1).locator(`li.step[data-path="${path}"]`);
 const cursor = (l: Locator) => l.evaluate((e) => getComputedStyle(e).cursor);
 const selected = (page: Page) => page.locator("svg.canvas g.block.selected");
-const PRESUMED = "A stage 2 output wired into this component. Its own stage 2 output may read it in the same sweep, so the producer runs first. Presumed: the build knows the wiring and the stages, not which inputs each output reads.";
+/** The edge's title, the second look's 7.1. */
+const PRESUMED = "A stage 2 output wired into this component. This component's stage 2 output may read it in the same sweep, so the producer runs first. Presumed: the build knows the wiring and the stages, not which inputs each output reads.";
 const component = (page: Page, path: string) => body(page).locator(`table.components tr.component[data-path="${path}"]`);
 const componentPaths = (page: Page) => body(page).locator("table.components tr.component").evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")));
 
@@ -158,6 +160,46 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   const fill = await page.locator('g.block[data-id="sensing/noise"] .shape').evaluate((e) => getComputedStyle(e).fill);
   expect(await swatch()).toBe(fill);
   expect(tier).toBe(fill);
+});
+
+/** Drags the pointer across a cell's text, from its first character's left half to its last's right half, and returns the selected text. */
+async function dragAcross(page: Page, cell: Locator): Promise<string> {
+  await cell.scrollIntoViewIfNeeded();
+  const r = await cell.evaluate((e) => {
+    const t = document.createTreeWalker(e, NodeFilter.SHOW_TEXT).nextNode()!;
+    const range = document.createRange();
+    range.selectNodeContents(t);
+    const b = range.getBoundingClientRect();
+    return { left: b.left, right: b.right, y: (b.top + b.bottom) / 2 };
+  });
+  await page.mouse.move(r.left + 1, r.y);
+  await page.mouse.down();
+  await page.mouse.move(r.right - 1, r.y, { steps: 5 });
+  await page.mouse.up();
+  return page.evaluate(() => window.getSelection()?.toString() ?? "");
+}
+
+test("closed_loop: a drag that leaves a text selection in a row selects nothing, a plain click then selects; on the root inputs and the order tabs", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await openTab(page, "root-inputs");
+  const type = body(page).locator('tr.root-input[data-name="mode"] td.type code');
+  expect(await dragAcross(page, type)).toBe("Bool");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");
+  await type.click();
+  await expect(page.locator('g.block.selected[data-id="⟨in⟩mode"]')).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+
+  // a stage 2 row's port: the drag selects its name and nothing on the canvas; a click selects the leaf on its level
+  await openTab(page, "order");
+  const port = step(page, 7).locator("li.port").last();
+  expect(await dragAcross(page, port)).toBe("u_raw");
+  await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "");
+  await port.click();
+  await page.locator(readyLevel("pid_controller")).waitFor();
+  await expect(page.locator('g.block.selected[data-id="pid_controller/h_ctl"]')).toHaveCount(1);
 });
 
 test("closed_loop_deployment: the schedule note says the format carries none", async ({ page }) => {

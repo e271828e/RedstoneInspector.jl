@@ -25,7 +25,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/view.ts` | the viewport math: `fitView`, `zoomAt`, `pan`, `centreOn`, `viewRect`, `toWorld` |
 | `src/lib/model.ts` | `loadModel`: everything above, built once |
 | `src/lib/outline.ts` | the tree pane's rows: `outlineRows`, `allRows`, `defaultExpansion`, `folderOf`, `ancestors`; `rowSelection`, what a row's click selects; `treeStep`, the tree's `h j k l` |
-| `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, `timingPhrase`, `ratePhrase`, `classPhrase`, `memberKind`, `memberTitle`, `FACT_TITLES`, `detailOf`; `levelFacts`, the open level's node facts with its counts and scopes, and its line `levelLine` with its `count`; the `Selection` type; `faceSelection` |
+| `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, `timingPhrase`, `ratePhrase`, `classPhrase`, `memberKind`, `memberTitle`, `FACT_TITLES`, `detailOf`; `levelFacts`, the open level's node facts with its scopes; `count`, a count in words; the `Selection` type; `faceSelection` |
 | `src/lib/navigate.ts` | the keyboard's cursor: `nearest` by the facing-edge gap and the perpendicular offset, `follow`'s least pan |
 | `src/lib/search.ts` | `parseQuery`, `searchModel` with its matched ranges and `CAP`, `marked`, `beneath`, `levelHits`; `hitSelection`, what picking a hit selects; `stepHit`, `n` and `N` |
 | `src/lib/rekey.ts` | the push: `rekey` of the per-tab state against a new model, `isLevel`, `fallback`, `sameBlocks` |
@@ -57,7 +57,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/frame/Breadcrumb.svelte` | the open level's path as links, the open control; at the right end the color mode's switch, the type labels' toggle and the order badges' toggle |
 | `src/frame/Detail.svelte` | the detail pane: one layout per element kind over `detail.ts`, a node's facts as a labelled list; the narrow pane's stacked rows, a container query; the trace button on a pin, a port and a wire; the docstring rendered through `renderDocstring` |
 | `src/frame/Drawer.svelte` | the drawer's tab strip with its counts; the diagnostics tab's filter and rows; the other three tabs' components hosted, the timing tab's period sort held for the session; the body scrolled to its top on a tab switch |
-| `src/frame/tabs/RootInputs.svelte`, `Timing.svelte`, `Order.svelte` | the three analysis tabs, each taking `model` and `onrow` (`Timing` also a bindable `byPeriod`): the root inputs' table; the anchors, the scopes and the components with the sort toggle and the schedule note; the execution order's steps with their stage ports and presumed edges |
+| `src/frame/tabs/RootInputs.svelte`, `Timing.svelte`, `Order.svelte`, `rowClick.ts` | the three analysis tabs, each taking `model` and `onrow` (`Timing` also a bindable `byPeriod`): the root inputs' table; the anchors, the scopes and the components with the sort toggle and the schedule note; the execution order's steps with their stage ports and presumed edges; `rowClick`, the rows' shared click, its capture `pointerdown` noting the selection at the press |
 | `src/frame/StatusBar.svelte` | the kind word, the model's totals, the color mode's word, the loader's note, the fallback note, the standing route with its clear control, the connection's state, the download, the help link at the right end |
 | `src/frame/Landing.svelte` | the privacy statement (`PRIVACY`), the open control, the drop hint, the help link, a refusal |
 | `src/frame/Help.svelte` | the help page, over the shell's `div.under`: the four sections over `help.ts`, the lead, the legend's fifteen static SVG samples in the canvas's shapes and the palette's colors, the about section's versions from the defines; scrolls on its own, focused on mount |
@@ -263,7 +263,7 @@ reviewer's Python scripts (`design/rules.md`).
 - `view.test.ts`: `zoomAt`, `fitView`, `pan`, `centreOn`; synthetic extents.
 - `outline.test.ts`: the tree's rows, folders, `treeStep`, `rowSelection`;
   every fixture, `containers`, `rates`, `closed_loop`.
-- `detail.test.ts`: the pane's facts and phrases, `levelLine`; `closed_loop`,
+- `detail.test.ts`: the pane's facts and phrases, wire counts, pinning; `closed_loop`,
   `kinds`, `rates`, `containers`, `primitive`, inline timings and structures.
 - `rates.test.ts`: palette order, an assembly's triple, clocks, legend lines,
   `wireTriple`; `closed_loop`, `rates`, `library`, `kinds`, inline structures
@@ -335,17 +335,17 @@ What the records do not fix, or where the page differs:
   9 px point and a 9 px empty slot.
 - **Colors.** `stepPair` is the one reader of a step's colors: fills,
   strokes, wires, swatches, the tree's dots. No check pins a value.
-- **The rate pill** `g.badge-pill` straddles a child's bottom edge at the left,
-  `BADGE_INSET` 4 in, on the bottom badges' row (`BADGE_TOP` -7, `BADGE_HEIGHT`
-  12): `#<n>` for an extra, `<k> clock(s)` on a closed assembly with a discrete
-  leaf beneath (`clockCount`), joined by ` · `; not drawn where it meets them.
+- **The rate pill** `g.badge-pill` straddles a child's top edge at the left,
+  `BADGE_INSET` 4 in (`BADGE_TOP` -7, `BADGE_HEIGHT` 12), whatever the toggles:
+  `#<n>` for an extra, `<k> clock(s)` on a closed assembly with a discrete
+  leaf beneath (`clockCount`), joined by ` · `.
 - **The legend** is an HTML `div.legend` in the bottom-left corner; a line's
   click calls `onlegend(key)`, and the shell passes `legendLit`'s set and
   `focus` `legend` while no route or diagnostic focus stands.
 - **Wires.** CSS by class: `scalar` thin, `flag` dashed `4 3`, `vector` 3
   wide, `opaque` dotted `1 3` in `wireLight`, `struct` 5 wide under a
   `path.wire-core` at 1.6 in the background color carrying the arrowhead: a
-  double line where answer 4 says triple. In rate mode a continuous
+  double line, as answer 4 says. In rate mode a continuous
   producer's wires take `continuousWire`, a root input's the gray.
 - **Trunks.** ELK's `junctionPoints` become `Geometry.junctions`, a
   `circle.junction` of radius 2.5 each; `rerouteTouching` drops them.
@@ -389,8 +389,9 @@ What the records do not fix, or where the page differs:
   `--warning`. A diagnostic on the level's own node draws nothing.
 - **Bottom badges** straddle the bottom edge at the right, right to left
   `BADGE_GAP` (2) apart: the diagnostic's, `loop`, `route` (`overlayBadges`); a
-  diagnostic's click calls `onbadge`, the others `onopen`.
-- **The order badge**, `order` on, straddles a child's top edge at the left,
+  diagnostic's click calls `onbadge`, the others `onopen`. Nothing yields: one
+  meeting an order badge draws over it, `g.overlay` coming after `g.blocks`.
+- **The order badge**, `order` on, straddles a child's bottom edge at the left,
   `pillWidth(text)` wide, background fill, text-color stroke, titled "Stage 2
   position N in the execution order" or "Stage 2 positions N in the execution
   order: the primitives inside"; its click selects the block.
@@ -434,7 +435,7 @@ What the records do not fix, or where the page differs:
 | a route casing | `g.casings > g.route-casings > path.casing.route[data-wire]` | each wire of the standing route |
 | a type label | `g.type-labels > text.type-label[data-port][data-wire]`, `<title>` the whole type | after `g.blocks`, only while `data-labels`; the producer port and its first wire |
 | a region | `g.regions > g.region[data-path]` holding `rect.halo`, `rect.shape`, `text.caption`; `.selected` | first in the svg; `selected` when the folder is |
-| the rate pill | `g.block g.badge-pill` holding `title`, `rect`, `text.badge` | rate mode, an extra or a clock count, unless it meets the overlay's pills |
+| the rate pill | `g.block g.badge-pill` holding `title`, `rect`, `text.badge` | rate mode, an extra or a clock count |
 | the order badge | `g.block g.order-badge[data-id]` holding `title`, `rect`, `text.order` | while `data-order` |
 | the overlay | `g.overlay` | last in the svg |
 | a mark | `path.mark-wire[data-wire]`, `rect.mark-port[data-port]`, `rect.mark-halo[data-id]`, each `[data-severity]`, `error` or `warning` | a diagnostic's attribution; a `path` mark halo on a root tag |
@@ -481,10 +482,12 @@ What the records do not fix, or where the page differs:
 - **The detail pane.** Each `dt` is titled from `FACT_TITLES`; `rate` is
   `ratePhrase` with `timingPhrase` in its title, `member` `memberKind` with
   `memberTitle`. Face rows and links select through `faceSelection`; on the
-  level's layout, an assembly's under the level's line, a face row selects the
-  level's own pin. A location click calls `onlocation(file, line)`: the shell
-  sends `open_location` while connected and returns true, else the pane copies
-  `file:line`; its title reads "Open in the editor" or "Copy the file label".
+  level's layout, an assembly's with "open level" where the open button
+  stands, a face row selects the level's own pin. A location's label breaks
+  after a slash, its file name and line number one inline block. A location
+  click calls `onlocation(file, line)`: the shell sends `open_location` while
+  connected and returns true, else the pane copies `file:line`; its title
+  reads "Open in the editor" or "Copy the file label".
   The docstring is `renderDocstring(facts.docstring, facts.type)` through
   `{@html}` (`build_release.md` answer 7), its styles `:global` under
   `div.docstring`, a `pre` scrolling sideways. `aside.detail` is a size
@@ -501,8 +504,10 @@ What the records do not fix, or where the page differs:
   `rowTarget`; `Timing` binds `byPeriod`, the drawer's, never a pref. The
   body scrolls to its top on a tab switch.
 - **The analysis tabs.** A click anywhere on a row with a target selects it,
-  `button.row` kept for the keyboard. A root input's row selects its tag
-  `⟨in⟩name`; its consumers read `path/port`, or `/port`, one to a line.
+  `button.row` kept for the keyboard, unless its press began with no selection
+  on the row and the click finds one (`rowClick`). A root input's row selects
+  its tag `⟨in⟩name`; its consumers read `path/port`, or `/port`, one to a
+  line.
   Timing's base grid row, "0 base grid", has no target; a scope cell selects
   its declaring node or reads "the root"; a swatch is `stepPair(step)` in
   either mode (reading 13); `p.schedule-note` is `scheduleNote` (reading 1).
@@ -539,11 +544,11 @@ What the records do not fix, or where the page differs:
 | the breadcrumb | `nav.breadcrumb[data-level-path]` holding `a[data-path]`, `.current`, `button.open-file` and its `input[type=file]` | with a model |
 | the controls | `.controls` holding `.mode button[data-mode][aria-pressed]`, `button.type-labels[aria-pressed]`, `button.order-badges[aria-pressed]` | at the breadcrumb's right end |
 | the pane | `aside.detail[data-kind][data-id]`, the kind `level`, `leaf`, `assembly`, `folder`, `wire`, `pin` or `port` | the id a path for a level, node or folder, else the element's id; `data-id=""` on a structureless model |
-| the header | `h2 .segment`, `h2 .name`, `.path-line` holding `.path`, `button.copy`, `button.open-level` right after it, `button.trace[aria-pressed]` | the open button on a closed assembly, never the open level; trace on a pin, a port or a wire with a route |
-| the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `rate`, `children` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a level, pin, port, wire or folder; `dl.facts` on a level, leaf or assembly |
+| the header | `h2 .segment`, `h2 .name`, `.path-line` holding `.path`, `button.copy`, `button.open-level` or `span.level-mark` "open level" right after it, `button.trace[aria-pressed]` | the open button on a closed assembly, the mark on the open level; trace on a pin, a port or a wire with a route |
+| the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `rate`, `children`, `wires` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a wire, a folder, a structureless model, and a pin or port with a stage or pinning, "stage 1 · pinned"; `dl.facts` on a level, leaf or assembly, `wires` under `children` |
 | the disclosures | `details.signature` with `summary` "signature"; `details.docstring` holding `summary .title` "docstring" and `div.docstring` | the signature only when it differs from the type |
-| the lists | `.locations li`, `.parameters tr` with `td.param-name`, `td.param-value`, `.scopes li`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the scopes on a level, the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
-| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a leaf; the links on a level too |
+| the lists | `.locations li` with `.file` holding `span.file-name`, `.parameters tr` with `td.param-name`, `td.param-value`, `.scopes li`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the scopes on a level, after the locations; the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
+| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a leaf, the ◆ on a primitive's own pinned face; the links on a level too |
 | the drawer | `section.drawer[data-open][data-tab]` holding `button.tab[data-tab]`, `diagnostics`, `root-inputs`, `timing` or `order`, `.count`, `.tab-body` | `.count` on a tab that has one; the body while open |
 | diagnostics | `div.diagnostics` holding `input.filter`, `ul.diagnostics > li.diagnostic[data-index][data-severity]` with `button.row` holding `.kind`, `.path`, `span.message`, then `a.location`; `.current` | `current` on the focused row; `p.empty` "No diagnostics or warnings." or "No row matches the filter." |
 | root inputs | `table.root-inputs tr.root-input[data-name]` with `td.name button.row`, `td.type`, `td.kind`, `td.consumers` holding a `code` per consumer | `p.empty` "No root inputs." |
@@ -655,7 +660,7 @@ One line per file: its concern; the fixtures.
 - `frame.spec.ts`: the status bar, the drawer's counts, splitters and
   collapse kept; `closed_loop`, the deployment, `failure_cycle`, `descent`.
 - `leave.spec.ts`: the leave prompt, dropped against pushed; `closed_loop`.
-- `colors.spec.ts`: rate mode's fills, the pill and its yield, legend, wires,
+- `colors.spec.ts`: rate mode's fills, the pill beside the overlay's, legend, wires,
   the tree's dots, the mode kept; `closed_loop`, `rates`, `failure_nested`.
 - `focus.spec.ts`: the legend's focus, Escape, tier mode, a push;
   `closed_loop`, the deployment, `rates`.

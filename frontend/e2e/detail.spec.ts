@@ -5,7 +5,10 @@
 // the docstring rendered from Markdown with the `@ref` link rule (build_release.md
 // answer 7), its code blocks scrolling sideways (the look pass's 3.2), a hostile
 // source's HTML, image and script link inert; the open level in the assembly
-// layout under its line (answer 4 as amended by the look pass's 3.5).
+// layout (answer 4 as amended by the look pass's 3.5), "open level" where a closed
+// assembly has its Open button, its wires among the facts and its rate scopes after
+// the locations (the second look's 3.1 and 3.2); pinning stated on a primitive's own
+// face alone (3.4); a location's file name kept whole with its line number (3.5).
 import { test, type Page } from "@playwright/test";
 import { clickWire, drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
@@ -29,32 +32,38 @@ test.describe("closed_loop", () => {
     await drop(page, "closed_loop");
   });
 
-  test("at load the pane shows the root level: its label, display name, path, the level's line and the root inputs as faces", async ({ page }) => {
+  test("at load the pane shows the root level: its label, display name, path, the open level's mark, its counts and the root inputs as faces", async ({ page }) => {
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
     await expect(pane(page)).toHaveAttribute("data-id", "");
     await expect(pane(page).locator("h2 .segment")).toHaveText("closed_loop");
     await expect(pane(page).locator("h2 .name")).toHaveText("Group");
     await expect(pane(page).locator(".path")).toHaveText("/");
-    await expect(pane(page).locator("p.facts")).toHaveText("open level · 6 children · 30 wires");
+    await expect(pane(page).locator(".path-line button.copy + span.level-mark")).toHaveText("open level");
+    await expect(pane(page).locator("p.facts")).toHaveCount(0);
+    await expect(pane(page).locator('dl.facts dd[data-fact="children"] ~ dd[data-fact="wires"]')).toHaveCount(1);
+    await expect(fact(page, "children")).toHaveText("6");
+    await expect(fact(page, "wires")).toHaveText("30");
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["h_ref", "V_ref", "mode"]);
     await expect(pane(page).locator("table.faces tr.out")).toHaveCount(0);
   });
 
-  test("the open level takes the assembly layout: the root's facts, docstring, locations and parameters under the level's line, no open button", async ({ page }) => {
+  test("the open level takes the assembly layout: the mark where the open button stands, the root's facts with its wires, docstring, locations and parameters", async ({ page }) => {
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
     await expect(pane(page)).toHaveAttribute("data-id", "");
     await expect(pane(page).locator("button.open-level")).toHaveCount(0);
-    await expect(pane(page).locator("p.facts")).toHaveText("open level · 6 children · 30 wires");
-    await expectLabels(page, ["type", "class", "children"]);
+    await expect(pane(page).locator(".path-line button.copy + span.level-mark")).toHaveCount(1);
+    await expect(pane(page).locator("p.facts")).toHaveCount(0);
+    await expectLabels(page, ["type", "class", "children", "wires"]);
     await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Blocks.Group");
     await expect(fact(page, "class")).toHaveText("assembly");
     await expect(fact(page, "children")).toHaveText("6");
+    await expect(fact(page, "wires")).toHaveText("30");
     await expect(pane(page).locator("details.signature")).toHaveCount(1);
     await expect(pane(page).locator("details.docstring div.docstring")).toHaveCount(1);
     await expect(pane(page).locator(".locations li")).toHaveCount(5);
     await expect(pane(page).locator(".parameters tr")).toHaveCount(4);
-    // the level's line first, then the assembly's facts, signature, docstring, locations, parameters and faces
-    const order = await pane(page).evaluate((aside) => ["p.facts", "dl.facts", "details.signature", "details.docstring", ".locations", ".parameters", "table.faces"]
+    // the mark in the header, then the assembly's facts, signature, docstring, locations, parameters and faces
+    const order = await pane(page).evaluate((aside) => ["span.level-mark", "dl.facts", "details.signature", "details.docstring", ".locations", ".parameters", "table.faces"]
       .map((s) => [...aside.querySelectorAll("*")].indexOf(aside.querySelector(s)!)));
     expect(order.every((i) => i >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
@@ -169,11 +178,13 @@ test.describe("closed_loop", () => {
     await page.locator('g.block[data-id="sensing"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "assembly");
     await expect(pane(page).locator("h2 .name")).toHaveText("Group");
-    await expectLabels(page, ["type", "class", "children", "member"]);
+    await expectLabels(page, ["type", "class", "children", "wires", "member"]);
     await expect(fact(page, "class")).toHaveText("assembly");
     await expect(fact(page, "children")).toHaveText("2");
-    // the open button stands beside the copy button on the path line
+    await expect(fact(page, "wires")).toHaveText("3");
+    // the open button stands beside the copy button on the path line, and no mark
     await expect(pane(page).locator(".path-line button.copy + button.open-level")).toHaveCount(1);
+    await expect(pane(page).locator("span.level-mark")).toHaveCount(0);
     await expect(pane(page).locator("table.faces tr.in .face-name")).toHaveText(["h"]);
     await expect(pane(page).locator("table.faces tr.out .face-name")).toHaveText(["h_meas"]);
     await expect(pane(page).locator("table.faces .stage")).toHaveCount(0);
@@ -207,21 +218,34 @@ test.describe("closed_loop", () => {
     await shot(page, "closed_loop", "", "detail-wire");
   });
 
-  test("the pin h_ref: the pin layout with its two consumers, nothing said of pinning; a pinned output's port says so", async ({ page }) => {
+  test("pinning on a primitive's own face alone: the root's pin h_ref, the port θ on pid_controller and the pin h_ref inside it say nothing; free's y and plant's V say so", async ({ page }) => {
     await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "pin");
     await expect(pane(page).locator(".type")).toContainText("Float64");
     await expect(pane(page).locator(".type")).toContainText("float");
-    await expect(pane(page).locator(".facts")).toHaveText("pin");
+    await expect(pane(page).locator("p.facts")).toHaveCount(0);
     await expect(pane(page).locator(".root-input")).toHaveText("root input: h_ref Float64");
     await expect(pane(page)).not.toContainText(/pinned/i);
     await expect(pane(page).locator("a.consumer")).toHaveCount(2);
     await expect(link(page, "consumer", "pid_controller/h_ctl", "r")).toHaveCount(1);
     await expect(link(page, "consumer", "lqr_controller/z_ref_pack", "in1")).toHaveCount(1);
+    // a closed assembly's port, fed by plant's output
+    await page.locator('rect.port[data-port="pid_controller|in|θ"]').click();
+    await expect(pane(page)).toHaveAttribute("data-kind", "port");
+    await expect(pane(page)).toHaveAttribute("data-id", "pid_controller|in|θ");
+    await expect(pane(page).locator("p.facts")).toHaveCount(0);
+    await expect(pane(page)).not.toContainText(/pinned/i);
+    // the level's pin inside it, fed by the root input
     await openPath(page, "pid_controller");
+    await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
+    await expect(pane(page)).toHaveAttribute("data-kind", "pin");
+    await expect(pane(page)).toHaveAttribute("data-id", "⟨in⟩h_ref");
+    await expect(pane(page).locator("p.facts")).toHaveCount(0);
+    await expect(pane(page)).not.toContainText(/pinned/i);
+    // a primitive's own output, pinned, with its stage and no kind word
     await page.locator('rect.port[data-port="pid_controller/free|out|y"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "port");
-    await expect(pane(page).locator(".facts")).toHaveText(/ · pinned$/);
+    await expect(pane(page).locator("p.facts")).toHaveText("stage 1 · pinned");
   });
 
   test("a face row selects its port on the canvas", async ({ page }) => {
@@ -231,7 +255,7 @@ test.describe("closed_loop", () => {
     await expect(page.locator('rect.port.selected[data-port="plant|out|V"]')).toHaveCount(1);
     await expect(page.locator("svg.canvas .selected")).toHaveCount(1);
     await expect(pane(page)).toHaveAttribute("data-kind", "port");
-    await expect(pane(page).locator(".facts")).toHaveText("port · stage 1 · not pinned");
+    await expect(pane(page).locator("p.facts")).toHaveText("stage 1 · not pinned");
   });
 
   test("the copy button writes the path to the clipboard", async ({ page, context, browserName }) => {
@@ -277,12 +301,21 @@ test.describe("closed_loop", () => {
   });
 });
 
-test("rates: level fast's scope line", async ({ page }) => {
+test("rates: level fast's scope line, its heading after the locations and before the parameters", async ({ page }) => {
   await drop(page, "rates");
   await openPath(page, "fast");
   await expect(pane(page)).toHaveAttribute("data-kind", "level");
   const scopes = pane(page).locator(".scopes li");
   await expect(scopes).toHaveCount(1);
+  const heads = await pane(page).evaluate((aside) => {
+    const all = [...aside.querySelectorAll("*")];
+    const h3 = (t: string) => all.findIndex((e) => e.tagName === "H3" && e.textContent === t);
+    return { locations: all.indexOf(aside.querySelector("ul.locations")!), scopes: h3("Rate scopes"), parameters: h3("Parameters"), list: all.indexOf(aside.querySelector("ul.scopes")!) };
+  });
+  expect(heads.locations).toBeGreaterThanOrEqual(0);
+  expect(heads.scopes).toBeGreaterThan(heads.locations);
+  expect(heads.list).toBeGreaterThan(heads.scopes);
+  expect(heads.parameters).toBeGreaterThan(heads.list);
   for (const t of ["fast", "anchor fast", "T 1/50", "m 1"]) await expect(scopes).toContainText(t);
   await page.locator('g.block[data-id="fast/outer"]').dblclick();
   await page.locator(readyLevel("fast/outer")).waitFor();
@@ -344,11 +377,56 @@ test("a narrow pane stacks each parameter's summary under its name and each face
   await expect(pane(page).locator("table.faces thead")).toBeVisible();
 });
 
-test("the level facts count in the singular and the plural: aircraft's one child, kinds' ten wires", async ({ page }) => {
+test("the level's facts count its children and wires: aircraft's one child and two wires, kinds' nine and ten", async ({ page }) => {
   await drop(page, "aircraft");
-  await expect(pane(page).locator("p.facts")).toHaveText("open level · 1 child · 2 wires");
+  await expect(fact(page, "children")).toHaveText("1");
+  await expect(fact(page, "wires")).toHaveText("2");
   await drop(page, "kinds");
-  await expect(pane(page).locator("p.facts")).toHaveText("open level · 9 children · 10 wires");
+  await expect(fact(page, "children")).toHaveText("9");
+  await expect(fact(page, "wires")).toHaveText("10");
+});
+
+test("kinds: the root's output faces, fed by pinned primitives, carry no pinned mark, nor does the pin ⟨out⟩i; the primitive's own port does", async ({ page }) => {
+  await drop(page, "kinds");
+  await expect(pane(page).locator("table.faces tr.out")).toHaveCount(9);
+  await expect(pane(page).locator("table.faces td.pinned")).toHaveText(Array(9).fill(""));
+  await page.locator('g.block[data-id="⟨out⟩i"]').click();
+  await expect(pane(page)).toHaveAttribute("data-kind", "pin");
+  await expect(pane(page).locator("p.facts")).toHaveCount(0);
+  await expect(pane(page)).not.toContainText(/pinned/i);
+  await page.locator('rect.port[data-port="i|out|y"]').click();
+  await expect(pane(page)).toHaveAttribute("data-kind", "port");
+  await expect(pane(page).locator("p.facts")).toHaveText(/^stage \d · pinned$/);
+});
+
+test("closed_loop: a location's file name stays on one line with its line number at pane widths 240, 360, 380 and 420", async ({ page }) => {
+  for (const detail of [240, 360, 380, 420]) {
+    await drop(page, "closed_loop");
+    await page.evaluate((detail) => localStorage.setItem("redstone-inspector/prefs",
+      JSON.stringify({ version: 1, sizes: { tree: 280, detail, drawer: 200 }, collapsed: { tree: false, detail: false } })), detail);
+    await drop(page, "closed_loop");
+    await expect(pane(page).locator(".locations li")).toHaveCount(5);
+    // the tops of the characters from the last slash's successor to the line number's end, read from each one's rect
+    const lines = await pane(page).locator(".locations .file").evaluateAll((files) => files.map((file) => {
+      const text = file.textContent!;
+      const tops = new Set<number>();
+      const walker = document.createTreeWalker(file, NodeFilter.SHOW_TEXT);
+      let offset = 0, start = text.lastIndexOf("/") + 1;
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const len = n.textContent!.length;
+        for (let i = Math.max(0, start - offset); i < len; i++) {
+          const r = document.createRange();
+          r.setStart(n, i);
+          r.setEnd(n, i + 1);
+          tops.add(Math.round(r.getBoundingClientRect().top));
+        }
+        offset += len;
+      }
+      return { text, lines: tops.size };
+    }));
+    expect(lines.length).toBe(5);
+    for (const l of lines) expect(l.lines, `${detail}: ${l.text}`).toBe(1);
+  }
 });
 
 test("library: integrator's docstring rendered, the signature a code block, seven @ref links opening the core's docs in a new tab", async ({ page }) => {

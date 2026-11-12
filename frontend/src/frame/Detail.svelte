@@ -4,7 +4,7 @@
   // through the session; nothing here is truncated, the pane scrolls. A pin, a
   // port and a wire carry the trace button.
   import {
-    classPhrase, count, detailOf, FACT_TITLES, faceSelection, levelLine, memberKind, memberTitle, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
     type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
@@ -47,18 +47,24 @@
   const pick = (f: Face) => onselect(faceSelection(model.tree!, f));
   const faceText = (f: Face) => (f.path === "" ? `${f.port} (root ${f.side === "in" ? "input" : "output"})` : `${f.path}/${f.port}`);
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
+  /** A file's directories, each with its slash, and its name: a label breaks after a slash, never inside the name. */
+  const fileParts = (file: string) => {
+    const i = file.lastIndexOf("/") + 1;
+    return { dirs: file.slice(0, i).split(/(?<=\/)/).filter(Boolean), name: file.slice(i) };
+  };
   /** A face row selects its port, or on the level's layout the level's pin. */
   const rowSelection = (f: Face): Selection => facts?.kind === "level"
     ? { level, target: { kind: "block", id: f.side === "in" ? inPinId(f.port) : outPinId(f.port) } }
     : faceSelection(model.tree!, f);
 </script>
 
-{#snippet header(segment: string, name: string, path: string, opens = false, traces = false)}
+{#snippet header(segment: string, name: string, path: string, opens = false, traces = false, mark = false)}
   <h2><span class="segment">{segment}</span> <span class="name">{name}</span></h2>
   <div class="path-line">
     <code class="path" title={path || "/"}>{path || "/"}</code>
     <button class="copy" title="Copy the path" onclick={() => copy(path)}>{copied === path ? "Copied" : "Copy"}</button>
     {#if opens}<button class="open-level" title={`Open ${segment} as the level`} onclick={() => onopen(path)}>Open</button>{/if}
+    {#if mark}<span class="level-mark">open level</span>{/if}
     {#if traces}{@render traceButton()}{/if}
   </div>
 {/snippet}
@@ -107,7 +113,7 @@
   {/if}
 {/snippet}
 
-{#snippet node(f: NodeFacts | LevelFacts)}
+{#snippet node(f: NodeFacts | LevelFacts, scopes: LevelFacts["scopes"] = [])}
   <dl class="facts">
     <dt title={FACT_TITLES.type}>type</dt>
     <dd data-fact="type">
@@ -122,6 +128,10 @@
     {#if f.children !== undefined}
       <dt title={FACT_TITLES.children}>children</dt>
       <dd data-fact="children">{f.children}</dd>
+    {/if}
+    {#if f.wires !== undefined}
+      <dt title={FACT_TITLES.wires}>wires</dt>
+      <dd data-fact="wires">{f.wires}</dd>
     {/if}
     {#if f.membership}
       <dt title={FACT_TITLES.member}>member</dt>
@@ -144,16 +154,21 @@
     <h3>Locations</h3>
     <ul class="locations">
       {#each f.locations as l, i (i)}
+        {@const parts = fileParts(l.file)}
         <li>
           <button
             class="location" class:editor title={editor ? "Open in the editor" : "Copy the file label"}
             onclick={() => onlocation(l.file, l.line) || copy(fileLabel(l.file, l.line))}
           >
-            <code class="function">{l.function}</code> <code class="file">{fileLabel(l.file, l.line)}</code>
+            <code class="function">{l.function}</code> <code class="file">{#each parts.dirs as d, j (j)}{d}<wbr />{/each}<span class="file-name">{parts.name}:{l.line}</span></code>
           </button>{#if copied === fileLabel(l.file, l.line)} <span class="copied">copied</span>{/if}
         </li>
       {/each}
     </ul>
+  {/if}
+  {#if scopes.length}
+    <h3>Rate scopes</h3>
+    <ul class="scopes">{#each scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>
   {/if}
   {#if f.parameters.length}
     <h3>Parameters</h3>
@@ -173,13 +188,8 @@
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
   <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
     {#if facts.kind === "level"}
-      {@render header(facts.segment, facts.displayName, facts.path)}
-      <p class="facts">{levelLine(facts)}</p>
-      {#if facts.scopes.length}
-        <h3>Rate scopes</h3>
-        <ul class="scopes">{#each facts.scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>
-      {/if}
-      {@render node(facts)}
+      {@render header(facts.segment, facts.displayName, facts.path, false, false, true)}
+      {@render node(facts, facts.scopes)}
     {:else if "signature" in facts}
       {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly")}
       {@render node(facts)}
@@ -203,7 +213,8 @@
       <ul class="consumers">{#each facts.consumers as c, i (i)}<li>{@render faceLink("consumer", c)}</li>{:else}<li>none</li>{/each}</ul>
     {:else}
       {@render header(facts.name, facts.kind === "pin" ? `${facts.face.side === "in" ? "input" : "output"} pin of ${facts.level || model.label}` : `${facts.face.side === "in" ? "input" : "output"} of ${facts.face.path || model.label}`, facts.face.path, false, true)}
-      <p class="facts">{[facts.kind, facts.stage && `stage ${facts.stage}`, facts.pinned === undefined ? undefined : facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}</p>
+      {@const line = [facts.stage && `stage ${facts.stage}`, facts.pinned === undefined ? undefined : facts.pinned ? "pinned" : "not pinned"].filter(Boolean).join(" · ")}
+      {#if line}<p class="facts">{line}</p>{/if}
       <p class="type"><code>{facts.type ?? "?"}</code> <span class="face-kind">{facts.phrase ?? ""}</span></p>
       {#if facts.rootInput}
         <p class="root-input">root input: <code>{facts.rootInput.name}</code> <code>{facts.rootInput.type}</code></p>
@@ -234,6 +245,7 @@
   dl.facts dd[title] { cursor: help; }
   dl.facts .aside { color: var(--text-light); font-size: 11px; margin: 0 4px 0 8px; }
   .open-level, .trace { font: 11px system-ui, sans-serif; padding: 0 6px; }
+  .level-mark { font-size: 11px; color: var(--text-light); }
   .trace[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 20%, transparent); }
   p { margin: 6px 0; }
   code, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
@@ -253,8 +265,10 @@
   .locations { list-style: none; padding: 0; }
   .locations li { margin: 2px 0; }
   .location { all: unset; display: block; cursor: copy; overflow-wrap: anywhere; }
+  /* The file's name with its line number moves to a line of its own whole, and breaks only when wider than the pane. */
+  .location .file-name { display: inline-block; }
   .location.editor { cursor: pointer; }
-  .location:hover .file { text-decoration: underline; }
+  .location:hover :is(.file, .file-name) { text-decoration: underline; }
   .locations .file, .copied { color: var(--text-light); }
   table { border-collapse: collapse; width: 100%; }
   td, th { padding: 2px 6px 2px 0; vertical-align: top; text-align: left; }

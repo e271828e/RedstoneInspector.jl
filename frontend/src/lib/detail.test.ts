@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { KindMarker, LeafFace, StructureSection } from "./descriptor";
 import {
-  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, levelLine, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
+  classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
   ratePhrase, timingPhrase, wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
@@ -106,9 +106,9 @@ describe("closed_loop's elements", () => {
 
   it("the open level carries its node's facts as a closed assembly's: the root's docstring, locations, parameters and faces' consumers", () => {
     const l = levelFacts(cl, "") as LevelFacts;
-    const { kind, wires, scopes, ...rest } = l;
-    expect([kind, wires, scopes]).toEqual(["level", 30, []]);
-    expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined, children: 6 });
+    const { kind, scopes, ...rest } = l;
+    expect([kind, l.wires, scopes]).toEqual(["level", 30, []]);
+    expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined });
     expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Blocks.Group"]);
     expect(by(l.inputs, "h_ref").consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
     const pid = levelFacts(cl, "pid_controller") as LevelFacts;
@@ -140,9 +140,9 @@ describe("closed_loop's elements", () => {
     expect(by(a.outputs, "y").stage).toBe(2);
   });
 
-  it("sensing's facts as a closed assembly: its child count, no tier or rate, its faces typed through the resolution", () => {
+  it("sensing's facts as a closed assembly: its child and wire counts, no tier or rate, its faces typed through the resolution", () => {
     const s = nodeFacts(cl, "sensing");
-    expect([s.kind, s.displayName, s.children, s.tier, s.rate]).toEqual(["assembly", "Group", 2, undefined, undefined]);
+    expect([s.kind, s.displayName, s.children, s.wires, s.tier, s.rate]).toEqual(["assembly", "Group", 2, 3, undefined, undefined]);
     expect(s.inputs.map((f) => [f.name, f.type, f.phrase])).toEqual([["h", "Float64", "float"]]);
     expect(s.outputs.map((f) => [f.name, f.type, f.stage])).toEqual([["h_meas", "Float64", undefined]]);
     expect(by(s.inputs, "h").producer).toEqual(face("plant", "out", "h"));
@@ -173,14 +173,22 @@ describe("closed_loop's elements", () => {
     expect([q.kind, q.consumers?.length, q.rootInput?.type, q.pinned]).toEqual(["port", 2, "Float64", undefined]);
   });
 
-  it("the pinned flag: none on a root input, a primitive root's inputs included; a primitive's own, an assembly's and a lower level's pin through the producer elsewhere", () => {
+  it("the pinned flag on a primitive's own face alone: none on a root input, a primitive root's inputs included, none on any assembly face", () => {
     const prim = fixtureModel("primitive");
     expect(levelFacts(prim, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined]);
     expect(levelFacts(cl, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined, undefined]);
     expect(portFacts(cl, "pid_controller", "pid_controller/free|out|y")!.pinned).toBe(true);
     expect(portFacts(cl, "", "plant|out|V")!.pinned).toBe(false);
-    expect(portFacts(cl, "", "sensing|out|h_meas")!.pinned).toBe(false);
-    expect(pinFacts(cl, "pid_controller", "⟨out⟩δe")!.pinned).toBe(false);
+    // an assembly's faces: a closed one's port, a level's pin, whether a root input or a pinned or unpinned output feeds it
+    expect(portFacts(cl, "", "sensing|out|h_meas")!.pinned).toBeUndefined();
+    expect(portFacts(cl, "", "pid_controller|in|θ")!.pinned).toBeUndefined();
+    expect(portFacts(cl, "", "pid_controller|in|h_ref")!.pinned).toBeUndefined();
+    expect(pinFacts(cl, "pid_controller", "⟨in⟩h_ref")!.pinned).toBeUndefined();
+    expect(pinFacts(cl, "pid_controller", "⟨out⟩δe")!.pinned).toBeUndefined();
+    const kinds = fixtureModel("kinds");
+    expect(levelFacts(kinds, "").outputs.map((f) => f.pinned)).toEqual(Array(9).fill(undefined));
+    expect(pinFacts(kinds, "", "⟨out⟩i")!.pinned).toBeUndefined();
+    expect(portFacts(kinds, "", "i|out|y")!.pinned).toBe(true);
     const lib = fixtureModel("library");
     const pinned = ["constant", "step", "source", "relay", "freeze"].map((p) => portFacts(lib, "", `${p}|out|y`)!.pinned);
     expect(pinned).toEqual([true, true, true, true, true]);
@@ -229,7 +237,7 @@ describe("other fixtures", () => {
     expect(l.scopes).toEqual([{ key: "fast", timing: "anchor fast (T 1/50 s, tau 0/1 s), m 1, c 0" }]);
   });
 
-  it("counts the level line in the singular for one child and one wire, the plural otherwise", () => {
+  it("an assembly's facts count its own level's wires, open or closed", () => {
     const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
     const structure: StructureSection = {
@@ -242,8 +250,12 @@ describe("other fixtures", () => {
     };
     const tree = buildTree(structure);
     const one = { tree, structure, resolution: buildResolution(tree, structure) } as Model;
-    expect(levelLine(levelFacts(one, "") as LevelFacts)).toBe("open level · 1 child · 1 wire");
-    expect(levelLine(levelFacts(fixtureModel("rates"), "fast") as LevelFacts)).toBe("open level · 2 children · 4 wires");
+    expect([levelFacts(one, "").children, levelFacts(one, "").wires]).toEqual([1, 1]);
+    const rates = fixtureModel("rates");
+    expect([levelFacts(rates, "fast").children, levelFacts(rates, "fast").wires]).toEqual([2, 4]);
+    expect([nodeFacts(rates, "fast").children, nodeFacts(rates, "fast").wires]).toEqual([2, 4]);
+    expect([levelFacts(cl, "").children, levelFacts(cl, "").wires]).toEqual([6, 30]);
+    expect([nodeFacts(cl, "plant").children, nodeFacts(cl, "plant").wires]).toEqual([undefined, undefined]);
   });
 
   it("a primitive root's level is its leaf, its segment the label", () => {
