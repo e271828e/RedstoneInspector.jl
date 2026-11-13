@@ -145,6 +145,16 @@ the increment it came from.
   functions, none of them owed for a loop, whose row takes the structural
   reading below. Each is a minor bump ruled in the core's spec and log
   first (D-433).
+- **A rational part past `2^53`** (the core's exact-arithmetic audit,
+  `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
+  section 2.8). The descriptor writes an anchor's `T` and `τ` as the JSON
+  integers `num` and `den`, exact in the file. `rational` in
+  `frontend/src/lib/analysis.ts` reads them into JavaScript numbers,
+  which are exact only below `2^53`, so a period of `1//(2^61 - 1)` prints
+  rounded. Display only. The cure is a reader that keeps the integers
+  exact, or a format change ruled in the core first (D-433). The user
+  ruled on 2026-11-14 that it stays out of the core's exact-arithmetic
+  increment and waits here.
 - **Names the export audit may change.** `descriptor` is provisional
   until the core's audit (D-226), and a diagnostic's `kind` is its type's
   name, which the audit may rename; the core's `pending.md` bullet "The
