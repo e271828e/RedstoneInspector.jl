@@ -62,9 +62,10 @@ The bullets stand in working order, the first one next.
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
   its anchor (amending `descriptor_design.md` answer 10); then 11, the
-  release. Open across increments: the Firefox project, non-blocking
-  until it has passed a few runs, first passed every check it runs on
-  2026-11-15. The built-in Julia GUI is parked (D-310).
+  release. The Firefox project blocks CI as Chromium's does, by the
+  user's ruling of 2026-11-15 after its first run with every check
+  passed, so increment 6's reading 18, non-blocking until the release, is
+  settled. The built-in Julia GUI is parked (D-310).
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The root's
   `[sources]` revision becomes a `[compat]` range, and `scripts/` keeps the
