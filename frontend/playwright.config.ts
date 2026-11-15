@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 // The browser checks run headless against the built bundle, served by `vite preview`
 // over dist/; `npm run build` runs first (build_release.md answer 5). Two projects:
-// Chromium, blocking, and Firefox, non-blocking in CI until it has passed a few runs.
+// Chromium and Firefox, both blocking in CI.
 const PORT = 4319;
 const CI = !!process.env.CI;
 

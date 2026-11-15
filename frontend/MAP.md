@@ -633,8 +633,7 @@ returns true, else returns false.
 
 `npm run e2e` runs Playwright over `e2e/` against `vite preview` on port 4319
 serving `dist/`, so `npm run build` runs first. Two projects, `chromium` and
-`firefox`; CI runs Firefox with `continue-on-error: true` until it has passed
-a few runs, before the release. The clipboard checks skip under Firefox.
+`firefox`, both blocking in CI. The clipboard checks skip under Firefox.
 `e2e/fixtures.ts` is the harness: `drop` opens `/` or the path given as `at`,
 dispatches a `drop` carrying the fixture on the window and waits for
 `svg.canvas[data-ready]` or the outcome; `dropOver` drops on the page as it
