@@ -121,7 +121,8 @@ pane and drawer; `closed_loop` the root to drag on. The screenshots are in
   Done on 2026-11-15: `ca5d342` pushed, CI run 43763489314 green on all
   four jobs. Firefox passed 223 checks and failed four: increment 6's two
   of `leave.spec.ts`, and the producer link's and the undo button's checks
-  of the removal rule, an item of `pending.md`.
+  of the removal rule. All four fixed at the user's word on the same day,
+  at `fbd6ef9`; the roadmap's note says how.
 - [x] **7.4** The roadmap's landed note, the pending bullet retired, the
   item "`j` and `k` in an unselected tree" retired and "Keyboard paths and
   buttons" amended.

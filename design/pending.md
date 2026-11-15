@@ -62,9 +62,9 @@ The bullets stand in working order, the first one next.
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
   its anchor (amending `descriptor_design.md` answer 10); then 11, the
-  release. Open across increments: the non-blocking Firefox project
-  fails the two leave-prompt checks, to be settled before it turns
-  blocking. The built-in Julia GUI is parked (D-310).
+  release. Open across increments: the Firefox project, non-blocking
+  until it has passed a few runs, first passed every check it runs on
+  2026-11-15. The built-in Julia GUI is parked (D-310).
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The root's
   `[sources]` revision becomes a `[compat]` range, and `scripts/` keeps the
@@ -178,8 +178,7 @@ the increment it came from.
   `frontend/dist`.
 - **Firefox's skipped checks** (increment 6). Its clipboard skip takes
   `live.spec.ts`'s whole hosted-copy check, so the no-connection and
-  no-download pins do not run under Firefox; its two `leave.spec.ts`
-  failures sit on the stage 1 bullet.
+  no-download pins do not run under Firefox.
 - **The base grid's peach** (increment 6). Step 0 goes to a block ticking
   on the base grid; `closed_loop` has none, so its palette starts at
   anchor 1 and the peach goes to `sensing`.
@@ -256,14 +255,6 @@ the increment it came from.
   keyboard's trace, and its button takes no focus on opening. The sweep
   needs a ruling on whether Tab enters a region or each region gets a row
   cursor.
-- **A removed focused element in Firefox** (increment 8b). CI's Firefox
-  project fails `detail.spec.ts`'s producer-link check and `drag.spec.ts`'s
-  undo-button check: the region stays set and shows its ring, but the
-  page's body holds the focus, so Tab starts from the page's top rather
-  than from the region. The keys still act on the region, since they read
-  `session.focus`. Inferred, not probed: Firefox fires no `focusout` when
-  the focused element is removed, and the review's removal rule waits for
-  one. Not seen by hand.
 - **A root input's seedability** (increment 8's look pass, 1.1). The
   root-inputs tab lost its pinned column, since version 1 writes a root
   input's `pinned` false, the wire pass having stripped the marker. The

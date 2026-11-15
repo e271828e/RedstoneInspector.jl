@@ -374,8 +374,14 @@ lays the level out again through `relayout` with a shorter list of
 dragged ids and the view kept, a `run` counter dropping a layout that a
 level change supersedes; `button.undo-drags` sits before `button.fit` in
 `.tools`; `help.ts`'s `KEYS` has 25 rows. Open items, each in
-`pending.md`: "Keyboard paths and buttons", amended; a removed focused
-element in Firefox; Firefox's two `leave.spec.ts` checks.*
+`pending.md`: "Keyboard paths and buttons", amended. The four Firefox
+failures were fixed the same day at `fbd6ef9`, CI run 43766529507 on the
+branch passing every check in both browsers, Firefox 227 with its three
+clipboard skips: Firefox fires no `focusout` when the focused element is
+removed, so a `MutationObserver` on the region's root takes over the
+removal rule while an element inside the root holds the focus, at no cost
+measured on `large`; and Firefox replaces the initial `about:blank` with
+the first page, so the leave checks open a page before the inspector.*
 
 **Increment 9: the server.** On the Julia track after increment 1, in
 parallel with 2 to 8: the module slot, HTTP.jl on the fixed port and
