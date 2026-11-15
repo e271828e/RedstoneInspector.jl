@@ -380,7 +380,7 @@ Open items live in `pending.md`.
     | key | action |
     |---|---|
     | `h` `j` `k` `l` | on the canvas or with nothing focused, move the selection to the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, scroll, `h` and `l` sideways; on the help page, `j` and `k` scroll |
-    | arrows | on the canvas or with nothing focused, pan the canvas; in the tree, the detail pane and the drawer, what `h j k l` do there |
+    | arrows | on the canvas or with nothing focused, pan the canvas; in the tree, the detail pane and the drawer, what `h j k l` do there; with Shift, the same |
     | Shift with `h`, `l` | back, forward between levels; nothing before the first |
     | Shift with `j`, Enter | open the selected assembly |
     | Shift with `k`, Backspace or Alt-Up | go to the parent |
@@ -401,7 +401,9 @@ Open items live in `pending.md`.
     the drawer show it on the pane's box whenever they hold the focus, the
     mouse's or the keyboard's, since `h j k l` and the arrows change meaning
     there; the canvas shows it for the keyboard only, its keys meaning what
-    they mean with nothing focused. Every control is a real button or link;
+    they mean with nothing focused. A click leaves the canvas without it,
+    and the first key after the click turns it on, the keyboard then
+    driving the canvas. Every control is a real button or link;
     a push keeps focus in the region that held it. Cmd-O and Ctrl-O take
     the browser's own binding on purpose and wherever the page shows, in
     the search field, on the landing panel and under the help page, where
@@ -431,7 +433,9 @@ Open items live in `pending.md`.
     comment, and of 2026-11-12): `h j k l` jumped on the canvas and the
     arrows panned it whatever held the focus, the tree's `h j k l` apart;
     `m`, `i`, Cmd-O, Ctrl-O, `u` and `U` did not exist; and the ring showed
-    for the keyboard only in every region.*
+    for the keyboard only in every region. Amended 2026-11-15 (increment
+    8b's look, 1.8 and 2.2): Shift with an arrow was unruled, and the
+    canvas's ring after a click and a key was unstated.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a
