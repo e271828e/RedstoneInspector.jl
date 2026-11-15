@@ -1,11 +1,15 @@
 // The leave prompt (workspace.md answer 10): a model from a dropped file asks before
 // the page unloads, so a back past the first level does not lose it; a model pushed
 // over the socket does not ask. Chromium asks only after a real interaction, which
-// the canvas click is.
+// the canvas click is. Each check opens a page before the inspector, so a back has
+// an entry to reach: Firefox replaces the initial about:blank with the first page.
 import { test } from "@playwright/test";
 import { drop, expect, fixtureText, live, readyLevel } from "./fixtures";
 
+const BEFORE = "data:text/html,before";
+
 test("a dropped model asks before a back past the first entry, and stays when the prompt is dismissed", async ({ page }) => {
+  await page.goto(BEFORE);
   await drop(page, "closed_loop");
   const dialogs: string[] = [];
   page.on("dialog", (d) => { dialogs.push(d.type()); d.dismiss(); });
@@ -17,6 +21,7 @@ test("a dropped model asks before a back past the first entry, and stays when th
 });
 
 test("a pushed model leaves without asking", async ({ page }) => {
+  await page.goto(BEFORE);
   const mock = await live(page, "/");
   await expect.poll(() => mock.sent.length).toBe(1);
   mock.send(fixtureText("closed_loop"));
@@ -25,6 +30,6 @@ test("a pushed model leaves without asking", async ({ page }) => {
   page.on("dialog", (d) => { dialogs.push(d.type()); d.dismiss(); });
   await page.locator('g.block[data-id="plant"]').click();
   await page.goBack({ timeout: 2000 }).catch(() => undefined);
-  await expect.poll(() => page.url()).toBe("about:blank");
+  await expect.poll(() => page.url()).toBe(BEFORE);
   expect(dialogs).toEqual([]);
 });
