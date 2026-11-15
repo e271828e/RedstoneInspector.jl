@@ -360,7 +360,9 @@
   /** The region a focus change lands in, from the focused element's nearest region root. */
   function focusin(e: FocusEvent) {
     const t = e.target instanceof Element ? e.target : null;
-    setFocus(REGIONS.find(([, sel]) => t?.closest(sel))?.[0]);
+    const region = REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
+    setFocus(region);
+    watchRemoval(region, t);
   }
   /**
    * Focus leaving for no element clears the region. When the focused element was removed, its region keeps the
@@ -369,6 +371,7 @@
   function focusout(e: FocusEvent) {
     if (e.relatedTarget !== null) return;
     setFocus(undefined);
+    watchRemoval(undefined, null);
     const t = e.target instanceof Element ? e.target : null;
     const region = REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
     if (!t || !region) return;
@@ -376,6 +379,24 @@
       const a = document.activeElement;
       if (!t.isConnected && (!a || a === document.body)) rootOf(region)?.focus({ preventScroll: true });
     });
+  }
+  /**
+   * Firefox fires no `focusout` when the focused element is removed. So while an element inside a region root holds
+   * the focus, the root's subtree is watched, and the root takes the focus once that element is gone and the body
+   * holds it. A focused root itself is never watched.
+   */
+  let held: { region: Region; el: Element } | undefined;
+  const removal = new MutationObserver(() => {
+    const a = document.activeElement;
+    if (held && !held.el.isConnected && (!a || a === document.body)) rootOf(held.region)?.focus({ preventScroll: true });
+  });
+  function watchRemoval(region: Region | undefined, el: Element | null) {
+    removal.disconnect();
+    held = undefined;
+    const root = region && rootOf(region);
+    if (!region || !el || !root || root === el) return;
+    held = { region, el };
+    removal.observe(root, { childList: true, subtree: true });
   }
   function drop(e: DragEvent) {
     e.preventDefault();

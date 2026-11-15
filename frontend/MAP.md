@@ -524,7 +524,10 @@ What the records do not fix, or where the page differs:
 - **Focus.** `focusin` sets the region from the nearest root, `nav.tree` and
   `aside.detail` filling their pane's body; a `focusout` with no related
   target clears it; if a microtask later the target is removed and the body
-  holds the focus, the region's root takes it (`preventScroll`). A row's
+  holds the focus, the region's root takes it (`preventScroll`). Firefox
+  fires no `focusout` on a removal, so while an element inside a root holds
+  the focus a `MutationObserver` watches the root's subtree and applies the
+  same rule; a focused root is never watched. A row's
   click focuses `nav.tree`. The ring, 2 px inset in the highlight hue, is on
   the focused pane's box, mouse or key, and on `.viewport` for
   `:focus-visible` alone. A push or a drop refocuses the noted region's root

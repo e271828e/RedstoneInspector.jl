@@ -355,7 +355,10 @@ full text stays.
 - **A focused node removed.** Chromium fires the same `focusout` for a
   focused node's removal and for a click on a non-focusable place: a null
   related target, the target still connected. A microtask later the removed
-  one is disconnected, which is how the shell tells them apart.
+  one is disconnected, which is how the shell tells them apart. Firefox
+  fires no `focusout` for the removal at all, so the shell also watches the
+  region's root for removed nodes. Only the Firefox project shows that path;
+  in Chromium the `focusout` covers it.
 - **A mutant runner in place.** A runner that swaps source files in place
   shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
   until it has restored the last one.
