@@ -347,7 +347,35 @@ rule across a push and a redo, for the one case of a component dragged
 twice, which a new drag covers. Its docs commit amends `workspace.md`
 answer 11's key table and answer 9's sentence on a drag's lifetime.
 Visible: a page one can drive from the keyboard pane by pane. Draws on
-`workspace.md` answers 9 and 11.
+`workspace.md` answers 9 and 11. *Landed on 2026-11-15 at `ca5d342` of
+`RedstoneInspector.jl`, pushed that day, CI run 43763489314 green on all four jobs (frontend 5
+min 6 s): 511 unit tests, 230 browser checks in Chromium, and the
+non-blocking Firefox project failing increment 6's two `leave.spec.ts`
+checks and two of the review's focus checks, 223 passing. Its folder,
+`increments/inspector_08b_keyboard/`, holds the brief with the ten
+readings and the review's record, and the look's checklist
+`look_inspector_08b.md` with the rulings under their entries. The look
+kept every reading and amended `workspace.md` answer 11 for Shift with an
+arrow, which acts as the arrow, and for the canvas's ring after a click,
+which the first key turns on. Facts the next briefs take from it:
+`App.svelte` dispatches `h j k l` and the arrows on `session.focus`,
+`treeMove` in the tree, `scrollBy` by `SCROLL_STEP` (40 px) on
+`.pane[data-pane="detail"] .body` or `.tab-body`, the jump and the pan
+elsewhere; the help page's guard takes `?`, Escape, `j` and `k`; Cmd-O
+and Ctrl-O, without Shift or Alt, click `main > input.pick`, outside
+`div.under`; `m`, `i` or `d` hiding the focused region focus
+`.viewport`; a tree row takes no focus, a row's click focusing
+`nav.tree`, and `nav.tree` and `aside.detail` fill their pane's body; a
+focused element removed, with the body holding the focus a microtask
+later, gives the focus back to its region's root; the ring is
+`.pane:has(.focused[tabindex="0"])` on the three panes and
+`.viewport.focused:focus-visible` on the canvas; the canvas's `undrag(all)`
+lays the level out again through `relayout` with a shorter list of
+dragged ids and the view kept, a `run` counter dropping a layout that a
+level change supersedes; `button.undo-drags` sits before `button.fit` in
+`.tools`; `help.ts`'s `KEYS` has 25 rows. Open items, each in
+`pending.md`: "Keyboard paths and buttons", amended; a removed focused
+element in Firefox; Firefox's two `leave.spec.ts` checks.*
 
 **Increment 9: the server.** On the Julia track after increment 1, in
 parallel with 2 to 8: the module slot, HTTP.jl on the fixed port and

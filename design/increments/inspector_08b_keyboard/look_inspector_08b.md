@@ -114,8 +114,15 @@ pane and drawer; `closed_loop` the root to drag on. The screenshots are in
 - [x] **7.1** Record amendments the look settles, docs commit first.
   Done on 2026-11-15: every entry ticked, the ten readings kept, and
   `workspace.md` answer 11 amended for 1.8 and 2.2.
-- [ ] **7.2** The merge: rebase onto `master`, fast-forward.
-- [ ] **7.3** The push and its CI run.
-- [ ] **7.4** The roadmap's landed note, the pending bullet retired, the
+- [x] **7.2** The merge: rebase onto `master`, fast-forward.
+  Done on 2026-11-15: `master` stands at `ca5d342`, whose tree differs
+  from the reviewed `68e0e87` in `design/` alone.
+- [x] **7.3** The push and its CI run.
+  Done on 2026-11-15: `ca5d342` pushed, CI run 43763489314 green on all
+  four jobs. Firefox passed 223 checks and failed four: increment 6's two
+  of `leave.spec.ts`, and the producer link's and the undo button's checks
+  of the removal rule, an item of `pending.md`.
+- [x] **7.4** The roadmap's landed note, the pending bullet retired, the
   item "`j` and `k` in an unselected tree" retired and "Keyboard paths and
   buttons" amended.
+  Done on 2026-11-15.

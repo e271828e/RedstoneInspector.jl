@@ -10,52 +10,6 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Increment 8b, the keyboard by region.** Next, and before the pin.
-  Built on 2026-11-12 on the branch `increment-8b`, in the worktree
-  `~/.julia/dev/RedstoneInspector.jl-inc8b`, the prototype being the
-  implementation, and reviewed: the branch stands at `68e0e87`, three
-  commits above the docs commit `dfdc089`, with 511 unit tests and 230
-  browser checks green in Chromium. `increments/inspector_08b_keyboard/`
-  holds its brief with the ten readings and the review's record, and the
-  checklist `look_inspector_08b.md` for the user's look. Owed, in order:
-  the user's look with Firefox and Safari tried by hand for Cmd-O, its
-  fixes, the merge by a rebase onto `master`, the push, the roadmap's
-  landed note. The user ruled its scope in
-  increment 8's first look,
-  `increments/inspector_08_analysis_help/look_inspector_08.md`, entry 4.7
-  and the additional comment under its section 6, and `roadmap.md` holds its
-  entry. `m` toggles the model tree and `i` the detail pane, over the
-  frame's collapse buttons and their prefs. Cmd-O and Ctrl-O open a file. `h
-  j k l` and the arrows follow the focused region: the tree's rows in the
-  tree, scrolling in the detail pane, the drawer and the help page, and as
-  today on the canvas or with nothing focused. A pane's focused state must
-  show clearly, since a key then changes meaning with the focus. By the
-  user's ruling of 2026-11-12 it also undoes drags on the open level: `u`
-  puts the last dragged component or pin back in its computed place, and `U`
-  every one, by the push's relayout with a shorter list of dragged ids; the
-  view stays, and a button beside Fit, shown while the level holds a drag,
-  does what `U` does; an undo per gesture was rejected, and the roadmap's
-  entry says why. It builds on the frame kept mounted and `inert` under the
-  help page, and increment 8's landed note in the roadmap lists the facts
-  its brief takes. Its docs commit amends `workspace.md` answer 11's key
-  table and answer 9 on a drag's lifetime, the help page's lead says how a
-  drag is undone, and each key goes into `help.ts`'s `KEYS` and the map's
-  keyboard table together, since a check counts one against the other. The
-  user ruled the four things the rulings left open on 2026-11-12, and the
-  brief need not be shown before it lands unless the prototype surfaces
-  another design decision. `h` and `l` scroll sideways in the detail pane
-  and the drawer, as the horizontal arrows do. The tree, the detail pane
-  and the drawer show the ring on the pane's box whenever they hold the
-  focus, the mouse's or the keyboard's, and the canvas keeps its ring for
-  the keyboard alone, its keys meaning what they mean with nothing focused.
-  The page takes Cmd-O and Ctrl-O wherever it shows, in the search field,
-  on the landing and under the help page, where the model loads beneath as
-  a drop's does, since the browser's own binding would leave the page; the
-  shell's rule then names four exceptions. It takes "`j` and `k` in an
-  unselected tree", ruled as built with the arrows alike, the sentence
-  going into `workspace.md` answer 2, and leaves "Keyboard paths and
-  buttons" to its own sweep, which needs a ruling on whether Tab enters a
-  region or each region gets a row cursor.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
@@ -103,7 +57,7 @@ The bullets stand in working order, the first one next.
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 9
-  have landed. After 8b and the pin, 10, the deployment
+  and 8b have landed. After the pin, 10, the deployment
   overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
@@ -209,8 +163,6 @@ the increment it came from.
 - **The leave prompt on old Safari** (increment 5). It calls
   `preventDefault` alone; Safari before 17 may also want `returnValue`.
   Untested.
-- **`j` and `k` in an unselected tree** (increment 5) both select the
-  first row; the records do not say.
 - **`follow` on a large box** (increment 5). It aligns the top or left
   edge of a box larger than the viewport.
 - **The drawer on a replacement** (increment 5). It keeps its state, and
@@ -294,12 +246,24 @@ the increment it came from.
 - **The drawer's filter** (increment 7) shows only when rows exist, the
   empty state alone with none, where the brief's contract lists the filter
   in the body.
-- **Keyboard paths and buttons** (increment 7), for an accessibility
-  sweep. The tree's rows and the pane's face rows take a click but are a
-  `div` and a `tr`, not buttons; the face rows have no keyboard path. The
-  drawer's rows and filter are outside Tab's cycle of the four region
-  roots. The right-click menu has no keyboard path, `t` being the
-  keyboard's trace, and its button takes no focus on opening.
+- **Keyboard paths and buttons** (increment 7, amended by increment 8b),
+  for an accessibility sweep. The tree's rows and the pane's face rows take
+  a click but are a `div` and a `tr`, not buttons; since 8b a tree row takes
+  no focus, the selection being the tree's cursor, and the face rows have
+  no keyboard path. The drawer's rows and filter are outside Tab's cycle of
+  the four region roots, and the drawer's keys scroll its body without
+  reaching a row. The right-click menu has no keyboard path, `t` being the
+  keyboard's trace, and its button takes no focus on opening. The sweep
+  needs a ruling on whether Tab enters a region or each region gets a row
+  cursor.
+- **A removed focused element in Firefox** (increment 8b). CI's Firefox
+  project fails `detail.spec.ts`'s producer-link check and `drag.spec.ts`'s
+  undo-button check: the region stays set and shows its ring, but the
+  page's body holds the focus, so Tab starts from the page's top rather
+  than from the region. The keys still act on the region, since they read
+  `session.focus`. Inferred, not probed: Firefox fires no `focusout` when
+  the focused element is removed, and the review's removal rule waits for
+  one. Not seen by hand.
 - **A root input's seedability** (increment 8's look pass, 1.1). The
   root-inputs tab lost its pinned column, since version 1 writes a root
   input's `pinned` false, the wire pass having stripped the marker. The
