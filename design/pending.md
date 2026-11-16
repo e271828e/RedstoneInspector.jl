@@ -81,10 +81,6 @@ the increment it came from.
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when
   the rebuild-and-reload loop chafes.
-- **Zed's entry upstream** (`live_session.md` answer 6). Julia 1.13.3's
-  editor table lacks Zed, so `edit` runs `zed path` without the line; the
-  README gives the `InteractiveUtils.define_editor("zed")` entry for
-  `startup.jl`. Proposing the entry to Julia is open.
 - **The schema's record path.** The description in the core's
   `src/descriptor.json`, and so in `frontend/schema/descriptor.json`,
   still names `design/inspector/descriptor_design.md`. A source change in
