@@ -300,7 +300,7 @@ Open items live in `pending.md`.
        steps: checkout, setup-node with npm cache, npm ci,
               npm run types, npm run check, npm test,
               npm run build, playwright install chromium, npm run e2e,
-              upload screenshots and dist/ as job outputs
+              upload screenshots, the README's images and dist/ as job outputs
      release:
        needs: [julia, fixtures, frontend]
        if: github.event_name == 'push'
@@ -315,7 +315,12 @@ Open items live in `pending.md`.
    only, installs the pinned Node dependencies from the lock file,
    generates the types, runs the checker, the unit tests with the ajv
    validation, builds the bundle and runs the browser checks against that
-   build, keeping the screenshots and handing `dist/` on. `release` runs
+   build, keeping the screenshots and handing `dist/` on. One spec,
+   `readme.spec.ts`, runs under Chromium alone and frames the README's
+   images: a smaller viewport, the detail pane hidden, one fixture each.
+   It writes them to a folder of their own, never into `dist/`, since the
+   bundle being served is the one the release packs. The job hands them
+   on beside it. `release` runs
    only on a push to master, never on a pull request, and starts with the
    tag-absent rule: read the version from `Project.toml`, and if the tag
    `v<version>` exists, stop. That is every ordinary push; a bump opens
@@ -337,7 +342,12 @@ Open items live in `pending.md`.
 
    Then it commits `Artifacts.toml`, pushes, tags that commit, creates the
    GitHub Release at the tag with the tarball attached, and deploys `dist/`
-   to Pages with GitHub's own Pages actions. A push made with the
+   to Pages with GitHub's own Pages actions, the README's images in an
+   `img/` folder beside the page. The README links each by its Pages
+   address, `https://e271828e.github.io/RedstoneInspector.jl/img/hero.png`,
+   so every release redraws them from the bundle it ships and no image is
+   committed. The runner draws them in its own fonts, DejaVu Sans standing
+   in for `system-ui`, as a Linux user's page does. A push made with the
    workflow's token never starts another run, so the commit does not re-run
    CI, and the tag now exists, so a later push finds nothing; the one cost
    is that the tagged commit has no run of its own, its parent does, and
@@ -346,10 +356,16 @@ Open items live in `pending.md`.
    run the same rule, and concurrency follows the core. No coverage job in
    stage 1. One setting is made by hand once: Pages' source set to
    "GitHub Actions".
+   *Amended 2026-11-16 (the README's images): the release deployed `dist/`
+   alone, and the README had no images.*
    *Rejected:* a release workflow triggered by the tag, answer 1's
    circularity; building the bundle again in the release job, which could
    differ from the tested one; browser checks on Windows, doubling the
-   slowest job for a page that runs in Chrome either way.
+   slowest job for a page that runs in Chrome either way; committing the
+   README's images, binaries in history at every redraw and a step to
+   remember; comparing them pixel by pixel against committed copies,
+   answer 5's rejection; a bot committing them on each push; a font
+   installed on the runner for the capture, showing one no user's page has.
 
 7. **The hosted address, and the five facts it fixes.** The hosted copy
    lives at `https://e271828e.github.io/RedstoneInspector.jl/`, the live

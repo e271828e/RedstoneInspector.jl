@@ -473,9 +473,10 @@ timing tab. Draws on the new record, `workspace.md` answers 6 and 7,
 
 **Increment 11: the release.** `scripts/release.jl`, the `release` job
 with the tag-absent rule, Pages, the `base` path, the version baked into
-the page, the Vimium patterns and the docs address constant, then the
-first release by the checklist. Visible: the hosted copy, and
-`Pkg.add` by URL at the tag serving the bundle. Draws on
+the page, the Vimium patterns, the docs address constant and the
+README's images, captured by the `frontend` job and deployed with Pages,
+then the first release by the checklist. Visible: the hosted copy, the
+README's images, and `Pkg.add` by URL at the tag serving the bundle. Draws on
 `build_release.md` answers 1, 6, 7 and 8.
 
 **Parallelism.** The Julia track runs beside the frontend track by
