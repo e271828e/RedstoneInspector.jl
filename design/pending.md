@@ -17,9 +17,12 @@ The bullets stand in working order, the first one next.
   `Select` and `Sequence`. Each draws its display name where answer 7
   draws a glyph or short math text. None is in the `library` fixture, so
   a check on their icons needs the fixture script's `library` model to
-  gain them. Answer 7 is amended with their glyphs first, under the rule
-  on amending a record; the user ruled on 2026-11-16, at the pin to the
-  core's `6afd6fb`, that this item heads the work order.
+  gain them. Until it does, two lines are false: `scripts/synthetic.jl`'s
+  `library()` docstring and `build_release.md` answer 3's description of
+  `library.json` each say one instance of every shipped component.
+  Answer 7 is amended with their glyphs first, under the rule on amending
+  a record; the user ruled on 2026-11-16, at the pin to the core's
+  `6afd6fb`, that this item heads the work order.
 - **The class value and the module's name at the next pin.** The core
   renamed the descriptor's class value `"leaf"` to `"primitive"` at
   `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,

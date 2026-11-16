@@ -29,7 +29,7 @@ report rather than deviate.
   is an unpushed docs commit, out of reach of a `[sources]` revision.
 - **The core's side is ruled.** D-453 is ratified. The schema changes by
   the rename alone, with no format bump: the class value, `PrimitiveNode`,
-  `PrimitiveFace`, and four description strings. `Deployment` and
+  `PrimitiveFace`, and five description strings. `Deployment` and
   `Simulation` take `Δt_frame` (D-443).
 - **The user's rulings**, each with its reason in the notes:
   1. The frontend's code says "primitive" as the descriptor does: the
@@ -70,10 +70,11 @@ report rather than deviate.
 - `icons.ts`'s `LIBRARY` reads `"Redstone.Library."`.
 - `help.spec.ts`'s check on the retired words drops `strip()` and its two
   exclusions.
-- Comments and test names follow. Of the frontend's "leaf" and "leaves",
-  196 lines meant a primitive and changed, 22 were the verb and stayed,
-  and none meant a value leaf. The classification log is
-  `probe/leafsweep.json` in the session's scratchpad.
+- Comments and test names follow. At `bfb622e`, 268 lines of the
+  frontend's code and checks said "leaf" or "leaves". Thirty remain, each
+  the verb or a word mention, and none meant a value leaf. The
+  classification log of the second pass is `probe/leafsweep.json` in the
+  session's scratchpad.
 
 **The synthetic models** (`6b03039`). `ContinuousBlock` and
 `DiscreteBlock` become `ContinuousPrimitive` and `DiscretePrimitive`; the
@@ -99,8 +100,8 @@ docstring each in `failure_dead` and `failure_probe`.
 Every reading went to the user and is ruled above, so none is open. The
 fixtures moved beyond the rename in three ways, all from the core:
 
-- The `types` rows' `file` changes by the depot's slug and `line` by the
-  library's growth.
+- The `types` rows' `file` changes by the depot's slug and from
+  `src/blocks.jl` to `src/library.jl`, and `line` by the library's growth.
 - The library's docstrings were rewritten. They now link
   `g-library-component` and six more glossary ids, all present in the
   core's spec at `6afd6fb`.
@@ -115,13 +116,14 @@ No test is added or removed. The existing suites pin the renames:
   regenerated union against the old internal types gave 95 errors in 19
   files.
 - The e2e checks pin the DOM contract through the seven
-  `data-kind="primitive"` asserts and the `g.block` selectors.
+  `data-kind="primitive"` asserts, and since the review's fix through the
+  `.primitive` class on a block and on a tree row.
 - `docstring.test.ts` and `detail.spec.ts` pin the Integrator row: 14
   links, 11 of them to the glossary, with `g-library-component` among
   the ids.
-- `help.spec.ts`'s check on the retired words now runs with no
-  exclusions. A reader-facing "block" or "leaf" anywhere in the page turns
-  it red.
+- `help.spec.ts`'s check on the retired words runs over `closed_loop`'s
+  reader text without its two exclusions. It still skips the docstrings
+  and the help page's Simulink column.
 - The fixture drift check pins the fixtures to the pinned core.
 
 ## Bookkeeping
@@ -133,7 +135,10 @@ After the merge, one commit on `master`:
 - `roadmap.md`: a dated entry for the pin, with the facts the next briefs
   take: the core at `6afd6fb`, `Redstone.Library`, the `"primitive"`
   class through the DOM contract, `ContinuousPrimitive` and
-  `DiscretePrimitive` in `large`, and the records' vocabulary.
+  `DiscretePrimitive` in `large`, and the records' vocabulary. It also
+  gives the API anchor form `Redstone.Library.<name>` and `descriptor`'s
+  methods at `src/descriptor.jl:43` to `46`, which the dated list "Facts
+  the briefs will cite" gives as of `2072d41`.
 - The core's `pending.md` bullet "The inspector, stage 1" lists the three
   changes this pin takes and cites this repo's pin bullet by name. By the
   user's ruling of 2026-11-16, the coordinator cuts that sentence in the
@@ -182,4 +187,41 @@ synthetic type names.
 
 ## The review's record
 
-Filled after the review.
+One high-tier reviewer ran the gate green on Julia 1.13.3: 128 Julia
+tests, a clean fixture drift check, 511 unit tests, 0 checker errors and
+230 Chromium checks, with the Firefox configuration listing 230. It ran 16
+mutants on a scratch worktree, removed afterwards.
+
+- **F1, a missing test.** No check read the `.primitive` class on
+  `g.block` or on a tree row; mapping either back to `leaf` left every
+  check green. The gap predates the pin, since no check read `.leaf`
+  either. Fixed in `8d44fda`: `tree.spec.ts`'s test on `closed_loop`'s
+  rows asserts both classes on `sensing/noise`, red under each mutant.
+- **F2, the brief's prose.** Five statements were miscounted or
+  overstated: the schema's description strings, the frontend's "leaf"
+  counts, the `types` rows' `file`, the `g.block` selectors as a pin, and
+  the reach of `help.spec.ts`'s check. Corrected in place above.
+- **F3, a sentence false at the pin.** `synthetic.jl`'s `library()`
+  docstring and `build_release.md` answer 3 say one instance of every
+  shipped component, which the seven new components break. No edit: the
+  icons bullet, first in the work order, restores them and now names the
+  two lines.
+- **F4, the roadmap's dated facts.** The list "Facts the briefs will cite"
+  still gives `Redstone.Blocks.Junction` and the old lines of
+  `descriptor`'s methods, as of `2072d41`. No edit to the list: the pin's
+  roadmap entry gives the current facts.
+
+Survivors accepted:
+
+- **`help.spec.ts`'s exclusions restored.** No page text holds `Blocks.`
+  or `blocks.jl` today, so no check can tell the two forms apart; a probe
+  with an injected `Redstone.Blocks.Foo` showed the removal takes effect.
+- **The `local_wires` link.** `docstring.test.ts` pins
+  `api/#Redstone.Library.local_wires`, an anchor that does not exist; the
+  test records today's behaviour, which increment 10's qualified `@ref`
+  links fix.
+
+The reviewer's delta check verified `8d44fda`, red under both mutants
+with 230 Chromium checks green, and the corrections above. It found one
+slip, F3's sentence cited as `build_release.md` answer 4 where it sits in
+answer 3, corrected here and in `pending.md`.
