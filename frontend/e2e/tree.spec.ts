@@ -8,7 +8,7 @@ const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path=
 const levelPath = (page: Page) => page.locator("nav.breadcrumb");
 const pane = (page: Page) => page.locator("aside.detail");
 
-test("closed_loop: seven rows with the root open; a click selects without opening, the chevron expands and collapses, a deeper row shows its parent's level, a block click selects its row, a double-click opens", async ({ page }) => {
+test("closed_loop: seven rows with the root open; a click selects without opening, the chevron expands and collapses, a deeper row shows its parent's level, its block and row classed primitive, a block click selects its row, a double-click opens", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(rows(page)).toHaveCount(7);
   await expect(row(page, "")).toHaveClass(/\bopen\b/);
@@ -42,6 +42,8 @@ test("closed_loop: seven rows with the root open; a click selects without openin
   await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
   await expect(row(page, "sensing/noise")).toHaveClass(/\bselected\b/);
   await expect(pane(page)).toHaveAttribute("data-kind", "primitive");
+  await expect(row(page, "sensing/noise")).toHaveClass(/\bprimitive\b/);
+  await expect(page.locator('g.block[data-id="sensing/noise"]')).toHaveClass(/\bprimitive\b/);
 
   // a block click selects its row
   await page.keyboard.press("Backspace");
