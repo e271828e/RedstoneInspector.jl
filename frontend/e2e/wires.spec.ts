@@ -48,7 +48,8 @@ const translation = (t: string) => t.match(/-?[\d.]+/g)!.map(Number);
  * The root's type labels against the rule (visual_grammar.md answer 4 as amended): one label per producer port, its
  * `data-wire` the port's first wire, start-anchored a few units right of the port's point and below the wire leaving
  * it, the unqualified type whole, the full type in its title; the labels' group after the blocks. The port's point is
- * the first wire's first point. Returns the labels drawn, by port.
+ * the first wire's first point. The place reads the first character's box, since Firefox pads a text's `getBBox`.
+ * Returns the labels drawn, by port.
  */
 async function expectLabels(page: Page, fixture: string): Promise<Map<string, string>> {
   const byPort = new Map<string, string[]>();
@@ -60,7 +61,7 @@ async function expectLabels(page: Page, fixture: string): Promise<Map<string, st
         .split(/[ML]/).filter((s) => s.trim())[0].split(",").map(Number);
       const t = document.querySelector<SVGTextElement>(`text.type-label[data-port="${CSS.escape(port)}"]`);
       const text = t ? [...t.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("") : undefined;
-      const box = t?.getBBox();
+      const box = t?.getExtentOfChar(0);
       out[port] = {
         start, text, wire: t?.getAttribute("data-wire"), title: t?.querySelector("title")?.textContent,
         x: Number(t?.getAttribute("x")), anchor: t && getComputedStyle(t).textAnchor,

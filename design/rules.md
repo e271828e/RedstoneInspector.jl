@@ -269,6 +269,11 @@ full text stays.
   command sandbox, found 2026-11-16. `playwright.config.ts` gives the
   `firefox` project an empty home through `CFFIXED_USER_HOME` on macOS, and
   a local `npm run e2e` runs both browsers.
+- **A text's box in Firefox.** Firefox pads a `<text>`'s `getBBox()` by
+  about 2 screen pixels on each side, stroke or none, so the box starts
+  left of `x` by an amount that varies with the zoom. A check on where a
+  text begins reads `getExtentOfChar(0)`, the same in both browsers,
+  found 2026-11-16.
 - **A build over a stale `node_modules`.** A dependency added since the
   last `npm ci` is missing, and `vite build` still succeeds, leaving the
   bare import in the bundle (`import "marked"`), so the page dies on load
