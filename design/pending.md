@@ -23,44 +23,6 @@ The bullets stand in working order, the first one next.
   Answer 7 is amended with their glyphs first, under the rule on amending
   a record; the user ruled on 2026-11-16, at the pin to the core's
   `6afd6fb`, that this item heads the work order.
-- **The class value and the module's name at the next pin.** The core
-  renamed the descriptor's class value `"leaf"` to `"primitive"` at
-  `c894949` on 2026-11-05, with `PrimitiveNode` and `PrimitiveFace` in the schema and no format bump,
-  since the spec spells a node's class as assembly or primitive and *leaf*
-  is the value leaf. By the user's ruling of 2026-11-11 it follows
-  increment 8b and the core's retirement of the term *block*,
-  so one pin carries both renames. The core's rename landed on its
-  `master` at `c8a15b9` on 2026-11-12, not pushed, as increment 94 (D-453,
-  `Redstone.jl/design/increments/094_retire_block/notes_increment_94.md`);
-  its names are that session's overnight rulings and await the user's
-  confirmation, so the pin's brief takes them from the core at its own
-  tip and not from here. As landed: the module is `Redstone.Library` in
-  `src/library.jl`, so a node's `type` reads `Redstone.Library.PID` and an
-  alias `Redstone.Library.SumJunction`, and `signature` changes with them;
-  the schema changes in one description string; a `types` row's `file`,
-  `line` and `docstring` change as content; the hosted API anchors follow
-  the module, `api/#Redstone.Library.<name>`; the glossary anchor
-  `g-block` is gone and the library's docstrings link
-  `@ref g-library-component`. Here every fixture regenerates, and the
-  icon table's keys in `frontend/src/lib/icons.ts`, the tests' literals
-  and the README follow. The pin's brief verifies that the docstring link
-  rule's anchors follow the data and that no test or check cites
-  `g-block`, and it drops the two exclusions for `Blocks.` names and
-  `blocks.jl` paths from `help.spec.ts`'s check on the retired words,
-  which the new names make needless. The text a user reads already says "primitive"
-  and "component" since increment 8's look pass; the code keeps `block`
-  for a box on the level (`glossary.md`). The same pin moves the six
-  construction sites from `h =` to `Δt_frame =`, as the core's bullet on
-  this repo says. When the pin moves: the schema copy
-  follows and `npm run types` regenerates `descriptor.d.ts`; every
-  comparison on the descriptor's `class` in `src/lib`, `src/canvas`,
-  `src/frame` and the e2e specs reads `"primitive"`, while an internal role
-  string such as `role: "leaf"` in `level.test.ts` is this repo's own call;
-  every fixture carrying `"class": "leaf"` is regenerated from the core,
-  since the regenerated schema refuses them; and the records that spell the
-  old names, `descriptor_design.md`, `build_release.md`, `initial_design.md`
-  answer 17 and `frontend/MAP.md`, are treated under the rule on frozen
-  records.
 - **The inspector, stage 1, its remaining increments**: the static
   inspector over the descriptor. Its records, none normative, are
   `initial_design.md` and one per axis beside it: `descriptor_design.md`
@@ -70,8 +32,8 @@ The bullets stand in working order, the first one next.
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 9
-  and 8b have landed. After the pin, 10, the deployment
-  overlay on both tracks after its design session writes the eighth
+  and 8b have landed, and the pin to the core's `6afd6fb`. After the
+  icons, 10, the deployment overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
   its anchor (amending `descriptor_design.md` answer 10); then 11, the

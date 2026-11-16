@@ -410,6 +410,27 @@ socket client, the connection state and the download wait for increment
 4's status bar. The frontend piece landed with increment 5 at `bf52830`,
 the reviewer driving the live tab against the real server.*
 
+**The pin to the core's `6afd6fb`.** Added from `pending.md`'s work order
+after increment 8b. The pin on the core moves from `035aa95` to `6afd6fb`.
+The descriptor's class value reads `"primitive"` (the core's `c894949`),
+the library is the module `Redstone.Library` in `src/library.jl` (D-453),
+and `Deployment` and `Simulation` take `Δt_frame` (D-443). By the user's
+ruling the repo takes one vocabulary with it: "primitive" for a node with
+no children, "component" for a library's component, and "block" for a box
+on the level alone. *Landed on 2026-11-16 at `61f40f8` of
+`RedstoneInspector.jl`, three commits; its brief,
+`increments/20261116_pin_library/brief_pin_library.md`, records the
+review, and `notes_pin_library.md` the rulings. Facts the next briefs
+take: the code, the map and the DOM contract say "primitive", as
+`g.block.primitive`, the tree row's `.primitive` and
+`aside.detail[data-kind="primitive"]`; a node's `type` reads
+`Redstone.Library.<name>` and its API anchor
+`api/#Redstone.Library.<name>`; `large`'s synthetic types are
+`ContinuousPrimitive` and `DiscretePrimitive`; `descriptor`'s methods sit
+at `src/descriptor.jl:43` to `46`, where the list below gives them as of
+`2072d41`. The library's seven components added since `035aa95` have no
+icon yet, the work order's first bullet.*
+
 **Increment 10: the deployment overlay.** On both tracks, after a design
 session that writes the eighth record, `design/deployment_overlay.md`
 (added 2026-11-04, the user's ruling after increment 8's reading 1): what

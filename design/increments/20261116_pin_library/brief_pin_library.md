@@ -225,3 +225,7 @@ The reviewer's delta check verified `8d44fda`, red under both mutants
 with 230 Chromium checks green, and the corrections above. It found one
 slip, F3's sentence cited as `build_release.md` answer 4 where it sits in
 answer 3, corrected here and in `pending.md`.
+
+Landed on 2026-11-16, the branch rebased onto `823d79b` and fast-forwarded:
+`23fd23b`, `6b03039` and `8d44fda` became `a139e2a`, `cfd55cd` and
+`61f40f8`.
