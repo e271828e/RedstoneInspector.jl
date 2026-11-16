@@ -262,9 +262,18 @@ full text stays.
   last place.
 - **A legend line in a button.** The button wrapped a line beside its `#9`
   number; it is `nowrap`.
-- **Firefox locally.** Firefox cannot start inside this machine's command
-  sandbox, so a local run is `npm run e2e -- --project=chromium`;
-  `npx playwright test --list --project=firefox` checks the configuration.
+- **Firefox on macOS.** Firefox's profile service reads
+  `~/Library/Application Support/Firefox` even with `-profile`, and macOS
+  walls that folder off from a process launched from a terminal, so
+  Firefox stopped with "Could not find profile folder". It was never the
+  command sandbox, found 2026-11-16. `playwright.config.ts` gives the
+  `firefox` project an empty home through `CFFIXED_USER_HOME` on macOS, and
+  a local `npm run e2e` runs both browsers.
+- **A build over a stale `node_modules`.** A dependency added since the
+  last `npm ci` is missing, and `vite build` still succeeds, leaving the
+  bare import in the bundle (`import "marked"`), so the page dies on load
+  in every browser. Run `npm ci` after a pull that changes
+  `package-lock.json`.
 - **A wire mark on a fixture.** The diagnostics that mark a wire are raised
   before the structure step, so port and wire marks are pinned on a
   synthetic copy of `failure_cycle`.

@@ -152,7 +152,9 @@ the sources and the browser checks. `npm run e2e` runs the browser checks:
 Playwright drives headless Chromium and Firefox against the built bundle,
 served by `vite preview`, so `npm run build` comes first, and `npx playwright
 install chromium firefox` once on a new machine; `--project=chromium` or
-`--project=firefox` runs one browser. In CI both runs block; the checks that read the clipboard back skip under Firefox. Each check drops fixtures on the page and saves
+`--project=firefox` runs one browser. On macOS, Firefox runs with an empty
+home folder, since macOS keeps a terminal's processes out of your own
+Firefox's data. In CI both runs block; the checks that read the clipboard back skip under Firefox. Each check drops fixtures on the page and saves
 screenshots to `frontend/e2e/screenshots/`, which CI keeps as a job output. The
 TypeScript types are generated from the schema copy into
 `frontend/src/lib/descriptor.d.ts`, which is ignored and regenerated before
