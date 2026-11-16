@@ -31,15 +31,18 @@ describe("iconOf", () => {
       ["RateLimiter", "rate-limiter", "glyph"], ["Freeze", "freeze", "glyph"], ["StopRequest", "stop", "glyph"],
       ["PID", "pid", "text"], ["DiscretePID", "pid", "text"], ["LQRTracker", "lqr", "text"],
       ["DiscreteLQRTracker", "lqr", "text"],
+      ["Fn", "fn", "text"], ["Fields", "fields", "glyph"], ["LimitedDoubleIntegrator", "limited-double-integrator", "glyph"],
+      ["Sequence", "sequence", "glyph"], ["Select", "select", "glyph"], ["Backlash", "backlash", "glyph"],
+      ["Comparator", "comparator", "text"],
     ];
-    expect(roster).toHaveLength(31);
+    expect(roster).toHaveLength(38);
     for (const [key, id, kind] of roster) {
       const i = iconOf(primitive(B + key, { parameters: [{ name: "value", value: "1.0" }] }));
       expect([key, i?.id, i?.kind]).toEqual([key, id, kind]);
     }
-    const texts = ["Integrator", "UnitDelay", "FirstOrderLag", "StateSpace", "TransferFunction", "DiscreteTransferFunction", "Source", "PID", "LQRTracker"]
+    const texts = ["Integrator", "UnitDelay", "FirstOrderLag", "StateSpace", "TransferFunction", "DiscreteTransferFunction", "Source", "PID", "LQRTracker", "Fn", "Comparator"]
       .map((k) => iconOf(primitive(B + k))!.text);
-    expect(texts).toEqual(["1/s", "z⁻¹", "1/(τs+1)", "ẋ=Ax+Bu", "N(s)/D(s)", "N(z)/D(z)", "f(t)", "PID", "LQR"]);
+    expect(texts).toEqual(["1/s", "z⁻¹", "1/(τs+1)", "ẋ=Ax+Bu", "N(s)/D(s)", "N(z)/D(z)", "f(t)", "PID", "LQR", "f(u)", "u≥c"]);
   });
 
   it("keys on the alias before the type, and gives a user type or an unaliased Junction none", () => {
@@ -67,6 +70,12 @@ describe("iconOf", () => {
     expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{Float64, K}` }))?.text).toBe("z⁻ᴷ");
     expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{StaticArraysCore.SVector{2, Float64}, 4}` }))?.text).toBe("z⁻⁴");
     expect(iconOf(node("library", "delay"))?.text).toBe("z⁻³");
+  });
+
+  it("keys library's seven components added at the pin to 6afd6fb", () => {
+    const paths = ["apply", "fields", "ld_integrator", "sequence", "select", "backlash", "comparator"];
+    expect(paths.map((p) => iconOf(node("library", p))?.id)).toEqual(
+      ["fn", "fields", "limited-double-integrator", "sequence", "select", "backlash", "comparator"]);
   });
 
   it("gives descent's stop request its octagon", () => {

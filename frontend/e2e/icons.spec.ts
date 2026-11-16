@@ -83,11 +83,12 @@ test("kinds and descent: the Constant's value, its opaque frame glyph, the stop 
   await expect(page.locator(`symbol#icon-stop`)).toHaveCount(1);
 });
 
-// The oracle's library line: 26 of the roster's 27 ids; `constant-opaque` is kinds' alone.
+// The oracle's library line: 33 of the roster's 34 ids; `constant-opaque` is kinds' alone.
 const LIBRARY_IDS = [
   "sum", "or", "and", "pack", "unpack", "switch", "stop", "constant", "step", "source", "noise", "integrator",
   "limited-integrator", "lag", "state-space", "transfer-function", "relay", "unit-delay", "discrete-integrator",
   "rate-limiter", "transfer-function-z", "discrete-limited-integrator", "delay", "freeze", "pid", "lqr",
+  "fn", "fields", "select", "sequence", "backlash", "limited-double-integrator", "comparator",
 ];
 
 test("library: every roster id drawn, Delay's K from its signature, a long display name's width given up", async ({ page }) => {
@@ -98,7 +99,7 @@ test("library: every roster id drawn, Delay's K from its signature, a long displ
   await expect(svg).toHaveAttribute("data-detail", "full");
   expect(await page.locator("g.icon").evaluateAll((es) => es.filter((e) => getComputedStyle(e).display === "none").length)).toBe(0);
   for (const id of LIBRARY_IDS) await expect(page.locator(`g.icon[data-icon="${id}"]`), id).not.toHaveCount(0);
-  await expect(page.locator("g.icon")).toHaveCount(31);
+  await expect(page.locator("g.icon")).toHaveCount(40);
   await expect(icon(page, "fn")).toHaveCount(0);
   expect(await iconText(page, "delay")).toBe("z⁻³");
   // every glyph id the page draws has its symbol

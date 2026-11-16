@@ -9,7 +9,8 @@ import Redstone.Library: Group, Constant, Junction, SumJunction, Or, And, Pack, 
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
     DiscreteTransferFunction, DiscretizedStateSpace, DiscretizedTransferFunction,
-    DiscreteLimitedIntegrator, Delay, Freeze, PID, DiscretePID, LQRTracker, DiscreteLQRTracker
+    DiscreteLimitedIntegrator, Delay, Freeze, PID, DiscretePID, LQRTracker, DiscreteLQRTracker,
+    Fn, Fields, Select, Sequence, Backlash, LimitedDoubleIntegrator, Comparator
 using StaticArrays: SVector, SMatrix
 using Random: Xoshiro
 
@@ -225,8 +226,9 @@ half(x) = x / 2
 
 """
 One instance of every shipped component of the core's library, beside a `Junction`
-over a user function, wired as one chain from the sources; the discrete primitives
-on two anchors, the base grid, a `Relative(2)` and a phased `Relative(2, 1)`.
+over a user function and two more `Constant`s, a `NamedTuple` for `Fields` and a `Gear`
+for `Select`, wired as one chain from the sources; the discrete primitives on two
+anchors, the base grid, a `Relative(2)` and a phased `Relative(2, 1)`.
 """
 function library()
     m = [1.0;;]
@@ -244,7 +246,12 @@ function library()
              freeze = Freeze{Float64}(), pid = PID(Kp = 1.0, Ki = 0.5), d_pid = DiscretePID(Kp = 1.0, Ki = 0.5),
              lqr = LQRTracker(K_fbk = SMatrix{1, 2}(1.0, 0.5), K_fwd = SMatrix{1, 2}(1.0, 0.0)),
              d_lqr = DiscreteLQRTracker(K_fbk = SMatrix{1, 2}(1.0, 0.5), K_fwd = SMatrix{1, 2}(1.0, 0.0)),
-             fn = Junction{Float64, Float64, 1}(half));
+             fn = Junction{Float64, Float64, 1}(half), apply = Fn{Float64}(half),
+             pair = Constant((a = 1.0, b = 2.0)), fields = Fields{typeof((a = 1.0, b = 2.0))}(),
+             gear = Constant(up), select = Select{Float64, Gear}(),
+             sequence = Sequence(times = (1.0, 2.0), values = (0.0, 1.0, -1.0)),
+             backlash = Backlash(width = 0.2), ld_integrator = LimitedDoubleIntegrator(lower = -1.0, upper = 1.0),
+             comparator = Comparator(threshold = 0.5));
           local_wires = ("source/y" => "sum/in1", "noise/y" => "sum/in2", "constant/y" => "pack/in1",
                          "step/y" => "pack/in2", "pack/y" => "unpack/u", "pack/y" => "lqr/x", "pack/y" => "lqr/z",
                          "pack/y" => "lqr/z_ref", "pack/y" => "d_lqr/x", "pack/y" => "d_lqr/z", "pack/y" => "d_lqr/z_ref",
@@ -255,7 +262,10 @@ function library()
                          "d_integrator/y" => "rate_limiter/u", "rate_limiter/y" => "dss/u", "dss/y" => "dtf/u",
                          "dtf/y" => "zoh_ss/u", "zoh_ss/y" => "zoh_tf/u", "zoh_tf/y" => "d_limited/u",
                          "d_limited/out" => "delay/u", "delay/y" => "fn/in1", "constant/y" => "pid/r", "constant/y" => "d_pid/r",
-                         "fn/y" => "pid/y", "pid/u" => "d_pid/y"),
+                         "fn/y" => "pid/y", "pid/u" => "d_pid/y", "pair/y" => "fields/u",
+                         "sequence/y" => "select/up", "fields/a" => "select/down", "gear/y" => "select/select",
+                         "select/y" => "backlash/u", "backlash/y" => "ld_integrator/u",
+                         "ld_integrator/out" => "comparator/u", "ld_integrator/velocity" => "apply/u"),
           input_wires = ("a" => ("or/in1", "and/in1"), "b" => "or/in2"),
           sample_times = (noise = Absolute(Hz(10)), dss = Absolute(Hz(50)), d_limited = Relative(2),
                           d_pid = Relative(2, 1)))

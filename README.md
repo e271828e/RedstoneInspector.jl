@@ -114,8 +114,9 @@ the pinned Redstone's `src/descriptor.json`. Among the synthetic models,
 `kinds` declares a face of every kind marker and wires each of its outputs to a
 root output of the same name, so its root draws a wire of every style, and
 `library` holds one instance of every shipped component, plus a `Junction` over a
-user function, on two anchors with a relative and a phased rate, so every icon
-and every legend form has something to show. Four models give the overlay
+user function and two `Constant`s feeding `Fields` and `Select`, on two anchors
+with a relative and a phased rate, so every icon and every legend form has
+something to show. Four models give the overlay
 something to show, each ported from the core's suite. `failure_nested` closes
 `failure_cycle`'s loop through a controller one level down, so the loop's chain
 crosses a boundary. `failure_dead` is an artificial loop with a dead hop.

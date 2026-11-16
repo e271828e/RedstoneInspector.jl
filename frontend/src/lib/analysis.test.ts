@@ -68,11 +68,11 @@ describe("orderGroups", () => {
     for (const r of groups(cl).stage1) expect(r).not.toHaveProperty("edges");
   });
 
-  it("gives library 32 as 20 and 14 with 2 in both and its 14 edges, three under d_lqr, lqr and switch at 10, 11 and 13", () => {
-    expect(sizes(lib)).toEqual([32, 20, 14, 2]);
+  it("gives library 41 as 25 and 18 with 2 in both and its 16 edges, three under d_lqr, lqr and switch at 12, 13 and 16", () => {
+    expect(sizes(lib)).toEqual([41, 25, 18, 2]);
     const rows = groups(lib).stage2;
-    expect(rows.flatMap((r) => r.edges)).toHaveLength(14);
-    expect([10, 11, 13].map((p) => [rows[p - 1].path, rows[p - 1].edges.length])).toEqual([["d_lqr", 3], ["lqr", 3], ["switch", 3]]);
+    expect(rows.flatMap((r) => r.edges)).toHaveLength(16);
+    expect([12, 13, 16].map((p) => [rows[p - 1].path, rows[p - 1].edges.length])).toEqual([["d_lqr", 3], ["lqr", 3], ["switch", 3]]);
   });
 
   it("gives rates 4 as 1 and 3, containers 6 as 0 and 6, large 160 as 160 and 0, primitive's root in both", () => {
@@ -192,15 +192,15 @@ describe("componentRows", () => {
     ]);
   });
 
-  it("lists library's 12 in walk order and, by period, anchor 0's triples first then period ascending, ties in walk order", () => {
+  it("lists library's 13 in walk order and, by period, anchor 0's triples first then period ascending, ties in walk order", () => {
     const walk = componentRows(lib).map((r) => r.path);
-    expect(walk).toEqual(["noise", "unit_delay", "d_integrator", "rate_limiter", "dss", "dtf", "zoh_ss", "zoh_tf", "d_limited", "delay", "d_pid", "d_lqr"]);
+    expect(walk).toEqual(["noise", "unit_delay", "d_integrator", "rate_limiter", "dss", "dtf", "zoh_ss", "zoh_tf", "d_limited", "delay", "d_pid", "d_lqr", "backlash"]);
     expect(componentRows(lib, true).map((r) => r.path)).toEqual([
-      "unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "d_limited", "d_pid", "dss", "noise",
+      "unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "backlash", "d_limited", "d_pid", "dss", "noise",
     ]);
     const by = Object.fromEntries(componentRows(lib).map((r) => [r.path, r.period]));
     expect([by.unit_delay, by.d_limited, by.d_pid, by.dss, by.noise]).toEqual(["1 base tick", "2 base ticks", "2 base ticks", "1/50 s", "1/10 s"]);
-    expect(componentRows(lib)).toHaveLength(12);
+    expect(componentRows(lib)).toHaveLength(13);
   });
 
   it("gives closed_loop 10, kinds 1 on the base grid, primitive none", () => {

@@ -19,7 +19,7 @@ const TABLE: [string, number, number, number, [number, number, number]][] = [
   ["failure_nested", 4, 2, 2, [0, 0, 3]],
   ["failure_dead", 4, 1, 3, [0, 0, 3]],
   ["failure_probe", 5, 2, 2, [2, 0, 2]],
-  ["library", 33, 1, 32, [0, 0, 32]],
+  ["library", 42, 1, 41, [0, 0, 41]],
   ["warning", 3, 1, 2, [2, 0, 0]],
 ];
 

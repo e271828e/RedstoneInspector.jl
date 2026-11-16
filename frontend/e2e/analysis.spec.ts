@@ -253,10 +253,10 @@ test("rates: three scopes with their triples, a scope row selecting its assembly
   await expect(page.locator('g.block.selected[data-id="fast/outer"]')).toHaveCount(1);
 });
 
-test("library: 12 components in walk order, the period sort and back, the sort kept across a tab switch", async ({ page }) => {
+test("library: 13 components in walk order, the period sort and back, the sort kept across a tab switch", async ({ page }) => {
   await drop(page, "library");
   await openTab(page, "timing");
-  await expect(body(page).locator("table.components tr.component")).toHaveCount(12);
+  await expect(body(page).locator("table.components tr.component")).toHaveCount(13);
   expect((await componentPaths(page))[0]).toBe("noise");
   const sort = body(page).locator("button.sort-period");
   await expect(sort).toHaveText("by period");
@@ -270,9 +270,9 @@ test("library: 12 components in walk order, the period sort and back, the sort k
   expect((await componentPaths(page))[0]).toBe("noise");
   await sort.click();
   await openTab(page, "order");
-  await expect(group(page, 1).locator("li.step")).toHaveCount(20);
-  await expect(group(page, 2).locator("li.step")).toHaveCount(14);
-  await expect(body(page).locator("li.edge")).toHaveCount(14);
+  await expect(group(page, 1).locator("li.step")).toHaveCount(25);
+  await expect(group(page, 2).locator("li.step")).toHaveCount(18);
+  await expect(body(page).locator("li.edge")).toHaveCount(16);
   // the tabs share one scrolling body, and a tab opens at its top
   await body(page).evaluate((b) => (b.scrollTop = b.scrollHeight));
   expect(await body(page).evaluate((b) => b.scrollTop)).toBeGreaterThan(0);

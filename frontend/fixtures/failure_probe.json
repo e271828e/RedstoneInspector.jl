@@ -259,17 +259,17 @@
             {
               "function": "local_wires",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 329
+              "line": 339
             },
             {
               "function": "input_wires",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 330
+              "line": 340
             },
             {
               "function": "output_wires",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 331
+              "line": 341
             }
           ]
         },
@@ -279,17 +279,17 @@
             {
               "function": "u_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 112
+              "line": 113
             },
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 113
+              "line": 114
             },
             {
               "function": "x_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 111
+              "line": 112
             }
           ]
         },
@@ -300,12 +300,12 @@
             {
               "function": "y_types",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 337
+              "line": 347
             },
             {
               "function": "x_init",
               "file": "<repo>/scripts/synthetic.jl",
-              "line": 336
+              "line": 346
             }
           ]
         }

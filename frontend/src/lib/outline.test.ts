@@ -15,7 +15,7 @@ const ROWS: [string, number, number][] = [
   ["failure_probe", 5, 3],
   ["kinds", 10, 10],
   ["large", 171, 151],
-  ["library", 33, 33],
+  ["library", 42, 42],
   ["primitive", 1, 1],
   ["rates", 8, 4],
   ["warning", 3, 3],

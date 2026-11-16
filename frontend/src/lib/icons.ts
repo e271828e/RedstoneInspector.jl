@@ -16,9 +16,10 @@ const LIBRARY = "Redstone.Library.";
 
 /** The roster by key: a glyph's id, or a text icon's id and text. */
 const ROSTER: Record<string, [id: string, text?: string]> = {
-  SumJunction: ["sum"], Or: ["or"], And: ["and"],
-  Pack: ["pack"], Unpack: ["unpack"],
+  SumJunction: ["sum"], Or: ["or"], And: ["and"], Fn: ["fn", "f(u)"],
+  Pack: ["pack"], Unpack: ["unpack"], Fields: ["fields"],
   Integrator: ["integrator", "1/s"], LimitedIntegrator: ["limited-integrator"],
+  LimitedDoubleIntegrator: ["limited-double-integrator"],
   DiscreteIntegrator: ["discrete-integrator"], DiscreteLimitedIntegrator: ["discrete-limited-integrator"],
   UnitDelay: ["unit-delay", "z⁻¹"], Delay: ["delay", "z⁻ᴷ"],
   FirstOrderLag: ["lag", "1/(τs+1)"],
@@ -28,8 +29,9 @@ const ROSTER: Record<string, [id: string, text?: string]> = {
   DiscreteTransferFunction: ["transfer-function-z", "N(z)/D(z)"],
   DiscretizedTransferFunction: ["transfer-function-z", "N(z)/D(z)"],
   Constant: ["constant"],
-  Step: ["step"], Source: ["source", "f(t)"], GaussianWhiteNoise: ["noise"],
-  Switch: ["switch"], Relay: ["relay"], RateLimiter: ["rate-limiter"],
+  Step: ["step"], Sequence: ["sequence"], Source: ["source", "f(t)"], GaussianWhiteNoise: ["noise"],
+  Switch: ["switch"], Select: ["select"], Relay: ["relay"], Backlash: ["backlash"], RateLimiter: ["rate-limiter"],
+  Comparator: ["comparator", "u≥c"],
   Freeze: ["freeze"], StopRequest: ["stop"],
   PID: ["pid", "PID"], DiscretePID: ["pid", "PID"],
   LQRTracker: ["lqr", "LQR"], DiscreteLQRTracker: ["lqr", "LQR"],
