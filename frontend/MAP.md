@@ -85,13 +85,13 @@ them to the stores. The code imports the generated types by name from
 
 - A **face** is `{path, side, port}`: a node's path, the side it is declared
   on, its name. A root input is `("", "in", name)`; at a primitive root it is
-  also the leaf's own input face. A wire endpoint on the level's own path is
+  also the primitive's own input face. A wire endpoint on the level's own path is
   one of the level's boundary faces (`wireFaces`).
-- A **terminal producer** is a leaf output or a root input; a **terminal
-  consumer** a leaf input or a root output.
+- A **terminal producer** is a primitive output or a root input; a
+  **terminal consumer** a primitive input or a root output.
 - A terminal producer's **chain** lists the producer faces the walk passes,
   the terminal last. An output face is its own first producer; a consumer, a
-  leaf input or an assembly input face, starts at what feeds it. Its length is
+  primitive input or an assembly input face, starts at what feeds it. Its length is
   what the brief counts as hops.
 - A **route** is rooted at the terminal producer: its consumers, every wire it
   crosses with the wire's level, and the set of levels. Any face on it, and
@@ -100,10 +100,10 @@ them to the stores. The code imports the generated types by name from
   wire's producer face (`producerFace`); the status line and the origin's
   halo name it, the drawing is the producer's whole tree. The session's
   **standing route** is the origin alone, the route recomputed from the model.
-- A **block**, the code's word where a reader's text says "component", as
-  `leaf` where it says "primitive", is an `InPin`, an `OutPin` or a
-  `ChildBlock`; `role` tells which, a child's its class. Pin ids are `⟨in⟩name`
-  and `⟨out⟩name`, a child's id its path, a port's id `block|side|name`.
+- A **block**, the code's word where a reader's text says "component", is an
+  `InPin`, an `OutPin` or a `ChildBlock`; `role` tells which, a child's its
+  class. Pin ids are `⟨in⟩name` and `⟨out⟩name`, a child's id its path, a
+  port's id `block|side|name`.
 - A level wire's **id** is its consumer's port id, unique within a level.
 - A **view** is `{x, y, scale}`: the world point at the SVG's top-left corner
   and the screen pixels per world unit. With the viewport's size it gives the
@@ -148,11 +148,11 @@ them to the stores. The code imports the generated types by name from
   the focused diagnostic, the legend's line, one at a time in that order; what
   it lights is a `Lit`, `{blocks, wires, ports}`.
 - An **analysis row** (`Row` in `analysis.ts`) is tagged by `kind`: `order`, a
-  leaf with one `stage`'s ports, on stage 2 with its 1-based **position** in
+  primitive with one `stage`'s ports, on stage 2 with its 1-based **position** in
   that group and its `edges`; `edge`, a feedthrough edge `{from, to}` under its
   consumer's row, **presumed**; `root-input`; `anchor`, the base grid's
   `{index: 0, base: true}` first; `scope`; `component`. An **order badge** is a
-  leaf's stage 2 position, or an assembly's as runs, "3–5, 8".
+  primitive's stage 2 position, or an assembly's as runs, "3–5, 8".
 
 ## Built once on load
 
@@ -162,8 +162,8 @@ them to the stores. The code imports the generated types by name from
 `fanout`, each producer face's consumers in wire order) and the feedthrough
 edges. A structureless failure leaves all three, and `structure`, undefined;
 any failure leaves `outputs` undefined. Levels and routes are computed on
-demand from the resolution, never stored. A primitive root's level is its
-leaf with a pin and a wire per face, built by `levelOf`, so the canvas has no
+demand from the resolution, never stored. A primitive root's level is the
+root itself with a pin and a wire per face, built by `levelOf`, so the canvas has no
 special case.
 
 ## Stores
@@ -339,7 +339,7 @@ What the records do not fix, or where the page differs:
 - **The rate pill** `g.badge-pill` straddles a child's top edge at the left,
   `BADGE_INSET` 4 in (`BADGE_TOP` -7, `BADGE_HEIGHT` 12), whatever the toggles:
   `#<n>` for an extra, `<k> clock(s)` on a closed assembly with a discrete
-  leaf beneath (`clockCount`), joined by ` · `.
+  primitive beneath (`clockCount`), joined by ` · `.
 - **The legend** is an HTML `div.legend` in the bottom-left corner; a line's
   click calls `onlegend(key)`, and the shell passes `legendLit`'s set and
   `focus` `legend` while no route or diagnostic focus stands.
@@ -418,7 +418,7 @@ What the records do not fix, or where the page differs:
 | the svg | `.legend-focus`, `.diagnostic-focus` or `.route-focus`, with `[data-focus]` | the standing focus; the line's key, the diagnostic's index or the origin's `faceText` |
 | the canvas region | `div.viewport[tabindex="0"]`, `.focused` | always; `focused` while it holds the keyboard |
 | the buttons | `.tools` holding `button.undo-drags`, then `button.fit` | the undo button while the drawn level holds a drag, titled "Put every dragged component and pin back in its computed place (U)" |
-| a block | `g.blocks > g.block[data-id]` with `.leaf`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin; the last child the most recently dragged |
+| a block | `g.blocks > g.block[data-id]` with `.primitive`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin; the last child the most recently dragged |
 | a block's outline | `g.block .shape`, a `path` for a root tag, else a `rect`; `[data-step]` | `data-step` in rate mode, absent with the continuous color or the gray |
 | a block's states | `.selected`, `.hover`, `.search-hit`, `.search-under`, `.lit`, `.extra`, `.route-origin` | selection, hover, a hit or a closed assembly with marked nodes beneath, a focus, past the eighth step, a pin as a route's origin |
 | a keyed member | `g.block[data-region]`, its `text.segment` the key | inside a region |
@@ -540,18 +540,18 @@ What the records do not fix, or where the page differs:
 | the grid | `.frame` holding `.pane[data-pane]`, `tree`, `detail` or `drawer`, `.collapsed` | always; `collapsed` on a collapsed pane or a closed drawer |
 | the splitters | `.splitter[data-pane]`, `.active`; `button.collapse[data-pane]` | always present, `active` when draggable; the collapse buttons on the side panes |
 | the regions | `nav.tree`, `.viewport`, `aside.detail`, `section.drawer`, each `[tabindex="0"]`, `.focused` | `focused` on the one holding the keyboard, mouse or key; its `.pane` then outlined, the canvas's root for `:focus-visible` |
-| a tree row | `nav.tree .row[data-path][data-depth]`, `.node` or `.folder`, a node `.leaf` or `.assembly`; `.expanded`, `.selected`, `.open`, `.hit` | every visible row |
+| a tree row | `nav.tree .row[data-path][data-depth]`, `.node` or `.folder`, a node `.primitive` or `.assembly`; `.expanded`, `.selected`, `.open`, `.hit` | every visible row |
 | a row's parts | `button.chevron`, `.segment`, `.name`, `.hits`, `span.mark[data-mark]`, `error`, `warning` or `route`, with a `title` | a chevron on an expandable row; `.name` on a node row but the root's; `.hits` on a collapsed row with marked nodes beneath |
 | the search | `.search` holding `input.query`, `button.clear` | at the top of `nav.tree` |
 | the results | `.results` holding `.group[data-group]`, `nodes` or `faces`, with `.group-head .count`, `.hit[data-path]` (a face row also `[data-side][data-face]`), `.active`, `mark`, `.refine` | while `listing` |
 | the breadcrumb | `nav.breadcrumb[data-level-path]` holding `a[data-path]`, `.current`, `button.open-file` and its `input[type=file]` | with a model |
 | the controls | `.controls` holding `.mode button[data-mode][aria-pressed]`, `button.type-labels[aria-pressed]`, `button.order-badges[aria-pressed]` | at the breadcrumb's right end |
-| the pane | `aside.detail[data-kind][data-id]`, the kind `level`, `leaf`, `assembly`, `folder`, `wire`, `pin` or `port` | the id a path for a level, node or folder, else the element's id; `data-id=""` on a structureless model |
+| the pane | `aside.detail[data-kind][data-id]`, the kind `level`, `primitive`, `assembly`, `folder`, `wire`, `pin` or `port` | the id a path for a level, node or folder, else the element's id; `data-id=""` on a structureless model |
 | the header | `h2 .segment`, `h2 .name`, `.path-line` holding `.path`, `button.copy`, `button.open-level` or `span.level-mark` "open level" right after it, `button.trace[aria-pressed]` | the open button on a closed assembly, the mark on the open level; trace on a pin, a port or a wire with a route |
-| the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `rate`, `children`, `wires` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a wire, a folder, a structureless model, and a pin or port with a stage or pinning, "stage 1 · pinned"; `dl.facts` on a level, leaf or assembly, `wires` under `children` |
+| the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `rate`, `children`, `wires` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a wire, a folder, a structureless model, and a pin or port with a stage or pinning, "stage 1 · pinned"; `dl.facts` on a level, primitive or assembly, `wires` under `children` |
 | the disclosures | `details.signature` with `summary` "signature"; `details.docstring` holding `summary .title` "docstring" and `div.docstring` | the signature only when it differs from the type |
 | the lists | `.locations li` with `.file` holding `span.file-name`, `.parameters tr` with `td.param-name`, `td.param-value`, `.scopes li`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the scopes on a level, after the locations; the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
-| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a leaf, the ◆ on a primitive's own pinned face; the links on a level too |
+| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a primitive, the ◆ on a primitive's own pinned face; the links on a level too |
 | the drawer | `section.drawer[data-open][data-tab]` holding `button.tab[data-tab]`, `diagnostics`, `root-inputs`, `timing` or `order`, `.count`, `.tab-body` | `.count` on a tab that has one; the body while open |
 | diagnostics | `div.diagnostics` holding `input.filter`, `ul.diagnostics > li.diagnostic[data-index][data-severity]` with `button.row` holding `.kind`, `.path`, `span.message`, then `a.location`; `.current` | `current` on the focused row; `p.empty` "No diagnostics or warnings." or "No row matches the filter." |
 | root inputs | `table.root-inputs tr.root-input[data-name]` with `td.name button.row`, `td.type`, `td.kind`, `td.consumers` holding a `code` per consumer | `p.empty` "No root inputs." |

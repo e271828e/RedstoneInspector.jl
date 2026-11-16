@@ -413,18 +413,18 @@ the reviewer driving the live tab against the real server.*
 **Increment 10: the deployment overlay.** On both tracks, after a design
 session that writes the eighth record, `design/deployment_overlay.md`
 (added 2026-11-04, the user's ruling after increment 8's reading 1): what
-the deployment body carries beyond the build, the base step, each leaf's
-concrete period and phase in base ticks, the hyperperiod and the grid
-report the bound schedule prints; how the timing tab's schedule rows and
-the hyperperiod chart draw, a timeline over one hyperperiod with a row per
-triple and a mark per firing; and the legend's lines gaining the concrete
-`Δt` and `(D, Φ)`. The core half: the format's minor bump to 1.1, a
+the deployment body carries beyond the build, the base step, each
+primitive's concrete period and phase in base ticks, the hyperperiod and the
+grid report the bound schedule prints; how the timing tab's schedule rows
+and the hyperperiod chart draw, a timeline over one hyperperiod with a row
+per triple and a mark per firing; and the legend's lines gaining the
+concrete `Δt` and `(D, Φ)`. The core half: the format's minor bump to 1.1, a
 `schedule` section on the deployment body and nothing else, with the §13.9
 sentence and its log entry, `descriptor(deployment)`, the schema and the
 regenerated deployment fixture; folded in, the writer qualifies every bare
 `@ref` link whose binding it can resolve from the type's module
 (`which(mod, name)` giving the defining module), so `local_wires` in a
-`Blocks` docstring reaches `Redstone.local_wires` on the API page, which
+`Library` docstring reaches `Redstone.local_wires` on the API page, which
 closes the bare-`@ref` note `build_release.md` carried and amends
 `descriptor_design.md`'s answer 10, the docstring source carrying
 qualified refs. The inspector
@@ -474,7 +474,7 @@ it enters a brief.
   `descriptor.ts` (85, `parentOf`, `typeLabel`), `SvgCanvas.svelte` (77,
   `orthoRoute`), `BlockNode.svelte` (46); `scripts/validate.mjs` is the
   ajv call at default strictness; `scripts/synthetic.mjs` generated the
-  150-block fixture the Julia synthetic replaces. `vite.config.ts` turns
+  150-component fixture the Julia synthetic replaces. `vite.config.ts` turns
   CSS code splitting off, the lazy-CSS trap.
 - The docstrings' `@ref` forms over `src/`: 986 glossary links
   `(@ref g-term)`, 676 bare `[\`name\`](@ref)`, two others. Documenter's

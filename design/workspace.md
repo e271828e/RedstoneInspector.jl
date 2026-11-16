@@ -35,10 +35,10 @@ Open items live in `pending.md`.
 2. **The tree: the node list as an outline, selection and opening apart.**
    One row per node in walk order, nested by the parent rule; the root row
    labelled by the envelope `name`, else the root type's display name; an
-   assembly row expands, a leaf row does not; a keyed container's elements
-   sit under a folder row named by the field, which is no node and on a
-   click highlights the region and shows the field in the detail pane; a
-   transparent container's elements sit under the parent. Root inputs are
+   assembly row expands, a primitive row does not; a keyed container's
+   elements sit under a folder row named by the field, which is no node and
+   on a click highlights the region and shows the field in the detail pane;
+   a transparent container's elements sit under the parent. Root inputs are
    faces and stay in the drawer; a primitive root is one row. A row shows a
    color dot following the canvas's mode, the segment and the display name
    in lighter text, a chevron on an assembly, no icon. Selection is shared:
@@ -53,10 +53,10 @@ Open items live in `pending.md`.
    dashed marker; the tree never filters. With the tree focused, `j` and
    `k` move the selection one row, `l` expands an assembly row or, when it
    is expanded, steps to its first child, `h` collapses a row or, when it
-   is collapsed or a leaf, steps to its parent's row, and `Shift+j` opens
-   the selected assembly, the canvas following as for a click. The arrows
-   do there what `h j k l` do, and with no row selected `j`, `k`, Down and
-   Up each take the first row.
+   is collapsed or a primitive, steps to its parent's row, and `Shift+j`
+   opens the selected assembly, the canvas following as for a click. The
+   arrows do there what `h j k l` do, and with no row selected `j`, `k`,
+   Down and Up each take the first row.
    *Amended 2026-11-01 (increment 5's look pass): the tree had no keys of
    its own. Amended 2026-11-12 (increment 8b, the user's rulings): the
    arrows panned the canvas from the tree, and no rule covered a tree with
@@ -99,15 +99,15 @@ Open items live in `pending.md`.
    port square, Escape clearing it. With nothing selected the pane shows
    the open level as it shows a closed assembly, with the words "open
    level" where the open button stands, its rate scopes after the
-   locations and a face row selecting the level's pin; the root so gains
-   its docstring, locations and parameters. A leaf block shows, in order:
+   locations and a face row selecting the level's pin; the root so gains its
+   docstring, locations and parameters. A primitive block shows, in order:
    - the header: segment, display name and path, a copy button and, on an
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
      that says what it means: the qualified type with the alias beside it;
      the class and tier; the rate read out as a phrase, "every 4th base
      tick, offset 1" or "every tick of `q_ctl`, 1/50 s", with the anchor,
-     `m` and `c` in its hover title and no row for a continuous leaf,
+     `m` and `c` in its hover title and no row for a continuous primitive,
      which no rate gates; and, when `key` is present, the membership with
      its container's kind written out, "transparent container `children`,
      key `plant`" or "keyed container `gains`, key `a`";
@@ -131,13 +131,13 @@ Open items live in `pending.md`.
    child and wire counts, its faces typed through the resolution with no
    pinned mark, and an open button.
    A folder shows its field, count and keys as links. A wire shows its
-   declared endpoints, the terminal leaf port behind an assembly face, the
-   type and kind phrase from the terminal producer, and its level. A pin or
-   a port shows its face's facts, what feeds it, the `root_inputs` row and
-   later the claim for a root input, and a trace button starting the route
-   of question 8. Its facts name an output's stage and whether the face is
-   pinned on a primitive's own face alone: an assembly's face declares
-   neither, and the header already says pin or port.
+   declared endpoints, the terminal primitive port behind an assembly face,
+   the type and kind phrase from the terminal producer, and its level. A pin
+   or a port shows its face's facts, what feeds it, the `root_inputs` row
+   and later the claim for a root input, and a trace button starting the
+   route of question 8. Its facts name an output's stage and whether the
+   face is pinned on a primitive's own face alone: an assembly's face
+   declares neither, and the header already says pin or port.
    *Amended 2026-11-01 (increment 5's look pass): the header had the copy
    button alone; the facts were one line with the timing read out, the
    alias and qualified type below it; the signature was collapsed with no
@@ -197,16 +197,16 @@ Open items live in `pending.md`.
    from stage 2, the claiming writer, a row selecting the root pin; the
    home of stage 3's input widgets. Timing: anchors with index, `T`, `tau`
    and the declaring scope and key, anchor 0 as the base grid; scopes with
-   path, key and triple; components, every discrete leaf with its triple in
-   walk order, sortable by period, with its rate-mode swatch; the
+   path, key and triple; components, every discrete primitive with its
+   triple in walk order, sortable by period, with its rate-mode swatch; the
    deployment overlay's schedule rows and hyperperiod chart join here, a
    build descriptor saying they need a deployment. Execution order: two
-   groups, as the core's §5.3 runs a sweep. The first lists every leaf with
-   a stage 1 port, unnumbered, since stage 1 runs in any order. The second
-   lists every leaf with a stage 2 port in `outputs.order`'s order,
-   numbered from 1 over that group, and under a row the feedthrough edges
-   into it, labelled presumed. A leaf with both stages stands in both
-   groups, each time with that stage's ports. The drawer opens on load
+   groups, as the core's §5.3 runs a sweep. The first lists every primitive
+   with a stage 1 port, unnumbered, since stage 1 runs in any order. The
+   second lists every primitive with a stage 2 port in `outputs.order`'s
+   order, numbered from 1 over that group, and under a row the feedthrough
+   edges into it, labelled presumed. A primitive with both stages stands in
+   both groups, each time with that stage's ports. The drawer opens on load
    only when a diagnostic exists, on that tab, and otherwise stays
    collapsed to its tab strip with the counts readable; its height is a
    remembered splitter; every row in
@@ -219,7 +219,7 @@ Open items live in `pending.md`.
    false in version 1 of the format, the wire pass having stripped the
    marker, with the question of seedability handed to `pending.md`; and the
    execution order was `outputs.order` numbered in one list, each row with
-   both stages' ports, which gave a leaf with stage 1 outputs alone a
+   both stages' ports, which gave a primitive with stage 1 outputs alone a
    position that orders nothing. Amended 2026-11-12 (increment 8's second
    look, 1.8): a drag selecting a row's text also selected the row's
    target.*
@@ -233,34 +233,35 @@ Open items live in `pending.md`.
    a toggle for the type labels and a toggle for the execution-order
    badges, nothing else; the fit button and the legend stay in the canvas
    corner, and the port-class glyphs are not a toggle. The settings persist
-   per browser and survive a push. With the badges on, every leaf block
+   per browser and survive a push. With the badges on, every primitive block
    with a stage 2 output carries its position among the stage 2 calls, in
    `outputs.order`'s order, on its bottom edge at the left, numbered over
    the whole model, and a closed assembly the range or ranges of those
-   positions beneath it, "3–5, 8"; a leaf with stage 1 outputs alone
+   positions beneath it, "3–5, 8"; a primitive with stage 1 outputs alone
    carries none; the badges use the text color, and the overlay's pills on
    that edge draw over a badge they meet. A
    deployment descriptor adds the concrete `Δt` and `(D, Φ)` to the legend
    and the schedule rows and the hyperperiod chart, a timeline over one
    hyperperiod with a row per triple and a mark per firing, to the drawer's
    timing tab, all waiting on the overlay bump.
-   *Amended 2026-11-11 (increment 8's look pass, 1.7): every leaf carried
-   its position in `outputs.order`, stage 1 leaves among them, though the
-   core runs stage 1 in any order. Amended 2026-11-12 (increment 8's second
-   look, 2.3 and 2.4): the badge sat in the top-left corner, and the rate
-   pill on the bottom edge was left out where it met the overlay's pills.*
+   *Amended 2026-11-11 (increment 8's look pass, 1.7): every primitive
+   carried its position in `outputs.order`, stage 1 primitives among them,
+   though the core runs stage 1 in any order. Amended 2026-11-12 (increment
+   8's second look, 2.3 and 2.4): the badge sat in the top-left corner, and
+   the rate pill on the bottom edge was left out where it met the overlay's
+   pills.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.
 
 8. **Face routes: the value's whole path, started on purpose.** A face's
-   route runs upstream to its one terminal producer, a leaf output or a
+   route runs upstream to its one terminal producer, a primitive output or a
    root input pin, and downstream through every fan-out to every terminal
-   consumer, a leaf input or a root output pin, crossing boundary faces:
-   a tree with one root, what `face_routes` derives in the core and the
-   client derives from the same wires. It starts only by the detail pane's
-   trace button, a "trace" entry on the right-click menu of a pin, a port
-   square or a wire, or `t` with one selected, a wire's route being its
+   consumer, a primitive input or a root output pin, crossing boundary
+   faces: a tree with one root, what `face_routes` derives in the core and
+   the client derives from the same wires. It starts only by the detail
+   pane's trace button, a "trace" entry on the right-click menu of a pin, a
+   port square or a wire, or `t` with one selected, a wire's route being its
    producer face's; one route at a time. It draws as `visual_grammar.md`'s
    answer 9 says, and in addition a pin the route leaves the level through
    gets the badge, a click on it going to the parent with the route lit,

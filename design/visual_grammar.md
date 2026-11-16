@@ -41,8 +41,8 @@ Open items live in `pending.md`.
    the type's last segment until the alias bump of question 7.*
    *Why:* the spike's picture already tells continuous from discrete with
    no legend, and gray alone reads as inert, hence the border. Keeping the
-   frame under an icon keeps a library block and a user block aligned on
-   the same ports.
+   frame under an icon keeps a library component's block and a user
+   component's block aligned on the same ports.
 
 2. **Faces as ports: squares on the edge, names inside.** Inputs on the
    west and outputs on the east in declaration order, each a small square
@@ -107,16 +107,16 @@ Open items live in `pending.md`.
    | `struct` | double line |
    | `opaque` | thin dotted, gray |
 
-   A vector of structs is thick: the outer kind wins. At a leaf endpoint
-   the kind is on the face; at an assembly endpoint, a closed child's face
-   or the level's own pin, the client's resolution of answer 18 supplies
-   it, and `AssemblyFace` gains no `type` or `kind`. A fan-out draws as one
-   trunk that branches, a filled dot at each branch; the mechanism, ELK's
-   edge merging, is axis 4's. A feedback wire gets no special style, since
-   the port glyph of answer 2 shows where the loop is legal. The type-label
-   toggle, off by default, writes the type once per producer port with its
-   module qualifiers dropped, `SVector{5, Float64}` for
-   `StaticArraysCore.SVector{5, Float64}`, uncut, at the port's own wire
+   A vector of structs is thick: the outer kind wins. At a primitive
+   endpoint the kind is on the face; at an assembly endpoint, a closed
+   child's face or the level's own pin, the client's resolution of answer 18
+   supplies it, and `AssemblyFace` gains no `type` or `kind`. A fan-out
+   draws as one trunk that branches, a filled dot at each branch; the
+   mechanism, ELK's edge merging, is axis 4's. A feedback wire gets no
+   special style, since the port glyph of answer 2 shows where the loop is
+   legal. The type-label toggle, off by default, writes the type once per
+   producer port with its module qualifiers dropped, `SVector{5, Float64}`
+   for `StaticArraysCore.SVector{5, Float64}`, uncut, at the port's own wire
    start, just below the wire, the full string in the hover title and the
    detail pane. The label is an ELK edge label placed at the tail and
    present in every layout, overlay on or off, so the layout reserves its
@@ -138,7 +138,7 @@ Open items live in `pending.md`.
    loop needs. Answer 18 already commits the client to resolve every face
    once on load and names the assembly face's marker as the first thing
    that serves; the fields would be the redundancy it rejected, and the
-   resolution always ends at a leaf face because the build refuses an
+   resolution always ends at a primitive face because the build refuses an
    assembly input that reaches none. Whether the rate-color mode tints
    wires is question 6's.
 
@@ -163,19 +163,19 @@ Open items live in `pending.md`.
    question 6.
 
 6. **Color: tier mode by default, rate mode by clock, no regions.** Tier
-   mode is the spike's: one color for continuous leaves, one for discrete,
-   neutral gray for a closed assembly, wires gray. Rate mode, a toggle,
-   keys a discrete leaf's color on its full timing triple, the compiled
-   clock against the nearest anchor: same triple, same tick instants under
-   every deployment; the authored chain of `Relative` entries is not shown,
-   and where an anchored clock lands on the base grid is the deployment
-   overlay's fact, not the build's. Continuous leaves keep the continuous
-   color. The palette is categorical, at most eight steps, constructed
-   rather than searched: eight hues evenly spread round the OKLCh hue
-   circle at one chroma, the fills alternating two lightness bands by step
-   and light enough for the text at AA contrast, each stroke its fill's
-   hue darkened, step 0 a warm peach opposite the continuous blue. The
-   steps are distinct under normal vision and never identical under
+   mode is the spike's: one color for continuous primitives, one for
+   discrete, neutral gray for a closed assembly, wires gray. Rate mode, a
+   toggle, keys a discrete primitive's color on its full timing triple, the
+   compiled clock against the nearest anchor: same triple, same tick
+   instants under every deployment; the authored chain of `Relative` entries
+   is not shown, and where an anchored clock lands on the base grid is the
+   deployment overlay's fact, not the build's. Continuous primitives keep
+   the continuous color. The palette is categorical, at most eight steps,
+   constructed rather than searched: eight hues evenly spread round the
+   OKLCh hue circle at one chroma, the fills alternating two lightness bands
+   by step and light enough for the text at AA contrast, each stroke its
+   fill's hue darkened, step 0 a warm peach opposite the continuous blue.
+   The steps are distinct under normal vision and never identical under
    simulated weak color vision, the legend focus telling any two apart.
    The fills, which also color the wires, keep their distance from the
    error, warning and highlight colors and the wire gray under every
@@ -185,11 +185,11 @@ Open items live in `pending.md`.
    model's order; the first four extras take colors distinct under normal
    vision only, the number telling them apart for every reader, and the
    rest a shared neutral. A closed assembly takes the one triple its
-   discrete leaves share, the assembly gray when they tick on several, and
-   the continuous color with none; whenever a discrete leaf lies beneath
-   it, it wears a clock-count badge on its top edge at the left, where an
-   extra's number also sits, "1 clock" on a colored one, the count on a
-   gray one. Its `scopes` row colors nothing: an
+   discrete primitives share, the assembly gray when they tick on several,
+   and the continuous color with none; whenever a discrete primitive lies
+   beneath it, it wears a clock-count badge on its top edge at the left,
+   where an extra's number also sits, "1 clock" on a colored one, the count
+   on a gray one. Its `scopes` row colors nothing: an
    assembly ticks on nothing, the row is the frame its `Relative` children
    compose against, and the detail pane lists it. Wires take their
    terminal producer's fill, a continuous producer's wires a blue of their
@@ -197,12 +197,12 @@ Open items live in `pending.md`.
    pin leaves its wires neutral, so a rate transition shows as a color
    change at a block's input and a wire names the block it leaves. A
    legend in a canvas corner lists first a line for the continuous color
-   when a continuous leaf, an assembly with no discrete leaf or a
+   when a continuous primitive, an assembly with no discrete primitive or a
    continuous producer's wire is visible, then every triple visible on the
    open level, on a block or a wire, each read out, "anchor 1 (1/10 s) ×
    2, phase 1"; the overlay bump adds the concrete `Δt` and `(D, Φ)` per
    line. A click on a legend line focuses its triple, the continuous line
-   its color: the blocks on it, the closed assemblies with a leaf of it
+   its color: the blocks on it, the closed assemblies with a primitive of it
    beneath and the wires it tints are lit, the rest dimmed as for a
    search, and the tree marks its rows with counts up collapsed ones. A
    second click, Escape or leaving rate mode clears the focus; it holds
@@ -216,7 +216,7 @@ Open items live in `pending.md`.
    the halo hue. Amended the same day (the pass's second round): the
    palette was searched for eight steps distinct under weak color vision;
    a closed assembly took its scope triple's color, with a multi-rate
-   badge when its leaves ticked otherwise; wires took their producer's
+   badge when its primitives ticked otherwise; wires took their producer's
    color at a lighter tint; the continuous line came last in the legend;
    and the strokes, not the fills, kept off the reserved hues. Amended
    2026-11-12 (increment 8's second look, 2.3): the badge's place was "one
@@ -229,14 +229,14 @@ Open items live in `pending.md`.
    the badge to patch the gap. A color now means one thing on every block,
    every discrete tick beneath is on that triple, gray with a count means
    several, and the count on every closed box tells a colored one from a
-   leaf. Eight light fills distinct under weak color vision do not exist,
-   the capacity search showed, so the bar is normal vision with the legend
-   focus as the guarantee, and nameable hues of even weight beat a palette
-   that clears a threshold everywhere and reads nowhere. *Rejected:* rate
-   scopes as regions, since a scope is declared for one child key and its region would be that child's own block, and
-   the container case already has answer 5's region; keying color on the
-   period alone with the phase as a mark, since phased blocks never share
-   an instant.
+   primitive. Eight light fills distinct under weak color vision do not
+   exist, the capacity search showed, so the bar is normal vision with the
+   legend focus as the guarantee, and nameable hues of even weight beat a
+   palette that clears a threshold everywhere and reads nowhere. *Rejected:*
+   rate scopes as regions, since a scope is declared for one child key and
+   its region would be that child's own block, and the container case
+   already has answer 5's region; keying color on the period alone with the
+   phase as a mark, since phased blocks never share an instant.
 
 7. **Library icons: keyed on the alias, then the type.** A monochrome
    glyph or short math text in the text color, at the second line's height
@@ -250,7 +250,7 @@ Open items live in `pending.md`.
    `Junction` over a user function and an alias defined elsewhere carry
    none. The roster:
 
-   | block | icon |
+   | component | icon |
    |---|---|
    | `SumJunction`; `Or`, `And` | circle with Σ; circle with ∨, with ∧ |
    | `Pack`, `Unpack` | n lines merging into one, and its mirror |
@@ -285,11 +285,11 @@ Open items live in `pending.md`.
    the type's source location. A probe failure is the node case, the badge
    carrying the function name from the probe chain. An `AlgebraicCycle`
    halos its members; its wires are terminal pairs, which the client maps
-   onto the chain of declared wires between the two leaves by answer 18's
-   resolution in reverse, drawn on every level the chain touches, a badge
-   on a closed child where the chain continues inside, a red dot on each
-   such level in the tree. The verdict is text, not a second color. A dead
-   hop is a dashed chord across its member from the input square to the
+   onto the chain of declared wires between the two primitives by answer
+   18's resolution in reverse, drawn on every level the chain touches, a
+   badge on a closed child where the chain continues inside, a red dot on
+   each such level in the tree. The verdict is text, not a second color. A
+   dead hop is a dashed chord across its member from the input square to the
    output square with a cross at its middle, shown under either verdict. No
    dimming by default; a dimmed state exists for axis 5's focus. Warnings
    take a second reserved hue, amber, same mechanics, once a descriptor
@@ -305,8 +305,8 @@ Open items live in `pending.md`.
    second rung makes (§5.4, D-140); a loop across levels is where the text
    is hardest to follow. Both verdicts are refused builds, so a color per
    verdict would spend the warning hue on an error. *Rejected:* straight
-   overlay lines between the terminal leaves, which show a wire that does
-   not exist and nothing on a crossed level.
+   overlay lines between the terminal primitives, which show a wire that
+   does not exist and nothing on a crossed level.
 
 9. **Highlight states: one hue, a halo for shapes, a casing for lines, dim
    beneath.** One reserved highlight hue, a blue outside the rate palette.

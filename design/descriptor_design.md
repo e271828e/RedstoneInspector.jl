@@ -60,21 +60,22 @@ Open items live in `pending.md`.
    subset rule to maintain. *Rejected:* flat concept sections at the body
    level, with the failure body copying a subset.
 3. **Type identity: the qualified base name.** A node's `type` is
-   `parentmodule` and `typename` joined, `Redstone.Blocks.PID`,
+   `parentmodule` and `typename` joined, `Redstone.Library.PID`,
    `RedstoneExamples.Longitudinal`, `Main.Aircraft` for a REPL definition.
    It keys the `types` table, labels the diagram by its last segment and
    matches answer 15's icons. Beside it each node carries `signature`, the
    instance's full printed type, untruncated, for the detail pane.
    *Amended 2026-10-27 (`visual_grammar.md` answer 7, commit 86ff8cc): the
-   alias was a cost accepted as lost.*
+   alias was a cost accepted as lost. Amended 2026-11-16 (the pin to the
+   core's `6afd6fb`, D-453): the library's module was `Redstone.Blocks`.*
    *Why:* the docstring and the declaration methods attach to the
    unparameterized name, so stripping is what makes the lookup work, and a
-   heavily parameterized block would otherwise print its parameters on the
-   diagram. A bare name would collide across modules. *Cost accepted:* a
+   heavily parameterized component would otherwise print its parameters on
+   the diagram. A bare name would collide across modules. *Cost accepted:* a
    `const` alias such as `SumJunction{V, N}` is a `Junction` to `typename`,
-   so the node's `type` says `Redstone.Blocks.Junction` and carries that
+   so the node's `type` says `Redstone.Library.Junction` and carries that
    docstring. The optional node `alias` of answer 4 recovers the name,
-   `Redstone.Blocks.SumJunction`, by `visual_grammar.md` answer 7's rule,
+   `Redstone.Library.SumJunction`, by `visual_grammar.md` answer 7's rule,
    and the diagram's label and icon key on it ahead of `type`.
 4. **The node entry.** One object per component in walk order, assemblies
    included (answer 17): `path`, `field`, `key`, `class`, `tier`, `type`,
@@ -82,9 +83,9 @@ Open items live in `pending.md`.
    `parameters`.
    ```json
    {"path": "aircraft/loops/l1", "field": "loops", "key": "l1",
-    "class": "leaf", "tier": "continuous",
+    "class": "primitive", "tier": "continuous",
     "timing": {"anchor": 0, "m": 4, "c": 1},
-    "type": "Redstone.Blocks.PID", "signature": "PID{Float64, …}",
+    "type": "Redstone.Library.PID", "signature": "PID{Float64, …}",
     "inputs":  [{"name": "r", "type": "Float64",
                  "kind": {"kind": "float"}, "pinned": false}, …],
     "outputs": [{"name": "u", "type": "Float64",
@@ -98,18 +99,21 @@ Open items live in `pending.md`.
    keyed container; a `key` equal to the segment is a name-transparent one.
    The root has `path` `""` and neither `field` nor `key`. An assembly node
    has `class` `"assembly"`, no `tier` or `timing`, name-only faces and its
-   `wires` (answer 5); a leaf node has `class` `"leaf"`, typed faces and no
-   `wires`. `alias` is present only when a `const` of the type's own module
-   binds a parameterization of it, as answer 3 says.
+   `wires` (answer 5); a primitive node has `class` `"primitive"`, typed
+   faces and no `wires`. `alias` is present only when a `const` of the
+   type's own module binds a parameterization of it, as answer 3 says.
    Two conventions fixed here for the whole format. *Omission:* a field that
    does not apply is left out, never written as `null`, so presence is the
    test and the schema can require fields per class; an empty collection
    that applies is an empty array. *Face objects on both classes:* an
    assembly's faces are `{"name": …}` objects, not bare strings, so a later
    bump can add fields without a second shape; the schema defines
-   `LeafFace` and `AssemblyFace` apart, and `class` says which a node uses.
+   `PrimitiveFace` and `AssemblyFace` apart, and `class` says which a node
+   uses.
    *Amended 2026-10-27 (`visual_grammar.md` answer 7, commit 86ff8cc): the
-   node had no `alias`.*
+   node had no `alias`. Amended 2026-11-16 (the pin to the core's `6afd6fb`,
+   its `c894949` and D-453): the class value was `"leaf"`, the face
+   `LeafFace` and the library's module `Redstone.Blocks`.*
    *Why:* `segment` and `membership` were in the first sketch and were
    dropped as derivable: the parent is the longest node path that is a
    proper prefix, which skips a container's non-node path such as
@@ -136,8 +140,8 @@ Open items live in `pending.md`.
    rebuilds full paths for resolution and for stage 2's subscriptions; full
    paths are the canonical addressing answer 4 promised. A separate
    `levels` array would key by the assembly's path and hold nothing else,
-   since the children list is the node order. A primitive root is a leaf
-   root node with no `wires` key.
+   since the children list is the node order. A primitive root is a root
+   node with no `wires` key.
 6. **The kind marker's rule.** Computed from the declared face type as the
    tier reader yields it at `Float64`, a `Pinned` entry unwrapped first and
    setting the face's `pinned` flag, by one classification in test order,
@@ -176,10 +180,10 @@ Open items live in `pending.md`.
    answering the questions only Julia can answer. *Why per-subtype kinds
    stop at integer and float:* those are the two cuts a widget or a wire
    style acts on; finer ones would restate the type string.
-7. **Root inputs: a section of leaf faces.** `structure.root_inputs` is an
-   array of leaf-face objects, `name`, `type`, `kind` and `pinned`, in the
-   artifact's order, typed from `root_types`. The root node's own `inputs`
-   stay name-only like any assembly's, joined by name.
+7. **Root inputs: a section of primitive faces.** `structure.root_inputs` is
+   an array of primitive-face objects, `name`, `type`, `kind` and `pinned`,
+   in the artifact's order, typed from `root_types`. The root node's own
+   `inputs` stay name-only like any assembly's, joined by name.
    *Why:* §11.3 makes root inputs a concept of their own, the primary data
    and the write surface the bridge's liveness table keys on, and a list
    the bridge and the detail pane read without walking to the root. A
@@ -198,12 +202,12 @@ Open items live in `pending.md`.
    producer's port is stage 2, into a component with a stage 2, from the
    resolution it already does.
    *Why:* the port class comes from probing, which the failure descriptor
-   never has, so a `stage` field on the leaf face would be present only
+   never has, so a `stage` field on the primitive face would be present only
    when the build completed, the subset rule answer 2 avoids. Carrying the
    edges would be the redundancy answer 18 rejected for wires.
-9. **Timing now, the chain later.** Each leaf node carries `timing`, the
-   anchor it hangs from with its period multiple and phase in that anchor's
-   ticks, and `structure` carries `anchors` and `scopes`:
+9. **Timing now, the chain later.** Each primitive node carries `timing`,
+   the anchor it hangs from with its period multiple and phase in that
+   anchor's ticks, and `structure` carries `anchors` and `scopes`:
    ```json
    "anchors": [{"T": {"num": 1, "den": 100}, "tau": {"num": 0, "den": 1},
                 "scope": "aircraft", "key": "loops"}],

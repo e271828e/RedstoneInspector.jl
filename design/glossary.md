@@ -90,7 +90,7 @@ no entry here.
 - **Envelope.** The top-level object: `format_version`,
   `redstone_version`, `kind`, the optional `name` and the body
   (`descriptor_design.md` answer 1).
-- **Face object.** A face as the node carries it: a *leaf face* with
+- **Face object.** A face as the node carries it: a *primitive face* with
   `name`, `type`, `kind` and `pinned`, or an *assembly face* with `name`
   alone (`descriptor_design.md` answer 4).
 - **Failure body.** The object under `failure`: `policy`, `structure` when
@@ -159,10 +159,10 @@ no entry here.
   orders jobs (`build_release.md` answer 6).
 - **`kind`.** Three senses in the format, told apart by where the field
   sits. The envelope's `kind` names its body: `build`, `deployment` or
-  `failure`. A leaf face's `kind` holds its kind marker, whose own first
-  field `kind` names the marker's class: `boolean`, `enum`, `symbol`,
-  `integer`, `float`, `number`, `vector`, `struct` or `opaque`. A
-  diagnostic's `kind` is its Julia type's name, the core's sense of the
+  `failure`. A primitive face's `kind` holds its kind marker, whose own
+  first field `kind` names the marker's class: `boolean`, `enum`,
+  `symbol`, `integer`, `float`, `number`, `vector`, `struct` or `opaque`.
+  A diagnostic's `kind` is its Julia type's name, the core's sense of the
   word (`descriptor_design.md` answers 1 and 6, `failure_descriptor.md`
   answer 2).
 - **Landing panel.** What the canvas shows before a model is loaded: the
@@ -199,8 +199,8 @@ no entry here.
 - **Named array.** The format's rule for a collection keyed by data: an
   array of objects each carrying `name`, never an object with data keys
   (`descriptor_design.md` answer 11).
-- **Node.** One component of the walk, leaf or assembly, keyed by its path
-  (`initial_design.md` answer 17, `descriptor_design.md` answer 4).
+- **Node.** One component of the walk, primitive or assembly, keyed by its
+  path (`initial_design.md` answer 17, `descriptor_design.md` answer 4).
 - **Omission.** The format's rule that a field which does not apply is
   left out rather than written as `null`; an empty collection that applies
   is an empty array (`descriptor_design.md` answer 4).
@@ -287,7 +287,7 @@ no entry here.
 - **Tag-absent rule.** The release trigger: on a push to master, release
   the version `Project.toml` claims if no tag of that version exists
   (`build_release.md` answer 6).
-- **Timing.** A leaf node's or a scope's `{"anchor", "m", "c"}`: the
+- **Timing.** A primitive node's or a scope's `{"anchor", "m", "c"}`: the
   anchor it hangs from, its period multiple and its phase in that anchor's
   ticks. The grammar and the frontend's code call it the triple, the
   compiled clock rate mode keys its colors on (`descriptor_design.md`

@@ -17,7 +17,7 @@ answers 17 and 18, renamed `describe` to `descriptor`, and gave stage 1's
 working order its step zero, the `Structure` refactor of increment 67. A
 fourth, on 2026-10-12, absorbed the framework changes that landed between
 the third session and it: the refactor itself (D-315), the structural stop
-requests (D-316), the `Model` split (D-317 to D-320) and the block library
+requests (D-316), the `Model` split (D-317 to D-320) and the library
 (D-311 to D-313). The split leaves the descriptor's sources as they were: a
 `Model` is a mutable materialization of a `Deployment`, not an artifact of
 its own. A fifth, on 2026-10-26, read the record against the 254 commits
@@ -97,7 +97,7 @@ b6f08b1.
    diagnostics.** When the structure step passes and the nominal evaluation
    fails, the failure carries the complete `Structure` beside the
    diagnostics. The inspector then draws the whole diagram and marks the
-   error on it: an algebraic loop's wires, or the block whose code threw
+   error on it: an algebraic loop's wires, or the component whose code threw
    while being probed. When the structure step fails, only the diagnostics
    remain, shown as a list grouped by path. The core change this needs is
    that the build's carrier exception holds the last clean artifact.
@@ -277,9 +277,9 @@ b6f08b1.
     carries. Redstone's terms stay because diagnostics, the spec and
     descriptors all use them. Stating the refusals spares a Simulink user from
     hunting for a Run button.
-16. **The kind marker is a requirement, not a question.** Every leaf face
-    carries a kind marker beside its printed Julia type: an object, not a
-    word, so that stage 2 extends it additively. Its kinds are boolean,
+16. **The kind marker is a requirement, not a question.** Every primitive
+    face carries a kind marker beside its printed Julia type: an object, not
+    a word, so that stage 2 extends it additively. Its kinds are boolean,
     enum with its instance names, symbol, integer, float, number for the
     other `Real`s, vector with its `shape` and its element's marker, struct
     with its `fields`, and opaque; function-valued signals of §4.4 are
@@ -303,13 +303,15 @@ b6f08b1.
 17. **Nodes are components, in walk order; containers are attributes.** A
     descriptor's node list is the tree's pre-order walk with assemblies
     included, one entry per component keyed by its path, the parent implied
-    by the path. Each node carries its class, assembly or leaf, its tier
-    when a leaf, the field that contributed it and, for a container
-    element, its key. A container is not a node: it has no faces, no
-    instance and no docstring of its own, and a name-transparent one has no
-    path to key it by. The vocabulary is the spec's: *class* for assembly
-    against leaf, *tier* for continuous against discrete, and *kind* stays
-    reserved for the value marker.
+    by the path. Each node carries its class, assembly or primitive, its
+    tier when a primitive, the field that contributed it and, for a
+    container element, its key. A container is not a node: it has no
+    faces, no instance and no docstring of its own, and a name-transparent
+    one has no path to key it by. The vocabulary is the spec's: *class* for
+    assembly against primitive, *tier* for continuous against discrete, and
+    *kind* stays reserved for the value marker.
+    *Amended 2026-11-16 (the pin to the core's `6afd6fb`, its `c894949`):
+    the class was assembly or leaf.*
     *Why:* this is a rendering of what the `Structure` holds after
     increment 67, a level table in walk order with each child's segment
     and field, so `descriptor` projects it with no reconstruction. The
@@ -319,11 +321,11 @@ b6f08b1.
 18. **Wires verbatim; the client resolves.** A descriptor carries the
     one-level wires as the author declared them, per level and in
     declaration order, and nothing resolved: no terminal producers, no face
-    tables, no routes. A leaf's faces carry type, kind marker and pinned
-    flag; an assembly's faces appear by name only, as the wire endpoints at
-    that level. The client resolves every face to its terminal once on
-    load, a walk of a few hundred lookups, and that one resolution serves
-    the type and marker of an assembly face, the face-route tier of
+    tables, no routes. A primitive's faces carry type, kind marker and
+    pinned flag; an assembly's faces appear by name only, as the wire
+    endpoints at that level. The client resolves every face to its terminal
+    once on load, a walk of a few hundred lookups, and that one resolution
+    serves the type and marker of an assembly face, the face-route tier of
     answer 9 and, from stage 2, the bridge's subscriptions.
     *Why:* the artifact's resolved tables were derived from the declared
     wires by the structure step, and increment 67 makes that derivation a
@@ -357,13 +359,13 @@ cited by number. Couplings are named where they exist.
    and the carrier exception holding the last clean artifact (§13.1, §13.2).
    It also covers collecting instance context: docstrings, source locations,
    and the truncation rule for parameter summaries. One fact to carry in:
-   the `Structure` holds no face types except the root inputs'; a leaf's
-   declared types live in the nominal activation's declaration tables,
-   `build.activations[Float64].decls`. Corrected 2026-10-26: `descriptor`
-   reads them off the instance through the tier reader at `Float64`
-   instead, so a failure descriptor has them too (`descriptor_design.md`,
-   answer 2). The requester roster of D-316 lives in the activation's
-   layout, not in the `Structure` (added 2026-10-26).
+   the `Structure` holds no face types except the root inputs'; a
+   primitive's declared types live in the nominal activation's declaration
+   tables, `build.activations[Float64].decls`. Corrected 2026-10-26:
+   `descriptor` reads them off the instance through the tier reader at
+   `Float64` instead, so a failure descriptor has them too
+   (`descriptor_design.md`, answer 2). The requester roster of D-316 lives
+   in the activation's layout, not in the `Structure` (added 2026-10-26).
    *Builds on* answers 5, 6 and 13. *Coupled to* axis 1.
 3. **Visual grammar.** How each model concept is drawn. This covers blocks;
    faces as ports; an opened assembly's boundary faces inside the subsystem;

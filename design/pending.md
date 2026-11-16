@@ -144,8 +144,8 @@ the increment it came from.
 - **ELK on the main thread** (increments 3 and 4). `large`'s root takes
   about 460 ms from drop to drawn on an M4 at thoroughness 20, sizing and
   layout both on the main thread; a web worker would move them off.
-- **A primitive root's blank first line** (increment 3). Its leaf has an
-  empty segment, so the block's bold first line is blank; the tree's row,
+- **A primitive root's blank first line** (increment 3). The primitive has
+  an empty segment, so the block's bold first line is blank; the tree's row,
   the breadcrumb and the pane carry the label.
 - **`closed_loop`'s tangled root** (increment 4). Feedback wires loop over
   and under the level, as the spike found; increment 6's ELK pass took it
@@ -231,7 +231,7 @@ the increment it came from.
   link each member's `y_direct`, which the format does not locate; the
   user dropped that on 2026-11-05, since the remedy for a loop is
   structural (§5.5: insert dynamics, a unit delay, or restructure) and a
-  member is often a library block the user cannot edit. The descriptor
+  member is often a library component the user cannot edit. The descriptor
   already carries what the row wants: `cycle` holds the wires as terminal
   pairs, the classification and each member's tracing mode, and an
   assembly's `types` row holds the location of its wire declarations. The

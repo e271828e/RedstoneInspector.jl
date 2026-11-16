@@ -153,7 +153,7 @@ Open items live in `pending.md`.
    since `descriptor` already renders a `Deployment` and the timing tab
    needs one. `synthetic.jl` widens "the repo's own synthetic model" of
    the earlier records to a family, each a function and each written as
-   one fixture: the large model the spike measured, 150 blocks in ten
+   one fixture: the large model the spike measured, 150 components in ten
    nested assemblies, and the small models the front end needs and the
    examples do not give, a keyed container and a name-transparent one for
    the region grouping, a primitive root, a face of every kind marker for
@@ -161,7 +161,7 @@ Open items live in `pending.md`.
    colors, a model with an algebraic cycle for `failure_cycle.json`, and
    one that fails the structure step for `failure_structure.json`, which
    draws the list alone. Five more join them: `library.json`, one instance
-   of every shipped block for the icons and the legend's forms, and four
+   of every shipped component for the icons and the legend's forms, and four
    for the overlay, each ported from the core's suite, `failure_nested.json`
    with the cycle closed one level down, `failure_dead.json` with a dead
    hop, `failure_probe.json` with a probe throw beside an
@@ -197,17 +197,17 @@ Open items live in `pending.md`.
    sees them. A type there describes the shape of a JSON object, the way a
    struct declaration describes a value, and a union discriminated by a
    field is what the checker narrows on: inside `if (node.class ===
-   "leaf")` a `Node` is a `LeafNode` and `node.tier` is allowed, outside
-   it is an error. The frontend is full of such branches, on `class`, on a
-   marker's `kind`, on the envelope's `kind`. Writing the thirty
-   declarations by hand would make them a second statement of the format
-   with nothing stopping drift: a field renamed in the core, the copy
+   "primitive")` a `Node` is a `PrimitiveNode` and `node.tier` is allowed,
+   outside it is an error. The frontend is full of such branches, on
+   `class`, on a marker's `kind`, on the envelope's `kind`. Writing the
+   thirty declarations by hand would make them a second statement of the
+   format with nothing stopping drift: a field renamed in the core, the copy
    updated, the hand-written type still naming the old field, the checker
    approving code that reads a field no descriptor carries. A generator
    is a program that writes the declarations from the schema, mechanically,
    as Documenter writes HTML from docstrings. `json-schema-to-typescript`
    is the common one for draft 7: `$ref` definitions become exported named
-   types keeping the schema's names, `LeafNode`, `KindMarker`, `Wire`;
+   types keeping the schema's names, `PrimitiveNode`, `KindMarker`, `Wire`;
    `oneOf` becomes a union, `allOf` an intersection, `const` and `enum`
    literal types; the branch idiom that repeats the identity's fields as
    `true` so that `additionalProperties: false` admits them becomes
@@ -225,6 +225,8 @@ Open items live in `pending.md`.
    `Node` with `if`/`then`/`else` for quieter ajv errors is independent of
    this: the generator ignores `if` either way, and the generated fixtures
    end the hand transcription the noise reached.
+   *Amended 2026-11-16 (the pin to the core's `6afd6fb`, its `c894949`): the
+   example's class value was `"leaf"` and its type `LeafNode`.*
    *Why:* the schema stays the one statement of the format and the types
    are derived, never written. *Rejected:* `quicktype`, a multi-language
    tool that renames and restructures; hand-written types; committing the
@@ -369,7 +371,7 @@ Open items live in `pending.md`.
      gives every entry that id, so it becomes `<docs>/glossary/#g-component`.
      ``[`init!`](@ref)`` is a bare name, and Documenter anchors each
      docstring on the API page by its qualified binding, `Redstone.x_init`,
-     `Redstone.Blocks.Junction`, so it becomes `<docs>/api/#<module>.<name>`
+     `Redstone.Library.Junction`, so it becomes `<docs>/api/#<module>.<name>`
      with the module taken from the row the docstring belongs to, whose
      key is the type's qualified base name. A docstring on a type outside
      `Redstone` has no hosted page and its links render as code text, as
@@ -392,6 +394,8 @@ Open items live in `pending.md`.
      Pages: answer 14 keeps one home for the schema, and the inspector's
      copy is a pinned snapshot that lags the record between bumps, so an
      identity pointing at it would name the wrong file half the time.
+   *Amended 2026-11-16 (the pin to the core's `6afd6fb`, D-453): the API
+   anchor's example was `Redstone.Blocks.Junction`.*
    *Rejected:* two builds, one per address, the second bundle
    `live_session.md`'s answer 5 refused; linking a bare `@ref` to the API
    page without an anchor, a link turned into a search; a `$id` carrying
