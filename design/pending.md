@@ -10,19 +10,6 @@ makes.
 
 The bullets stand in working order, the first one next.
 
-- **Icons for the library's new components.** Seven library components
-  reached the core after the old pin `035aa95` and are on neither
-  `visual_grammar.md` answer 7's roster nor `frontend/src/lib/icons.ts`'s:
-  `Backlash`, `Comparator`, `Fields`, `Fn`, `LimitedDoubleIntegrator`,
-  `Select` and `Sequence`. Each draws its display name where answer 7
-  draws a glyph or short math text. None is in the `library` fixture, so
-  a check on their icons needs the fixture script's `library` model to
-  gain them. Until it does, two lines are false: `scripts/synthetic.jl`'s
-  `library()` docstring and `build_release.md` answer 3's description of
-  `library.json` each say one instance of every shipped component.
-  Answer 7 is amended with their glyphs first, under the rule on amending
-  a record; the user ruled on 2026-11-16, at the pin to the core's
-  `6afd6fb`, that this item comes before increment 10.
 - **The inspector, stage 1, its remaining increments**: the static
   inspector over the descriptor. Its records, none normative, are
   `initial_design.md` and one per axis beside it: `descriptor_design.md`
@@ -32,8 +19,8 @@ The bullets stand in working order, the first one next.
   `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
   (axis 7). `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 9
-  and 8b have landed, and the pin to the core's `6afd6fb`. After the
-  icons, 10, the deployment overlay on both tracks after its design session writes the eighth
+  and 8b have landed, as have the pin to the core's `6afd6fb` and the
+  icons for its new components. Next, 10, the deployment overlay on both tracks after its design session writes the eighth
   record, `deployment_overlay.md`, with the writer's qualified `@ref`
   links folded in, so a bare `@ref` to a name in a parent module reaches
   its anchor (amending `descriptor_design.md` answer 10); then 11, the

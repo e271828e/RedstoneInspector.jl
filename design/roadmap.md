@@ -431,6 +431,22 @@ at `src/descriptor.jl:43` to `46`, where the list below gives them as of
 `2072d41`. The library's seven components added since `035aa95` have no
 icon yet, the work order's first bullet.*
 
+**The icons for the library's new components.** Added from `pending.md`'s
+work order after the pin, by the user's ruling of 2026-11-16 that it comes
+before increment 10. `visual_grammar.md` answer 7's roster takes `Backlash`,
+`Comparator`, `Fields`, `Fn`, `LimitedDoubleIntegrator`, `Select` and
+`Sequence`, and the fixture script's `library` model gains one instance of
+each, with two `Constant`s feeding `Fields` and `Select`. *Landed on
+2026-11-16, without a brief, the user approving at the look pass, which
+turned `Switch`'s lever and `Select`'s to face their inputs and chose
+`u≥c` for `Comparator`. Facts the next briefs take: the roster holds 38
+keys over 34 ids, of which `library` draws 33 as 40 icons, `constant-opaque`
+being `kinds`' alone; `library` has 42 nodes, 41 primitives, 25 with a
+stage 1 output and 18 with a stage 2 one, 2 in both, 48 wires, 16
+feedthrough edges and 13 discrete primitives; the new `Constant`s are
+`pair`, a `NamedTuple`, and `gear`, the `Gear` enum's `up`; a `Junction`
+over a user function stays `fn`, and `Fn` is `apply`.*
+
 **Increment 10: the deployment overlay.** On both tracks, after a design
 session that writes the eighth record, `design/deployment_overlay.md`
 (added 2026-11-04, the user's ruling after increment 8's reading 1): what
