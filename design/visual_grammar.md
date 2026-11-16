@@ -253,15 +253,21 @@ Open items live in `pending.md`.
    | component | icon |
    |---|---|
    | `SumJunction`; `Or`, `And` | circle with Σ; circle with ∨, with ∧ |
+   | `Fn` | f(u) |
    | `Pack`, `Unpack` | n lines merging into one, and its mirror |
+   | `Fields` | `Unpack`'s fan with a double line in, a struct wire's line |
    | `Integrator`, `LimitedIntegrator` | 1/s, and between two limit bars |
+   | `LimitedDoubleIntegrator` | 1/s² between two limit bars |
    | `DiscreteIntegrator`, `DiscreteLimitedIntegrator` | the same pair over a staircase |
    | `UnitDelay`, `Delay` | z⁻¹, z⁻ᴷ (`K` is a type parameter; the signature gives it) |
    | `FirstOrderLag` | 1/(τs+1) |
    | `StateSpace` family, `TransferFunction` family | ẋ=Ax+Bu; N(s)/D(s) or N(z)/D(z) |
    | `Constant` | its `value` summary cut short; a frame glyph when the output's kind is `opaque` (D-344, D-364) |
-   | `Step`, `Source`, `GaussianWhiteNoise` | a step line, f(t), a noise squiggle |
-   | `Switch`, `Relay`, `RateLimiter` | the lever, the hysteresis loop, the slope line |
+   | `Step`, `Sequence` | a step line; a staircase up and down |
+   | `Source`, `GaussianWhiteNoise` | f(t), a noise squiggle |
+   | `Switch`, `Select` | a lever pivoting on the right over two contacts on the left; over three |
+   | `Relay`, `Backlash`, `RateLimiter` | the hysteresis loop, the backlash parallelogram, the slope line |
+   | `Comparator` | u≥c |
    | `Freeze`; `StopRequest` | a struck-through gradient; an octagon |
    | `PID`, `DiscretePID`; `LQRTracker`, `DiscreteLQRTracker` | PID; LQR |
    | `Group` | none, a closed assembly |
@@ -270,7 +276,10 @@ Open items live in `pending.md`.
    icons stay refused (answer 15). The icon never changes with tier or
    rate, which are the fill's.
    *Amended 2026-10-27 (`alias` landed, `86ff8cc`): the answer asked for
-   the field as the alias bump.*
+   the field as the alias bump. Amended 2026-11-16 (the pin to the core's
+   `6afd6fb` and the icons' look pass): the roster gained `Backlash`, `Comparator`, `Fields`, `Fn`,
+   `LimitedDoubleIntegrator`, `Select` and `Sequence`, and `Switch`'s lever
+   turned to face its inputs, as `Select`'s does.*
    *Why:* six of the closed loop's blocks read "Junction" with only the
    signature's `typeof(+)` to tell them apart, the parsing the format
    exists to avoid. *Rejected:* a `display_name` trait on the library
