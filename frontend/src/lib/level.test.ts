@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { AssemblyNode, LeafNode } from "./descriptor";
+import type { AssemblyNode, PrimitiveNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { regionsOf } from "./regions";
 import { labelledPorts } from "./wires";
@@ -27,7 +27,7 @@ describe("the root level", () => {
     const m = fixtureModel("rates");
     expect(levelOf(m.tree!, m.resolution!, "").blocks.map((b) => b.id))
       .toEqual(["src", "fast", "slow", outPinId("inner"), outPinId("outer"), outPinId("slow")]);
-    expect(level("descent").blocks.map((b) => b.role)).toEqual(["in", "in", "leaf", "leaf", "leaf"]);
+    expect(level("descent").blocks.map((b) => b.role)).toEqual(["in", "in", "primitive", "primitive", "primitive"]);
   });
 
   it("flags the root's input pins, and no inner level's", () => {
@@ -39,7 +39,7 @@ describe("the root level", () => {
 
   it("gives a child its segment, display name, class, tier and face names", () => {
     const b = level("closed_loop", "sensing").blocks.find((x) => x.id === "sensing/altimeter")!;
-    expect(b).toMatchObject({ role: "leaf", path: "sensing/altimeter", segment: "altimeter", displayName: "SumJunction", tier: "continuous" });
+    expect(b).toMatchObject({ role: "primitive", path: "sensing/altimeter", segment: "altimeter", displayName: "SumJunction", tier: "continuous" });
     const g = level("containers").blocks.find((x) => x.id === "gains/a")!;
     expect(g).toMatchObject({ segment: "gains/a", inputs: ["e"], outputs: ["out"] });
     expect(level("closed_loop").blocks.find((x) => x.id === "sensing")).toMatchObject({ role: "assembly", inputs: ["h"], outputs: ["h_meas"] });
@@ -87,14 +87,14 @@ describe("every level", () => {
     }
   });
 
-  it("primitive: the leaf with a pin and a wire per face", () => {
+  it("primitive: the primitive with a pin and a wire per face", () => {
     const m = fixtureModel("primitive");
     const l = levelOf(m.tree!, m.resolution!, "");
     expect(l.blocks).toEqual([
       { id: inPinId("u"), role: "in", name: "u", rootInput: true },
       { id: inPinId("d"), role: "in", name: "d", rootInput: true },
       {
-        id: "", role: "leaf", path: "", segment: "", displayName: "Plant", tier: (m.tree!.root as LeafNode).tier,
+        id: "", role: "primitive", path: "", segment: "", displayName: "Plant", tier: (m.tree!.root as PrimitiveNode).tier,
         inputs: ["u", "d"], outputs: ["y", "power"],
       },
       { id: outPinId("y"), role: "out", name: "y" },
@@ -110,8 +110,8 @@ describe("every level", () => {
 
   it("refuses a path that is no level", () => {
     const m = fixtureModel("descent");
-    const leaf = m.structure!.nodes.find((n) => n.class === "leaf")!.path;
-    expect(() => levelOf(m.tree!, m.resolution!, leaf)).toThrow(/leaf/);
+    const primitive = m.structure!.nodes.find((n) => n.class === "primitive")!.path;
+    expect(() => levelOf(m.tree!, m.resolution!, primitive)).toThrow(/primitive/);
     expect(() => levelOf(m.tree!, m.resolution!, "nowhere")).toThrow(/no node/);
   });
 });

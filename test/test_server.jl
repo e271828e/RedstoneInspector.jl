@@ -71,7 +71,7 @@ end
 
 @testset "the live session" begin
     loop_build = build(loop("y"))
-    loop_deployment = Deployment(loop_build; h = 1//1000)
+    loop_deployment = Deployment(loop_build; Δt_frame = 1//1000)
     cycle_err = caught(loop("power"))
     structure_err = caught(loop("q"))
 

@@ -22,7 +22,7 @@ export interface OutPin {
 /** A child of the opened level; `role` is its class. */
 export interface ChildBlock {
   id: string;
-  role: "leaf" | "assembly";
+  role: "primitive" | "assembly";
   path: string;
   segment: string;
   displayName: string;
@@ -66,8 +66,8 @@ export function levelOf(tree: Tree, _res: Resolution, path: string): Level {
   if (!self) throw new Error(`no node at "${path}"`);
   const inPins = self.inputs.map((f): InPin => ({ id: inPinId(f.name), role: "in", name: f.name, rootInput: path === "" }));
   const outPins = self.outputs.map((f): OutPin => ({ id: outPinId(f.name), role: "out", name: f.name }));
-  if (self.class === "leaf") {
-    if (path !== "") throw new Error(`"${path}" is a leaf, not a level`);
+  if (self.class === "primitive") {
+    if (path !== "") throw new Error(`"${path}" is a primitive, not a level`);
     const wires = [
       ...self.inputs.map((f) => levelWire({ block: inPinId(f.name), port: f.name }, { block: path, port: f.name })),
       ...self.outputs.map((f) => levelWire({ block: path, port: f.name }, { block: outPinId(f.name), port: f.name })),
@@ -95,7 +95,7 @@ function childBlock(tree: Tree, path: string): ChildBlock {
   const n = tree.byPath.get(path)!;
   return {
     id: path, role: n.class, path, segment: tree.segment.get(path) ?? "", displayName: displayName(n),
-    tier: n.class === "leaf" ? n.tier : undefined,
+    tier: n.class === "primitive" ? n.tier : undefined,
     inputs: n.inputs.map((f) => f.name), outputs: n.outputs.map((f) => f.name),
   };
 }

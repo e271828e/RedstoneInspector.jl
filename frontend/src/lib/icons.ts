@@ -1,5 +1,5 @@
 // Library icons (visual_grammar.md answer 7): keyed on the alias, then the
-// type, for `Redstone.Blocks` types alone; a user type gets none. Pure: the
+// type, for `Redstone.Library` types alone; a user type gets none. Pure: the
 // canvas draws the text or its own `<symbol>` of the glyph's id.
 import type { Node } from "./descriptor";
 
@@ -12,7 +12,7 @@ export interface Icon {
   title: string;
 }
 
-const LIBRARY = "Redstone.Blocks.";
+const LIBRARY = "Redstone.Library.";
 
 /** The roster by key: a glyph's id, or a text icon's id and text. */
 const ROSTER: Record<string, [id: string, text?: string]> = {
@@ -69,7 +69,7 @@ export function iconOf(n: Node): Icon | undefined {
   if (!entry) return undefined;
   const [id, text] = entry;
   if (key === "Constant") {
-    if (n.class === "leaf" && n.outputs[0]?.kind.kind === "opaque") return { id: "constant-opaque", kind: "glyph", title: key };
+    if (n.class === "primitive" && n.outputs[0]?.kind.kind === "opaque") return { id: "constant-opaque", kind: "glyph", title: key };
     const value = constantText(n);
     return { id, kind: "text", text: value, title: `${key} ${value}` };
   }

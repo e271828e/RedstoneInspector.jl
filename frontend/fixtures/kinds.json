@@ -12,8 +12,8 @@
         {
           "path": "",
           "class": "assembly",
-          "type": "Redstone.Blocks.Group",
-          "signature": "Redstone.Blocks.Group{@NamedTuple{i::Redstone.Blocks.Constant{Int8}, r::Redstone.Blocks.Constant{Rational{Int64}}, v::Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}, mat::Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}, nt::Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}, fn::Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}, g::Main.Synthetic.GearMode, s::Main.Synthetic.PhaseSelector, p::Main.Synthetic.PhaseReader}, Tuple{Pair{String, String}}, Tuple{}, NTuple{9, Pair{String, String}}, @NamedTuple{}}",
+          "type": "Redstone.Library.Group",
+          "signature": "Redstone.Library.Group{@NamedTuple{i::Redstone.Library.Constant{Int8}, r::Redstone.Library.Constant{Rational{Int64}}, v::Redstone.Library.Constant{StaticArraysCore.SVector{2, Float64}}, mat::Redstone.Library.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}, nt::Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}, fn::Redstone.Library.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}, g::Main.Synthetic.GearMode, s::Main.Synthetic.PhaseSelector, p::Main.Synthetic.PhaseReader}, Tuple{Pair{String, String}}, Tuple{}, NTuple{9, Pair{String, String}}, @NamedTuple{}}",
           "inputs": [],
           "outputs": [
             {
@@ -169,15 +169,15 @@
           "path": "i",
           "field": "children",
           "key": "i",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{Int8}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{Int8}",
           "inputs": [],
           "outputs": [
             {
@@ -200,15 +200,15 @@
           "path": "r",
           "field": "children",
           "key": "r",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{Rational{Int64}}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{Rational{Int64}}",
           "inputs": [],
           "outputs": [
             {
@@ -231,15 +231,15 @@
           "path": "v",
           "field": "children",
           "key": "v",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{StaticArraysCore.SVector{2, Float64}}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{StaticArraysCore.SVector{2, Float64}}",
           "inputs": [],
           "outputs": [
             {
@@ -268,15 +268,15 @@
           "path": "mat",
           "field": "children",
           "key": "mat",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{StaticArraysCore.SMatrix{2, 2, Float64, 4}}",
           "inputs": [],
           "outputs": [
             {
@@ -306,15 +306,15 @@
           "path": "nt",
           "field": "children",
           "key": "nt",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{@NamedTuple{a::Float64, b::Float64}}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}",
           "inputs": [],
           "outputs": [
             {
@@ -345,15 +345,15 @@
           "path": "fn",
           "field": "children",
           "key": "fn",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{Main.Synthetic.var\"#scaled##0#scaled##1\"{Float64}}",
           "inputs": [],
           "outputs": [
             {
@@ -376,7 +376,7 @@
           "path": "g",
           "field": "children",
           "key": "g",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -414,7 +414,7 @@
           "path": "s",
           "field": "children",
           "key": "s",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
@@ -440,7 +440,7 @@
           "path": "p",
           "field": "children",
           "key": "p",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -477,49 +477,49 @@
       "scopes": [],
       "types": [
         {
-          "name": "Redstone.Blocks.Group",
-          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "name": "Redstone.Library.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2123
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3134
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2120
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3131
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2121
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3132
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2122
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3133
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2124
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3135
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Constant",
-          "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, bare, publishes `value` from [stage 1](@ref g-stage-function).\nThe [block](@ref g-block) is stateless, so discrete consumers read it as well.\n\nThe output is [pinned](@ref g-walked) at `V`, the type of `value`. A constant is\nnever seeded, so it carries zero partials under every `Dual`\n[activation](@ref g-activation). A consumer input declared plain `Float64`,\nwhich admits a value with or without partials, accepts it as a value that never\ncarries partials. The value is instance data, not an overridable default. A\nsource set from outside is a [root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
+          "name": "Redstone.Library.Constant",
+          "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, `y`, publishes `value` from [stage 1](@ref g-stage-function).\nThe [library component](@ref g-library-component) is stateless, so discrete\nconsumers read it as well.\n\nThe output is [pinned](@ref g-walked) at the parameter `V`, the type of `value`.\nIt carries zero partials under every `Dual` [activation](@ref g-activation). A\nconsumer input declared plain `Float64`, which admits a value with or without\npartials, accepts it as a value that never carries partials.\n\nThe value is a field, not an overridable default. A source set from outside is a\n[root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 193
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 351
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 192
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 350
             }
           ]
         },

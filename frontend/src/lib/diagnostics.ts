@@ -37,7 +37,7 @@ export interface Hop {
 const wireId = (level: string, to: Face) => portId(to.path === level ? outPinId(to.port) : to.path, "in", to.port);
 
 /**
- * A loop's terminal pairs mapped onto the declared wires between the two leaves: from each pair's consumer up
+ * A loop's terminal pairs mapped onto the declared wires between the two primitives: from each pair's consumer up
  * through `feeder` to its producer. A walk that ends anywhere else contributes nothing.
  */
 export function chainOf(model: Model, cycle: Cycle): Hop[] {

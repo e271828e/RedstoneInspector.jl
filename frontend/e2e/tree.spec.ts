@@ -41,7 +41,7 @@ test("closed_loop: seven rows with the root open; a click selects without openin
   await page.locator(readyLevel("sensing")).waitFor();
   await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
   await expect(row(page, "sensing/noise")).toHaveClass(/\bselected\b/);
-  await expect(pane(page)).toHaveAttribute("data-kind", "leaf");
+  await expect(pane(page)).toHaveAttribute("data-kind", "primitive");
 
   // a block click selects its row
   await page.keyboard.press("Backspace");
@@ -162,7 +162,7 @@ test("closed_loop: with the tree focused, j k l h walk, expand and collapse rows
   const child = (await paths())[i + 1];
   await expect(selectedRow).toHaveAttribute("data-path", child);
   await expect(levelPath(page)).toHaveAttribute("data-level-path", "sensing");
-  // h on a leaf steps to its parent's row; on an expanded row it collapses; then to the root's row
+  // h on a primitive steps to its parent's row; on an expanded row it collapses; then to the root's row
   await press(page, "h");
   await expect(selectedRow).toHaveAttribute("data-path", "sensing");
   await press(page, "h");

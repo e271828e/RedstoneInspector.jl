@@ -55,7 +55,7 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator(".path-line button.copy + span.level-mark")).toHaveCount(1);
     await expect(pane(page).locator("p.facts")).toHaveCount(0);
     await expectLabels(page, ["type", "class", "children", "wires"]);
-    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Blocks.Group");
+    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Library.Group");
     await expect(fact(page, "class")).toHaveText("assembly");
     await expect(fact(page, "children")).toHaveText("6");
     await expect(fact(page, "wires")).toHaveText("30");
@@ -87,14 +87,14 @@ test.describe("closed_loop", () => {
     await expect(pane(page)).toHaveAttribute("data-kind", "pin");
   });
 
-  test("plant: the leaf layout's header, facts without a rate row, closed docstring, parameters, locations, and faces with stages and links", async ({ page }) => {
+  test("plant: the primitive layout's header, facts without a rate row, closed docstring, parameters, locations, and faces with stages and links", async ({ page }) => {
     await page.locator('g.block[data-id="plant"]').click();
-    await expect(pane(page)).toHaveAttribute("data-kind", "leaf");
+    await expect(pane(page)).toHaveAttribute("data-kind", "primitive");
     await expect(pane(page)).toHaveAttribute("data-id", "plant");
     await expect(pane(page).locator("h2 .segment")).toHaveText("plant");
     await expect(pane(page).locator("h2 .name")).toHaveText("Longitudinal");
     await expect(pane(page).locator(".path")).toHaveText("plant");
-    // the labelled facts: a continuous leaf has no rate row
+    // the labelled facts: a continuous primitive has no rate row
     await expectLabels(page, ["type", "class", "member"]);
     await expect(fact(page, "class")).toHaveText("primitive, continuous");
     await expect(fact(page, "rate")).toHaveCount(0);
@@ -128,7 +128,7 @@ test.describe("closed_loop", () => {
     await expect(faceRow(page, "plant|out|h").locator('a.consumer[data-path="sensing/altimeter"][data-port="in1"]')).toHaveCount(1);
     await expect(faceRow(page, "plant|out|h").locator('a.consumer[data-path="lqr_controller/state_pack"][data-port="in5"]')).toHaveCount(1);
     await expect(faceRow(page, "plant|out|α").locator("a.consumer")).toHaveCount(0);
-    await shot(page, "closed_loop", "", "detail-leaf");
+    await shot(page, "closed_loop", "", "detail-primitive");
     await docstring.locator("summary").click();
     await expect(docstring).toHaveAttribute("open");
     await expect(docstring.locator("div.docstring")).toBeVisible();
@@ -158,8 +158,8 @@ test.describe("closed_loop", () => {
     await openPath(page, "sensing");
     await page.locator('g.block[data-id="sensing/altimeter"]').click();
     await expect(pane(page).locator("h2 .name")).toHaveText("SumJunction");
-    await expect(fact(page, "type").locator(".alias")).toHaveText("Redstone.Blocks.SumJunction");
-    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Blocks.Junction");
+    await expect(fact(page, "type").locator(".alias")).toHaveText("Redstone.Library.SumJunction");
+    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Library.Junction");
     const signature = pane(page).locator("details.signature");
     await expect(signature).not.toHaveAttribute("open");
     await expect(signature.locator("summary")).toHaveText("signature");
@@ -168,7 +168,7 @@ test.describe("closed_loop", () => {
       .map((s) => [...aside.querySelectorAll("*")].indexOf(aside.querySelector(s)!)));
     expect(order.every((i) => i >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    await expect(signature.locator("code")).toHaveText("Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}");
+    await expect(signature.locator("code")).toHaveText("Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}");
     await expect(faceRow(page, "sensing/altimeter|in|in1").locator('a.producer[data-path="plant"][data-port="h"]')).toHaveCount(1);
   });
 
@@ -195,7 +195,7 @@ test.describe("closed_loop", () => {
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
   });
 
-  test("pid_controller/q_ctl: a discrete leaf's rate row, its timing in the title", async ({ page }) => {
+  test("pid_controller/q_ctl: a discrete primitive's rate row, its timing in the title", async ({ page }) => {
     await openPath(page, "pid_controller");
     await page.locator('g.block[data-id="pid_controller/q_ctl"]').click();
     await expectLabels(page, ["type", "class", "rate", "member"]);
@@ -330,7 +330,7 @@ test("containers: the folder's keys select their nodes", async ({ page }) => {
   await page.locator('nav.tree .row[data-path="gains"]').click();
   await expect(pane(page).locator(".keys a")).toHaveText(["a", "b"]);
   await pane(page).locator('.keys a[data-path="gains/a"]').click();
-  await expect(pane(page)).toHaveAttribute("data-kind", "leaf");
+  await expect(pane(page)).toHaveAttribute("data-kind", "primitive");
   await expect(pane(page)).toHaveAttribute("data-id", "gains/a");
   await expect(pane(page).locator("details.signature")).toHaveCount(0);
   await expect(page.locator('nav.tree .row.selected[data-path="gains/a"]')).toHaveCount(1);
@@ -431,18 +431,18 @@ test("closed_loop: a location's file name stays on one line with its line number
   }
 });
 
-test("library: integrator's docstring rendered, the signature a code block, seven @ref links opening the core's docs in a new tab", async ({ page }) => {
+test("library: integrator's docstring rendered, the signature a code block, fourteen @ref links opening the core's docs in a new tab", async ({ page }) => {
   await drop(page, "library");
   await page.locator('g.block[data-id="integrator"]').click();
   const docstring = pane(page).locator("details.docstring");
   await docstring.locator("summary").click();
   await expect(docstring).toHaveAttribute("open");
   const body = docstring.locator("div.docstring");
-  await expect(body.locator('a[target="_blank"][rel="noopener"]')).toHaveCount(7);
-  await expect(body.locator("a")).toHaveCount(7);
-  await expect(body.locator(`a[href^="${DOCS_URL}glossary/#g-"]`)).toHaveCount(5);
-  await expect(body.locator('a[href$="api/#Redstone.Blocks.LimitedIntegrator"]')).toHaveCount(1);
-  await expect(body.locator("pre code").first()).toHaveText("Integrator(; x0 = 0.0) -> Integrator");
+  await expect(body.locator('a[target="_blank"][rel="noopener"]')).toHaveCount(14);
+  await expect(body.locator("a")).toHaveCount(14);
+  await expect(body.locator(`a[href^="${DOCS_URL}glossary/#g-"]`)).toHaveCount(11);
+  await expect(body.locator('a[href$="api/#Redstone.Library.LimitedIntegrator"]')).toHaveCount(1);
+  await expect(body.locator("pre code").first()).toHaveText("Integrator(; x0 = 0.0, reset::Bool = false) -> Integrator");
   await expect(body).not.toContainText("@ref");
 });
 

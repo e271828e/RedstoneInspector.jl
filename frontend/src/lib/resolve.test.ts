@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { AssemblyNode, LeafFace, LeafNode, StructureSection } from "./descriptor";
+import type { AssemblyNode, PrimitiveFace, PrimitiveNode, StructureSection } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { buildTree } from "./tree";
 import { buildResolution, faceInfo, route, terminalConsumers, terminalProducer, wireFaces, wireRoute, type Face, type Resolution, type Route } from "./resolve";
@@ -7,7 +7,7 @@ import { buildResolution, faceInfo, route, terminalConsumers, terminalProducer, 
 const res = (name: string): Resolution => fixtureModel(name).resolution!;
 const nodes = (r: Resolution) => [...r.tree.byPath.values()];
 const assemblies = (r: Resolution) => nodes(r).filter((n): n is AssemblyNode => n.class === "assembly");
-const leaves = (r: Resolution) => nodes(r).filter((n): n is LeafNode => n.class === "leaf");
+const primitives = (r: Resolution) => nodes(r).filter((n): n is PrimitiveNode => n.class === "primitive");
 const face = (path: string, side: "in" | "out", port: string): Face => ({ path, side, port });
 
 /** Tallies each face's terminal, by the kind of face and the kind of terminal. */
@@ -24,36 +24,36 @@ function tally(r: Resolution): Record<string, number> {
     for (const f of a.inputs) a.path === "" ? add("root-input-face") : resolve(face(a.path, "in", f.name), "asm-in");
     for (const f of a.outputs) resolve(face(a.path, "out", f.name), "asm-out");
   }
-  for (const l of leaves(r)) for (const f of l.inputs) resolve(face(l.path, "in", f.name), "leaf-in");
+  for (const l of primitives(r)) for (const f of l.inputs) resolve(face(l.path, "in", f.name), "primitive-in");
   return { ...t, deepest };
 }
 
 describe("the resolution", () => {
-  it("closed_loop: 42 assembly faces and every leaf input resolve", () => {
+  it("closed_loop: 42 assembly faces and every primitive input resolve", () => {
     expect(tally(res("closed_loop"))).toEqual({
       "root-input-face": 3,
-      "asm-out->leaf-output": 11,
-      "asm-in->leaf-output": 21,
+      "asm-out->primitive-output": 11,
+      "asm-in->primitive-output": 21,
       "asm-in->root-input": 7,
-      "leaf-in->leaf-output": 44,
-      "leaf-in->root-input": 11,
+      "primitive-in->primitive-output": 44,
+      "primitive-in->root-input": 11,
       deepest: 3,
     });
   });
 
   it("rates: 7 assembly output faces resolve, the deepest in 4 hops", () => {
     const t = tally(res("rates"));
-    expect(t["asm-out->leaf-output"]).toBe(7);
+    expect(t["asm-out->primitive-output"]).toBe(7);
     expect(t.deepest).toBe(4);
     const p = terminalProducer(res("rates"), face("", "out", "outer"))!;
     expect(p.chain).toEqual([face("", "out", "outer"), face("fast", "out", "outer"), face("fast/outer", "out", "out"), face("fast/outer/hold", "out", "out")]);
   });
 
-  it("large: 313 leaf inputs to leaf outputs, 18 to root inputs, 12 assembly outputs", () => {
+  it("large: 313 primitive inputs to primitive outputs, 18 to root inputs, 12 assembly outputs", () => {
     const t = tally(res("large"));
-    expect(t["leaf-in->leaf-output"]).toBe(313);
-    expect(t["leaf-in->root-input"]).toBe(18);
-    expect(t["asm-out->leaf-output"]).toBe(12);
+    expect(t["primitive-in->primitive-output"]).toBe(313);
+    expect(t["primitive-in->root-input"]).toBe(18);
+    expect(t["asm-out->primitive-output"]).toBe(12);
     expect(Object.keys(t).filter((k) => k.endsWith("none"))).toEqual([]);
   });
 
@@ -66,7 +66,7 @@ describe("the resolution", () => {
 
   it("keeps an assembly's input and output faces of one name apart", () => {
     // A's input face x and output face x share a name; only the side tells them apart.
-    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
     const structure: StructureSection = {
       nodes: [
@@ -74,7 +74,7 @@ describe("the resolution", () => {
           wires: [{ from: { path: "", port: "x" }, to: { path: "A", port: "x" } }] },
         { ...id, path: "A", field: "A", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "x" }],
           wires: [{ from: { path: "A", port: "x" }, to: { path: "A/L", port: "e" } }, { from: { path: "A/L", port: "o" }, to: { path: "A", port: "x" } }] },
-        { ...id, path: "A/L", field: "L", class: "leaf", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [f("o")] },
+        { ...id, path: "A/L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [f("o")] },
       ],
       root_inputs: [f("x")], anchors: [], scopes: [], types: [],
     };
@@ -87,29 +87,29 @@ describe("the resolution", () => {
 
 describe("faceInfo", () => {
   const r = res("closed_loop");
-  const altimeter = r.tree.byPath.get("sensing/altimeter") as LeafNode;
-  it("types an assembly output face from the leaf output behind it", () => {
-    const leafFace = altimeter.outputs.find((f) => f.name === "y")!;
-    expect(faceInfo(r, "sensing", "out", "h_meas")).toEqual(leafFace);
-    expect(leafFace).toMatchObject({ type: "Float64", kind: { kind: "float" } });
+  const altimeter = r.tree.byPath.get("sensing/altimeter") as PrimitiveNode;
+  it("types an assembly output face from the primitive output behind it", () => {
+    const primitiveFace = altimeter.outputs.find((f) => f.name === "y")!;
+    expect(faceInfo(r, "sensing", "out", "h_meas")).toEqual(primitiveFace);
+    expect(primitiveFace).toMatchObject({ type: "Float64", kind: { kind: "float" } });
   });
   it("types an assembly input face from the producer feeding it", () => {
-    const plant = r.tree.byPath.get("plant") as LeafNode;
+    const plant = r.tree.byPath.get("plant") as PrimitiveNode;
     expect(faceInfo(r, "sensing", "in", "h")).toEqual(plant.outputs.find((f) => f.name === "h"));
   });
   it("types a root input from root_inputs", () => {
     expect(faceInfo(r, "", "in", "mode")).toEqual(r.structure.root_inputs[2]);
     expect(faceInfo(r, "", "in", "mode")).toMatchObject({ name: "mode", kind: { kind: "boolean" } });
   });
-  it("types a leaf's face from its own entry", () => {
+  it("types a primitive's face from its own entry", () => {
     expect(faceInfo(r, "sensing/altimeter", "in", "in1")).toEqual(altimeter.inputs.find((f) => f.name === "in1"));
   });
 });
 
-/** The routes of every leaf output and root input. */
+/** The routes of every primitive output and root input. */
 function producerRoutes(r: Resolution): Route[] {
   const starts = [
-    ...leaves(r).flatMap((l) => l.outputs.map((f) => face(l.path, "out", f.name))),
+    ...primitives(r).flatMap((l) => l.outputs.map((f) => face(l.path, "out", f.name))),
     ...r.structure.root_inputs.map((f) => face("", "in", f.name)),
   ];
   return starts.map((f) => route(r, f.path, f.side, f.port)!);
@@ -140,7 +140,7 @@ describe("routes", () => {
     expect(rt.levels).toEqual(new Set(["", "sensing", "lqr_controller"]));
   });
 
-  it("containers: u reaches one consumer, the root output's route ends at one leaf output", () => {
+  it("containers: u reaches one consumer, the root output's route ends at one primitive output", () => {
     const r = res("containers");
     expect(terminalConsumers(r, face("", "in", "u"))).toEqual([face("gains/a", "in", "e")]);
     const rt = route(r, "", "out", "y")!;
@@ -153,7 +153,7 @@ describe("routes", () => {
     const outs = (r.tree.root as AssemblyNode).outputs;
     expect(rootInputConsumers(r)).toBe(18);
     expect(outs).toHaveLength(2);
-    for (const f of outs) expect(terminalProducer(r, face("", "out", f.name))?.end).toBe("leaf-output");
+    for (const f of outs) expect(terminalProducer(r, face("", "out", f.name))?.end).toBe("primitive-output");
     expect(rootInputConsumers(r) + outs.length).toBe(20);
   });
 
@@ -161,7 +161,7 @@ describe("routes", () => {
     const r = res("rates");
     const outs = (r.tree.root as AssemblyNode).outputs;
     expect(r.structure.root_inputs).toHaveLength(0);
-    expect(outs.map((f) => route(r, "", "out", f.name)?.end)).toEqual(["leaf-output", "leaf-output", "leaf-output"]);
+    expect(outs.map((f) => route(r, "", "out", f.name)?.end)).toEqual(["primitive-output", "primitive-output", "primitive-output"]);
     const rt = route(r, "", "out", "outer")!;
     expect(rt.consumers).toEqual([face("", "out", "outer")]);
     expect(rt.levels).toEqual(new Set(["fast/outer", "fast", ""]));

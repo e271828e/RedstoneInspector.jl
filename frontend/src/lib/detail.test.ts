@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { KindMarker, LeafFace, StructureSection } from "./descriptor";
+import type { KindMarker, PrimitiveFace, StructureSection } from "./descriptor";
 import {
   classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
   ratePhrase, timingPhrase, wireFacts,
@@ -32,7 +32,7 @@ describe("kindPhrase", () => {
   it("kinds' eleven faces", () => {
     const m = fixtureModel("kinds");
     const phrases = Object.fromEntries([...m.tree!.byPath.values()].flatMap((n) =>
-      n.class === "leaf" ? [...n.inputs, ...n.outputs].map((f) => [`${n.path}.${f.name}`, kindPhrase(f.kind)]) : []));
+      n.class === "primitive" ? [...n.inputs, ...n.outputs].map((f) => [`${n.path}.${f.name}`, kindPhrase(f.kind)]) : []));
     expect(phrases).toEqual({
       "i.y": "integer", "r.y": "number", "v.y": "vector 2 of float", "mat.y": "array 2×2 of float",
       "nt.y": "struct {a, b}", "fn.y": "opaque", "g.gear": "enum {up, down}", "g.y": "float",
@@ -69,19 +69,19 @@ describe("ratePhrase", () => {
   it("a non-zero tau joins the anchor's T", () => {
     expect(ratePhrase({ anchor: 1, m: 1, c: 0 }, [{ ...q, tau: { num: 1, den: 100 } }])).toBe("every tick of q_ctl, 1/50 s, tau 1/100 s");
   });
-  it("the fixtures: rates' hold every 2nd tick of fast, closed_loop's q_ctl, a discrete leaf at anchor 0", () => {
+  it("the fixtures: rates' hold every 2nd tick of fast, closed_loop's q_ctl, a discrete primitive at anchor 0", () => {
     expect(nodeFacts(fixtureModel("rates"), "fast/outer/hold").rate?.phrase).toBe("every 2nd tick of fast, 1/50 s");
     const ctl = nodeFacts(cl, "pid_controller/q_ctl");
     expect(ctl.rate).toEqual({ phrase: "every tick of q_ctl, 1/50 s", title: "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0" });
     const kinds = fixtureModel("kinds");
-    const discrete = [...kinds.tree!.byPath.values()].find((n) => n.class === "leaf" && n.tier === "discrete")!;
+    const discrete = [...kinds.tree!.byPath.values()].find((n) => n.class === "primitive" && n.tier === "discrete")!;
     expect(nodeFacts(kinds, discrete.path).rate?.phrase).toBe("every base tick");
   });
-  it("a continuous leaf has no rate; the class phrase names the tier", () => {
+  it("a continuous primitive has no rate; the class phrase names the tier", () => {
     const p = nodeFacts(cl, "plant");
     expect(p.rate).toBeUndefined();
     expect(classPhrase(p.kind, p.tier)).toBe("primitive, continuous");
-    expect(classPhrase("leaf", "discrete")).toBe("primitive, discrete");
+    expect(classPhrase("primitive", "discrete")).toBe("primitive, discrete");
     expect(classPhrase("assembly")).toBe("assembly");
   });
   it("the member row names the container's kind, the field alone for neither form", () => {
@@ -109,17 +109,17 @@ describe("closed_loop's elements", () => {
     const { kind, scopes, ...rest } = l;
     expect([kind, l.wires, scopes]).toEqual(["level", 30, []]);
     expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined });
-    expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Blocks.Group"]);
+    expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Library.Group"]);
     expect(by(l.inputs, "h_ref").consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
     const pid = levelFacts(cl, "pid_controller") as LevelFacts;
     expect([pid.kind, pid.segment, pid.membership?.field]).toEqual(["level", "pid_controller", "children"]);
     expect(by(pid.inputs, "h_ref").producer).toEqual(face("", "in", "h_ref"));
   });
 
-  it("plant's facts as a leaf: tier, membership, parameters, locations, each input's producer, each output's stage and consumers", () => {
+  it("plant's facts as a primitive: tier, membership, parameters, locations, each input's producer, each output's stage and consumers", () => {
     const p = nodeFacts(cl, "plant");
     expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.rate, p.alias, p.type])
-      .toEqual(["leaf", "plant", "Longitudinal", "plant", "continuous", undefined, undefined, "RedstoneExamples.Longitudinal"]);
+      .toEqual(["primitive", "plant", "Longitudinal", "plant", "continuous", undefined, undefined, "RedstoneExamples.Longitudinal"]);
     expect(p.membership).toEqual({ how: "transparent", field: "children", key: "plant" });
     expect([p.parameters.length, p.locations.length, !!p.docstring]).toEqual([14, 3, true]);
     expect(p.inputs.map((f) => [f.name, f.type, f.phrase, f.pinned])).toEqual([["δe", "Float64", "float", false], ["δt", "Float64", "float", false]]);
@@ -135,7 +135,7 @@ describe("closed_loop's elements", () => {
 
   it("sensing/altimeter: the alias against the type", () => {
     const a = nodeFacts(cl, "sensing/altimeter");
-    expect([a.alias, a.type, a.displayName]).toEqual(["Redstone.Blocks.SumJunction", "Redstone.Blocks.Junction", "SumJunction"]);
+    expect([a.alias, a.type, a.displayName]).toEqual(["Redstone.Library.SumJunction", "Redstone.Library.Junction", "SumJunction"]);
     expect(by(a.inputs, "in1").producer).toEqual(face("plant", "out", "h"));
     expect(by(a.outputs, "y").stage).toBe(2);
   });
@@ -156,7 +156,7 @@ describe("closed_loop's elements", () => {
     expect([w.type, w.phrase, w.level]).toEqual(["Float64", "float", ""]);
   });
 
-  it("a wire into a leaf names the leaf input as its terminal consumer", () => {
+  it("a wire into a primitive names the primitive input as its terminal consumer", () => {
     const w = wireFacts(cl, "sensing", "sensing/altimeter|in|in1")!;
     expect(w.from).toEqual({ path: "sensing", port: "h" });
     expect(w.consumers).toEqual([face("sensing/altimeter", "in", "in1")]);
@@ -194,14 +194,14 @@ describe("closed_loop's elements", () => {
     expect(pinned).toEqual([true, true, true, true, true]);
   });
 
-  it("a leaf's input port names its producer", () => {
+  it("a primitive's input port names its producer", () => {
     const q = portFacts(cl, "sensing", "sensing/altimeter|in|in1")!;
     expect([q.face, q.producer, q.consumers]).toEqual([face("sensing/altimeter", "in", "in1"), face("plant", "out", "h"), undefined]);
   });
 
   it("detailOf dispatches on the selection", () => {
     expect(detailOf(cl, "", undefined)?.kind).toBe("level");
-    expect(detailOf(cl, "", { level: "", target: { kind: "block", id: "plant" } })?.kind).toBe("leaf");
+    expect(detailOf(cl, "", { level: "", target: { kind: "block", id: "plant" } })?.kind).toBe("primitive");
     expect(detailOf(cl, "", { level: "", target: { kind: "block", id: "sensing" } })?.kind).toBe("assembly");
     expect(detailOf(cl, "", { level: "", target: { kind: "block", id: "⟨in⟩mode" } })?.kind).toBe("pin");
     expect(detailOf(cl, "", { level: "", target: { kind: "wire", id: "sensing|in|h" } })?.kind).toBe("wire");
@@ -238,13 +238,13 @@ describe("other fixtures", () => {
   });
 
   it("an assembly's facts count its own level's wires, open or closed", () => {
-    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [],
           wires: [{ from: { path: "", port: "x" }, to: { path: "L", port: "e" } }] },
-        { ...id, path: "L", field: "L", class: "leaf", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
+        { ...id, path: "L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
       ],
       root_inputs: [f("x")], anchors: [], scopes: [], types: [],
     };
@@ -258,8 +258,8 @@ describe("other fixtures", () => {
     expect([nodeFacts(cl, "plant").children, nodeFacts(cl, "plant").wires]).toEqual([undefined, undefined]);
   });
 
-  it("a primitive root's level is its leaf, its segment the label", () => {
+  it("a primitive root's level is the root itself, its segment the label", () => {
     const l = levelFacts(fixtureModel("primitive"), "") as NodeFacts;
-    expect([l.kind, l.segment, l.displayName]).toEqual(["leaf", "primitive", "Plant"]);
+    expect([l.kind, l.segment, l.displayName]).toEqual(["primitive", "primitive", "Plant"]);
   });
 });

@@ -55,7 +55,7 @@ end
 mkpath(FIXTURE_DIR)
 mkpath(SCHEMA_DIR)
 
-sim = Simulation(aircraft(); h = 1//100)
+sim = Simulation(aircraft(); Δt_frame = 1//100)
 report = trim!(sim, level_flight(); baseline = set(u = (δe = 0.0, δt = 0.5)))
 gains = lqr_gains(linearize(sim, longitudinal_taps()))
 closed = closed_loop(report.solution, gains)
@@ -63,7 +63,7 @@ closed = closed_loop(report.solution, gains)
 write_fixture("aircraft", aircraft(); name = nothing)
 write_fixture("descent", descent())
 write_fixture("closed_loop", closed)
-write_fixture("closed_loop_deployment", Deployment(build(closed); h = 1//100))
+write_fixture("closed_loop_deployment", Deployment(build(closed); Δt_frame = 1//100))
 
 for base_name in ("large", "containers", "primitive", "kinds", "rates", "library", "warning")
     write_fixture(base_name, getfield(Synthetic, Symbol(base_name))())

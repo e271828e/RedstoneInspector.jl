@@ -66,7 +66,7 @@ test("closed_loop: h listed, walked and picked; the markers; type:, path:, face:
   await page.locator(readyLevel("selection")).waitFor();
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "selection");
   await expect(page.locator('g.block.selected[data-id="selection/select_δe"]')).toHaveCount(1);
-  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "leaf");
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "primitive");
   expect(await isFocused(page, ".viewport")).toBe(true);
   await expect(page.locator(".results")).toHaveCount(0);
   await expect(page.locator('nav.tree .row.expanded[data-path="selection"]')).toHaveCount(1);
@@ -132,7 +132,7 @@ test("closed_loop: a node row picked by a click selects as a tree click does", a
   await expect(page.locator('g.block.search-hit[data-id="plant"]')).toHaveCount(1);
   await page.locator('.results .hit[data-path="plant"]').click();
   await expect(page.locator('g.block.selected[data-id="plant"]')).toHaveCount(1);
-  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "leaf");
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "primitive");
   // the selected hit's halo is solid
   await expect(page.locator('g.block[data-id="plant"] > .halo.dashed')).toHaveCount(0);
 });

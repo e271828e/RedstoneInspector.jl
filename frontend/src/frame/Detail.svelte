@@ -120,7 +120,7 @@
       <code class="type">{f.type}</code>{#if f.alias}<span class="aside">alias</span><code class="alias">{f.alias}</code>{/if}
     </dd>
     <dt title={FACT_TITLES.class}>class</dt>
-    <dd data-fact="class">{classPhrase(f.kind === "leaf" ? "leaf" : "assembly", f.tier)}</dd>
+    <dd data-fact="class">{classPhrase(f.kind === "primitive" ? "primitive" : "assembly", f.tier)}</dd>
     {#if f.rate}
       <dt title={FACT_TITLES.rate}>rate</dt>
       <dd data-fact="rate" title={f.rate.title}>{f.rate.phrase}</dd>
@@ -175,7 +175,7 @@
     <table class="parameters"><tbody>{#each f.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
   {/if}
   {#if f.inputs.length + f.outputs.length}<h3>Faces</h3>{/if}
-  {@render faces(f.inputs, f.outputs, f.kind === "leaf", true)}
+  {@render faces(f.inputs, f.outputs, f.kind === "primitive", true)}
 {/snippet}
 
 {#if !facts}

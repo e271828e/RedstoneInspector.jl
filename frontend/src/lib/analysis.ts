@@ -9,7 +9,7 @@ import type { Face } from "./resolve";
 import { inPinId } from "./level";
 import { stepsOf, tripleKey, tripleText, type Triple } from "./rates";
 
-/** A feedthrough edge under its consumer's row: a stage-2 leaf output into a leaf with a stage 2, presumed. */
+/** A feedthrough edge under its consumer's row: a stage-2 primitive output into a primitive with a stage 2, presumed. */
 export interface EdgeRow {
   kind: "edge";
   from: Face;
@@ -46,7 +46,7 @@ export interface RootInputRow {
   name: string;
   type: string;
   phrase: string;
-  /** The terminal consumers: leaf inputs and root outputs; none on a primitive root, whose inputs are its leaf's. */
+  /** The terminal consumers: primitive inputs and root outputs; none on a primitive root, whose inputs are its primitive's. */
   consumers: Face[];
 }
 /** The base grid's row, anchor 0, which declares nowhere and whose `T` is the deployment's `Δt`. */
@@ -135,7 +135,7 @@ export function orderBadge(model: Model, path: string): string | undefined {
   const found: number[] = [];
   const walk = (p: string) => {
     const n = tree.byPath.get(p);
-    if (n?.class === "leaf") {
+    if (n?.class === "primitive") {
       const k = pos.get(p);
       if (k !== undefined) found.push(k);
     } else for (const c of tree.children.get(p) ?? []) walk(c);
@@ -183,7 +183,7 @@ function periodText(model: Model, t: Triple): string {
 }
 
 /**
- * Every discrete leaf in walk order with its triple, period and palette step; with `byPeriod` in the palette's
+ * Every discrete primitive in walk order with its triple, period and palette step; with `byPeriod` in the palette's
  * order of their triples (`tripleOrder`: anchor 0 first, then period ascending), equal triples in walk order.
  */
 export function componentRows(model: Model, byPeriod = false): ComponentRow[] {
@@ -191,7 +191,7 @@ export function componentRows(model: Model, byPeriod = false): ComponentRow[] {
   if (!s) return [];
   const steps = stepsOf(model);
   const rows = s.nodes.flatMap((n): ComponentRow[] => {
-    if (n.class !== "leaf" || n.tier !== "discrete") return [];
+    if (n.class !== "primitive" || n.tier !== "discrete") return [];
     const triple: Triple = [n.timing.anchor, n.timing.m, n.timing.c];
     return [{ kind: "component", path: n.path, triple, text: tripleText(model, triple), period: periodText(model, triple), step: steps.get(tripleKey(triple))! }];
   });
@@ -211,7 +211,7 @@ const nodeSelection = (model: Model, path: string): Selection | undefined =>
   model.tree?.byPath.has(path) ? { level: model.tree.parent.get(path) ?? "", target: { kind: "block", id: path } } : undefined;
 
 /**
- * What a row's click selects: an order or component row its leaf, in either group, an edge row its consumer's input port, a root
+ * What a row's click selects: an order or component row its primitive, in either group, an edge row its consumer's input port, a root
  * input its root tag, an anchor row its declaring scope's node and a scope
  * row its assembly; nothing for the base grid's row and a root scope.
  */

@@ -123,7 +123,7 @@
     const out = new Map<string, string>();
     if (!order || !shown) return out;
     for (const b of shown.level.blocks) {
-      if (b.role !== "leaf" && b.role !== "assembly") continue;
+      if (b.role !== "primitive" && b.role !== "assembly") continue;
       const text = orderBadge(model, b.path);
       if (text !== undefined) out.set(b.id, text);
     }
@@ -452,7 +452,7 @@
   }
 
   // Drawing.
-  const isStage1 = (b: ChildBlock, name: string) => b.role === "leaf" && !!stage1.get(b.path)?.has(name);
+  const isStage1 = (b: ChildBlock, name: string) => b.role === "primitive" && !!stage1.get(b.path)?.has(name);
   const tierColors = (b: ChildBlock) =>
     b.role === "assembly" ? palette.assembly : b.tier === "discrete" ? palette.discrete : palette.continuous;
   /** A child's colors in the mode, and in rate mode its step: a palette step's, a colored extra's, the shared neutral past them, the assembly gray for a mixed assembly, or the continuous pair with no triple. */
@@ -464,7 +464,7 @@
     if (step === undefined) return { c: palette.continuous };
     return { c: stepPair(step), step };
   }
-  /** Rate mode's badge: the legend number of an extra, the clock count of an assembly with a discrete leaf beneath, joined when both. */
+  /** Rate mode's badge: the legend number of an extra, the clock count of an assembly with a discrete primitive beneath, joined when both. */
   function badgeOf(b: ChildBlock, step: number | undefined): { text: string; title: string } | undefined {
     if (mode !== "rate") return undefined;
     const text: string[] = [], title: string[] = [];
@@ -783,7 +783,7 @@
                 {@const w = pillWidth(text)}
                 {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
                 <g class="order-badge" data-id={b.id}>
-                  <title>{b.role === "leaf" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
+                  <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
                   <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
                   <text class="order" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{text}</text>
                 </g>

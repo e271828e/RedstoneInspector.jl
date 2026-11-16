@@ -11,7 +11,7 @@
       "nodes": [
         {
           "path": "",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,

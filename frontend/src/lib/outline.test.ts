@@ -76,7 +76,7 @@ describe("depth and ancestors", () => {
     expect(ancestors(tree, "")).toEqual([]);
   });
 
-  it("closed_loop: assembly rows expand, leaf rows do not", () => {
+  it("closed_loop: assembly rows expand, primitive rows do not", () => {
     const { all } = rowsOf("closed_loop");
     for (const r of all) expect(r.expandable).toBe(r.class === "assembly");
   });
@@ -85,7 +85,7 @@ describe("depth and ancestors", () => {
 describe("the root row", () => {
   it("primitive is one row labelled primitive", () => {
     const { all } = rowsOf("primitive");
-    expect(all.map((r) => [r.path, r.label, r.class, r.expandable])).toEqual([["", "primitive", "leaf", false]]);
+    expect(all.map((r) => [r.path, r.label, r.class, r.expandable])).toEqual([["", "primitive", "primitive", false]]);
   });
 
   it("aircraft's root row reads the loader's label", () => {
@@ -110,14 +110,14 @@ describe("treeStep, the tree's h j k l", () => {
     expect(treeStep(rows, "", "k", new Set([""]))).toBeUndefined();
     expect(treeStep(rows, rows.at(-1)!.path, "j", new Set([""]))).toBeUndefined();
   });
-  it("l expands a collapsed row, then steps into its first child; on a leaf it does nothing", () => {
+  it("l expands a collapsed row, then steps into its first child; on a primitive it does nothing", () => {
     const e = new Set([""]);
     expect(treeStep(at(e), "sensing", "l", e)).toEqual({ toggle: "sensing" });
     const e2 = new Set(["", "sensing"]);
     expect(path(treeStep(at(e2), "sensing", "l", e2))).toBe(tree.children.get("sensing")![0]);
     expect(treeStep(at(e), "plant", "l", e)).toBeUndefined();
   });
-  it("h collapses an expanded row, steps from a collapsed row or a leaf to its parent's row; the root has none", () => {
+  it("h collapses an expanded row, steps from a collapsed row or a primitive to its parent's row; the root has none", () => {
     const e = new Set(["", "sensing"]);
     expect(treeStep(at(e), "sensing", "h", e)).toEqual({ toggle: "sensing" });
     expect(path(treeStep(at(e), "sensing/noise", "h", e))).toBe("sensing");

@@ -332,9 +332,8 @@ test("large: the tree's scroll and the drawer's period sort survive the help pag
   await expect(sort).toHaveAttribute("aria-pressed", "true");
 });
 
-/** "block" or "leaf" as a reader's word, after the descriptor's data is struck out: a qualified name naming the core's module, a source file. */
+/** "block" or "leaf" as a reader's word. */
 const RETIRED = /\b(blocks?|leaf|leaves)\b/i;
-const strip = (s: string) => s.replace(/[\w.]*\bBlocks\.[\w.{}]*/g, "").replace(/\S*\.jl\b(:\d+)?/g, "");
 
 /** Every text a reader sees on the page: text content and the title, aria-label and placeholder attributes. */
 const readerTexts = (page: Page) => page.evaluate(() => {
@@ -362,7 +361,7 @@ test("closed_loop: no text a reader sees says block or leaf, over each drawer ta
     seen.push(...await readerTexts(page));
   }
   await page.locator('g.block[data-id="plant"]').click();
-  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "leaf");
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "primitive");
   seen.push(...await readerTexts(page));
   await openPath(page, "pid_controller");
   await page.locator('g.block[data-id="pid_controller/h_ctl"]').click();
@@ -371,7 +370,7 @@ test("closed_loop: no text a reader sees says block or leaf, over each drawer ta
   await expect(help(page)).toHaveCount(1);
   seen.push(...await readerTexts(page));
   expect(seen.length).toBeGreaterThan(100);
-  expect(seen.filter((t) => RETIRED.test(strip(t)))).toEqual([]);
+  expect(seen.filter((t) => RETIRED.test(t))).toEqual([]);
 });
 
 test("closed_loop: on the help page j and k scroll it by the step, down and back", async ({ page }) => {

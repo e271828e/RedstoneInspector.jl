@@ -102,7 +102,7 @@
           "path": "gains/a",
           "field": "gains",
           "key": "a",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -142,7 +142,7 @@
           "path": "gains/b",
           "field": "gains",
           "key": "b",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -182,7 +182,7 @@
           "path": "pair/1",
           "field": "pair",
           "key": "1",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -222,7 +222,7 @@
           "path": "s1",
           "field": "stages",
           "key": "s1",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -262,7 +262,7 @@
           "path": "s2",
           "field": "stages",
           "key": "s2",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -301,7 +301,7 @@
         {
           "path": "scale",
           "field": "scale",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,

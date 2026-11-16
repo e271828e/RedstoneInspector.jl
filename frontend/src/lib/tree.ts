@@ -37,7 +37,7 @@ export interface Tree {
   byPath: Map<string, Node>;
   /** Every non-root node's parent path. */
   parent: Map<string, string>;
-  /** Every node's children paths in walk order, empty for a leaf. */
+  /** Every node's children paths in walk order, empty for a primitive. */
   children: Map<string, string[]>;
   segment: Map<string, string>;
   membership: Map<string, Membership | undefined>;

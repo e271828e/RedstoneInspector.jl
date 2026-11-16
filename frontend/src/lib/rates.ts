@@ -12,37 +12,37 @@ export const tripleKey = (t: Triple): string => t.join(",");
 export const STEPS = 8;
 
 const triple = (t: { anchor: number; m: number; c: number }): Triple => [t.anchor, t.m, t.c];
-const isDiscreteLeaf = (n: Node) => n.class === "leaf" && n.tier === "discrete";
+const isDiscretePrimitive = (n: Node) => n.class === "primitive" && n.tier === "discrete";
 
-/** The timing triples of the discrete leaves beneath an assembly, in walk order, repeats kept. */
-function leafTriples(model: Model, path: string): Triple[] {
+/** The timing triples of the discrete primitives beneath an assembly, in walk order, repeats kept. */
+function primitiveTriples(model: Model, path: string): Triple[] {
   const tree = model.tree!;
   const out: Triple[] = [];
   for (const c of tree.children.get(path) ?? []) {
     const n = tree.byPath.get(c)!;
-    if (n.class === "leaf") {
-      if (isDiscreteLeaf(n)) out.push(triple(n.timing));
-    } else out.push(...leafTriples(model, c));
+    if (n.class === "primitive") {
+      if (isDiscretePrimitive(n)) out.push(triple(n.timing));
+    } else out.push(...primitiveTriples(model, c));
   }
   return out;
 }
 
 /**
- * A block's triple in rate mode (visual_grammar.md answer 6, amended 2026-11-02): a discrete leaf's own timing; a
- * closed assembly's the one triple its discrete leaves share, since an assembly ticks on nothing itself and its
- * `scopes` row, a frame for its `Relative` children, plays no part; `undefined` for a continuous leaf and an
- * assembly with no discrete leaf, which take the continuous color, and for a mixed assembly, which takes the
+ * A block's triple in rate mode (visual_grammar.md answer 6, amended 2026-11-02): a discrete primitive's own timing; a
+ * closed assembly's the one triple its discrete primitives share, since an assembly ticks on nothing itself and its
+ * `scopes` row, a frame for its `Relative` children, plays no part; `undefined` for a continuous primitive and an
+ * assembly with no discrete primitive, which take the continuous color, and for a mixed assembly, which takes the
  * assembly gray (`mixed`).
  */
 export function blockTriple(model: Model, path: string): Triple | undefined {
   const n = model.tree!.byPath.get(path);
   if (!n) return undefined;
-  if (n.class === "leaf") return isDiscreteLeaf(n) ? triple(n.timing) : undefined;
+  if (n.class === "primitive") return isDiscretePrimitive(n) ? triple(n.timing) : undefined;
   const clocks = clocksBeneath(model, path);
   return clocks.length === 1 ? clocks[0] : undefined;
 }
 
-/** Whether an assembly's discrete leaves tick on several triples, the assembly gray's case. */
+/** Whether an assembly's discrete primitives tick on several triples, the assembly gray's case. */
 export const mixed = (model: Model, path: string): boolean => clocksBeneath(model, path).length > 1;
 
 /** A triple's period in seconds, the anchor's `T` times `m`; the base grid before every anchor. */
@@ -53,13 +53,13 @@ function period(model: Model, t: Triple): number {
 }
 
 /**
- * Every triple a drawn block takes, the root's leaf included when the root is primitive, in palette order: anchor 0
+ * Every triple a drawn block takes, the root included when it is primitive, in palette order: anchor 0
  * first, then by period ascending, ties by anchor index, then `m`, then `c`. A triple's step is its index.
  */
 export function tripleOrder(model: Model): Triple[] {
   const seen = new Map<string, Triple>();
   for (const n of model.structure!.nodes) {
-    if (n.path === "" && n.class !== "leaf") continue;
+    if (n.path === "" && n.class !== "primitive") continue;
     const t = blockTriple(model, n.path);
     if (t) seen.set(tripleKey(t), t);
   }
@@ -96,10 +96,10 @@ export interface LegendLine {
   title: string;
 }
 
-/** The blocks a level draws that can take a color: its children, or a primitive root's leaf. */
+/** The blocks a level draws that can take a color: its children, or a primitive root itself. */
 function drawnPaths(model: Model, level: string): string[] {
   const n = model.tree!.byPath.get(level)!;
-  return n.class === "leaf" ? [level] : model.tree!.children.get(level)!;
+  return n.class === "primitive" ? [level] : model.tree!.children.get(level)!;
 }
 
 /**
@@ -127,12 +127,12 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
   return lines;
 }
 
-/** The distinct triples of the discrete leaves under an assembly, in walk order. */
+/** The distinct triples of the discrete primitives under an assembly, in walk order. */
 export function clocksBeneath(model: Model, path: string): Triple[] {
-  return [...new Map(leafTriples(model, path).map((t) => [tripleKey(t), t])).values()];
+  return [...new Map(primitiveTriples(model, path).map((t) => [tripleKey(t), t])).values()];
 }
 
-/** The clock badge's count: the distinct triples of the discrete leaves beneath an assembly, 0 with none. */
+/** The clock badge's count: the distinct triples of the discrete primitives beneath an assembly, 0 with none. */
 export const clockCount = (model: Model, path: string): number => clocksBeneath(model, path).length;
 
 /** Whether a level wire's terminal producer is a root input, whose wires stay neutral. */
@@ -143,5 +143,5 @@ export function fromRootInput(model: Model, level: string, w: LevelWire): boolea
 /** A wire's terminal producer's triple; `undefined` from a root input (neutral) and from a continuous producer (the continuous wire color). */
 export function wireTriple(model: Model, level: string, w: LevelWire): Triple | undefined {
   const t = terminalProducer(model.resolution!, producerFace(level, w));
-  return t?.end === "leaf-output" ? blockTriple(model, t.face.path) : undefined;
+  return t?.end === "primitive-output" ? blockTriple(model, t.face.path) : undefined;
 }

@@ -23,7 +23,7 @@ const arrowFill = (page: Page, id: string) => page.evaluate((id) => {
   return getComputedStyle(document.querySelector(`${end.slice(4, -1)} path`)!).fill;
 }, id);
 
-test("closed_loop: tier at load, r to rate mode with two assemblies on their leaves' triple and three gray, the badges and the legend", async ({ page }) => {
+test("closed_loop: tier at load, r to rate mode with two assemblies on their primitives' triple and three gray, the badges and the legend", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(svg(page)).toHaveAttribute("data-mode", "tier");
   await expect(status(page).locator(".mode")).toHaveText("tier colors");
@@ -42,16 +42,16 @@ test("closed_loop: tier at load, r to rate mode with two assemblies on their lea
   await expect(modeButton(page, "rate")).toHaveAttribute("aria-pressed", "true");
   await expect(modeButton(page, "tier")).toHaveAttribute("aria-pressed", "false");
   await expect(page.locator("g.block.assembly .shape")).toHaveCount(5);
-  // an assembly whose discrete leaves share one triple takes its step: sensing's noise anchor 1, lqr's tracker 6
+  // an assembly whose discrete primitives share one triple takes its step: sensing's noise anchor 1, lqr's tracker 6
   await expect(shape(page, "sensing")).toHaveAttribute("data-step", "0");
   await expect(shape(page, "lqr_controller")).toHaveAttribute("data-step", "5");
-  // one whose leaves tick on several is the assembly gray, tier mode's, not the continuous color
+  // one whose primitives tick on several is the assembly gray, tier mode's, not the continuous color
   for (const id of mixed) {
     await expect(shape(page, id), id).not.toHaveAttribute("data-step");
     expect(await look(page, id), id).toEqual(tierLook);
   }
   expect(await look(page, "plant")).not.toEqual(tierLook);
-  // the clock count on every assembly with a discrete leaf beneath, its title telling one clock from several
+  // the clock count on every assembly with a discrete primitive beneath, its title telling one clock from several
   const clocks = { sensing: "1 clock", pid_controller: "4 clocks", lqr_controller: "1 clock", selection: "2 clocks", actuators: "2 clocks" };
   for (const [id, text] of Object.entries(clocks)) await expect(badge(page, id), id).toHaveText(text);
   await expect(page.locator("text.badge")).toHaveCount(5);
@@ -160,12 +160,12 @@ test("closed_loop: pid_controller's four steps and seven lines, actuators' extra
   await expect(page.locator(".legend")).toHaveCount(0);
 });
 
-test("rates: fast gray with two clocks whatever its scope row, slow on its leaf's triple with one, the legend's lines at the root and in fast", async ({ page }) => {
+test("rates: fast gray with two clocks whatever its scope row, slow on its primitive's triple with one, the legend's lines at the root and in fast", async ({ page }) => {
   await drop(page, "rates");
   const tierLook = await look(page, "fast");
   await modeButton(page, "rate").click();
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
-  // fast's scope row names anchor 1 and its leaves tick on two clocks: gray; slow's leaf ticks on anchor 2: step 2
+  // fast's scope row names anchor 1 and its primitives tick on two clocks: gray; slow's primitive ticks on anchor 2: step 2
   await expect(shape(page, "fast")).not.toHaveAttribute("data-step");
   expect(await look(page, "fast")).toEqual(tierLook);
   await expect(shape(page, "slow")).toHaveAttribute("data-step", "2");

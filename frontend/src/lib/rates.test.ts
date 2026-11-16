@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
 import type { Model } from "./model";
-import type { LeafFace, StructureSection } from "./descriptor";
+import type { PrimitiveFace, StructureSection } from "./descriptor";
 import { buildResolution } from "./resolve";
 import { buildTree } from "./tree";
 import { blockTriple, clockCount, clocksBeneath, CONTINUOUS, fromRootInput, legend, mixed, stepsOf, tripleKey, tripleOrder, wireTriple, type Triple } from "./rates";
@@ -43,7 +43,7 @@ describe("tripleOrder", () => {
 });
 
 describe("blockTriple and the badge", () => {
-  it("gives a closed_loop assembly the one triple its leaves share, none when they tick on several, and counts the clocks on each", () => {
+  it("gives a closed_loop assembly the one triple its primitives share, none when they tick on several, and counts the clocks on each", () => {
     expect(blockTriple(cl, "sensing")).toEqual([1, 1, 0]);
     expect(blockTriple(cl, "lqr_controller")).toEqual([6, 1, 0]);
     for (const a of ["pid_controller", "selection", "actuators"]) {
@@ -74,7 +74,7 @@ describe("blockTriple and the badge", () => {
     expect(blockTriple(cl, "actuators/δe_lag")).toBeUndefined();
   });
 
-  it("leaves rates' fast without a triple and counts two clocks, slow on its leaf's with one, their wires giving each level its lines", () => {
+  it("leaves rates' fast without a triple and counts two clocks, slow on its primitive's with one, their wires giving each level its lines", () => {
     expect(texts(rates, "")).toEqual([[undefined, "continuous"], [0, "anchor 1 (1/50 s)"], [1, "anchor 1 (1/50 s) × 2"], [2, "anchor 2 (1/10 s)"]]);
     expect(legend(rates, "")[1].title).toBe("fast at the root");
     expect([blockTriple(rates, "fast"), mixed(rates, "fast"), clockCount(rates, "fast")]).toEqual([undefined, true, 2]);
@@ -83,7 +83,7 @@ describe("blockTriple and the badge", () => {
     expect(texts(rates, "fast/outer")).toEqual([[undefined, "continuous"], [1, "anchor 1 (1/50 s) × 2"]]);
   });
 
-  it("reads no scopes row: fast's row names its inner clock, slow's a clock its leaf does not tick on", () => {
+  it("reads no scopes row: fast's row names its inner clock, slow's a clock its primitive does not tick on", () => {
     expect(rates.structure!.scopes.find((s) => s.path === "fast")!.timing).toEqual({ anchor: 1, m: 1, c: 0 });
     const scopes = rates.structure!.scopes.map((s) => (s.path === "slow" ? { ...s, timing: { anchor: 1, m: 1, c: 0 } } : s));
     const m = { ...rates, structure: { ...rates.structure!, scopes } } as Model;
@@ -92,26 +92,26 @@ describe("blockTriple and the badge", () => {
 });
 
 describe("the continuous line", () => {
-  const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+  const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
   const id = { type: "T", signature: "T", parameters: [] };
-  /** An inline model: the root input `x` into a discrete leaf `D`, and `D` into the root output `y`; `C` a continuous leaf when asked. */
+  /** An inline model: the root input `x` into a discrete primitive `D`, and `D` into the root output `y`; `C` a continuous primitive when asked. */
   function inline(withContinuous: boolean): Model {
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
           wires: [{ from: { path: "", port: "x" }, to: { path: "D", port: "u" } }, { from: { path: "D", port: "v" }, to: { path: "", port: "y" } }] },
-        { ...id, path: "D", field: "D", class: "leaf", tier: "discrete", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("u")], outputs: [f("v")] },
-        ...(withContinuous ? [{ ...id, path: "C", field: "C", class: "leaf" as const, tier: "continuous" as const, timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [] }] : []),
+        { ...id, path: "D", field: "D", class: "primitive", tier: "discrete", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("u")], outputs: [f("v")] },
+        ...(withContinuous ? [{ ...id, path: "C", field: "C", class: "primitive" as const, tier: "continuous" as const, timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [] }] : []),
       ],
       root_inputs: [f("x")], anchors: [], scopes: [], types: [],
     };
     const tree = buildTree(structure);
     return { tree, structure, resolution: buildResolution(tree, structure) } as Model;
   }
-  /** An inline model: the root input `x` into an assembly `A` of the discrete leaves `D1` and `D2` on two clocks, `A` into the root output `y`. */
+  /** An inline model: the root input `x` into an assembly `A` of the discrete primitives `D1` and `D2` on two clocks, `A` into the root output `y`. */
   function mixedOnly(): Model {
-    const leaf = (name: string, m: number) =>
-      ({ ...id, path: `A/${name}`, field: name, class: "leaf" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
+    const primitive = (name: string, m: number) =>
+      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
@@ -119,7 +119,7 @@ describe("the continuous line", () => {
         { ...id, path: "A", field: "A", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
           wires: [{ from: { path: "A", port: "x" }, to: { path: "A/D1", port: "u" } }, { from: { path: "A/D1", port: "v" }, to: { path: "A/D2", port: "u" } },
             { from: { path: "A/D2", port: "v" }, to: { path: "A", port: "y" } }] },
-        leaf("D1", 1), leaf("D2", 2),
+        primitive("D1", 1), primitive("D2", 2),
       ],
       root_inputs: [f("x")], anchors: [], scopes: [], types: [],
     };
@@ -137,7 +137,7 @@ describe("the continuous line", () => {
     expect(texts(m, "")).toEqual([[1, "base grid × 2"]]);
   });
 
-  it("comes first, unnumbered, for a continuous leaf on the level", () => {
+  it("comes first, unnumbered, for a continuous primitive on the level", () => {
     expect(legend(inline(true), "")[0]).toEqual({ key: CONTINUOUS, text: "continuous", title: expect.stringMatching(/^No rate/) });
     expect(texts(inline(true), "")).toEqual([[undefined, "continuous"], [0, "base grid"]]);
   });

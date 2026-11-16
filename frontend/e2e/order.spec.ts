@@ -1,7 +1,7 @@
 // The execution-order badges (workspace.md answers 7, 9 and 11): off at load, `o`
-// and the breadcrumb's toggle turning them on, a leaf's position among the
+// and the breadcrumb's toggle turning them on, a primitive's position among the
 // stage 2 rows and a closed assembly's ranges over the whole model, none on a
-// leaf with stage 1 outputs alone and none on large, straddling the bottom edge
+// primitive with stage 1 outputs alone and none on large, straddling the bottom edge
 // at the left, kept per browser across a reload and a drop, none on a pin or a
 // tag or on a model without an order, taking the pointer for its title and
 // dimming with its block. The rate pill straddles the top edge at the left
@@ -144,7 +144,7 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await expect(badge(page, "pid_controller/h_ctl")).toHaveText("7");
 });
 
-test("primitive, rates and failure_cycle: the root's own leaf badged, the scopes' ranges, no badge without an order", async ({ page }) => {
+test("primitive, rates and failure_cycle: the root's own primitive badged, the scopes' ranges, no badge without an order", async ({ page }) => {
   await drop(page, "primitive");
   await press(page, "o");
   await expect(badges(page)).toHaveCount(1);

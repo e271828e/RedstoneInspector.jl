@@ -13,9 +13,9 @@ const rates = fixtureModel("rates");
 const lib = fixtureModel("library");
 const prim = fixtureModel("primitive");
 const text = (f: Face) => `${f.path}/${f.port}`;
-/** A copy of a model whose execution order lacks some leaves. */
+/** A copy of a model whose execution order lacks some primitives. */
 const without = (m: Model, ...paths: string[]): Model => ({ ...m, outputs: { ...m.outputs!, order: m.outputs!.order.filter((p) => !paths.includes(p)) } });
-/** A copy of a model in which some leaves publish no output port, which no fixture has. */
+/** A copy of a model in which some primitives publish no output port, which no fixture has. */
 const portless = (m: Model, ...paths: string[]): Model => ({
   ...m, outputs: { ...m.outputs!, components: m.outputs!.components.map((c) => (paths.includes(c.path) ? { ...c, stage1: [], stage2: [] } : c)) },
 });
@@ -61,7 +61,7 @@ describe("orderGroups", () => {
     const tracker = rows.find((r) => r.path === "lqr_controller/tracker")!;
     expect([tracker.position, tracker.edges.length]).toEqual([10, 5]);
     expect(rows[8].edges.map((e) => [text(e.from), text(e.to)])).toEqual([["pid_controller/h_ctl/u", "pid_controller/θ_ctl/r"]]);
-    // every edge ends at its row's leaf, in feedthroughEdges' order
+    // every edge ends at its row's primitive, in feedthroughEdges' order
     for (const r of rows) for (const e of r.edges) expect(e.to.path).toBe(r.path);
     expect(rows.flatMap((r) => r.edges).map((e) => [e.from, e.to])).toEqual(cl.feedthrough!.map((e) => [e.from, e.to]));
     // a first-group row carries no edges
@@ -75,7 +75,7 @@ describe("orderGroups", () => {
     expect([10, 11, 13].map((p) => [rows[p - 1].path, rows[p - 1].edges.length])).toEqual([["d_lqr", 3], ["lqr", 3], ["switch", 3]]);
   });
 
-  it("gives rates 4 as 1 and 3, containers 6 as 0 and 6, large 160 as 160 and 0, primitive's leaf in both", () => {
+  it("gives rates 4 as 1 and 3, containers 6 as 0 and 6, large 160 as 160 and 0, primitive's root in both", () => {
     expect(sizes(rates)).toEqual([4, 1, 3, 0]);
     expect(groups(rates).stage2.map((r) => [r.position, r.path])).toEqual([[1, "fast/inner"], [2, "fast/outer/hold"], [3, "slow/hold"]]);
     expect(sizes(fixtureModel("containers"))).toEqual([6, 0, 6, 0]);
@@ -86,7 +86,7 @@ describe("orderGroups", () => {
     });
   });
 
-  it("leaves a leaf with no output port out of both groups and out of the numbering", () => {
+  it("leaves a primitive with no output port out of both groups and out of the numbering", () => {
     const m = portless(cl, "plant", "pid_controller/h_ctl");
     expect(sizes(m)).toEqual([24, 11, 15, 4]);
     const g = groups(m);
@@ -122,14 +122,14 @@ describe("orderBadge", () => {
     });
   });
 
-  it("badges rates' nested assemblies and none on src, primitive's root leaf, and nothing in large", () => {
+  it("badges rates' nested assemblies and none on src, primitive's root, and nothing in large", () => {
     expect(["fast", "fast/outer", "slow", "src"].map((p) => orderBadge(rates, p))).toEqual(["1–2", "2", "3", undefined]);
     expect(orderBadge(prim, "")).toBe("1");
     const large = fixtureModel("large");
     for (const n of large.structure!.nodes) expect(orderBadge(large, n.path), n.path).toBeUndefined();
   });
 
-  it("gives no badge to a leaf absent from the order, an assembly with none beneath, or a model without outputs", () => {
+  it("gives no badge to a primitive absent from the order, an assembly with none beneath, or a model without outputs", () => {
     const m = without(cl, "sensing/altimeter");
     expect(orderBadge(m, "sensing/altimeter")).toBeUndefined();
     expect(orderBadge(m, "sensing")).toBeUndefined();
@@ -152,7 +152,7 @@ describe("rootInputRows", () => {
     ]));
   });
 
-  it("gives kinds none and primitive two on its leaf, which consume nothing beyond it", () => {
+  it("gives kinds none and primitive two on its primitive, which consume nothing beyond it", () => {
     expect(rootInputRows(fixtureModel("kinds"))).toEqual([]);
     expect(rootInputRows(prim).map((r) => [r.name, r.consumers])).toEqual([["u", []], ["d", []]]);
   });
@@ -184,7 +184,7 @@ describe("anchorRows and scopeRows", () => {
 });
 
 describe("componentRows", () => {
-  it("lists rates' three discrete leaves with their periods", () => {
+  it("lists rates' three discrete primitives with their periods", () => {
     expect(componentRows(rates).map((r) => [r.path, r.text, r.period, r.step])).toEqual([
       ["fast/inner", "anchor 1 (1/50 s)", "1/50 s", 0],
       ["fast/outer/hold", "anchor 1 (1/50 s) × 2", "1/25 s", 1],
@@ -235,7 +235,7 @@ describe("rowTarget", () => {
     expect(rowTarget(cl, componentRows(cl)[0])).toEqual({ level: "sensing", target: { kind: "block", id: "sensing/noise" } });
   });
 
-  it("selects a primitive root's leaf on the root level, and its root input's tag there", () => {
+  it("selects a primitive root on the root level, and its root input's tag there", () => {
     expect(rowTarget(prim, groups(prim).stage1[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
     expect(rowTarget(prim, groups(prim).stage2[0])).toEqual({ level: "", target: { kind: "block", id: "" } });
     expect(rowTarget(prim, rootInputRows(prim)[0])).toEqual({ level: "", target: { kind: "block", id: "⟨in⟩u" } });

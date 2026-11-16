@@ -94,10 +94,10 @@ export const cutConstant = (value: string): string => cutText(constants, value, 
 export const iconWidth = (icon: Icon): number =>
   icon.id === "constant" ? Math.max(ICON_WIDTH, textWidth(cutConstant(icon.text!), NAME_FONT)) : ICON_WIDTH;
 
-/** Whether a face of a leaf child is pinned. */
+/** Whether a face of a primitive child is pinned. */
 export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: string): boolean {
   const n = tree.byPath.get(b.path);
-  return n?.class === "leaf" && !!(side === "in" ? n.inputs : n.outputs).find((f) => f.name === name)?.pinned;
+  return n?.class === "primitive" && !!(side === "in" ? n.inputs : n.outputs).find((f) => f.name === name)?.pinned;
 }
 
 export function sizeBlock(b: Block, tree: Tree): BlockSize {

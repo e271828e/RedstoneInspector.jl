@@ -20,7 +20,7 @@ const widths = (page: Page, items: [string, string][]) => page.evaluate((items) 
   const ctx = document.createElement("canvas").getContext("2d")!;
   return items.map(([s, font]) => { ctx.font = font; return ctx.measureText(s).width; });
 }, items);
-/** The sizing rule's width for a leaf with an icon: the icon's width in place of the display name's. */
+/** The sizing rule's width for a primitive with an icon: the icon's width in place of the display name's. */
 async function ruleWidth(page: Page, fixture: string, path: string, segment: string, second: number): Promise<number> {
   const n = node(fixture, path);
   const rows = Math.max(n.inputs.length, n.outputs.length, 1);
@@ -57,7 +57,7 @@ test("closed_loop: the icons of lqr_controller and sensing, by alias before type
   await page.locator("nav.breadcrumb").getByText("closed_loop").click();
   await openPath(page, "sensing");
   await expect(icon(page, "sensing/altimeter")).toHaveAttribute("data-icon", "sum");
-  await expect(page.locator('g.block[data-id="sensing/altimeter"] > title')).toContainText("Redstone.Blocks.SumJunction");
+  await expect(page.locator('g.block[data-id="sensing/altimeter"] > title')).toContainText("Redstone.Library.SumJunction");
   await expect(icon(page, "sensing/noise")).toHaveAttribute("data-icon", "noise");
 });
 

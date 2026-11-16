@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { KindMarker, LeafNode } from "./descriptor";
+import type { KindMarker, PrimitiveNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
 import type { Model } from "./model";
@@ -19,8 +19,8 @@ describe("wireClass", () => {
     const k = fixtureModel("kinds");
     const got: [string, WireClass][] = [];
     for (const n of k.structure!.nodes) {
-      if (n.class !== "leaf") continue;
-      for (const f of [...(n as LeafNode).inputs, ...(n as LeafNode).outputs]) got.push([`${n.path}.${f.name}`, wireClass(f.kind)]);
+      if (n.class !== "primitive") continue;
+      for (const f of [...(n as PrimitiveNode).inputs, ...(n as PrimitiveNode).outputs]) got.push([`${n.path}.${f.name}`, wireClass(f.kind)]);
     }
     expect(Object.fromEntries(got)).toEqual({
       "i.y": "scalar", "r.y": "scalar", "v.y": "vector", "mat.y": "vector", "nt.y": "struct", "fn.y": "opaque",
@@ -44,7 +44,7 @@ describe("levelWireClasses", () => {
     const d = fixtureModel("descent");
     expect(tally(d, "")).toEqual({ scalar: 3, flag: 1 });
     expect(levelWireClasses(d, level(d, "")).get("stop|in|u")).toBe("flag");
-    const stop = d.tree!.byPath.get("stop") as LeafNode;
+    const stop = d.tree!.byPath.get("stop") as PrimitiveNode;
     expect([stop.outputs[0].type, wireClass(stop.outputs[0].kind)]).toEqual(["Redstone.StopFlag", "flag"]);
   });
 
@@ -82,7 +82,7 @@ describe("labelledPorts and fanouts", () => {
 describe("shortType", () => {
   it.each([
     ["StaticArraysCore.SVector{5, Float64}", "SVector{5, Float64}"],
-    ["Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}", "Junction{Float64, Float64, 2, typeof(+)}"],
+    ["Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}", "Junction{Float64, Float64, 2, typeof(+)}"],
     ["Main.Synthetic.Pt", "Pt"],
     ["@NamedTuple{a::Float64, b::Main.M.T}", "@NamedTuple{a::Float64, b::T}"],
     ["Tuple{Core.Int64, Base.RefValue{Main.δ.Ω}}", "Tuple{Int64, RefValue{Ω}}"],

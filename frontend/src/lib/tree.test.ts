@@ -100,9 +100,9 @@ describe("display names", () => {
   });
 });
 
-it("makes a primitive root a tree of one leaf", () => {
+it("makes a primitive root a tree of one primitive", () => {
   const tr = tree("primitive");
-  expect(tr.root.class).toBe("leaf");
+  expect(tr.root.class).toBe("primitive");
   expect(tr.children.get("")).toEqual([]);
   expect(tr.parent.size).toBe(0);
 });

@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { KindMarker, LeafNode, Node } from "./descriptor";
+import type { KindMarker, Node, PrimitiveNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { iconOf } from "./icons";
 
-/** An inline leaf of a type, its one output of a kind. */
-function leaf(type: string, extra: Partial<LeafNode> = {}, kind: KindMarker = { kind: "float" }): Node {
+/** An inline primitive of a type, its one output of a kind. */
+function primitive(type: string, extra: Partial<PrimitiveNode> = {}, kind: KindMarker = { kind: "float" }): Node {
   return {
-    path: "x", type, signature: type, parameters: [], class: "leaf", tier: "continuous",
+    path: "x", type, signature: type, parameters: [], class: "primitive", tier: "continuous",
     timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [{ name: "y", type: "Float64", kind, pinned: false }], ...extra,
   };
 }
-const B = "Redstone.Blocks.";
+const B = "Redstone.Library.";
 const node = (fixture: string, path: string) => fixtureModel(fixture).tree!.byPath.get(path)!;
 
 describe("iconOf", () => {
@@ -34,11 +34,11 @@ describe("iconOf", () => {
     ];
     expect(roster).toHaveLength(31);
     for (const [key, id, kind] of roster) {
-      const i = iconOf(leaf(B + key, { parameters: [{ name: "value", value: "1.0" }] }));
+      const i = iconOf(primitive(B + key, { parameters: [{ name: "value", value: "1.0" }] }));
       expect([key, i?.id, i?.kind]).toEqual([key, id, kind]);
     }
     const texts = ["Integrator", "UnitDelay", "FirstOrderLag", "StateSpace", "TransferFunction", "DiscreteTransferFunction", "Source", "PID", "LQRTracker"]
-      .map((k) => iconOf(leaf(B + k))!.text);
+      .map((k) => iconOf(primitive(B + k))!.text);
     expect(texts).toEqual(["1/s", "z⁻¹", "1/(τs+1)", "ẋ=Ax+Bu", "N(s)/D(s)", "N(z)/D(z)", "f(t)", "PID", "LQR"]);
   });
 
@@ -48,8 +48,8 @@ describe("iconOf", () => {
     expect(iconOf(node("closed_loop", "lqr_controller/engaged"))).toBeUndefined();
     expect(iconOf(node("closed_loop", "lqr_controller/state_pack"))?.id).toBe("pack");
     expect(iconOf(node("closed_loop", "plant"))).toBeUndefined();
-    expect(iconOf(leaf(`${B}Group`))).toBeUndefined();
-    expect(iconOf(leaf("Main.Synthetic.Pack"))).toBeUndefined();
+    expect(iconOf(primitive(`${B}Group`))).toBeUndefined();
+    expect(iconOf(primitive("Main.Synthetic.Pack"))).toBeUndefined();
     expect(iconOf(node("library", "fn"))).toBeUndefined();
   });
 
@@ -62,10 +62,10 @@ describe("iconOf", () => {
   });
 
   it("reads Delay's K from the signature's integer type parameter", () => {
-    expect(iconOf(leaf(`${B}Delay`, { signature: `${B}Delay{3, Float64}` }))?.text).toBe("z⁻³");
-    expect(iconOf(leaf(`${B}Delay`, { signature: `${B}Delay{Float64, 12}` }))?.text).toBe("z⁻¹²");
-    expect(iconOf(leaf(`${B}Delay`, { signature: `${B}Delay{Float64, K}` }))?.text).toBe("z⁻ᴷ");
-    expect(iconOf(leaf(`${B}Delay`, { signature: `${B}Delay{StaticArraysCore.SVector{2, Float64}, 4}` }))?.text).toBe("z⁻⁴");
+    expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{3, Float64}` }))?.text).toBe("z⁻³");
+    expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{Float64, 12}` }))?.text).toBe("z⁻¹²");
+    expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{Float64, K}` }))?.text).toBe("z⁻ᴷ");
+    expect(iconOf(primitive(`${B}Delay`, { signature: `${B}Delay{StaticArraysCore.SVector{2, Float64}, 4}` }))?.text).toBe("z⁻⁴");
     expect(iconOf(node("library", "delay"))?.text).toBe("z⁻³");
   });
 

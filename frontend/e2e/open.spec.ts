@@ -1,6 +1,6 @@
 // Opening and climbing (workspace.md answer 3): double-click or Enter opens a
 // closed assembly, Backspace or Alt-Up goes to the parent, a breadcrumb link opens
-// its level, a leaf does not open.
+// its level, a primitive does not open.
 import { test } from "@playwright/test";
 import { drop, expect, fixtureText, openPath, readyLevel, shot } from "./fixtures";
 
@@ -26,7 +26,7 @@ test("closed_loop: double-click and Enter open, Backspace climbs", async ({ page
   await shot(page, "closed_loop", "actuators", "open");
 });
 
-test("closed_loop: a double-click on a leaf leaves the level as it is", async ({ page }) => {
+test("closed_loop: a double-click on a primitive leaves the level as it is", async ({ page }) => {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').dblclick();
   await page.waitForTimeout(300);
@@ -35,7 +35,7 @@ test("closed_loop: a double-click on a leaf leaves the level as it is", async ({
   await expect(page.locator("g.block")).toHaveCount(9);
 });
 
-test("closed_loop: Enter on a selected leaf leaves the level as it is", async ({ page }) => {
+test("closed_loop: Enter on a selected primitive leaves the level as it is", async ({ page }) => {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').click();
   await expect(page.locator('g.block.selected[data-id="plant"]')).toHaveCount(1);

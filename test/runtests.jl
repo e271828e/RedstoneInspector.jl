@@ -4,7 +4,7 @@
 using Test, RedstoneInspector, Redstone, JSON, JSONSchema
 import Redstone: AbstractComponent, x_init, s_init, u_types, y_types, y_state, y_direct,
     x_deriv, s_update, Absolute, Hz, Build, Deployment, DiagnosticError, descriptor, build
-import Redstone.Blocks: Group
+import Redstone.Library: Group
 import RedstoneInspector: write_descriptor
 
 # The core README's quick start: a plant with a state and a direct output under
@@ -61,7 +61,7 @@ const SCHEMA = Schema(JSON.parsefile(joinpath(pkgdir(Redstone), "src", "descript
 
 @testset "RedstoneInspector" begin
     clean_build = build(loop("y"))
-    artifacts = (build = clean_build, deployment = Deployment(clean_build; h = 1//1000),
+    artifacts = (build = clean_build, deployment = Deployment(clean_build; Δt_frame = 1//1000),
                  failure = caught(loop("power")))
 
     @testset "the primitive on a $kind" for (kind, artifact) in pairs(artifacts)

@@ -28,7 +28,7 @@ import Redstone: build, Deployment
 
 model = MyModel()    # any root component
 RedstoneInspector.write_descriptor("model.json", model; name = "my model")
-RedstoneInspector.write_descriptor("deployment.json", Deployment(build(model); h = 1//100))
+RedstoneInspector.write_descriptor("deployment.json", Deployment(build(model); Δt_frame = 1//100))
 ```
 
 `write_descriptor(path, x; name = nothing)` takes a root component, a `Build`,
@@ -46,10 +46,10 @@ the REPL, line by line:
 ```julia
 import RedstoneInspector: inspect
 
-inspect(model)                                 # builds the root and draws the build
-inspect(broken; name = "broken")               # draws the failure, then rethrows
-inspect(Deployment(build(model); h = 1//100))  # draws the deployment
-inspect(err)                                   # draws the DiagnosticError in the REPL's last error
+inspect(model)                                        # builds the root and draws the build
+inspect(broken; name = "broken")                      # draws the failure, then rethrows
+inspect(Deployment(build(model); Δt_frame = 1//100))  # draws the deployment
+inspect(err)                                          # draws the DiagnosticError in the REPL's last error
 ```
 
 `inspect` takes a root component, a `Build`, a `Deployment`, a

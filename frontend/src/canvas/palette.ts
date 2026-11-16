@@ -9,7 +9,7 @@ export interface Pair {
 }
 
 export const palette = {
-  /** Leaf fill and stroke by tier, the spike's. */
+  /** Primitive fill and stroke by tier, the spike's. */
   continuous: { fill: "#d6e6fb", stroke: "#2f62a8" },
   /** A continuous producer's wire in rate mode: the continuous blue at a wire's weight, the fill being too pale for a line. */
   continuousWire: "#9fbfe6",

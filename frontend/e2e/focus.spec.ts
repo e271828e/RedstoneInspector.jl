@@ -1,6 +1,6 @@
 // The legend's focus (visual_grammar.md answers 6 and 9, workspace.md answer 11,
 // as amended in increment 6's look pass): a legend line lights its blocks, the
-// closed assemblies with a leaf of it beneath and the wires it tints, dims the
+// closed assemblies with a primitive of it beneath and the wires it tints, dims the
 // rest as a search does and marks the tree; a second click, Escape and tier mode
 // clear it; it holds across levels and a push that keeps the triple; with a query
 // standing the canvas shows the focus and the tree the query's marks. The lit
@@ -55,7 +55,7 @@ test("closed_loop: anchor 4's line lights the gray pid_controller and its wire, 
   expect(await opacity(page, 'g.block[data-id="pid_controller/h_ctl"] > .shape')).toBe("1");
 });
 
-test("closed_loop: the continuous line lights plant, the assemblies with a continuous leaf beneath and plant's 17 wires", async ({ page }) => {
+test("closed_loop: the continuous line lights plant, the assemblies with a continuous primitive beneath and plant's 17 wires", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "r");
   await line(page, ".continuous").click();

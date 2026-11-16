@@ -5,7 +5,7 @@ using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
     transparent_container, input_passthrough, Absolute, Relative, Hz
-import Redstone.Blocks: Group, Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
+import Redstone.Library: Group, Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
     DiscreteTransferFunction, DiscretizedStateSpace, DiscretizedTransferFunction,
@@ -13,69 +13,69 @@ import Redstone.Blocks: Group, Constant, Junction, SumJunction, Or, And, Pack, U
 using StaticArrays: SVector, SMatrix
 using Random: Xoshiro
 
-# --- large: the spike's 150 blocks ---------------------------------------------
+# --- large: 150 components -----------------------------------------------------
 
 port_names(prefix, n) = ntuple(i -> Symbol(prefix, i), n)
 
-"A leaf of `NI` inputs and `NO` outputs, every output its state, the gained input sum's integral."
-struct ContinuousBlock{NI, NO} <: AbstractComponent
+"A primitive of `NI` inputs and `NO` outputs, every output its state, the gained input sum's integral."
+struct ContinuousPrimitive{NI, NO} <: AbstractComponent
     gain::Float64
 end
 
-"A leaf of `NI` inputs and `NO` outputs, every output its store, the gained input sum's accumulation."
-struct DiscreteBlock{NI, NO} <: AbstractComponent
+"A primitive of `NI` inputs and `NO` outputs, every output its store, the gained input sum's accumulation."
+struct DiscretePrimitive{NI, NO} <: AbstractComponent
     gain::Float64
 end
 
-u_types(::Union{ContinuousBlock{NI}, DiscreteBlock{NI}}) where {NI} =
+u_types(::Union{ContinuousPrimitive{NI}, DiscretePrimitive{NI}}) where {NI} =
     NamedTuple{port_names(:in, NI)}(ntuple(_ -> Float64, NI))
-y_types(::Union{ContinuousBlock{NI, NO}, DiscreteBlock{NI, NO}}) where {NI, NO} =
+y_types(::Union{ContinuousPrimitive{NI, NO}, DiscretePrimitive{NI, NO}}) where {NI, NO} =
     NamedTuple{port_names(:out, NO)}(ntuple(_ -> Float64, NO))
 
-x_init(::ContinuousBlock) = (q = 0.0,)
-x_deriv(c::ContinuousBlock, (; u)) = (q = c.gain * sum(u),)
-y_state(::ContinuousBlock{NI, NO}, (; x)) where {NI, NO} =
+x_init(::ContinuousPrimitive) = (q = 0.0,)
+x_deriv(c::ContinuousPrimitive, (; u)) = (q = c.gain * sum(u),)
+y_state(::ContinuousPrimitive{NI, NO}, (; x)) where {NI, NO} =
     NamedTuple{port_names(:out, NO)}(ntuple(_ -> x.q, NO))
 
-s_init(::DiscreteBlock) = (q = 0.0,)
-s_update(c::DiscreteBlock, (; s, u)) = (q = s.q + c.gain * sum(u),)
-y_state(::DiscreteBlock{NI, NO}, (; s)) where {NI, NO} =
+s_init(::DiscretePrimitive) = (q = 0.0,)
+s_update(c::DiscretePrimitive, (; s, u)) = (q = s.q + c.gain * sum(u),)
+y_state(::DiscretePrimitive{NI, NO}, (; s)) where {NI, NO} =
     NamedTuple{port_names(:out, NO)}(ntuple(_ -> s.q, NO))
 
-series(gain) = Group((; a = ContinuousBlock{1, 1}(gain), b = ContinuousBlock{1, 1}(gain));
+series(gain) = Group((; a = ContinuousPrimitive{1, 1}(gain), b = ContinuousPrimitive{1, 1}(gain));
                      local_wires = ("a/out1" => "b/in1",),
                      input_wires = ("in1" => "a/in1",),
                      output_wires = ("b/out1" => "out1",))
 
-const N_BLOCKS = 150
+const N_COMPONENTS = 150
 
 """
-150 blocks under one root, ten of them two-leaf assemblies, about a third of the
-leaves discrete at 50 Hz, every input port fed once: the first six blocks' from
-the root inputs `u1` to `u4`, the rest mostly from the eight blocks before, a
-tenth from the eight after.
+150 components under one root, ten of them two-primitive assemblies, about a third
+of the primitives discrete at 50 Hz, every input port fed once: the first six
+components' from the root inputs `u1` to `u4`, the rest mostly from the eight
+components before, a tenth from the eight after.
 """
 function large()
     rng = Xoshiro(20261026)
-    block_names = [Symbol("b", lpad(i, 3, '0')) for i in 1:N_BLOCKS]
-    blocks = AbstractComponent[]
+    component_names = [Symbol("b", lpad(i, 3, '0')) for i in 1:N_COMPONENTS]
+    components = AbstractComponent[]
     input_counts = Int[]
     output_counts = Int[]
     anchored = Symbol[]
-    for i in 1:N_BLOCKS
+    for i in 1:N_COMPONENTS
         gain = round(10 * rand(rng); digits = 3)
         if (i - 1) % 15 == 7
-            push!(blocks, series(gain))
+            push!(components, series(gain))
             push!(input_counts, 1)
             push!(output_counts, 1)
         else
             n_in = rand(rng, (1, 1, 2, 2, 3, 4))
             n_out = rand(rng, 1:3)
             if rand(rng) < 0.3
-                push!(blocks, DiscreteBlock{n_in, n_out}(gain))
-                push!(anchored, block_names[i])
+                push!(components, DiscretePrimitive{n_in, n_out}(gain))
+                push!(anchored, component_names[i])
             else
-                push!(blocks, ContinuousBlock{n_in, n_out}(gain))
+                push!(components, ContinuousPrimitive{n_in, n_out}(gain))
             end
             push!(input_counts, n_in)
             push!(output_counts, n_out)
@@ -84,21 +84,21 @@ function large()
     level_wires = Pair{String, String}[]
     root_consumers = [String[] for _ in 1:4]
     n_root = 0
-    for i in 1:N_BLOCKS, port in 1:input_counts[i]
-        consumer = "$(block_names[i])/in$port"
+    for i in 1:N_COMPONENTS, port in 1:input_counts[i]
+        consumer = "$(component_names[i])/in$port"
         if i <= 6
             push!(root_consumers[n_root % 4 + 1], consumer)
             n_root += 1
         else
-            j = rand(rng) < 0.1 && i < N_BLOCKS ? i + rand(rng, 1:min(8, N_BLOCKS - i)) :
+            j = rand(rng) < 0.1 && i < N_COMPONENTS ? i + rand(rng, 1:min(8, N_COMPONENTS - i)) :
                                                   i - rand(rng, 1:min(8, i - 1))
-            push!(level_wires, "$(block_names[j])/out$(rand(rng, 1:output_counts[j]))" => consumer)
+            push!(level_wires, "$(component_names[j])/out$(rand(rng, 1:output_counts[j]))" => consumer)
         end
     end
-    Group(NamedTuple{Tuple(block_names)}(Tuple(blocks));
+    Group(NamedTuple{Tuple(component_names)}(Tuple(components));
           local_wires = Tuple(level_wires),
           input_wires = ntuple(i -> "u$i" => Tuple(root_consumers[i]), 4),
-          output_wires = ("$(block_names[end])/out1" => "y1", "$(block_names[end - 1])/out1" => "y2"),
+          output_wires = ("$(component_names[end])/out1" => "y1", "$(component_names[end - 1])/out1" => "y2"),
           sample_times = NamedTuple{Tuple(anchored)}(ntuple(_ -> Absolute(Hz(50)), length(anchored))))
 end
 
@@ -133,7 +133,7 @@ output_wires(::Containers) = ("scale/out" => "y",)
 containers() = Containers((a = Gain(2.0), b = Gain(3.0)), (Gain(4.0),),
                           (s1 = Gain(0.5), s2 = Gain(0.25)), Gain(10.0))
 
-# --- primitive: one leaf as the root ---------------------------------------------
+# --- primitive: one primitive as the root ----------------------------------------
 
 "A damped oscillator driven by `u` and `d`, with a state output and a direct one."
 struct Plant <: AbstractComponent
@@ -218,15 +218,15 @@ rates() = Group((; src = Ramp(),
                 output_wires = ("fast/inner" => "inner", "fast/outer" => "outer", "slow/out" => "slow"),
                 sample_times = (fast = Absolute(Hz(50)), slow = Absolute(Hz(10))))
 
-# --- library: one of every shipped block --------------------------------------------
+# --- library: one of every shipped library component --------------------------------
 
 wave(t) = sin(t)
 half(x) = x / 2
 
 """
-One instance of every shipped block of the core's library, beside a `Junction` over
-a user function, wired as one chain from the sources; the discrete leaves on two
-anchors, the base grid, a `Relative(2)` and a phased `Relative(2, 1)`.
+One instance of every shipped component of the core's library, beside a `Junction`
+over a user function, wired as one chain from the sources; the discrete primitives
+on two anchors, the base grid, a `Relative(2)` and a phased `Relative(2, 1)`.
 """
 function library()
     m = [1.0;;]
@@ -306,7 +306,7 @@ failure_nested() = Group((plant = Plant(2.0, 0.3),
                          input_wires = ("ref" => "ctl/ref", "d" => "plant/d"),
                          output_wires = "plant/y" => "y")
 
-"A leaf whose `F` reads `v` and `f` directly and whose state integrates `g`."
+"A primitive whose `F` reads `v` and `f` directly and whose state integrates `g`."
 struct Piecewise <: AbstractComponent end
 
 x_init(::Piecewise) = (q = 0.0,)
@@ -330,7 +330,7 @@ local_wires(::SelectedNothing) = ("src/out" => "g/e",)
 input_wires(a::SelectedNothing) = (input_passthrough(a, "g"; select = _ -> false)..., "in" => "src/e")
 output_wires(::SelectedNothing) = ("g/out" => "out",)
 
-"A leaf whose state output throws."
+"A primitive whose state output throws."
 struct Thrower <: AbstractComponent end
 
 x_init(::Thrower) = (; a = 0.0)

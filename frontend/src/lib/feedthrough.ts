@@ -9,18 +9,18 @@ export interface FeedthroughEdge {
   to: Face;
 }
 
-/** For each leaf with a stage 2, in execution order, each input whose terminal producer is a stage-2 leaf output. */
+/** For each primitive with a stage 2, in execution order, each input whose terminal producer is a stage-2 primitive output. */
 export function feedthroughEdges(tree: Tree, res: Resolution, outputs: OutputsSection | undefined): FeedthroughEdge[] {
   if (!outputs) return [];
   const stage2 = new Map(outputs.components.map((c) => [c.path, c.stage2]));
   const edges: FeedthroughEdge[] = [];
   for (const path of outputs.order) {
     const node = tree.byPath.get(path);
-    if (node?.class !== "leaf" || !stage2.get(path)?.length) continue;
+    if (node?.class !== "primitive" || !stage2.get(path)?.length) continue;
     for (const f of node.inputs) {
       const to: Face = { path, side: "in", port: f.name };
       const t = terminalProducer(res, to);
-      if (t?.end === "leaf-output" && stage2.get(t.face.path)?.includes(t.face.port)) edges.push({ from: t.face, to });
+      if (t?.end === "primitive-output" && stage2.get(t.face.path)?.includes(t.face.port)) edges.push({ from: t.face, to });
     }
   }
   return edges;

@@ -61,7 +61,7 @@
         {
           "path": "g",
           "field": "g",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
@@ -100,7 +100,7 @@
         {
           "path": "src",
           "field": "src",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,

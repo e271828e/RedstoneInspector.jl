@@ -1,7 +1,7 @@
 <script lang="ts">
-  // The execution-order tab (workspace.md answer 6): two groups, as the core runs a sweep. Stage 1 lists every leaf
-  // with a stage 1 port, unnumbered; stage 2 every leaf with a stage 2 port, numbered from 1, and under a row the
-  // feedthrough edges into it, labelled presumed (look pass 1.7 and 1.8). A row's click selects the leaf; an edge's,
+  // The execution-order tab (workspace.md answer 6): two groups, as the core runs a sweep. Stage 1 lists every primitive
+  // with a stage 1 port, unnumbered; stage 2 every primitive with a stage 2 port, numbered from 1, and under a row the
+  // feedthrough edges into it, labelled presumed (look pass 1.7 and 1.8). A row's click selects the primitive; an edge's,
   // the consumer's input port. The whole row takes the click; its button is there for the keyboard (look pass 1.2).
   import { orderGroups, rowTarget, type Row } from "../../lib/analysis";
   import type { Selection } from "../../lib/detail";

@@ -15,7 +15,7 @@ export interface Row {
   segment: string;
   /** Empty for a folder. */
   displayName: string;
-  class: "leaf" | "assembly" | undefined;
+  class: "primitive" | "assembly" | undefined;
   expandable: boolean;
 }
 
@@ -116,7 +116,7 @@ export function rowSelection(tree: Tree, level: string, r: Row): Selection {
 /**
  * The tree's `h j k l` from the selected row (workspace.md answer 2): `j` and `k` the next and previous visible
  * row, the first when none is selected; `l` expands a collapsed row, steps into an expanded one's first child;
- * `h` collapses an expanded row, steps from a collapsed one or a leaf to its parent's row. Nothing when no row fits.
+ * `h` collapses an expanded row, steps from a collapsed one or a primitive to its parent's row. Nothing when no row fits.
  */
 export function treeStep(
   rows: readonly Row[], at: string | undefined, key: "h" | "j" | "k" | "l", expanded: ReadonlySet<string>,

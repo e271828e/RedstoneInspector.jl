@@ -1,7 +1,7 @@
 // The client's resolution (initial_design.md answer 18): every face to its
 // terminal producer and through every fan-out to its terminal consumers, built
 // once on load from the wires as declared.
-import type { LeafFace, StructureSection, Wire } from "./descriptor";
+import type { PrimitiveFace, StructureSection, Wire } from "./descriptor";
 import type { Tree } from "./tree";
 
 export type Side = "in" | "out";
@@ -20,7 +20,7 @@ interface Hop {
 export interface Resolution {
   tree: Tree;
   structure: StructureSection;
-  /** The producer feeding each consumer face: a leaf input, an assembly's input face at its parent, an output face inside its own level. */
+  /** The producer feeding each consumer face: a primitive input, an assembly's input face at its parent, an output face inside its own level. */
   feeder: Map<string, Hop>;
   /** The consumers fed by each producer face, in wire order. */
   fanout: Map<string, Hop[]>;
@@ -54,18 +54,18 @@ export function buildResolution(tree: Tree, structure: StructureSection): Resolu
 
 /** A root input's face, `("", "in", name)`. */
 export const isRootInput = (f: Face) => f.path === "" && f.side === "in";
-const isLeaf = (res: Resolution, f: Face) => res.tree.byPath.get(f.path)?.class === "leaf";
-const isRootOutput = (res: Resolution, f: Face) => f.path === "" && f.side === "out" && !isLeaf(res, f);
+const isPrimitive = (res: Resolution, f: Face) => res.tree.byPath.get(f.path)?.class === "primitive";
+const isRootOutput = (res: Resolution, f: Face) => f.path === "" && f.side === "out" && !isPrimitive(res, f);
 
 export interface TerminalProducer {
   face: Face;
-  end: "leaf-output" | "root-input";
+  end: "primitive-output" | "root-input";
   /** The producer faces the walk passes, the terminal last; an output face is its own first, a consumer starts at its feeder. */
   chain: Face[];
 }
 
 /**
- * From a leaf input, an assembly face or a root face, upstream to the leaf output
+ * From a primitive input, an assembly face or a root face, upstream to the primitive output
  * or root input that produces its value. A primitive root's inputs are root inputs.
  */
 export function terminalProducer(res: Resolution, face: Face): TerminalProducer | undefined {
@@ -75,13 +75,13 @@ export function terminalProducer(res: Resolution, face: Face): TerminalProducer 
   while (cur) {
     chain.push(cur);
     if (isRootInput(cur)) return { face: cur, end: "root-input", chain };
-    if (cur.side === "out" && isLeaf(res, cur)) return { face: cur, end: "leaf-output", chain };
+    if (cur.side === "out" && isPrimitive(res, cur)) return { face: cur, end: "primitive-output", chain };
     cur = res.feeder.get(faceKey(cur))?.face;
   }
   return undefined;
 }
 
-/** Downstream from a producer face, an assembly face or a root input, through every fan-out to every leaf input or root output, in wire order. */
+/** Downstream from a producer face, an assembly face or a root input, through every fan-out to every primitive input or root output, in wire order. */
 export function terminalConsumers(res: Resolution, face: Face): Face[] {
   const out: Face[] = [];
   walkDown(res, face, (_, hop, terminal) => terminal && out.push(hop.face));
@@ -90,16 +90,16 @@ export function terminalConsumers(res: Resolution, face: Face): Face[] {
 
 function walkDown(res: Resolution, face: Face, visit: (from: Face, hop: Hop, terminal: boolean) => void): void {
   for (const hop of res.fanout.get(faceKey(face)) ?? []) {
-    const terminal = (hop.face.side === "in" && isLeaf(res, hop.face)) || isRootOutput(res, hop.face);
+    const terminal = (hop.face.side === "in" && isPrimitive(res, hop.face)) || isRootOutput(res, hop.face);
     visit(face, hop, terminal);
     if (!terminal) walkDown(res, hop.face, visit);
   }
 }
 
-/** A face's type, kind marker and pinned flag: a leaf's own, a root input's from `root_inputs`, an assembly face's from its terminal producer. */
-export function faceInfo(res: Resolution, path: string, side: Side, name: string): LeafFace | undefined {
+/** A face's type, kind marker and pinned flag: a primitive's own, a root input's from `root_inputs`, an assembly face's from its terminal producer. */
+export function faceInfo(res: Resolution, path: string, side: Side, name: string): PrimitiveFace | undefined {
   const node = res.tree.byPath.get(path);
-  if (node?.class === "leaf") return (side === "in" ? node.inputs : node.outputs).find((f) => f.name === name);
+  if (node?.class === "primitive") return (side === "in" ? node.inputs : node.outputs).find((f) => f.name === name);
   if (isRootInput({ path, side, port: name })) return res.structure.root_inputs.find((f) => f.name === name);
   const t = terminalProducer(res, { path, side, port: name });
   return t && faceInfo(res, t.face.path, t.face.side, t.face.port);

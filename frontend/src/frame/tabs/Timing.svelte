@@ -1,7 +1,7 @@
 <script lang="ts">
-  // The timing tab (workspace.md answer 6): the anchors with the base grid first, the rate scopes, every discrete leaf
+  // The timing tab (workspace.md answer 6): the anchors with the base grid first, the rate scopes, every discrete primitive
   // with its triple and rate swatch, sortable by period, then the schedule note (reading 1). A row's click selects
-  // its scope's or leaf's node (reading 12); the whole row takes it, its button there for the keyboard (look pass 1.2).
+  // its scope's or primitive's node (reading 12); the whole row takes it, its button there for the keyboard (look pass 1.2).
   import { stepPair } from "../../canvas/palette";
   import { anchorRows, componentRows, rowTarget, scheduleNote, scopeRows } from "../../lib/analysis";
   import type { Selection } from "../../lib/detail";

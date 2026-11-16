@@ -77,7 +77,7 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await expect(edge).toHaveAttribute("title", PRESUMED);
   await shot(page, "closed_loop", "", "analysis-order");
 
-  // the whole line takes the click: a stage 2 row's port selects its leaf on its level, a stage 1 row's port too
+  // the whole line takes the click: a stage 2 row's port selects its primitive on its level, a stage 1 row's port too
   expect(await cursor(step(page, 16).locator(".line"))).toBe("pointer");
   await step(page, 16).locator("li.port").first().click();
   await page.locator(readyLevel("actuators")).waitFor();
@@ -93,7 +93,7 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await page.locator(readyLevel("pid_controller")).waitFor();
   await expect(page.locator('rect.port.selected[data-port="pid_controller/θ_ctl|in|r"]')).toHaveCount(1);
   await expect(page.locator('aside.detail[data-kind="port"]')).toHaveAttribute("data-id", "pid_controller/θ_ctl|in|r");
-  // the button is there for the keyboard: Space on it selects the row's leaf
+  // the button is there for the keyboard: Space on it selects the row's primitive
   await step(page, 2).locator("button.row").focus();
   await page.keyboard.press("Space");
   await expect(page.locator('g.block.selected[data-id="pid_controller/V_ctl"]')).toHaveCount(1);
@@ -148,7 +148,7 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await anchors.first().locator("td.key").click();
   await expect(selected(page)).toHaveAttribute("data-id", "pid_controller");
 
-  // the swatch is the leaf's rate fill in either mode
+  // the swatch is the primitive's rate fill in either mode
   const swatch = () => component(page, "sensing/noise").locator("span.swatch").evaluate((e) => getComputedStyle(e).backgroundColor);
   const tier = await swatch();
   expect(await cursor(component(page, "sensing/noise"))).toBe("pointer");
@@ -208,7 +208,7 @@ test("closed_loop: a drag that makes or changes a text selection in a row select
   await page.keyboard.press("Escape");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
 
-  // a stage 2 row's port: the drag selects its name and nothing on the canvas; a click selects the leaf on its level
+  // a stage 2 row's port: the drag selects its name and nothing on the canvas; a click selects the primitive on its level
   await openTab(page, "order");
   const port = step(page, 7).locator("li.port").last();
   expect(await dragAcross(page, port)).toBe("u_raw");

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LeafFace, StructureSection } from "./descriptor";
+import type { PrimitiveFace, StructureSection } from "./descriptor";
 import { fixtureJson, fixtureModel } from "./fixtures";
 import { parseDescriptor } from "./loader";
 import { loadModel, type Model } from "./model";
@@ -59,13 +59,13 @@ describe("rekey", () => {
   });
 
   it("falls back to the longest prefix still an assembly", () => {
-    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [], outputs: [], wires: [] },
         { ...id, path: "a", field: "a", class: "assembly", inputs: [], outputs: [], wires: [] },
-        { ...id, path: "a/b", field: "b", class: "leaf", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
+        { ...id, path: "a/b", field: "b", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
       ],
       root_inputs: [], anchors: [], scopes: [], types: [],
     };

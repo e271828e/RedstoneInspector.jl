@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
 import { legendLit, legendMarks, rekeyFocus } from "./focus";
-import type { LeafFace, StructureSection } from "./descriptor";
+import type { PrimitiveFace, StructureSection } from "./descriptor";
 import type { Model } from "./model";
 import { CONTINUOUS } from "./rates";
 import { buildResolution } from "./resolve";
@@ -22,7 +22,7 @@ describe("legendLit", () => {
     expect(lit(cl, "", "6,1,0")).toEqual({ blocks: ["lqr_controller"], wires: [] });
   });
 
-  it("lights an assembly with a leaf of anchor 4 beneath and the wire its tint draws", () => {
+  it("lights an assembly with a primitive of anchor 4 beneath and the wire its tint draws", () => {
     expect(lit(cl, "", "4,1,0")).toEqual({ blocks: ["pid_controller"], wires: ["selection|in|δe_pid"] });
     expect(lit(cl, "pid_controller", "4,1,0")).toEqual({ blocks: ["pid_controller/q_ctl"], wires: ["pid_controller/θ_ctl|in|saturation", "⟨out⟩δe|in|δe"] });
     expect(lit(cl, "selection", "4,1,0")).toEqual({ blocks: [], wires: ["selection/select_δe|in|in1"] });
@@ -33,7 +33,7 @@ describe("legendLit", () => {
     expect(lit(cl, "actuators", "9,1,0")).toEqual({ blocks: ["actuators/δe_limiter"], wires: ["actuators/δe_lag|in|u"] });
   });
 
-  it("lights the continuous color: plant, every assembly with a continuous leaf beneath, the 17 wires plant tints", () => {
+  it("lights the continuous color: plant, every assembly with a continuous primitive beneath, the 17 wires plant tints", () => {
     const l = lit(cl, "", CONTINUOUS);
     expect(l.blocks).toEqual(["actuators", "lqr_controller", "pid_controller", "plant", "selection", "sensing"]);
     expect(l.wires).toHaveLength(17);
@@ -45,7 +45,7 @@ describe("legendLit", () => {
     });
   });
 
-  it("on rates lights the mixed fast by its leaves beneath, never by the continuous color, and the continuous wires on levels with no continuous block", () => {
+  it("on rates lights the mixed fast by its primitives beneath, never by the continuous color, and the continuous wires on levels with no continuous block", () => {
     expect(lit(rates, "", "1,1,0")).toEqual({ blocks: ["fast"], wires: ["⟨out⟩inner|in|inner"] });
     expect(lit(rates, "", "1,2,0")).toEqual({ blocks: ["fast"], wires: ["⟨out⟩outer|in|outer"] });
     expect(lit(rates, "fast", "1,2,0")).toEqual({ blocks: ["fast/outer"], wires: ["⟨out⟩outer|in|outer"] });
@@ -77,16 +77,16 @@ describe("rekeyFocus", () => {
   });
 
   it("drops the continuous color when the one node without a triple is a mixed assembly", () => {
-    const f = (name: string): LeafFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
+    const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
-    const leaf = (name: string, m: number) =>
-      ({ ...id, path: `A/${name}`, field: name, class: "leaf" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
-    // an assembly `A` of the discrete leaves `D1` and `D2` on two clocks, alone under the root
+    const primitive = (name: string, m: number) =>
+      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
+    // an assembly `A` of the discrete primitives `D1` and `D2` on two clocks, alone under the root
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [], outputs: [], wires: [] },
         { ...id, path: "A", field: "A", class: "assembly", inputs: [], outputs: [], wires: [{ from: { path: "A/D1", port: "v" }, to: { path: "A/D2", port: "u" } }] },
-        leaf("D1", 1), leaf("D2", 2),
+        primitive("D1", 1), primitive("D2", 2),
       ],
       root_inputs: [], anchors: [], scopes: [], types: [],
     };

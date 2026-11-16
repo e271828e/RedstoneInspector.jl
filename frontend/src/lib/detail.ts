@@ -1,6 +1,6 @@
 // What the detail pane shows, as data (workspace.md answer 4): one function per
 // selectable element, each a function of the model and the element's key.
-import type { Anchor, KindMarker, LeafFace, Location, Parameter, Rational, Timing } from "./descriptor";
+import type { Anchor, KindMarker, Location, Parameter, PrimitiveFace, Rational, Timing } from "./descriptor";
 import { inPinId, levelOf, outPinId, portId } from "./level";
 import type { Model } from "./model";
 import { folderOf } from "./outline";
@@ -49,7 +49,7 @@ function ordinal(n: number): string {
 }
 
 /**
- * A discrete leaf's rate as a phrase: anchor 0 as "every base tick", another anchor as "every tick of q_ctl,
+ * A discrete primitive's rate as a phrase: anchor 0 as "every base tick", another anchor as "every tick of q_ctl,
  * 1/50 s" with its key and T, and its tau when non-zero; `m` > 1 as "every 4th", `c` > 0 adding ", offset 1".
  */
 export function ratePhrase(t: Timing, anchors: Anchor[]): string {
@@ -61,10 +61,9 @@ export function ratePhrase(t: Timing, anchors: Anchor[]): string {
   return t.c > 0 ? `${head}, offset ${t.c}` : head;
 }
 
-/** The class in the reader's words and, on a leaf, the tier: "primitive, continuous", "assembly". */
-export function classPhrase(kind: "leaf" | "assembly", tier?: string): string {
-  const word = kind === "leaf" ? "primitive" : kind;
-  return tier ? `${word}, ${tier}` : word;
+/** The class in the reader's words and, on a primitive, the tier: "primitive, continuous", "assembly". */
+export function classPhrase(kind: "primitive" | "assembly", tier?: string): string {
+  return tier ? `${kind}, ${tier}` : kind;
 }
 
 /** The member row's lead before the field: the container's kind, or "field" for a membership of neither form. */
@@ -100,11 +99,11 @@ export interface FaceFacts {
    * nor on a root input, whose `pinned` version 1 of the format writes false whatever the model declares.
    */
   pinned?: boolean;
-  /** A leaf output's stage, from `outputs.components`. */
+  /** A primitive output's stage, from `outputs.components`. */
   stage?: 1 | 2;
   /** The terminal producer, when another face. */
   producer?: Face;
-  /** The terminal consumers, for any face but a leaf input. */
+  /** The terminal consumers, for any face but a primitive input. */
   consumers?: Face[];
 }
 
@@ -114,13 +113,13 @@ export interface LevelFacts extends Omit<NodeFacts, "kind"> {
   scopes: { key: string; timing: string }[];
 }
 export interface NodeFacts {
-  kind: "leaf" | "assembly";
+  kind: "primitive" | "assembly";
   path: string;
   /** The root's is the model's label. */
   segment: string;
   displayName: string;
   tier?: "continuous" | "discrete";
-  /** A discrete leaf's rate: the phrase and the timing in full for its hover title. A continuous leaf has none. */
+  /** A discrete primitive's rate: the phrase and the timing in full for its hover title. A continuous primitive has none. */
   rate?: { phrase: string; title: string };
   membership?: { how: Membership | undefined; field: string; key: string };
   alias?: string;
@@ -159,11 +158,11 @@ export interface FaceElementFacts extends FaceFacts {
   level: string;
   id: string;
   /** The `root_inputs` row, for a root input. */
-  rootInput?: LeafFace;
+  rootInput?: PrimitiveFace;
 }
 export type Facts = LevelFacts | NodeFacts | FolderFacts | WireFacts | FaceElementFacts;
 
-const isLeaf = (tree: Tree, path: string) => tree.byPath.get(path)?.class === "leaf";
+const isPrimitive = (tree: Tree, path: string) => tree.byPath.get(path)?.class === "primitive";
 const same = (a: Face, b: Face) => faceKey(a) === faceKey(b);
 
 /** A face's facts through the resolution. */
@@ -173,22 +172,22 @@ export function faceFacts(model: Model, face: Face): FaceFacts {
   const out: FaceFacts = {
     face, name: face.port, type: info?.type, phrase: info && kindPhrase(info.kind),
   };
-  const leaf = isLeaf(tree, face.path);
-  if (leaf && !isRootInput(face)) out.pinned = info?.pinned ?? false;
-  if (leaf && face.side === "out") {
+  const primitive = isPrimitive(tree, face.path);
+  if (primitive && !isRootInput(face)) out.pinned = info?.pinned ?? false;
+  if (primitive && face.side === "out") {
     const c = model.outputs?.components.find((x) => x.path === face.path);
     if (c) out.stage = c.stage1.includes(face.port) ? 1 : c.stage2.includes(face.port) ? 2 : undefined;
   }
   const t = terminalProducer(res, face);
   if (t && !same(t.face, face)) out.producer = t.face;
-  if (!(leaf && face.side === "in")) out.consumers = terminalConsumers(res, face);
+  if (!(primitive && face.side === "in")) out.consumers = terminalConsumers(res, face);
   return out;
 }
 
 const facesOf = (model: Model, path: string, side: Side, names: { name: string }[]) =>
   names.map((f) => faceFacts(model, { path, side, port: f.name }));
 
-/** A leaf's or a closed assembly's facts; the root's segment is the label. */
+/** A primitive's or a closed assembly's facts; the root's segment is the label. */
 export function nodeFacts(model: Model, path: string): NodeFacts {
   const s = model.structure!, tree = model.tree!;
   const n = tree.byPath.get(path)!;
@@ -199,7 +198,7 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
     parameters: n.parameters, inputs: facesOf(model, path, "in", n.inputs), outputs: facesOf(model, path, "out", n.outputs),
   };
   if (n.key !== undefined) facts.membership = { how: tree.membership.get(path), field: n.field!, key: n.key };
-  if (n.class === "leaf") {
+  if (n.class === "primitive") {
     facts.tier = n.tier;
     if (n.tier === "discrete") facts.rate = { phrase: ratePhrase(n.timing, s.anchors), title: timingPhrase(n.timing, s.anchors) };
   } else {
@@ -212,11 +211,11 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
 /** A count in words, the singular for one: `1 wire`, `2 wires`. */
 export const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
 
-/** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is its leaf. */
+/** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is the root itself. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
   const s = model.structure!, n = model.tree!.byPath.get(path)!;
   const node = nodeFacts(model, path);
-  if (n.class === "leaf") return node;
+  if (n.class === "primitive") return node;
   return {
     ...node, kind: "level",
     scopes: s.scopes.filter((x) => x.path === path).map((x) => ({ key: x.key, timing: timingPhrase(x.timing, s.anchors) })),
@@ -237,7 +236,7 @@ export function wireFacts(model: Model, level: string, id: string): WireFacts | 
   const fromPin = w.from.block === inPinId(w.from.port), toPin = w.to.block === outPinId(w.to.port);
   const from: Face = { path: fromPin ? level : w.from.block, side: fromPin ? "in" : "out", port: w.from.port };
   const to: Face = { path: toPin ? level : w.to.block, side: toPin ? "out" : "in", port: w.to.port };
-  const terminal = (to.side === "in" && isLeaf(res.tree, to.path)) || (to.side === "out" && to.path === "");
+  const terminal = (to.side === "in" && isPrimitive(res.tree, to.path)) || (to.side === "out" && to.path === "");
   const t = terminalProducer(res, from);
   const info = t && faceInfo(res, t.face.path, t.face.side, t.face.port);
   return {

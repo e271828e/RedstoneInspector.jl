@@ -50,7 +50,7 @@ test("failure_probe: two rows, error first, the filter, a click focusing and sel
   await row(page, 0).locator("span.message").click();
   await expect(row(page, 0)).toHaveClass(/\bcurrent\b/);
   await expect(page.locator('g.block.selected[data-id="t"]')).toHaveCount(1);
-  await expect(page.locator('aside.detail[data-kind="leaf"]')).toHaveAttribute("data-id", "t");
+  await expect(page.locator('aside.detail[data-kind="primitive"]')).toHaveAttribute("data-id", "t");
   await expect(svg(page)).toHaveClass(/\bdiagnostic-focus\b/);
   await row(page, 1).locator(".kind").click();
   await page.locator(readyLevel("s")).waitFor();

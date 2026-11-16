@@ -12,8 +12,8 @@
         {
           "path": "",
           "class": "assembly",
-          "type": "Redstone.Blocks.Group",
-          "signature": "Redstone.Blocks.Group{@NamedTuple{sum::Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}, or::Redstone.Blocks.Junction{Bool, Bool, 2, typeof(|)}, and::Redstone.Blocks.Junction{Bool, Bool, 2, typeof(&)}, pack::Redstone.Blocks.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Blocks.pack)}, unpack::Redstone.Blocks.Unpack{Float64, 2}, switch::Redstone.Blocks.Switch{Float64}, stop::Redstone.Blocks.StopRequest, constant::Redstone.Blocks.Constant{Float64}, step::Redstone.Blocks.Step{Float64, true}, source::Redstone.Blocks.Source{Float64, typeof(Main.Synthetic.wave)}, noise::Redstone.Blocks.GaussianWhiteNoise{Float64}, integrator::Redstone.Blocks.Integrator{Float64}, limited::Redstone.Blocks.LimitedIntegrator{Float64, true}, lag::Redstone.Blocks.FirstOrderLag{Float64}, ss::Redstone.Blocks.StateSpace{1, 1, 1, false, 1, 1, 1, 1}, tf::Redstone.Blocks.TransferFunction{1, false, 1, 2, 1}, relay::Redstone.Blocks.Relay{Float64}, unit_delay::Redstone.Blocks.UnitDelay{Float64}, d_integrator::Redstone.Blocks.DiscreteIntegrator{Float64}, rate_limiter::Redstone.Blocks.RateLimiter{Float64}, dss::Redstone.Blocks.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}, dtf::Redstone.Blocks.DiscreteTransferFunction{1, false, 1, 2, 1}, zoh_ss::Redstone.Blocks.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}, zoh_tf::Redstone.Blocks.DiscretizedTransferFunction{1, false, 1, 2, 1}, d_limited::Redstone.Blocks.DiscreteLimitedIntegrator{Float64}, delay::Redstone.Blocks.Delay{Float64, 3}, freeze::Redstone.Blocks.Freeze{Float64}, pid::Redstone.Blocks.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, d_pid::Redstone.Blocks.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, lqr::Redstone.Blocks.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, d_lqr::Redstone.Blocks.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, fn::Redstone.Blocks.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}}, NTuple{37, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, Tuple{}, @NamedTuple{noise::Redstone.Absolute, dss::Redstone.Absolute, d_limited::Redstone.Relative, d_pid::Redstone.Relative}}",
+          "type": "Redstone.Library.Group",
+          "signature": "Redstone.Library.Group{@NamedTuple{sum::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}, or::Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}, and::Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}, pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, unpack::Redstone.Library.Unpack{Float64, 2}, switch::Redstone.Library.Switch{Float64}, stop::Redstone.Library.StopRequest, constant::Redstone.Library.Constant{Float64}, step::Redstone.Library.Step{Float64, true}, source::Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}, noise::Redstone.Library.GaussianWhiteNoise{Float64}, integrator::Redstone.Library.Integrator{Float64, false}, limited::Redstone.Library.LimitedIntegrator{Float64, true, false}, lag::Redstone.Library.FirstOrderLag{Float64}, ss::Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}, tf::Redstone.Library.TransferFunction{1, false, 1, 2, 1}, relay::Redstone.Library.Relay{Float64}, unit_delay::Redstone.Library.UnitDelay{Float64}, d_integrator::Redstone.Library.DiscreteIntegrator{Float64, false}, rate_limiter::Redstone.Library.RateLimiter{Float64}, dss::Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}, dtf::Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}, zoh_ss::Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}, zoh_tf::Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}, d_limited::Redstone.Library.DiscreteLimitedIntegrator{Float64, false}, delay::Redstone.Library.Delay{Float64, 3, false}, freeze::Redstone.Library.Freeze{Float64}, pid::Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, d_pid::Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, lqr::Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, d_lqr::Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, fn::Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}}, NTuple{37, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, Tuple{}, @NamedTuple{noise::Redstone.Absolute, dss::Redstone.Absolute, d_limited::Redstone.Relative, d_pid::Redstone.Relative}}",
           "inputs": [
             {
               "name": "a"
@@ -460,16 +460,16 @@
           "path": "sum",
           "field": "children",
           "key": "sum",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Junction",
-          "alias": "Redstone.Blocks.SumJunction",
-          "signature": "Redstone.Blocks.Junction{Float64, Float64, 2, typeof(+)}",
+          "type": "Redstone.Library.Junction",
+          "alias": "Redstone.Library.SumJunction",
+          "signature": "Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}",
           "inputs": [
             {
               "name": "in1",
@@ -509,16 +509,16 @@
           "path": "or",
           "field": "children",
           "key": "or",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Junction",
-          "alias": "Redstone.Blocks.Or",
-          "signature": "Redstone.Blocks.Junction{Bool, Bool, 2, typeof(|)}",
+          "type": "Redstone.Library.Junction",
+          "alias": "Redstone.Library.Or",
+          "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}",
           "inputs": [
             {
               "name": "in1",
@@ -558,16 +558,16 @@
           "path": "and",
           "field": "children",
           "key": "and",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Junction",
-          "alias": "Redstone.Blocks.And",
-          "signature": "Redstone.Blocks.Junction{Bool, Bool, 2, typeof(&)}",
+          "type": "Redstone.Library.Junction",
+          "alias": "Redstone.Library.And",
+          "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}",
           "inputs": [
             {
               "name": "in1",
@@ -607,16 +607,16 @@
           "path": "pack",
           "field": "children",
           "key": "pack",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Junction",
-          "alias": "Redstone.Blocks.Pack",
-          "signature": "Redstone.Blocks.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Blocks.pack)}",
+          "type": "Redstone.Library.Junction",
+          "alias": "Redstone.Library.Pack",
+          "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
           "inputs": [
             {
               "name": "in1",
@@ -662,15 +662,15 @@
           "path": "unpack",
           "field": "children",
           "key": "unpack",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Unpack",
-          "signature": "Redstone.Blocks.Unpack{Float64, 2}",
+          "type": "Redstone.Library.Unpack",
+          "signature": "Redstone.Library.Unpack{Float64, 2}",
           "inputs": [
             {
               "name": "u",
@@ -711,15 +711,15 @@
           "path": "switch",
           "field": "children",
           "key": "switch",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Switch",
-          "signature": "Redstone.Blocks.Switch{Float64}",
+          "type": "Redstone.Library.Switch",
+          "signature": "Redstone.Library.Switch{Float64}",
           "inputs": [
             {
               "name": "in1",
@@ -762,15 +762,15 @@
           "path": "stop",
           "field": "children",
           "key": "stop",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.StopRequest",
-          "signature": "Redstone.Blocks.StopRequest",
+          "type": "Redstone.Library.StopRequest",
+          "signature": "Redstone.Library.StopRequest",
           "inputs": [
             {
               "name": "u",
@@ -806,15 +806,15 @@
           "path": "constant",
           "field": "children",
           "key": "constant",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Constant",
-          "signature": "Redstone.Blocks.Constant{Float64}",
+          "type": "Redstone.Library.Constant",
+          "signature": "Redstone.Library.Constant{Float64}",
           "inputs": [],
           "outputs": [
             {
@@ -837,15 +837,15 @@
           "path": "step",
           "field": "children",
           "key": "step",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Step",
-          "signature": "Redstone.Blocks.Step{Float64, true}",
+          "type": "Redstone.Library.Step",
+          "signature": "Redstone.Library.Step{Float64, true}",
           "inputs": [],
           "outputs": [
             {
@@ -876,15 +876,15 @@
           "path": "source",
           "field": "children",
           "key": "source",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Source",
-          "signature": "Redstone.Blocks.Source{Float64, typeof(Main.Synthetic.wave)}",
+          "type": "Redstone.Library.Source",
+          "signature": "Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}",
           "inputs": [],
           "outputs": [
             {
@@ -907,15 +907,15 @@
           "path": "noise",
           "field": "children",
           "key": "noise",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 1,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.GaussianWhiteNoise",
-          "signature": "Redstone.Blocks.GaussianWhiteNoise{Float64}",
+          "type": "Redstone.Library.GaussianWhiteNoise",
+          "signature": "Redstone.Library.GaussianWhiteNoise{Float64}",
           "inputs": [],
           "outputs": [
             {
@@ -950,15 +950,15 @@
           "path": "integrator",
           "field": "children",
           "key": "integrator",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Integrator",
-          "signature": "Redstone.Blocks.Integrator{Float64}",
+          "type": "Redstone.Library.Integrator",
+          "signature": "Redstone.Library.Integrator{Float64, false}",
           "inputs": [
             {
               "name": "u",
@@ -990,15 +990,15 @@
           "path": "limited",
           "field": "children",
           "key": "limited",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.LimitedIntegrator",
-          "signature": "Redstone.Blocks.LimitedIntegrator{Float64, true}",
+          "type": "Redstone.Library.LimitedIntegrator",
+          "signature": "Redstone.Library.LimitedIntegrator{Float64, true, false}",
           "inputs": [
             {
               "name": "u",
@@ -1046,15 +1046,15 @@
           "path": "lag",
           "field": "children",
           "key": "lag",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.FirstOrderLag",
-          "signature": "Redstone.Blocks.FirstOrderLag{Float64}",
+          "type": "Redstone.Library.FirstOrderLag",
+          "signature": "Redstone.Library.FirstOrderLag{Float64}",
           "inputs": [
             {
               "name": "u",
@@ -1090,15 +1090,15 @@
           "path": "ss",
           "field": "children",
           "key": "ss",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.StateSpace",
-          "signature": "Redstone.Blocks.StateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+          "type": "Redstone.Library.StateSpace",
+          "signature": "Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1146,15 +1146,15 @@
           "path": "tf",
           "field": "children",
           "key": "tf",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.TransferFunction",
-          "signature": "Redstone.Blocks.TransferFunction{1, false, 1, 2, 1}",
+          "type": "Redstone.Library.TransferFunction",
+          "signature": "Redstone.Library.TransferFunction{1, false, 1, 2, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1190,15 +1190,15 @@
           "path": "relay",
           "field": "children",
           "key": "relay",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Relay",
-          "signature": "Redstone.Blocks.Relay{Float64}",
+          "type": "Redstone.Library.Relay",
+          "signature": "Redstone.Library.Relay{Float64}",
           "inputs": [
             {
               "name": "u",
@@ -1242,15 +1242,15 @@
           "path": "unit_delay",
           "field": "children",
           "key": "unit_delay",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.UnitDelay",
-          "signature": "Redstone.Blocks.UnitDelay{Float64}",
+          "type": "Redstone.Library.UnitDelay",
+          "signature": "Redstone.Library.UnitDelay{Float64}",
           "inputs": [
             {
               "name": "u",
@@ -1282,15 +1282,15 @@
           "path": "d_integrator",
           "field": "children",
           "key": "d_integrator",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscreteIntegrator",
-          "signature": "Redstone.Blocks.DiscreteIntegrator{Float64}",
+          "type": "Redstone.Library.DiscreteIntegrator",
+          "signature": "Redstone.Library.DiscreteIntegrator{Float64, false}",
           "inputs": [
             {
               "name": "u",
@@ -1322,15 +1322,15 @@
           "path": "rate_limiter",
           "field": "children",
           "key": "rate_limiter",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.RateLimiter",
-          "signature": "Redstone.Blocks.RateLimiter{Float64}",
+          "type": "Redstone.Library.RateLimiter",
+          "signature": "Redstone.Library.RateLimiter{Float64}",
           "inputs": [
             {
               "name": "u",
@@ -1370,15 +1370,15 @@
           "path": "dss",
           "field": "children",
           "key": "dss",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 2,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscreteStateSpace",
-          "signature": "Redstone.Blocks.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+          "type": "Redstone.Library.DiscreteStateSpace",
+          "signature": "Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1426,15 +1426,15 @@
           "path": "dtf",
           "field": "children",
           "key": "dtf",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscreteTransferFunction",
-          "signature": "Redstone.Blocks.DiscreteTransferFunction{1, false, 1, 2, 1}",
+          "type": "Redstone.Library.DiscreteTransferFunction",
+          "signature": "Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1470,15 +1470,15 @@
           "path": "zoh_ss",
           "field": "children",
           "key": "zoh_ss",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscretizedStateSpace",
-          "signature": "Redstone.Blocks.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+          "type": "Redstone.Library.DiscretizedStateSpace",
+          "signature": "Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1505,15 +1505,15 @@
           "path": "zoh_tf",
           "field": "children",
           "key": "zoh_tf",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscretizedTransferFunction",
-          "signature": "Redstone.Blocks.DiscretizedTransferFunction{1, false, 1, 2, 1}",
+          "type": "Redstone.Library.DiscretizedTransferFunction",
+          "signature": "Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}",
           "inputs": [
             {
               "name": "u",
@@ -1549,15 +1549,15 @@
           "path": "d_limited",
           "field": "children",
           "key": "d_limited",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 2,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscreteLimitedIntegrator",
-          "signature": "Redstone.Blocks.DiscreteLimitedIntegrator{Float64}",
+          "type": "Redstone.Library.DiscreteLimitedIntegrator",
+          "signature": "Redstone.Library.DiscreteLimitedIntegrator{Float64, false}",
           "inputs": [
             {
               "name": "u",
@@ -1605,15 +1605,15 @@
           "path": "delay",
           "field": "children",
           "key": "delay",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Delay",
-          "signature": "Redstone.Blocks.Delay{Float64, 3}",
+          "type": "Redstone.Library.Delay",
+          "signature": "Redstone.Library.Delay{Float64, 3, false}",
           "inputs": [
             {
               "name": "u",
@@ -1645,15 +1645,15 @@
           "path": "freeze",
           "field": "children",
           "key": "freeze",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Freeze",
-          "signature": "Redstone.Blocks.Freeze{Float64}",
+          "type": "Redstone.Library.Freeze",
+          "signature": "Redstone.Library.Freeze{Float64}",
           "inputs": [
             {
               "name": "u",
@@ -1680,15 +1680,15 @@
           "path": "pid",
           "field": "children",
           "key": "pid",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.PID",
-          "signature": "Redstone.Blocks.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+          "type": "Redstone.Library.PID",
+          "signature": "Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
           "inputs": [
             {
               "name": "r",
@@ -1768,15 +1768,15 @@
           "path": "d_pid",
           "field": "children",
           "key": "d_pid",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 2,
             "c": 1
           },
-          "type": "Redstone.Blocks.DiscretePID",
-          "signature": "Redstone.Blocks.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+          "type": "Redstone.Library.DiscretePID",
+          "signature": "Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
           "inputs": [
             {
               "name": "r",
@@ -1864,15 +1864,15 @@
           "path": "lqr",
           "field": "children",
           "key": "lqr",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.LQRTracker",
-          "signature": "Redstone.Blocks.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
+          "type": "Redstone.Library.LQRTracker",
+          "signature": "Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
           "inputs": [
             {
               "name": "x",
@@ -1990,15 +1990,15 @@
           "path": "d_lqr",
           "field": "children",
           "key": "d_lqr",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "discrete",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.DiscreteLQRTracker",
-          "signature": "Redstone.Blocks.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
+          "type": "Redstone.Library.DiscreteLQRTracker",
+          "signature": "Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
           "inputs": [
             {
               "name": "x",
@@ -2130,15 +2130,15 @@
           "path": "fn",
           "field": "children",
           "key": "fn",
-          "class": "leaf",
+          "class": "primitive",
           "tier": "continuous",
           "timing": {
             "anchor": 0,
             "m": 1,
             "c": 0
           },
-          "type": "Redstone.Blocks.Junction",
-          "signature": "Redstone.Blocks.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}",
+          "type": "Redstone.Library.Junction",
+          "signature": "Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}",
           "inputs": [
             {
               "name": "in1",
@@ -2214,621 +2214,621 @@
       "scopes": [],
       "types": [
         {
-          "name": "Redstone.Blocks.Group",
-          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref): `children` is\nname-transparent, so its elements go by bare key everywhere a child name\nappears. That is `\"ctl/out\" => \"plant/u\"` for a wire, `(ctl = Relative(2),)` for\na rate, `at(\"ctl\", …)` for a [condition](@ref g-condition) prefix and\n`\"plant/y\"` for a read path. A `Group`'s declarations are then textually\nidentical to a named assembly's. The rate declaration's field-name sugar, keying\non the field rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n\nThe type parameters carry the children's concrete types, so the\n[executor](@ref g-executor) specializes on them as on a named assembly. What a\n`Group` gives up against a named type is dispatch, which exploratory composition\ndoes not want.\n",
+          "name": "Redstone.Library.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2123
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3134
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2120
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3131
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2121
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3132
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2122
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3133
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2124
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3135
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Junction",
-          "docstring": "    Junction{In, Out, N}(f) -> Junction{In, Out, N}\n\nA continuous [primitive](@ref g-primitive) that publishes a fold of its `N`\ninputs as its one output.\n\nThe inputs `in1` to `inN` are typed `In`, and the one output, bare, is typed\n`Out`, with `y = f(in1, …, inN)`, the fold applied in positional order. A wire\nnames the output `y`, as in `\"sum/y\"`. The [block](@ref g-block) is\nstateless. The fold `f` is instance data, and the type\nparameter `F` is inferred from it. A custom fold, such as a weighted blend or a\nmass-properties composition, is written at the site.\n\nThe fold is stateless and declares no events, so a discontinuity written into\nit lands wherever it lands inside a step. A clamp is fine, since its kink is\nsecond-order downstream. So is a branch on a `Bool` that flips at a\n[boundary](@ref g-boundary), as a saturation code does. A branch on a continuous\nquantity makes a mode silently, which the moded blocks such as [`Relay`](@ref)\nexist to declare.\n\nSee also [`SumJunction`](@ref), [`Or`](@ref), [`And`](@ref), [`Pack`](@ref).\n",
+          "name": "Redstone.Library.Junction",
+          "docstring": "    Junction{In, Out, N}(f) -> Junction{In, Out, N}\n\nA continuous [primitive](@ref g-primitive) that publishes a fold of its `N`\ninputs as its one output.\n\nThe inputs `in1` to `inN` are typed `In`. The one output, `y`, is typed `Out`,\nand a wire names it as in `\"sum/y\"`. It publishes `y = f(in1, …, inN)`, the\nfold applied in positional order.\n\nThe [library component](@ref g-library-component) is stateless. A user writes a\ncustom fold, such as a weighted blend or a mass-properties composition, at the\nsite.\n\nThe fold holds no state and declares no [events](@ref g-state-event). A\ndiscontinuity written into it therefore lands wherever it falls inside a step. A\nclamp is fine, since its kink is second-order downstream. So is a branch on a\n`Bool` that flips at a [boundary](@ref g-boundary), as a saturation code does. A\nbranch on a continuous quantity makes a mode silently. The components with\nmodes, such as [`Relay`](@ref), declare one.\n\nSee also [`SumJunction`](@ref), [`Or`](@ref), [`And`](@ref), [`Pack`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 111
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 117
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 113
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 119
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 110
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 116
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Unpack",
-          "docstring": "    Unpack{V, N}() -> Unpack{V, N}\n\nA continuous [primitive](@ref g-primitive) that publishes the `N` elements of\nits static-vector input as `N` outputs.\n\nThe one input, bare, is an `SVector{N, V}`, and the outputs `out1` to `outN`\nare typed `V`, with `outi = u[i]`. A wire names the input by the block's path\nalone. The [block](@ref g-block) is stateless, and the inverse of\n[`Pack`](@ref).\n",
+          "name": "Redstone.Library.Unpack",
+          "docstring": "    Unpack{V, N}() -> Unpack{V, N}\n\nA continuous [primitive](@ref g-primitive) that publishes the `N` elements of\nits `SVector` input as `N` outputs.\n\nThe one input, `u`, is an `SVector{N, V}`, and the outputs `out1` to `outN`\nare typed `V`, with `outi = u[i]`. A wire names the input as in\n`\"unpack/u\"`. The [library component](@ref g-library-component) is stateless,\nand the inverse of [`Pack`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 136
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 137
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 135
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.Switch",
-          "docstring": "    Switch{V}() -> Switch{V}\n\nA continuous [primitive](@ref g-primitive) that publishes one of its two inputs,\npicked by a `Bool` input.\n\nThe inputs `in1` and `in2` are typed `V` and `select` is a `Bool`. The one\noutput, bare and typed `V`, is `in1` while `select` holds and `in2` otherwise.\nThe [block](@ref g-block) is stateless. The output reads all three inputs, so a\nselector wired from a memoryless function of it closes an\n[algebraic loop](@ref g-algebraic-loop), which the build refuses as\n`AlgebraicCycle`.\n\nThe block declares no event, so the jump in the output lands where `select`\nflips. A\n`select` published from a mode, or held between [ticks](@ref g-tick), flips on a\n[boundary](@ref g-boundary) and the jump is clean. One computed from a\ncontinuous quantity inside a stage body flips inside a step and smears that\nstep. That is a mode made silently, which the moded blocks such as\n[`Relay`](@ref) exist to declare.\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 164
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 165
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 163
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.StopRequest",
-          "docstring": "    StopRequest(; reason = \"\") -> StopRequest\n\nA continuous [primitive](@ref g-primitive) that publishes a\n[stop request](@ref g-stop-request) while its `Bool` input holds.\n\nIts one output, a bare [`StopFlag`](@ref), publishes `STOP_REQUESTED` while its\none input, a bare `Bool`, holds and `NO_STOP` otherwise. A wire names them `u`\nand `y`. The [block](@ref g-block) is\nstateless, so it refreshes at every [boundary](@ref g-boundary) and sits\nanywhere in the tree. It holds no privilege: the request is the\n[port](@ref g-port)'s type, and any component may publish one.\n\n# Keywords\n\n- `reason`: the reason the block's requests report, read by\n  [`stop_reason`](@ref). It is instance data.\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 274
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 275
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 273
-            },
-            {
-              "function": "stop_reason",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 277
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.Constant",
-          "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, bare, publishes `value` from [stage 1](@ref g-stage-function).\nThe [block](@ref g-block) is stateless, so discrete consumers read it as well.\n\nThe output is [pinned](@ref g-walked) at `V`, the type of `value`. A constant is\nnever seeded, so it carries zero partials under every `Dual`\n[activation](@ref g-activation). A consumer input declared plain `Float64`,\nwhich admits a value with or without partials, accepts it as a value that never\ncarries partials. The value is instance data, not an overridable default. A\nsource set from outside is a [root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
-          "locations": [
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
               "line": 193
             },
             {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 194
+            },
+            {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
               "line": 192
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Step",
-          "docstring": "    Step(; t_step, before = 0.0, after = 1.0, localized::Bool = true) -> Step\n\nA continuous [primitive](@ref g-primitive) that publishes one value before a\ngiven time and another from then on.\n\nIts one output, bare, publishes `before` until `t_step` and `after` from then\non. The [block](@ref g-block) is a mode-only primitive with no inputs. Its one bare mode, `fired`\nbelow, picks the value, and one [state event](@ref g-state-event), `fire`, sets it once\n`t` reaches `t_step`. The output is [pinned](@ref g-walked) at `V`. The value depends\non neither state nor an input that follows the scalar, so it carries zero\npartials under every [activation](@ref g-activation), as a [`Constant`](@ref)'s\ndoes.\n\n`localized` picks the detection policy. [Localized](@ref g-localized), the\n[guard](@ref g-guard) is the sign form `t - t_step`: the step ends at the\ncrossing and the jump lands there.\n[Boundary-detected](@ref g-boundary-detected), the guard is the `Bool`\n`t ≥ t_step`. The event then fires at the end of the step in which it was first\nobserved, so the jump lands on the first [boundary](@ref g-boundary) at or after\n`t_step`, never inside a step. The policy is the type parameter `L` rather than\na field because the build reads it off the guard's return type.\n\n[Boundary zero](@ref g-boundary-zero) sets every [prior](@ref g-prior) to\nnot-holding. A `t_step` at or before `t₀` therefore fires there, and the output\npublishes `after` from the start.\n\n# Keywords\n\n- `t_step`: the time of the step, any time.\n- `before`: the value before `t_step`.\n- `after`: the value from `t_step` on. `before` and `after` are promoted to one\n  `V`, `Float64` or a static array of `Float64`, and taken by `float`, so\n  integer values qualify.\n- `localized`: `true` for a localized step, `false` for a boundary-detected one.\n",
+          "name": "Redstone.Library.Switch",
+          "docstring": "    Switch{V}() -> Switch{V}\n\nA continuous [primitive](@ref g-primitive) that publishes one of its two inputs,\npicked by a `Bool` input.\n\nThe inputs `in1` and `in2` are typed `V` and `select` is a `Bool`. The one\noutput, `y`, is typed `V`. It is `in1` while `select` holds and `in2` otherwise.\nThe [library component](@ref g-library-component) is stateless.\n\nThe output reads all three inputs. A `select` wired from a memoryless function\nof the output therefore closes an [algebraic loop](@ref g-algebraic-loop), which\nthe build refuses as `AlgebraicCycle`.\n\nThe component declares no [event](@ref g-state-event), so the jump in the output\nlands where `select` flips. A `select` published from a mode, or held between\n[ticks](@ref g-tick), flips on a [boundary](@ref g-boundary) and the jump is\nclean. One computed from a continuous quantity inside a\n[stage body](@ref g-stage-function) flips inside a step and smears that step.\nThat is a mode made silently. A [`Comparator`](@ref) on the quantity is the\ndeclared way to produce `select`. A [`Relay`](@ref) publishes a value rather\nthan a `Bool`, so it reaches `select` through a [`Junction`](@ref).\n",
           "locations": [
             {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 262
+            },
+            {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1130
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 263
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1128
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 261
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.StopRequest",
+          "docstring": "    StopRequest(; reason = \"\") -> StopRequest\n\nA continuous [primitive](@ref g-primitive) that publishes a\n[stop request](@ref g-stop-request) while its `Bool` input holds.\n\nIts one output, `y`, is a [`StopFlag`](@ref). It publishes `STOP_REQUESTED`\nwhile its one input, the `Bool` `u`, holds and `NO_STOP` otherwise. The\n[library component](@ref g-library-component) is stateless, so it refreshes at\nevery [boundary](@ref g-boundary) and sits anywhere in the tree.\n\nAny [component](@ref g-component) may publish a request, since the request is\nthe [port](@ref g-port)'s type.\n\n# Keywords\n\n- `reason`: the reason the component's requests report, read by\n  [`stop_reason`](@ref).\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 440
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 441
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 439
+            },
+            {
+              "function": "stop_reason",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 443
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.Constant",
+          "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, `y`, publishes `value` from [stage 1](@ref g-stage-function).\nThe [library component](@ref g-library-component) is stateless, so discrete\nconsumers read it as well.\n\nThe output is [pinned](@ref g-walked) at the parameter `V`, the type of `value`.\nIt carries zero partials under every `Dual` [activation](@ref g-activation). A\nconsumer input declared plain `Float64`, which admits a value with or without\npartials, accepts it as a value that never carries partials.\n\nThe value is a field, not an overridable default. A source set from outside is a\n[root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 351
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 350
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.Step",
+          "docstring": "    Step(; t_step, before = 0.0, after = 1.0, localized::Bool = true) -> Step\n\nA continuous [primitive](@ref g-primitive) that publishes one value before a\ngiven time and another from then on.\n\nIts one output, `y`, publishes `before` until `t_step` and `after` from then on.\nThe [library component](@ref g-library-component) has no inputs and no\ncontinuous state. Its one mode, the field `m`, picks the value. One\n[state event](@ref g-state-event), `fire`, sets it once `t` reaches `t_step`.\n\n`before` and `after` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar pairs with a vector and\ninteger values qualify. The output is [pinned](@ref g-walked) at `V`. It carries\nzero partials under every [activation](@ref g-activation), as a\n[`Constant`](@ref)'s does.\n\n`localized` picks the detection policy.\n[Localized](@ref g-localized), the step ends at the crossing and the jump lands\nthere. [Non-localized](@ref g-non-localized), the event fires at the end of the\nstep in which it was first observed. The jump then lands on the first\n[boundary](@ref g-boundary) at or after `t_step`, never inside a step.\n\nA `t_step` at or before `t₀` fires at [boundary zero](@ref g-boundary-zero), and\nthe output publishes `after` from the start.\n\n# Keywords\n\n- `t_step`: the time of the step, any time.\n- `before`: the value before `t_step`.\n- `after`: the value from `t_step` on.\n- `localized`: `true` for a localized step, `false` for a non-localized one.\n",
+          "locations": [
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1642
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1640
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1129
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1641
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Source",
-          "docstring": "    Source{V}(f) -> Source{V}\n    Source(f) -> Source{Float64}\n\nA continuous [primitive](@ref g-primitive) that publishes a function of time,\nwith no inputs and no state.\n\nIts one output, bare, publishes `f(t)` from [stage 1](@ref g-stage-function).\n`Source(f)` is `Source{Float64}(f)`. `f` receives the plain `Float64` time under\nevery [activation](@ref g-activation), so it need not be generic, and it returns\na `V`. Nothing converts, so a value of another type is refused at build as\n`ConformanceFailure`.\n\nThe output is [pinned](@ref g-walked) at `V`. The time is stripped of its\npartials before `f` sees it, so the output depends on neither state nor an\ninput that follows the scalar, and carries zero partials under every\nactivation. A source set from\noutside is a [root input](@ref g-root-input).\n\nSee also [`Constant`](@ref), [`Step`](@ref).\n",
+          "name": "Redstone.Library.Source",
+          "docstring": "    Source{V}(f) -> Source{V}\n    Source(f) -> Source{Float64}\n\nA continuous [primitive](@ref g-primitive) that publishes a function of time,\nwith no inputs and no state.\n\nIts one output, `y`, publishes `f(t)` from [stage 1](@ref g-stage-function).\n`Source(f)` is `Source{Float64}(f)`. `f` receives the plain `Float64` time under\n`Float64` and a one-layer `Dual` [activation](@ref g-activation), so it need not\nbe generic there. It returns a `V`. Nothing converts, so a value of another type\nis refused as `ConformanceFailure`, at build for the value the build reads and\nas a `StepError` carrying it on a later [frame](@ref g-frame).\n\nThe output is [pinned](@ref g-walked) at `V` and carries zero partials under\nevery activation. The time loses one `Dual` layer before `f` sees it. At a\nnested `Dual`, an `f` that returns the inner `Dual` is refused at build as\n`ConformanceFailure`.\n\nA source set from outside is a [root input](@ref g-root-input).\n\nSee also [`Constant`](@ref), [`Step`](@ref).\n",
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 563
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 900
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 562
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 899
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.GaussianWhiteNoise",
-          "docstring": "    GaussianWhiteNoise(; seed, μ = nothing, σ = nothing, psd = nothing) -> GaussianWhiteNoise\n\nA discrete [primitive](@ref g-primitive) that publishes a seeded Gaussian white\nnoise sample at each [tick](@ref g-tick).\n\nThe [block](@ref g-block) is a discrete Gaussian white noise process. At each\ntick, its one output, bare, publishes an independent sample of mean `μ` and\nstandard deviation `σ`. It publishes from [stage 1](@ref g-stage-function). The sample is a pure\nfunction of `seed` and the tick count, the one bare [store](@ref g-store) value, `k` below.\nThe stage therefore draws, no generator or [workspace](@ref g-workspace) is\nneeded, and [replay](@ref g-replay) reproduces the stream. After a tick the\nstore holds the next sample's index, so `k` reads `N + 1` once the block has\nticked `N` times past `t₀`. Two blocks with one seed publish one stream, so\nindependent sources take distinct seeds.\n\n`μ` and the scale are broadcast to one `V`, `Float64` or an `SVector` of\n`Float64`, so a scalar pairs with a vector, and over a vector the components\nare independent.\n\nExactly one of `σ` and `psd` is given. Neither or both is refused as an\n`ArgumentError`.\n\n# Keywords\n\n- `seed`: the integer the stream is drawn from. It is instance data.\n- `μ`: the mean. Left at `nothing`, it is zero in the scale's shape.\n- `σ`: the standard deviation per sample, at any period.\n- `psd`: the two-sided intensity `Q` of the white noise the samples stand for,\n  with `σ² = Q/Δt` at the component's own period `Δt`. A one-sided density is\n  halved before being passed.\n",
+          "name": "Redstone.Library.GaussianWhiteNoise",
+          "docstring": "    GaussianWhiteNoise(; seed, μ = nothing, σ = nothing, psd = nothing) -> GaussianWhiteNoise\n\nA discrete [primitive](@ref g-primitive) that publishes a seeded Gaussian white\nnoise sample at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is a discrete Gaussian white\nnoise process. At each tick, its one output, `y`, publishes an independent\nsample of mean `μ` and standard deviation `σ`. It publishes from\n[stage 1](@ref g-stage-function).\n\nThe sample is a pure function of `seed` and the tick count. The tick count is\nthe one [store](@ref g-store) value, the field `s`, written `k` below.\n[Replay](@ref g-replay) therefore reproduces the stream. After a tick the store\nholds the next sample's index, so `k` reads `N + 1` once the component has\nticked `N` times past `t₀`.\n\nTwo components with one seed publish one stream, so independent sources take\ndistinct seeds.\n\n`μ` and the scale are broadcast to one type, the parameter `V` and the\noutput's, `Float64` or an `SArray` of `Float64`, so a scalar pairs with an\narray. Over an `SArray` the components are independent.\n\nExactly one of `σ` and `psd` is given. Neither or both is refused as an\n`ArgumentError`. Halve a one-sided density before passing it as `psd`.\n\n# Keywords\n\n- `seed`: the non-negative integer the stream is drawn from.\n- `μ`: the mean, zero in the scale's shape when left at `nothing`.\n- `σ`: the standard deviation per sample, at any period.\n- `psd`: the two-sided intensity `Q` of the white noise the samples stand for,\n  with `σ² = Q/Δt` at the [component](@ref g-component)'s own period `Δt`.\n",
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 526
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 859
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 525
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 858
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Integrator",
-          "docstring": "    Integrator(; x0 = 0.0) -> Integrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input.\n\nThe [block](@ref g-block) holds one continuous state `x`, starting at `x0`. Its\ninput `u` and its output `y` are bare, and a wire names each by its face, as in\n`\"integrator/u\"`, with `ẋ = u` and `y = x`, published from\n[stage 1](@ref g-stage-function). The block\ntherefore has no [feedthrough](@ref g-feedthrough). A `Float64` state follows\nthe scalar of a `Dual` [activation](@ref g-activation), so the block linearizes\nas it integrates.\n\n# Keywords\n\n- `x0`: the initial value of `x`. `V` is `Float64` or a static array of\n  `Float64`, taken from `float(x0)`, so an integer `x0` qualifies.\n\nSee also [`LimitedIntegrator`](@ref), [`DiscreteIntegrator`](@ref).\n",
+          "name": "Redstone.Library.Integrator",
+          "docstring": "    Integrator(; x0 = 0.0, reset::Bool = false) -> Integrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input.\n\nThe [library component](@ref g-library-component) holds one continuous state\n`x`, starting at `x0`, with `ẋ = u` and `y = x`, published from\n[stage 1](@ref g-stage-function). The component therefore has no\n[feedthrough](@ref g-feedthrough). A `Float64` state follows the scalar of a\n`Dual` [activation](@ref g-activation), so the component linearizes as it\nintegrates.\n\nA wire names its input `u` and its output `y` by [face](@ref g-face), as in\n`\"integrator/u\"`.\n\nWith `reset`, the component gains a second input, the `Bool` `reset`, and its\ndata input keeps the face `u`, as in `\"integrator/u\"` and `\"integrator/reset\"`.\nA rising edge of `reset` writes `x0` into `x`, through one\n[state event](@ref g-state-event), `reset`. The event is\n[non-localized](@ref g-non-localized), so the reset lands on the\n[boundary](@ref g-boundary) where `reset` rises. Under\n[edge semantics](@ref g-edge-semantics), holding `reset` resets once, and a\nsecond rising edge resets again.\n\nA `reset` published from a mode rises only on a boundary, so no reset is late. A\nreset driven by a continuous quantity takes it through a [`Comparator`](@ref),\nwhich localizes the crossing. A `reset` already holding at `t₀` fires at\n[boundary zero](@ref g-boundary-zero).\n\nThe state, the input `u` and the output `y` share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, taken from `Float64.(x0)`, an array\nconverted to an `SArray`, so an integer, a `Float32` or a plain array `x0`\nqualifies.\n\n# Keywords\n\n- `x0`: the initial value of `x`, and the value a reset writes.\n- `reset`: `true` for the form with the `reset` input.\n\nSee also [`LimitedIntegrator`](@ref), [`DiscreteIntegrator`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 595
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 961
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 596
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 962
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 594
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 960
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.LimitedIntegrator",
-          "docstring": "    LimitedIntegrator(; lower, upper, x0 = zero(lower), localized::Bool = true) -> LimitedIntegrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input, held between two limits.\n\nThe [block](@ref g-block) holds one continuous state `x`. Its one input `u` is\nbare, with `ẋ = u` while free and `ẋ = 0` while saturated, and the output\n`out` publishes `x` from [stage 1](@ref g-stage-function). It is not a clamp. The bare mode, `saturation`\nbelow, is read by the derivative, and four [state events](@ref g-state-event) move\nit. It\nis a signed `Int8` code, the sign of the limit in force: `-1` at `lower`, `0`\nfree and `+1` at `upper`. `hit_upper` and `hit_lower` fire when `x` reaches a\nlimit, and their handlers write `x` to the limit exactly and saturate.\n`leave_upper` and `leave_lower` fire when `u` turns strictly back into the\nrange, and free it. An input of exactly zero at a limit keeps the mode\nsaturated. The hit events are [localized](@ref g-localized).\n\nA second output, also `saturation`, publishes the code from stage 1, so it has\nno [feedthrough](@ref g-feedthrough). It serves an anti-windup consumer, such as\na controller that gates its integrator on the code. The code flips only when an\nevent fires, and so only on a declared [boundary](@ref g-boundary).\n\n`localized` picks the detection policy of the leave events. Localized, the\n[guards](@ref g-guard) are sign forms gated by the mode, and the departure ends\nthe step at the input's zero crossing.\n[Boundary-detected](@ref g-boundary-detected), the guards are the `Bool`\n[predicates](@ref g-predicate). The departure then fires at the end of the step\nin which `u` first pointed back into the range, so `x` is held on the limit for\nthe rest of that step. It carries an offset of at most `a h² / 2` from then on,\n`a` the input's slope at its zero crossing. What the cheap form buys is that a\ndeparture costs no root-finding and splits no step, where a localized one pays\nabout 22 trial [sweeps](@ref g-sweep) and a boundary. The policy is the type\nparameter `L` rather than a field because the build reads it off the guard's\nreturn type.\n\nOver a static vector, the limits and the codes are componentwise, and\n`saturation` publishes a static vector of `Int8`. The block declares `N` copies\nof the scalar events, one per component, named `hit_upper_1` to `hit_upper_N`,\nthen `hit_lower_i`, `leave_upper_i` and `leave_lower_i`. Each guard reads its\none component and each handler writes it.\n\n[Boundary zero](@ref g-boundary-zero) sets every [prior](@ref g-prior) to\nnot-holding. An `x0` outside the limits is therefore clamped there, and the\ninitial mode agrees with the initial input.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`, componentwise over a vector.\n- `upper`: the upper limit.\n- `x0`: the initial value of `x`. `x0`, `lower` and `upper` are promoted to one\n  `V`, which is `Float64` or a static array of `Float64`, and taken by `float`,\n  so integer values qualify.\n- `localized`: `true` for localized leave events, `false` for boundary-detected\n  ones.\n\nSee also [`DiscreteLimitedIntegrator`](@ref), [`Integrator`](@ref).\n",
+          "name": "Redstone.Library.LimitedIntegrator",
+          "docstring": "    LimitedIntegrator(; lower, upper, x0 = zero(lower), localized::Bool = true, reset::Bool = false) -> LimitedIntegrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input, held between two limits.\n\nThe [library component](@ref g-library-component) integrates its input `u` into\none continuous state `x`, with `ẋ = u` while free and `ẋ = 0` while saturated.\nIt stops integrating at a limit rather than clamping its output. The output\n`out` publishes `x` from [stage 1](@ref g-stage-function).\n\nFour [state events](@ref g-state-event) move the mode, the field `m`, a signed\n`Int8` code with the sign of the limit in force. The code is `-1` at `lower`,\n`0` free and `+1` at `upper`.\n\n- `hit_upper` and `hit_lower` fire when `x` reaches a limit. They are\n  [localized](@ref g-localized). They write `x` to the limit exactly and\n  saturate.\n- `leave_upper` and `leave_lower` fire when `u` turns strictly back into the\n  range, and they free the component. An input of exactly zero at a limit keeps\n  it saturated.\n\nAn input that turns outward again after a leave, even within the same step,\nstops the component on the limit.\n\nThe output `saturation` publishes the code from stage 1, so it has no\n[feedthrough](@ref g-feedthrough). It serves an anti-windup consumer, such as a\ncontroller that gates its integrator on the code. The code changes only when an\nevent fires, and so only on a declared [boundary](@ref g-boundary).\n\n`localized` picks how the leave events fire. With `true`, a departure ends the\nstep at the input's zero crossing, at the cost of root-finding and a split step.\nWith `false`, the leave events are\n[non-localized](@ref g-non-localized), and a departure costs neither. It fires\nat the first boundary after `u` points back into the range, at the latest the\nend of that step. `x` stays on the limit until then. It then carries an\noffset of about `a h² / 2` at most, to leading order in `h`, with `a` the\ninput's slope at its zero crossing and `h` the step.\n\nOver an `SArray`, the limits and the codes are componentwise, and `saturation`\npublishes an `SArray` of `Int8` of the same shape. The integrator declares one\ncopy of each event per component, named `hit_upper_1` to `hit_upper_N`, then\n`hit_lower_i`, `leave_upper_i` and `leave_lower_i`. Each copy acts on its own\ncomponent.\n\nAn `x0` outside the limits is clamped at [boundary zero](@ref g-boundary-zero),\nand the initial mode agrees with the initial input.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs `u` and `reset` are\nnamed. It also adds one `reset` event, however wide the component is. As on the\n[`Integrator`](@ref), the event is non-localized on the flag, so it fires\nonce per rising edge. Its handler writes `x0`, clamped to the limits, and the\ncode that value earns. A reset onto a limit therefore lands saturated, and frees\nat that boundary if `u` points back into the range. A reset inside lands free,\nwhatever the mode was.\n\n`x0`, `lower` and `upper` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar limit pairs with a vector and\ninteger values qualify. A `lower` not below `upper`, componentwise over an\n`SArray`, is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`.\n- `upper`: the upper limit.\n- `x0`: the initial value of `x`, and the value a reset writes.\n- `localized`: `true` for localized leave events, `false` for non-localized\n  ones.\n- `reset`: `true` to add the input `reset` and its event.\n\nSee also [`LimitedDoubleIntegrator`](@ref), [`DiscreteLimitedIntegrator`](@ref),\n[`Integrator`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1216
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1843
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1217
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1844
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1214
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1841
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1215
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1842
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.FirstOrderLag",
-          "docstring": "    FirstOrderLag(; τ, x0 = 0.0) -> FirstOrderLag\n\nA continuous [primitive](@ref g-primitive) that publishes its input through a\nfirst-order lag of time constant `τ`.\n\nThe [block](@ref g-block) holds one continuous state `x` from `x0`. Its input\n`u` and its output `y` are bare, with `ẋ = (u - x) / τ` and `y = x`, published\nfrom [stage 1](@ref g-stage-function). The state follows the scalar of a `Dual`\n[activation](@ref g-activation), so the lag linearizes to `A = -1/τ` and\n`B = 1/τ`. A hand-written lag whose [scratch](@ref g-scratch) is kept at\n`Float64` fails there instead.\n\n`V` is `Float64` or a static array of `Float64`, taken from `float(x0)`, so an\ninteger `x0` qualifies. For a scalar signal it is\n[`TransferFunction`](@ref)`(num = (1,), den = (τ, 1), u0 = x0)`; the block stays\nfor static-array signals, for `x0` in the signal's own coordinates and for the\nspelling.\n\n# Keywords\n\n- `τ`: the time constant, positive. It is instance data, kept a `Float64`\n  whatever scalar the model runs at.\n- `x0`: the initial value of `x`.\n",
+          "name": "Redstone.Library.FirstOrderLag",
+          "docstring": "    FirstOrderLag(; τ, x0 = 0.0) -> FirstOrderLag\n\nA continuous [primitive](@ref g-primitive) that publishes its input through a\nfirst-order lag of time constant `τ`.\n\nThe [library component](@ref g-library-component) holds one continuous state `x`\nfrom `x0`. Its input is `u` and its output `y`, with `ẋ = (u - x) / τ` and\n`y = x`, published from [stage 1](@ref g-stage-function). The state follows the\nscalar of a `Dual` [activation](@ref g-activation), so the lag linearizes to\n`A = -1/τ` and `B = 1/τ`.\n\nFor a scalar signal the component is\n[`TransferFunction`](@ref)`(num = (1,), den = (τ, 1), u0 = x0)`. The component\nstays for `SArray` signals, for `x0` in the signal's own coordinates and for\nthe spelling.\n\nThe state, the input `u`, the output `y` and `τ` share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `τ` and `x0` to one\nshape, so a scalar `τ` pairs with a vector `x0` and integer values qualify. Over\nan `SArray` the lag is componentwise, each component at its own `τ`. A `τ` that\nis not positive in every component is refused as an `ArgumentError`. `τ` stays\nat `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `τ`: the time constant, positive.\n- `x0`: the initial value of `x`.\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 637
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1012
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 638
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1013
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 636
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1011
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.StateSpace",
-          "docstring": "    StateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n               D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n               x0 = zeros(size(A, 1))) -> StateSpace\n\nA continuous [primitive](@ref g-primitive) that runs a linear system given in\nstate-space form.\n\nThe [block](@ref g-block) holds one continuous state `x` from `x0`, and its\ninput `u` and its output `y` are bare:\n\n    ẋ = A x + B u\n    y = C x + D u\n\nThe state is an `SVector` at every size. `u` is a `Float64` when `n_u` is one\nand an `SVector{n_u, Float64}` otherwise, and `y` likewise by `n_y`.\n\nThe type parameter `FT` is the feedthrough class of [`LinearBlock`](@ref), and\n`D` picks it. A zero `D` publishes `y` from [stage 1](@ref g-stage-function).\nThe block then breaks an [algebraic loop](@ref g-algebraic-loop) as the lag\ndoes. A nonzero `D` publishes it from stage 2, so a loop closed on the block\nthrough a memoryless path is refused as `AlgebraicCycle`. The matrices are kept\nat `Float64`, and the state and the [ports](@ref g-port) follow the scalar of a\n`Dual` [activation](@ref g-activation), so the block linearizes to its own\nmatrices.\n\nEach matrix is any `AbstractMatrix` of reals, stored at full shape as a static\nmatrix of `Float64`, so integer entries qualify. A matrix that does not fit the\nothers is refused as an `ArgumentError`, and so is an `x0` of the wrong length.\nAn `A` of size zero is refused likewise, since a block with no state is a gain.\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `x0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n\nSee also [`TransferFunction`](@ref), [`DiscretizedStateSpace`](@ref).\n",
+          "name": "Redstone.Library.StateSpace",
+          "docstring": "    StateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n               D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n               x0 = zeros(size(A, 1))) -> StateSpace\n\nA continuous [primitive](@ref g-primitive) that runs a linear system given in\nstate-space form.\n\nThe [library component](@ref g-library-component) holds one continuous state `x`\nfrom `x0`, and its input is `u` and its output `y`:\n\n    ẋ = A x + B u\n    y = C x + D u\n\nThe state is an `SVector` at every size. `u` is a `Float64` when `n_u` is one\nand an `SVector{n_u, Float64}` otherwise, and `y` likewise by `n_y`.\n\n`D` picks the component's [feedthrough](@ref g-feedthrough) class, which\n[`AbstractLinearSystem`](@ref) explains. A zero `D` publishes `y` from\n[stage 1](@ref g-stage-function). The component then breaks an\n[algebraic loop](@ref g-algebraic-loop) as [`FirstOrderLag`](@ref) does. A\nnonzero `D` publishes it from stage 2, so a loop closed on the component through\na memoryless path is refused as `AlgebraicCycle`.\n\nThe matrices are kept at `Float64`. The state and the [ports](@ref g-port)\nfollow the scalar of a `Dual` [activation](@ref g-activation), so the component\nlinearizes to its own matrices.\n\nEach matrix is any `AbstractMatrix` of reals, stored at full shape as an\n`SMatrix` of `Float64`, so integer entries qualify. A matrix that does not fit\nthe others is refused as an `ArgumentError`, and so is an `x0` of the wrong\nlength. An `A` of size zero is refused likewise, since a component with no state\nis a gain.\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `x0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n\nSee also [`TransferFunction`](@ref), [`DiscretizedStateSpace`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 674
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1049
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 675
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1050
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 673
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1048
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.TransferFunction",
-          "docstring": "    TransferFunction(; num, den, u0 = 0.0) -> TransferFunction\n\nA continuous [primitive](@ref g-primitive) that runs a single-input,\nsingle-output linear system given by its transfer function in `s`.\n\nThe transfer function is\n\n    G(s) = (num[1] sᵐ + … + num[end]) / (den[1] sⁿ + … + den[end])\n\nfrom the input `u` to the output `y`, both bare and `Float64`. The\n[block](@ref g-block) keeps the coefficients and holds their realization in\ncontrollable canonical form, a [`StateSpace`](@ref) whose stages it shares.\n\nThere is no `x0`, because a realization's state means nothing to a user who\nknows only `G(s)`. The block starts at rest, or, with `u0` given, at the steady\nstate for the constant input `u0`, where `y` is `G(0) u0`.\n\nThe type parameter `FT` is the feedthrough class of [`LinearBlock`](@ref), and\nthe degrees pick it. A numerator of lower degree than the denominator publishes\n`y` from [stage 1](@ref g-stage-function). The block then breaks an\n[algebraic loop](@ref g-algebraic-loop). One of equal degree publishes it from\nstage 2.\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power first, as a tuple or a\n  vector of reals.\n- `den`: the denominator's coefficients, highest power first, likewise.\n- `u0`: the constant input whose steady state the block starts at, `0.0` for\n  rest.\n\nFour spellings are refused as an `ArgumentError`: a denominator of fewer than\ntwo coefficients, whose order of zero makes a gain; a numerator longer than the\ndenominator, which is improper; a leading denominator coefficient of zero; and\na nonzero `u0` over a denominator whose constant coefficient is zero, a pole at\nthe origin, which has no steady state.\n\nSee also [`DiscreteTransferFunction`](@ref), [`DiscretizedTransferFunction`](@ref).\n",
+          "name": "Redstone.Library.TransferFunction",
+          "docstring": "    TransferFunction(; num, den, u0 = 0.0) -> TransferFunction\n    TransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> TransferFunction\n\nA continuous [primitive](@ref g-primitive) that runs a single-input,\nsingle-output linear system given by its transfer function in `s`.\n\nThe transfer function is\n\n    G(s) = (num[1] sᵐ + … + num[end]) / (den[1] sⁿ + … + den[end])\n\nfrom the input `u` to the output `y`, both `Float64`. The\n[library component](@ref g-library-component) keeps the coefficients and holds\ntheir realization in controllable canonical form, a [`StateSpace`](@ref).\n\nThe second spelling gives the roots in place of the coefficients,\n\n    G(s) = gain (s - zeros[1]) … (s - zeros[end]) / ((s - poles[1]) … (s - poles[end]))\n\nwith `zeros` empty by default. A root is real or complex, and the complex ones\ncome in conjugate pairs, so that the coefficients are real. The component keeps\nthe coefficients the roots expand to. Mixing the two spellings is refused as an\n`ArgumentError`, as is a set of roots that is not closed under conjugation, and\nmore zeros than poles.\n\nThere is no `x0`. The component starts at rest, or, with `u0` given, at the\nsteady state for the constant input `u0`, where `y` is `G(0) u0`.\n\nThe degrees pick the component's [feedthrough](@ref g-feedthrough) class, which\n[`AbstractLinearSystem`](@ref) explains. A numerator of lower degree than\nthe denominator publishes `y` from [stage 1](@ref g-stage-function). The\ncomponent then breaks an [algebraic loop](@ref g-algebraic-loop). One of equal\ndegree publishes it from stage 2.\n\nFour spellings are refused as an `ArgumentError`. A denominator of fewer than\ntwo coefficients has order zero, which makes a gain. A numerator longer than the\ndenominator is improper. The third is a leading denominator coefficient of zero.\nThe fourth is a nonzero `u0` over a denominator whose constant coefficient is\nzero, a pole at the origin, which has no steady state.\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power first, as a tuple or a\n  vector of reals.\n- `den`: the denominator's coefficients, highest power first, likewise.\n- `zeros`: the zeros, real or complex, as a tuple or a vector; none by default.\n- `poles`: the poles, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n\nSee also [`DiscreteTransferFunction`](@ref),\n[`DiscretizedTransferFunction`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 674
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1049
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 675
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1050
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 673
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1048
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.Relay",
-          "docstring": "    Relay(; lower, upper, off = zero(lower), on = one.(lower)) -> Relay\n\nA continuous [primitive](@ref g-primitive) that publishes one of two values,\nswitched by its input with hysteresis.\n\nIts input `u` and its output `y` are bare. The output publishes `off` or `on`\nby the bare mode, `state` below, from [stage 1](@ref g-stage-function). The mode\nis an `Int8` code, `0` off and `1` on. Two [state events](@ref g-state-event)\nmove it. `switch_on` fires when `u` rises to `upper` while off, and `switch_off`\nwhen `u` falls to `lower` while on. Both [guards](@ref g-guard) are sign forms gated by the mode, so both are\n[localized](@ref g-localized).\n\n`y` reads no input, so the [block](@ref g-block) has no\n[feedthrough](@ref g-feedthrough). A relay closing a feedback loop therefore\nmakes no [algebraic loop](@ref g-algebraic-loop). It is the library's reference\nmode-switching primitive. `y` is [pinned](@ref g-walked) at `V`. It depends on\nthe mode and the instance alone, so it carries zero partials under every\n[activation](@ref g-activation).\n\nOver a static vector, the thresholds, the values and the codes are\ncomponentwise. The block declares `N` copies of the two events, one per\ncomponent, named `switch_on_1` to `switch_on_N`, then `switch_off_i`. Each\nguard reads its one component and each handler writes it.\n\nThe relay starts off. [Boundary zero](@ref g-boundary-zero) sets every\n[prior](@ref g-prior) to not-holding. An input already at or above `upper` at\n`t₀` therefore turns the relay on there, and an input between the thresholds\nleaves it off, which is the hysteresis itself.\n\n# Keywords\n\n- `lower`: the threshold `u` falls to for the relay to switch off, below\n  `upper`.\n- `upper`: the threshold `u` rises to for the relay to switch on.\n- `off`: the value `y` publishes while off.\n- `on`: the value `y` publishes while on. The four values are promoted to one\n  `V`, which is `Float64` or a static array of `Float64`, and taken by `float`,\n  so integer values qualify.\n",
+          "name": "Redstone.Library.Relay",
+          "docstring": "    Relay(; lower, upper, off = zero(lower), on = one.(lower)) -> Relay\n\nA continuous [primitive](@ref g-primitive) that publishes one of two values,\nswitched by its input with hysteresis.\n\nIts input is `u` and its output `y`. The output publishes `off` or `on` by the\nmode, the field `m`, from [stage 1](@ref g-stage-function). The mode is an\n`Int8` code, `0` off and `1` on.\n\nTwo [state events](@ref g-state-event) move the mode. `switch_on` fires when `u`\nrises to `upper` while off, and `switch_off` when `u` falls strictly below\n`lower` while on. At `lower == upper` an input exactly on the threshold therefore\nreads on. Both are [localized](@ref g-localized).\n\n`y` reads no input, so the [library component](@ref g-library-component) has no\n[feedthrough](@ref g-feedthrough). A relay closing a feedback loop therefore\nmakes no [algebraic loop](@ref g-algebraic-loop).\n\nThe four values and both [ports](@ref g-port) share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, the four keywords' broadcast to one\nshape, so a scalar pairs with a vector and integer values qualify. `y` is\n[pinned](@ref g-walked) at `V`. It carries zero partials under every\n[activation](@ref g-activation).\n\nOver an `SArray`, the thresholds, the values and the codes are componentwise.\nThe relay declares `N` copies of the two events, one per component, named\n`switch_on_1` to `switch_on_N`, then `switch_off_i`. Each copy acts on its own\ncomponent.\n\nThe relay starts off. An input already at or above `upper` at `t₀` turns the\nrelay on at [boundary zero](@ref g-boundary-zero), and an input between the\nthresholds leaves it off, which is the hysteresis itself.\n\nA `lower` above `upper` is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the threshold `u` falls below for the relay to switch off, at most\n  `upper`.\n- `upper`: the threshold `u` rises to for the relay to switch on.\n- `off`: the value `y` publishes while off.\n- `on`: the value `y` publishes while on.\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1332
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2142
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1333
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2143
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2140
+            },
+            {
+              "function": "m_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2141
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.UnitDelay",
+          "docstring": "    UnitDelay(s0) -> UnitDelay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from the\nprevious [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is the native `z⁻¹` of the\ndiscrete [tier](@ref g-tier). A wire names its input `u` and its output `y` by\n[face](@ref g-face), `\"delay/u\"` and `\"delay/y\"`.\n\nThe output publishes the stored value `s` from [stage 1](@ref g-stage-function),\n`y = s`, and `s0` at the first publication. Each tick stores the input for the\nnext one, `s⁺ = u`. The [store](@ref g-store) and both [ports](@ref g-port)\nshare one type, the parameter `V`, the type of `s0`, an isbits type or a\n`Symbol`, as the store requires.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop), and that is a modelling\ndecision. Placed in a continuous loop, it moves the signal onto the discrete\ntier and inserts a zero-order hold over the [component](@ref g-component)'s own\nperiod, a multiple of [`Δt_base`](@ref g-dt_base).\n\nSee also [`Delay`](@ref).\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 382
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 383
+            },
+            {
+              "function": "s_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 381
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.DiscreteIntegrator",
+          "docstring": "    DiscreteIntegrator(; s0 = 0.0, reset::Bool = false) -> DiscreteIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input.\n\nThe [library component](@ref g-library-component) holds one\n[store](@ref g-store) value from `s0`, the field `s`. Its input is `u` and its\noutput `y`.\n\nEach [tick](@ref g-tick) advances the store by forward Euler,\n`s⁺ = s + Δt u`, and the output publishes `y = s` from\n[stage 1](@ref g-stage-function). The component therefore breaks an\n[algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref) does. `Δt` is the\n[component](@ref g-component)'s own period, so the integral is per second at any\nrate.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs `u` and `reset` are\nnamed. The reset is a level. At every tick where `reset` reads true, the update\nwrites `s0` in place of the sum. The output at the reset tick still publishes\nthe integral before it, and the next tick's output publishes `s0`. The\ncontinuous [`Integrator`](@ref) resets on the flag's rising edge instead, as an\n[event](@ref g-state-event).\n\nThe discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\nThe state, the input `u` and the output `y` share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, taken from `Float64.(s0)`, an array\nconverted to an `SArray`, so an integer, a `Float32` or a plain array `s0`\nqualifies.\n\n# Keywords\n\n- `s0`: the initial value of `s`, and the value a reset writes.\n- `reset`: `true` to add the input `reset`.\n\nSee also [`DiscreteLimitedIntegrator`](@ref), [`Integrator`](@ref).\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 607
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 608
+            },
+            {
+              "function": "s_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 606
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.RateLimiter",
+          "docstring": "    RateLimiter(; rising, falling = rising, s0 = 0.0) -> RateLimiter\n\nA discrete [primitive](@ref g-primitive) that publishes its input with its rate\nof change bounded per [tick](@ref g-tick).\n\nThe output `y` follows the input `u`, moving at most `rising Δt` up and\n`falling Δt` down per tick. `Δt` is the [component](@ref g-component)'s own\nperiod. One [store](@ref g-store) value, the field `s`, holds the previous\noutput, and each tick stores `y`:\n\n    y = s + clamp(u - s, -falling Δt, rising Δt)\n\nOver an `SArray` the slew is componentwise.\n\n`y` reads `u`, so the [library component](@ref g-library-component) has\n[feedthrough](@ref g-feedthrough). A loop closed on it through a memoryless path\nis refused as `AlgebraicCycle`. A [`UnitDelay`](@ref) after the component breaks\nthat loop, and lags the input by one tick at every rate.\n\nThe rates, the state and both [ports](@ref g-port) share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `rising`, `falling`\nand `s0` to one shape, so a scalar rate pairs with a vector `s0` and integer\nvalues qualify. Over an `SArray` each component slews at its own rates. A\n`rising` or a `falling` that is not positive in every component is refused as an\n`ArgumentError`. The rates stay at `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `rising`: the largest rise per second, positive.\n- `falling`: the largest fall per second, positive.\n- `s0`: the previous output at the first tick, so the output at `t₀` is already\n  one slew step from it.\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 726
+            },
+            {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 727
+            },
+            {
+              "function": "s_init",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 725
+            }
+          ]
+        },
+        {
+          "name": "Redstone.Library.DiscreteStateSpace",
+          "docstring": "    DiscreteStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                       D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                       s0 = zeros(size(A, 1))) -> DiscreteStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a linear system given in\ndiscrete state-space form.\n\nThe [library component](@ref g-library-component) holds one\n[store](@ref g-store) value from `s0`, the field `s`, advanced once per\n[tick](@ref g-tick), and its input is `u` and its output `y`:\n\n    s⁺ = A s + B u\n    y  = C s + D u\n\nThe keywords, the shapes, the storage, the [ports](@ref g-port) and the refusals\nare those of [`StateSpace`](@ref), with `s0` in place of its `x0`.\n\nThe [feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) is also that of `StateSpace`. A zero `D`\npublishes `y` from [stage 1](@ref g-stage-function). The component then breaks\nan [algebraic loop](@ref g-algebraic-loop). A nonzero `D` publishes it from\nstage 2.\n\nThe discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\nThe matrices presuppose the period they were designed at. That period is the\none the component's [rate scope](@ref g-rate-scope) gives it, bound at\ndeployment after the component is built, so the component cannot check it. A\nsystem that should follow its period is a [`DiscretizedStateSpace`](@ref).\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `s0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n",
+          "locations": [
+            {
+              "function": "u_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
               "line": 1330
             },
             {
-              "function": "m_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
               "line": 1331
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.UnitDelay",
-          "docstring": "    UnitDelay(s0) -> UnitDelay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from the\nprevious [tick](@ref g-tick).\n\nThe [block](@ref g-block) is a discrete primitive, the native `z⁻¹` of the\ndiscrete [tier](@ref g-tier). Its input `u` and its output `y` are bare, and a\nwire names each by its face, `\"delay/u\"` and `\"delay/y\"`. The output publishes the stored value\n`s` from [stage 1](@ref g-stage-function), `y = s`, and `s0` at the first\npublication. Each tick stores the input for the next one, `s⁺ = u`. The\n[store](@ref g-store) is isbits, which bounds `V`.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop), and that is a modelling\ndecision. Placed in a continuous loop, it moves the signal onto the discrete\ntier and inserts a zero-order hold at the scale of [`Δt_base`](@ref g-dt_base).\n\nSee also [`Delay`](@ref).\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 220
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 221
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 219
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1329
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscreteIntegrator",
-          "docstring": "    DiscreteIntegrator(; s0 = 0.0) -> DiscreteIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input.\n\nThe [block](@ref g-block) holds one bare [store](@ref g-store) value from `s0`, `s`\nbelow, the field `s`.\nIts input `u` and its output `y` are bare. Each [tick](@ref g-tick) advances\nthe store by forward Euler, `s⁺ = s + Δt u`, and the output publishes `y = s`\nfrom [stage 1](@ref g-stage-function). The block therefore breaks\nan [algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref) does. `Δt` is\nthe component's own period, so the integral is per second at any rate.\n\nThe discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the block holds\nits last value.\n\n# Keywords\n\n- `s0`: the initial value of `s`. `V` is `Float64` or a static array of\n  `Float64`, taken from `float(s0)`, so an integer `s0` qualifies.\n\nSee also [`DiscreteLimitedIntegrator`](@ref), [`Integrator`](@ref).\n",
+          "name": "Redstone.Library.DiscreteTransferFunction",
+          "docstring": "    DiscreteTransferFunction(; num, den, u0 = 0.0) -> DiscreteTransferFunction\n    DiscreteTransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> DiscreteTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a single-input, single-output\nlinear system given by its transfer function in `z`.\n\nThe transfer function is\n\n    G(z) = (num[1] zᵐ + … + num[end]) / (den[1] zⁿ + … + den[end])\n\nwith the coefficients highest power of `z` first, as [`TransferFunction`](@ref)\ntakes them in `s`. This is not the `z⁻¹` convention of `filter(b, a)`, which\nagrees with it only when the degrees are equal.\n\nThe [library component](@ref g-library-component) keeps the coefficients and\nholds their realization in controllable canonical form, a\n[`DiscreteStateSpace`](@ref). The degrees pick the\n[feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) as for `TransferFunction`.\n\nThe component starts at rest, or, with `u0` given, at the steady state for the\nconstant input `u0`, where `y` is `G(1) u0`.\n\nThe keywords, the two spellings and the refusals are those of\n`TransferFunction`, the roots in `z`, save that the pole with no steady state is\nat `z = 1`. A nonzero `u0` is refused as an\n`ArgumentError` over a denominator whose coefficients sum to zero within `1e-12`\nof the sum of their magnitudes. A designed denominator such as `(1, -0.7, -0.3)`\nmisses an exact zero by rounding.\n\nThe coefficients presuppose the period they were designed at, which the\ncomponent cannot check, as for `DiscreteStateSpace`.\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power of `z` first, as a tuple or\n  a vector of reals.\n- `den`: the denominator's coefficients, highest power of `z` first, likewise.\n- `zeros`: the zeros in `z`, real or complex, as a tuple or a vector; none by\n  default.\n- `poles`: the poles in `z`, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n\nSee also [`DiscretizedTransferFunction`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 357
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1330
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 358
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1331
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 356
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1329
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.RateLimiter",
-          "docstring": "    RateLimiter(; rising, falling = rising, s0 = 0.0) -> RateLimiter\n\nA discrete [primitive](@ref g-primitive) that publishes its input with its rate\nof change bounded per [tick](@ref g-tick).\n\nIts input `u` and its output `y` are bare. The output follows the input, moving\nat most `rising Δt` up and `falling Δt` down per tick. `Δt` is the component's\nown period. One bare [store](@ref g-store) value, `s` below, holds the previous\noutput, and each tick stores `y`:\n\n    y = s + clamp(u - s, -falling Δt, rising Δt)\n\n`y` reads `u`, so the [block](@ref g-block) has\n[feedthrough](@ref g-feedthrough). A loop closed on it through a memoryless path\nis refused as `AlgebraicCycle`. A form publishing the stored value from\n[stage 1](@ref g-stage-function) would break that loop, but it lags its input by\none tick at every rate. It is this block followed by a [`UnitDelay`](@ref), a\nmodelling decision the model makes by placing the delay. Over a vector the slew\nis componentwise.\n\n# Keywords\n\n- `rising`: the largest rise per second, positive, and kept a `Float64` whatever\n  scalar the model runs at.\n- `falling`: the largest fall per second, positive, and kept a `Float64` likewise.\n- `s0`: the previous output at the first tick, so the output at `t₀` is already\n  one slew step from it. `V` is `Float64` or a static array of `Float64`, taken\n  from `float(s0)`.\n",
+          "name": "Redstone.Library.DiscretizedStateSpace",
+          "docstring": "    DiscretizedStateSpace(continuous::StateSpace) -> DiscretizedStateSpace\n    DiscretizedStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                          D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                          x0 = zeros(size(A, 1))) -> DiscretizedStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a continuous state-space\nsystem through a zero-order hold at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) runs the [`StateSpace`](@ref)\n`continuous`, or the one its keywords build, on the discrete\n[tier](@ref g-tier). At each tick it takes the zero-order hold\n\n    A_d = e^{A Δt}        B_d = (∫₀^Δt e^{Aτ} dτ) B\n\nwith `C` and `D` unchanged. The hold is exact for an input held constant over\neach period, so the samples are the continuous system's own.\n\n`Δt` is the [component](@ref g-component)'s own period, so the component follows\nthe rate its [rate scope](@ref g-rate-scope) gives it. It carries no period of\nits own, where a [`DiscreteStateSpace`](@ref) presupposes one.\n\nThe keywords and their refusals are those of `StateSpace`. The\n[feedthrough](@ref g-feedthrough) class, the [ports](@ref g-port) and `x0` are\nthe continuous component's, `x0` in its coordinates.\n\nThe discrete tier never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `x0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n\nSee also [`DiscretizedTransferFunction`](@ref),\n[`AbstractDiscreteLinearSystem`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 451
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1330
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 452
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1331
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 450
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1329
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscreteStateSpace",
-          "docstring": "    DiscreteStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                       D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                       s0 = zeros(size(A, 1))) -> DiscreteStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a linear system given in\ndiscrete state-space form.\n\nThe [block](@ref g-block) holds one bare [store](@ref g-store) value from `s0`, `s` below,\nadvanced once per [tick](@ref g-tick), and its input `u` and its output `y` are\nbare:\n\n    s⁺ = A s + B u\n    y  = C s + D u\n\nThe keywords, the shapes, the storage, the [ports](@ref g-port) and the refusals\nare those of [`StateSpace`](@ref), with `s0` in place of its `x0`, and so is the\nfeedthrough class of\n[`DiscreteLinearBlock`](@ref). A zero `D` publishes `y` from\n[stage 1](@ref g-stage-function). The block then breaks an\n[algebraic loop](@ref g-algebraic-loop). A nonzero `D` publishes it from stage\n2. The discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the block holds\nits last value.\n\nThe matrices presuppose the period they were designed at. That period is the\none the block's [rate scope](@ref g-rate-scope) gives it, bound at deployment\nafter the block is built, so the block cannot check it. A system that should\nfollow its period is a [`DiscretizedStateSpace`](@ref).\n",
+          "name": "Redstone.Library.DiscretizedTransferFunction",
+          "docstring": "    DiscretizedTransferFunction(; num, den, u0 = 0.0) -> DiscretizedTransferFunction\n    DiscretizedTransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> DiscretizedTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a continuous transfer\nfunction through a zero-order hold at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) takes the transfer function in\n`s` of [`TransferFunction`](@ref), with its keywords in either spelling, its\nrefusals and its start at rest or at `G(0) u0`. It runs it on the discrete\n[tier](@ref g-tier) through the zero-order hold of\n[`DiscretizedStateSpace`](@ref). The hold is taken at each\ntick. It spans `Δt`, the [component](@ref g-component)'s own period. The degrees\npick the [feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) as for `TransferFunction`.\n\nThe hold keeps the feedthrough class and matches the step response at the\nsamples. A design that wants Tustin's frequency response discretizes externally\nand uses [`DiscreteTransferFunction`](@ref).\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power of `s` first, as a tuple or\n  a vector of reals.\n- `den`: the denominator's coefficients, highest power of `s` first, likewise.\n- `zeros`: the zeros in `s`, real or complex, as a tuple or a vector; none by\n  default.\n- `poles`: the poles in `s`, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 883
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1330
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 884
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1331
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 882
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 1329
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscreteTransferFunction",
-          "docstring": "    DiscreteTransferFunction(; num, den, u0 = 0.0) -> DiscreteTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a single-input, single-output\nlinear system given by its transfer function in `z`.\n\nThe transfer function is\n\n    G(z) = (num[1] zᵐ + … + num[end]) / (den[1] zⁿ + … + den[end])\n\nwith the coefficients highest power of `z` first, as [`TransferFunction`](@ref)\ntakes them in `s`. This is not the `z⁻¹` convention of `filter(b, a)`, which\nagrees with it only when the degrees are equal. The [block](@ref g-block) keeps\nthe coefficients and holds their realization in controllable canonical form, a\n[`DiscreteStateSpace`](@ref) whose stages it shares. The degrees pick the\nfeedthrough class of [`DiscreteLinearBlock`](@ref) as for `TransferFunction`.\n\nThe block starts at rest, or, with `u0` given, at the steady state for the\nconstant input `u0`, where `(I - A) s = B u0` and `y` is `G(1) u0`.\n\nThe keywords and the refusals are those of `TransferFunction`, save that the\npole with no steady state is at `z = 1`. A nonzero `u0` is refused as an\n`ArgumentError` over a denominator whose coefficients sum to zero within `1e-12`\nof the sum of their magnitudes, since a designed denominator such as\n`(1, -0.7, -0.3)` misses an exact zero by rounding.\n\nThe coefficients presuppose the period they were designed at, which the block\ncannot check, as for `DiscreteStateSpace`.\n\nSee also [`DiscretizedTransferFunction`](@ref).\n",
+          "name": "Redstone.Library.DiscreteLimitedIntegrator",
+          "docstring": "    DiscreteLimitedIntegrator(; lower, upper, s0 = zero(lower), reset::Bool = false) -> DiscreteLimitedIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input, held between two limits.\n\nIts input is `u`. Each [tick](@ref g-tick) advances the one\n[store](@ref g-store) value, the field `s`, from `s0` as\n`s⁺ = clamp(s + Δt u, lower, upper)`. The output `out` publishes `s` from\n[stage 1](@ref g-stage-function).\n\nA second output, `saturation`, publishes the `Int8` code of\n`LimitedIntegrator`, read off the state, also from stage 1. The code is `1` at\n`upper`, `-1` at `lower` and `0` between. At a limit with the input already\npointing inward, the code reads saturated until the next tick moves the state\noff.\n\nOver an `SArray`, the limits and the codes are componentwise, and `saturation`\npublishes an `SArray` of `Int8` of the same shape.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs\n`u` and `reset` are named. It is the level reset of\n[`DiscreteIntegrator`](@ref). The update writes `s0`, clamped, at every tick\nwhere the flag reads true.\n\n`s0`, `lower` and `upper` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar limit pairs with a vector and\ninteger values qualify. A `lower` not below `upper`, componentwise over an\n`SArray`, is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`.\n- `upper`: the upper limit.\n- `s0`: the initial value of `s`, and the value a reset writes, clamped.\n- `reset`: `true` to add the input `reset`.\n\nSee also [`DiscreteIntegrator`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 883
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 668
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 884
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 669
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 882
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 667
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscretizedStateSpace",
-          "docstring": "    DiscretizedStateSpace(continuous::StateSpace) -> DiscretizedStateSpace\n    DiscretizedStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                          D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                          x0 = zeros(size(A, 1))) -> DiscretizedStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a continuous state-space\nsystem through a zero-order hold at each [tick](@ref g-tick).\n\nThe [block](@ref g-block) runs the [`StateSpace`](@ref) `continuous`, or the one\nits keywords build, on the discrete [tier](@ref g-tier). At each tick it takes\nthe zero-order hold\n\n    A_d = e^{A Δt}        B_d = (∫₀^Δt e^{Aτ} dτ) B\n\nwith `C` and `D` unchanged. `A_d` and `B_d` are the top row of one exponential\nof the augmented matrix `[A B; 0 0] Δt`. The hold is exact for an input held\nconstant over each period, so the samples are the continuous system's own.\n\n`Δt` is the component's own period, so the block follows the rate its\n[rate scope](@ref g-rate-scope) gives it, and carries no period of its own,\nwhere a [`DiscreteStateSpace`](@ref) presupposes one. The keywords and their\nrefusals are those of `StateSpace`. The feedthrough class, the\n[ports](@ref g-port) and `x0` are the continuous block's, `x0` in its\ncoordinates. The discrete tier never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the block holds\nits last value.\n\nSee also [`DiscretizedTransferFunction`](@ref), [`DiscreteLinearBlock`](@ref).\n",
+          "name": "Redstone.Library.Delay",
+          "docstring": "    Delay(; K::Int, v0 = 0.0, taps::Bool = false) -> Delay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from `K`\n[ticks](@ref g-tick) before.\n\nThe [library component](@ref g-library-component) is the delay line, the `z⁻ᴷ`\nof the discrete [tier](@ref g-tier). The output `y` publishes the input `u` from\n`K` ticks ago, and `v0` at the first `K` publications.\nIt publishes from [stage 1](@ref g-stage-function). The [store](@ref g-store) is\na ring of `K` values and a cursor.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref)\ndoes in either form, and that is a modelling decision. Placed in a continuous\nloop, it moves the signal onto the discrete tier and inserts a zero-order hold\nover the [component](@ref g-component)'s own period, a multiple of\n[`Δt_base`](@ref g-dt_base).\n\n`K` counts ticks of the component's own period, so the user picks it from the\nrate the component declares. `K = 1` is `UnitDelay` in keyword spelling. A\nsmaller `K` is refused as an `ArgumentError`.\n\n`v0` is a value of the signal, copied into every slot of the ring. It is not the\ninitial store, so it is not `UnitDelay`'s `s0`. The ring's values, the input\n`u` and the output `y` share one type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`, taken from `Float64.(v0)`, an array converted to an\n`SArray`, so an integer, a `Float32` or a plain array `v0` qualifies.\n\n`taps = true` adds a second output, `taps`, so the outputs `y` and `taps` are\nnamed. It publishes the last `K` inputs as an `SVector{K, V}`, newest first,\nwith `v0` in the slots no tick has filled yet. `taps[1]` is the input from one\ntick ago and `taps[K]` the one from `K` ticks ago, which is `y`. It serves a\nlaw over the window written in a stage body, a moving median or a minimum over\nthe last `K` samples. A FIR filter is a [`DiscreteTransferFunction`](@ref)\ninstead. The taps publish from stage 1 as `y` does.\n\n# Keywords\n\n- `K`: the delay in ticks, at least 1.\n- `v0`: the value published before `K` ticks have passed.\n- `taps`: `true` to add the output `taps`.\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 883
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 546
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 884
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 547
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 882
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 545
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscretizedTransferFunction",
-          "docstring": "    DiscretizedTransferFunction(; num, den, u0 = 0.0) -> DiscretizedTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a continuous transfer\nfunction through a zero-order hold at each [tick](@ref g-tick).\n\nThe [block](@ref g-block) takes the transfer function in `s` of\n[`TransferFunction`](@ref), with its keywords, its refusals and its start at\nrest or at `G(0) u0`. It runs it on the discrete [tier](@ref g-tier) through the\nzero-order hold of [`DiscretizedStateSpace`](@ref). The hold is taken at each\ntick. It spans `Δt`, the component's own period. The block keeps the\ncoefficients and holds the realization wrapped for the hold, and the degrees\npick the feedthrough class of [`DiscreteLinearBlock`](@ref) as for\n`TransferFunction`.\n\nThe hold keeps the feedthrough class and matches the step response at the\nsamples, where Tustin's method would give every block\n[feedthrough](@ref g-feedthrough). A design that wants Tustin's frequency\nresponse discretizes externally and uses [`DiscreteTransferFunction`](@ref).\n",
+          "name": "Redstone.Library.Freeze",
+          "docstring": "    Freeze{V}() -> Freeze{V}\n\nA continuous [primitive](@ref g-primitive) that publishes its input with its\npartials dropped, so no derivative passes through it.\n\nThe [library component](@ref g-library-component) is the declared stop-gradient.\nIts output `y` is its input `u` with its partials dropped,\n[pinned](@ref g-walked) at the parameter `V`, a `Float64` or an `SArray` of\n`Float64`. A producer that walks may therefore feed a [`Pinned`](@ref) input\n[entry](@ref g-entry) through it. At [nominal](@ref g-nominal) it is the\nidentity. Every Jacobian along the path then reads a zero coupling, which is the\nmodelling decision the component states.\n\nAny other `V` is refused as a `TypeError` where `Freeze{V}` is written. The\ncomponent drops one `Dual` layer, so at a nested `Dual` an input that carries\npartials is refused at build as `ConformanceFailure`.\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 883
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 408
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 884
-            },
-            {
-              "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 882
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.DiscreteLimitedIntegrator",
-          "docstring": "    DiscreteLimitedIntegrator(; lower, upper, s0 = zero(lower)) -> DiscreteLimitedIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input, held between two limits.\n\nIts input `u` is bare. Each [tick](@ref g-tick) advances the one bare\n[store](@ref g-store) value, `s` below, from `s0` as\n`s⁺ = clamp(s + Δt u, lower, upper)`. The output `out` publishes `s` from\n[stage 1](@ref g-stage-function). The mode and four events of the continuous\n[`LimitedIntegrator`](@ref) are this one `clamp`, with no mode store and no\nlocalization.\n\nA second output, `saturation`, publishes the same `Int8` code, read off the\nstate, also from stage 1: `1` at `upper`, `-1` at `lower` and `0` between. At a\nlimit with the input already pointing inward, the code reads saturated until the\nnext tick moves the state off.\n\nOver a static vector, the limits and the codes are componentwise, and\n`saturation` publishes a static vector of `Int8`.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`, componentwise over a vector.\n- `upper`: the upper limit.\n- `s0`: the initial value of `s`. `s0`, `lower` and `upper` are promoted to one\n  `V`, which is `Float64` or a static array of `Float64`, and taken by `float`,\n  so integer values qualify.\n\nSee also [`DiscreteIntegrator`](@ref).\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 404
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 405
-            },
-            {
-              "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 403
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.Delay",
-          "docstring": "    Delay(; K::Int, v0 = 0.0) -> Delay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from `K`\n[ticks](@ref g-tick) before.\n\nThe [block](@ref g-block) is the delay line, the `z⁻ᴷ` of the discrete\n[tier](@ref g-tier). Its input `u` and its output `y` are bare. The output\npublishes the input from `K` ticks ago, and `v0` at the first `K` publications.\nIt publishes from [stage 1](@ref g-stage-function). The [store](@ref g-store) is\na ring of `K` values and a cursor. The slot under the cursor holds the value\nfrom `K` ticks ago, and each tick overwrites it with `u` and advances, with no\nshift of the other slots.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref)\ndoes, and that is a modelling decision. Placed in a continuous loop, it moves\nthe signal onto the discrete tier and inserts a zero-order hold at the scale of\n[`Δt_base`](@ref g-dt_base).\n\n# Keywords\n\n- `K`: the delay in ticks of the component's own period, at least 1, so the\n  model picks it from the rate it declares. `K = 1` is `UnitDelay` in keyword\n  spelling, and a smaller `K` is refused as an `ArgumentError`.\n- `v0`: the value published before `K` ticks have passed. It is a value of the\n  signal, copied into every slot of the ring, and not the initial store, so it\n  is not `UnitDelay`'s `s0`. `V` is `Float64` or a static array of `Float64`,\n  taken from `float(v0)`, so an integer `v0` qualifies.\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 320
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 321
-            },
-            {
-              "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 319
-            }
-          ]
-        },
-        {
-          "name": "Redstone.Blocks.Freeze",
-          "docstring": "    Freeze{V}() -> Freeze{V}\n\nA continuous [primitive](@ref g-primitive) that publishes its input with its\npartials dropped, so no derivative passes through it.\n\nThe [block](@ref g-block) is the declared stop-gradient. Its input `u` and its\noutput `y` are bare, and `y` is `u` with its partials dropped,\n[pinned](@ref g-walked) at `V`. A producer that walks may\ntherefore feed a [`Pinned`](@ref) input [entry](@ref g-entry) through it. At\n[nominal](@ref g-nominal) it is the identity. Every Jacobian along the path then\nreads a zero coupling, which is the modelling decision the block states.\n\n`V` is a `Real` or a `StaticArray` of them. Any other `V` is refused as a\n`TypeError` where `Freeze{V}` is written.\n",
-          "locations": [
-            {
-              "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 244
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 245
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 409
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 243
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 407
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.PID",
-          "docstring": "    PID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n          b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> PID\n\nA continuous [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. The two outputs come\nfrom [stage 2](@ref g-stage-function):\n`u_raw = Kp (b r - y) + q - Kd (w - yf) / τd`, and `u`, its clamp to\n`[u_min, u_max]`. The [block](@ref g-block) holds two continuous states: `q`,\nthe integral term, and `yf`, the weighted measurement `w = y - c r` through a\nlag, `ẏf = (w - yf) / τd`. One law moves the integral term,\n\n    q̇ = Ki ε + (ref - u_raw) / Tt\n\nand two independent type parameters, each adding inputs, fill its slots `ε` and\n`ref` over the error `e` by the table of [`ControllerBlock`](@ref).\n\n`hold = true`, the parameter `Hold`, adds two inputs. `saturation` is an `Int8`\ncode such as a [`LimitedIntegrator`](@ref) publishes for the path downstream,\nand gates the error by sign: `gate(e) = saturation == sign(e) ? 0 : e`.\n`engaged` is a `Bool` that reads true while the block is in command; not\nengaged, the error is gated to zero whatever the code. Without tracking, a\nblock not engaged freezes: `q` holds while the own clamp is free and\nback-calculates against it otherwise.\n\n`tracking = true`, the parameter `Track`, adds the input `v`, a value the path\ndelivered or the selected command, as the correction's reference in place of the\nown `u`. With the hold, `v` is the reference only while the block is limited or\nnot engaged, and `u` while it is free, so a block not in command follows the\nselected command at rate `1/Tt` and engages without a bump. It chases a moving\n`v` with lag `Tt`, so a block out of command wants a short `Tt`. The default\n`Tt = Inf` follows nothing, so `tracking = true` with a `Tt` given as a value and\ninfinite in any channel is refused as an `ArgumentError`: tracking needs `Tt`\nspelled, or given as `AsPort()`, which leaves it to the model to keep finite.\n\n`q` holds the integral term in output units, with `Ki` inside the integral, so\na change in `Ki` alters only future accumulation. The setpoint weights `b` and\n`c` multiply `r` alone, `b` in the proportional term and `c` in the derivative's\nweighted measurement, and the integral's error stays `e`. Their defaults, `b = 1`\nand `c = 0`, put the derivative on the measurement, so a step in `r` makes no\nkick; `c = 1` puts it on the error. The defaults make the plain spelling a P\ncontroller: `Ki = Kd = 0`, `Tt = Inf`, which switches the correction off, and\ninfinite limits.\n\n`V` is `Float64` or a static array of `Float64`. Over a static vector the law\nis componentwise: the parameters, `r`, `y`, `v`, the outputs and the states are\neach a `V`, and `saturation` and `engaged` are static vectors of `Int8` and of\n`Bool`. The nine keywords given as values broadcast to one `V`, whose shape is\nthe sum of their `zero`s, so a scalar pairs with a vector and integer values\nqualify. A vector PID with uniform gains spells at least one keyword as a\nvector, `Kp = @SVector fill(2.0, 3)`.\n\nAny of the nine parameters may be an input [port](@ref g-port) in place of a\nfield, spelled `Kp = AsPort()` with [`AsPort`](@ref). The port is named for the\nparameter and typed `V`, and it takes no part in the shape, so when every\nvalue-carrying keyword is a port, `V` is `Float64`. Under a `Dual`\n[activation](@ref g-activation), a scheduled parameter carries partials, so a\nlinearization sees the coupling through the schedule. A model that wants it\nfrozen at its plain `Float64` value routes the port through [`Freeze`](@ref).\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. A\ntracking input wired from a memoryless clamp of the block's own `u` is refused\nas an `AlgebraicCycle` classified [artificial](@ref g-algebraic-loop). That is\nwhy the limits live inside the block. `v` serves a value published from state,\nsuch as a stateful actuator's position. A scheduled parameter computed\nmemorylessly from `u` closes a cycle too, artificial for `Ki` and `Tt`, which\nonly the derivative reads, and real for the others. One read from a state is\nfine.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, positive.\n- `Tt`: the time constant of the correction, `Inf` to switch it off.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`, the parameter\n  `Hold`.\n- `tracking`: `true` to add the input `v`, the parameter `Track`.\n\nSee also [`DiscretePID`](@ref), [`PIDBlock`](@ref), [`LQRTracker`](@ref).\n",
+          "name": "Redstone.Library.PID",
+          "docstring": "    PID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n          b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> PID\n\nA continuous [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]`:\n\n    u_raw = Kp (b r - y) + q - Kd (w - yf) / τd\n\nThe [library component](@ref g-library-component) holds two continuous states.\n`q` is the integral term. `yf` is the weighted measurement `w = y - c r` through\na lag, `ẏf = (w - yf) / τd`. One law moves the integral term:\n\n    q̇ = Ki ε + (ref - u_raw) / Tt\n\nTwo independent keywords, `hold` and `tracking`, each adding inputs, fill the\nslots `ε` and `ref` over the error `e` by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold = true` adds two inputs. `saturation` is an `Int8` code such as a\n[`LimitedIntegrator`](@ref) publishes for the path downstream. It gates the\nerror by sign. `engaged` is a `Bool` that reads true while the component is in\ncommand. Not engaged, the error is gated to zero whatever the code. Without\ntracking, a component not engaged freezes. `q` then holds while the own clamp is\nfree and back-calculates against it otherwise.\n\n`tracking = true` adds the input `v`, a value the path delivered or the selected\ncommand. It takes the place of the own `u` as the correction's reference. With\nthe hold, `v` is the reference only while the component is limited or not\nengaged, and `u` while it is free. A component not in command therefore follows\nthe selected command at rate `1/Tt` and engages without a bump. It chases a\nmoving `v` with lag `Tt`, so a component out of command wants a short `Tt`.\n\nThe default `Tt = Inf` follows nothing. `tracking = true` with a `Tt` given as a\nvalue and infinite in any channel is therefore refused as an `ArgumentError`.\nTracking needs `Tt` spelled, or given as `AsPort()`, which leaves it to the\ncomponent tree to keep finite.\n\nA `u_min` above `u_max`, both given as values, is refused as an `ArgumentError`.\nSo is a `τd` or a `Tt` given as a value and not positive in every channel. The\ndefault `Tt = Inf` passes.\n\n`q` holds the integral term in output units, with `Ki` inside the integral, so\na change in `Ki` alters only future accumulation.\n\nThe setpoint weights `b` and `c` multiply `r` alone, and the integral's error\nstays `e`. `b` acts in the proportional term and `c` in the derivative's\nweighted measurement. Their defaults, `b = 1` and `c = 0`, put the derivative on\nthe measurement, so a step in `r` makes no kick. `c = 1` puts it on the error.\n\nThe defaults make the plain spelling a P controller, with `Ki = Kd = 0` and\ninfinite limits. They also set `Tt = Inf`, which switches the correction off.\n\nThe parameters, the inputs `r`, `y` and `v`, the outputs `u` and `u_raw` and\nthe states share one type, the parameter `V`, `Float64` or an `SArray` of\n`Float64`, the broadcast of the nine keywords given as values. Over an `SArray`\nthe law is componentwise, and `saturation` is an `SArray` of `Int8` of `V`'s\nshape and `engaged` one of `Bool`.\n\nThe nine keywords given as values broadcast to one `V`, so a scalar pairs with a\nvector and integer values qualify. A vector PID with uniform gains spells at\nleast one keyword as a vector, `Kp = @SVector fill(2.0, 3)`.\n\nAny of the nine parameters may be an input [port](@ref g-port) in place of a\nfield, spelled `Kp = AsPort()` with [`AsPort`](@ref). The port is named for the\nparameter and typed `V`. It takes no part in the shape, so when every\nvalue-carrying keyword is a port, `V` is `Float64`. Under a `Dual`\n[activation](@ref g-activation), a parameter given as a port carries partials,\nso a linearization sees the coupling through the port. A component tree that\nwants it frozen at its plain `Float64` value routes the port through\n[`Freeze`](@ref).\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. A\ntracking input wired from a memoryless clamp of the component's own `u` is\nrefused as an `AlgebraicCycle` classified [artificial](@ref g-algebraic-loop).\n`v` serves a value published from state, such as a stateful actuator's position.\nA parameter port computed memorylessly from `u` closes a cycle too, artificial\nfor `Ki` and `Tt`, which only the derivative reads, and real for the others. One\nread from a state is fine.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, positive.\n- `Tt`: the time constant of the correction, `Inf` to switch it off.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`DiscretePID`](@ref), [`AbstractPID`](@ref), [`LQRTracker`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1453
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2382
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1457
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2386
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1591
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2558
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscretePID",
-          "docstring": "    DiscretePID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n                  b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> DiscretePID\n\nA discrete [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe [block](@ref g-block) takes the parameters, defaults, [ports](@ref g-port)\nand law of [`PID`](@ref) to the discrete [tier](@ref g-tier). Two\n[store](@ref g-store) fields stand in for its continuous states: `q`, the\nintegral term, and `yf`, the weighted measurement `w = y - c r` through a lag. A\nthird, `saturated`, holds its code. `Δt` is the component's own period. The\ninputs are `r` and `y`, with the error `e = r - y`. The two outputs come from\n[stage 2](@ref g-stage-function):\n`u_raw = Kp (b r - y) + q - Kd (w - yf) / (τd + Δt)`, and `u`, its clamp to\n`[u_min, u_max]`. Each [tick](@ref g-tick) moves the lag by backward Euler,\n`yf⁺ = yf + Δt (w - yf) / (τd + Δt)`, and the integral term by forward Euler\nand the correction's exact step,\n\n    q⁺ = q + Δt Ki ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nwith its slots `ε` and `ref` filled over the two anti-windup axes by the table\nof [`ControllerBlock`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`, and a block not engaged\nwithout tracking freezes. `tracking` adds the input `v`. `tracking = true` with\na `Tt` given infinite in any channel is refused as an `ArgumentError`. With the\nhold, the reference falls back to `u` while the block is free. All of this is\nas in `PID`. The setpoint weights `b` and `c` multiply `r` alone, as in `PID`,\nand the integral's error stays `e`.\n\n`V` is `Float64` or a static array of `Float64`, and over a static vector the\nlaw is componentwise, as in `PID`. The nine keywords given as values broadcast\nto one `V` by the rule of `PID`, the shape the sum of their `zero`s. A scalar\ntherefore pairs with a vector, and a uniform vector gain spells one keyword as a\nvector, `Kp = @SVector fill(2.0, 3)`. Any parameter may be an input port,\nspelled `Kp = AsPort()` with [`AsPort`](@ref), typed `V` and outside the shape.\nIt carries partials under a `Dual` [activation](@ref g-activation), and\n[`Freeze`](@ref) holds it at its plain `Float64` value, as in `PID`.\n\nThe backward Euler lag is stable at every period, and `τd = 0` is legal: `yf`\nis then the previous weighted measurement, and the D term the backward\ndifference `(w - yf) / Δt`. `β` is the exact step of the correction's relaxation\nover one period, so every `Tt` is stable. `Tt = Inf` switches the correction\noff, and `Tt = 0` is legal and brings `u_raw` to the reference by the next\ntick, the clamping scheme as the limit of tracking. Not engaged with tracking,\n`Tt = 0` follows `v` exactly.\n\nA third output, `saturated`, publishes the `Int8` code of the block's own\nclamp: `1` with `u_raw` at or above `u_max`, `-1` at or below `u_min` and `0`\nbetween, a static vector of `Int8` over a vector. `s_update` writes it to the\nstore from `u_raw` at the tick, and `y_state` publishes it from stage 1 at the\nnext. It is therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary). It serves the hold of an outer block in a cascade,\nwired to its input `saturation`, whose integrator takes one extra step before\nthe hold engages. As a stage-1 port it closes no cycle through the outer block's\n`u`. The block never reads its own code, since its own windup is the\ncorrection's. `PID` publishes no code, since a continuous one would need a mode\nand events.\n\nA tracking input wired from a memoryless clamp of the block's own `u` is\nrefused as an `AlgebraicCycle`, as for `PID`, but classified real: a discrete\nmember's dependences are traced from its structure, so no [hop](@ref g-hop) is\nnamed dead. A scheduled parameter computed memorylessly from `u` closes a cycle\nlikewise.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, `0` for the backward\n  difference.\n- `Tt`: the time constant of the correction, `Inf` to switch it off and `0` to\n  correct within one tick.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`, the parameter\n  `Hold`.\n- `tracking`: `true` to add the input `v`, the parameter `Track`.\n\nSee also [`PIDBlock`](@ref), [`DiscreteLQRTracker`](@ref).\n",
+          "name": "Redstone.Library.DiscretePID",
+          "docstring": "    DiscretePID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n                  b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> DiscretePID\n\nA discrete [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe [library component](@ref g-library-component) takes the parameters,\ndefaults, [ports](@ref g-port) and law of [`PID`](@ref) to the discrete\n[tier](@ref g-tier). Two [store](@ref g-store) fields stand in for its\ncontinuous states. `q` is the integral term, and `yf` is the weighted\nmeasurement `w = y - c r` through a lag. A third, `saturated`, holds its code.\n`Δt` is the [component](@ref g-component)'s own period.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]`:\n\n    u_raw = Kp (b r - y) + q - Kd (w - yf) / (τd + Δt)\n\nEach [tick](@ref g-tick) moves the lag by backward Euler,\n`yf⁺ = yf + Δt (w - yf) / (τd + Δt)`. It moves the integral term by forward\nEuler and the correction's exact step:\n\n    q⁺ = q + Δt Ki ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nThe two anti-windup axes fill the slots `ε` and `ref` by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`. A component not engaged\nwithout tracking freezes. `tracking` adds the input `v`. With the hold, the\nreference falls back to `u` while the component is free. All of this is as in\n`PID`. The setpoint weights `b` and `c` multiply `r` alone, as in `PID`, and the\nintegral's error stays `e`.\n\n`tracking = true` with a `Tt` given infinite in any channel is refused as an\n`ArgumentError`, as in `PID`. So is a `u_min` above `u_max`, both given as\nvalues, and so is a `τd` or a `Tt` given as a value and negative in any channel.\nEither may be zero.\n\nThe parameters, the inputs `r`, `y` and `v`, the outputs `u` and `u_raw` and the\nstore fields `q` and `yf` share one type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`. Over an `SArray` the law is componentwise, as in `PID`.\nThe nine keywords given as values broadcast to one `V` by the rule of `PID`. A\nscalar therefore pairs with a vector, and a uniform vector gain spells one\nkeyword as a vector, `Kp = @SVector fill(2.0, 3)`.\n\nAny parameter may be an input port, spelled `Kp = AsPort()` with\n[`AsPort`](@ref), typed `V` and outside the shape. Under a `Dual`\n[activation](@ref g-activation) the discrete tier does not run and holds its\n`Float64` values, so a linearization sees no coupling through the port and a\n[`Freeze`](@ref) on it changes nothing.\n\nThe backward Euler lag is stable at every period, and `τd = 0` is legal. `yf` is\nthen the previous weighted measurement, and the D term the backward difference\n`(w - yf) / Δt`.\n\n`β` is the exact step of the correction's relaxation over one period, so every\n`Tt` is stable. `Tt = Inf` switches the correction off. `Tt = 0` is legal and\nbrings `u_raw` to the reference plus the tick's integral step `Δt Ki ε` by the\nnext tick, the clamping scheme as the limit of tracking. Not engaged with\ntracking, `Tt = 0` lands `u_raw` on the tick's `v` one tick later, exact for a\nconstant `v` while `r` and `y` hold.\n\nA third output, `saturated`, publishes the `Int8` code of the component's own\nclamp, an `SArray` of `Int8` of `V`'s shape over an array. The code is `1` with\n`u_raw` at or above `u_max`, `-1` at or below `u_min` and `0` between. The\ncomponent stores the code from `u_raw` at the tick and publishes it from stage 1\nat the next. It is therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary).\n\nThe code serves the hold of an outer controller in a cascade, wired to its input\n`saturation`. The outer controller's integrator takes one extra step before the\nhold engages. As a stage-1 port the code closes no cycle through the outer\ncontroller's `u`.\n\nA tracking input wired from a memoryless clamp of the component's own `u` is\nrefused as an `AlgebraicCycle`, as for `PID`, but classified real. A parameter\nport computed memorylessly from `u` closes a cycle likewise.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, `0` for the backward\n  difference.\n- `Tt`: the time constant of the correction, `Inf` to switch it off and `0` to\n  correct within one tick.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`AbstractPID`](@ref), [`DiscreteLQRTracker`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1453
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2382
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1705
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2695
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1704
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2694
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.LQRTracker",
-          "docstring": "    LQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n               x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n               z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n               hold::Bool = false, tracking::Bool = false) -> LQRTracker\n    LQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                           x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                           z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                           hold::Bool = false, tracking::Bool = false) -> LQRTracker{NX, NU, NZ}\n\nA continuous [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe inputs are `x`, the plant state, `z`, the command variables, and `z_ref`,\ntheir reference. The two outputs come from [stage 2](@ref g-stage-function),\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nand `u`, its clamp to `[u_min, u_max]` per channel. The [block](@ref g-block)\nholds one continuous state, `q`, the integral term in output units, one channel\nper control input. One law moves it,\n\n    q̇ = ε + (ref - u_raw) / Tt\n\nand the two anti-windup axes of [`PID`](@ref), each adding inputs, fill its\nslots `ε` and `ref` over the integrator input `e = K_int (z_ref - z)`, channel\nby channel, by the table of [`ControllerBlock`](@ref).\n\n`hold = true`, the parameter `Hold`, adds two inputs. `saturation`, a code per\nchannel from the path downstream, gates each channel whose code agrees with the\nsign of its integrator input: `gate(e) = saturation == sign(e) ? 0 : e`.\n`engaged`, a flag per channel that reads true in command, zeroes the integrator\ninput of a channel not engaged whatever its code. Without tracking, a channel\nnot engaged freezes, its own clamp's correction alone moving it.\n`tracking = true`, the parameter `Track`, adds the input `v` as the\ncorrection's reference in place of the own `u`. With the hold, `v` is the\nreference in a channel only while it is limited or not engaged, so a channel\nnot engaged converges to `v` at rate `1/Tt` and engagement is bumpless. The own\nclamp is the correction's, and `Tt = Inf` switches it off. Tracking with a `Tt`\ngiven as a value and infinite in any channel is refused as an `ArgumentError`,\nas for `PID`.\n\nThe [ports](@ref g-port) are static vectors at every size: `x` at\n`SVector{NX, Float64}`, `z` and `z_ref` at `SVector{NZ, Float64}`, `u`, `u_raw`\nand `v` at `SVector{NU, Float64}`, `saturation` at `SVector{NU, Int8}`, and\n`engaged` at `SVector{NU, Bool}`.\n\nAny of the nine parameters may be an input port in place of a field, spelled\n`K_fbk = AsPort()` with [`AsPort`](@ref) and typed as the field would be, an\n`SMatrix{NU, NX, Float64, NU * NX}` for `K_fbk`. That is how a gain schedule\nreaches the block. Under a `Dual` [activation](@ref g-activation), the port\ncarries partials, and a model that wants it frozen at its plain `Float64` value\nroutes it through [`Freeze`](@ref).\n\nThe first form reads `NX`, `NU` and `NZ` off the values given, `K_fbk` first,\nthen `K_fwd`, `K_int` and the trims, and passes every keyword on to the second,\nthe explicit spelling, which takes the sizes and the same keywords. A matrix or\na vector that does not fit the sizes read is refused as an `ArgumentError`. A\nsize no value carries, every carrier a port or left at its default, is refused\nlikewise, naming the explicit spelling.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. An\n`x` assembled from what the plant publishes from state, and a `z` selected from\nthe same, close no loop. A `z_ref` computed memorylessly from the block's own\n`u` closes an `AlgebraicCycle` classified real, since the direct law reads it. A\ntracking input wired from a memoryless clamp of `u` closes one classified\n[artificial](@ref g-algebraic-loop), since only the derivative reads it, which\nis why the limits live inside the block. A scheduled parameter computed\nmemorylessly from `u` closes a cycle too, artificial for `K_int` and `Tt` and\nreal for the others.\n\nThe block publishes no saturation code, since a continuous one would need a\nmode and events per channel for a consumer that does not exist. The gains are\ndesigned outside, from [`trim!`](@ref Redstone.trim!) and\n[`linearize`](@ref Redstone.linearize).\n\n`K_int` and the trims default to zero. `Tt`, `u_min` and `u_max` are each a real\nbroadcast to an `SVector{NU, Float64}`, or a vector of length `NU`. Integer\nentries qualify.\n\n# Keywords\n\nThe nine parameters come in this order.\n\n- `K_fbk`: the `NU × NX` feedback gain, any `AbstractMatrix` of reals stored as\n  a static matrix of `Float64`.\n- `K_fwd`: the `NU × NZ` feedforward gain, stored likewise.\n- `K_int`: the `NU × NZ` integral gain, stored likewise. A zero `K_int` is the\n  tracker without integral action.\n- `x_trim`: the plant state at trim, a vector of length `NX`.\n- `u_trim`: the control input at trim, a vector of length `NU`.\n- `z_trim`: the command variables at trim, a vector of length `NZ`.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`, the parameter\n  `Hold`.\n- `tracking`: `true` to add the input `v`, the parameter `Track`.\n\nSee also [`DiscreteLQRTracker`](@ref), [`LQRTrackerBlock`](@ref).\n",
+          "name": "Redstone.Library.LQRTracker",
+          "docstring": "    LQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n               x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n               z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n               hold::Bool = false, tracking::Bool = false) -> LQRTracker\n    LQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                           x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                           z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                           hold::Bool = false, tracking::Bool = false) -> LQRTracker{NX, NU, NZ}\n\nA continuous [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe inputs are `x`, the plant state, `z`, the command variables, and `z_ref`,\ntheir reference. Two outputs come from [stage 2](@ref g-stage-function), `u_raw`\nand `u`, its clamp to `[u_min, u_max]` per channel:\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nThe [library component](@ref g-library-component) holds one continuous state,\nthe field `x`, written `q` below. It is the integral term in output units, one\nchannel per control input. One law moves it:\n\n    q̇ = ε + (ref - u_raw) / Tt\n\nThe two anti-windup axes of [`PID`](@ref), each adding inputs, fill the slots\n`ε` and `ref` over the integrator input `e = K_int (z_ref - z)`. They fill them\nchannel by channel, by the table of [`AbstractAntiWindupController`](@ref).\n\n`hold = true` adds two inputs. `saturation`, a code per channel from the path\ndownstream, gates each channel whose code agrees with the sign of its integrator\ninput. `engaged`, a flag per channel that reads true in command, zeroes the\nintegrator input of a channel not engaged whatever its code. Without tracking, a\nchannel not engaged freezes, its own clamp's correction alone moving it.\n\n`tracking = true` adds the input `v` as the correction's reference in place of\nthe own `u`. With the hold, `v` is the reference in a channel only while it is\nlimited or not engaged. A channel not engaged therefore converges to `v` at rate\n`1/Tt` and engagement is bumpless. The own clamp is the correction's, and\n`Tt = Inf` switches it off.\n\nTracking with a `Tt` given as a value and infinite in any channel is refused as\nan `ArgumentError`, as for `PID`. A `u_min` above `u_max`, both given as values,\nis refused as an `ArgumentError`, and so is a `Tt` given as a value and not\npositive in every channel. The default `Tt = Inf` passes.\n\nThe [ports](@ref g-port) are each an `SVector` at every size. `x` is an\n`SVector{NX, Float64}`, `z` and `z_ref` are `SVector{NZ, Float64}`, and `u`,\n`u_raw` and `v` are `SVector{NU, Float64}`. `saturation` is an\n`SVector{NU, Int8}` and `engaged` an `SVector{NU, Bool}`.\n\nAny of the nine parameters may be an input port in place of a field, spelled\n`K_fbk = AsPort()` with [`AsPort`](@ref) and typed as the field would be, an\n`SMatrix{NU, NX, Float64, NU * NX}` for `K_fbk`. That is how a gain schedule\nreaches the component. Under a `Dual` [activation](@ref g-activation), the port\ncarries partials. A component tree that wants it frozen at its plain `Float64`\nvalue routes it through [`Freeze`](@ref).\n\nThe first form reads `NX`, `NU` and `NZ` off the values given, `K_fbk` first,\nthen `K_fwd`, `K_int` and the trims. The second, the explicit spelling, takes\nthe sizes and the same keywords. A matrix or a vector that does not fit the\nsizes read is refused as an `ArgumentError`. A size no value carries, every\ncarrier a port or left at its default, is refused likewise, naming the explicit\nspelling.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. An\n`x` assembled from what the plant publishes from state, and a `z` selected from\nthe same, close no loop. A `z_ref` computed memorylessly from the component's\nown `u` closes an `AlgebraicCycle` classified real, since the direct law reads\nit. A tracking input wired from a memoryless clamp of `u` closes one classified\n[artificial](@ref g-algebraic-loop), since only the derivative reads it. A\nparameter port computed memorylessly from `u` closes a cycle too, artificial for\n`K_int` and `Tt` and real for the others.\n\nThe component publishes no saturation code. The gains are designed outside, from\n[`trim!`](@ref Redstone.trim!) and [`linearize`](@ref Redstone.linearize).\n\n`K_int` and the trims default to zero. `Tt`, `u_min` and `u_max` are each a real\nbroadcast to an `SVector{NU, Float64}`, or a vector of length `NU`. Integer\nentries qualify.\n\n# Keywords\n\n- `K_fbk`: the `NU × NX` feedback gain, any `AbstractMatrix` of reals stored as\n  an `SMatrix{NU, NX, Float64}`.\n- `K_fwd`: the `NU × NZ` feedforward gain, stored likewise.\n- `K_int`: the `NU × NZ` integral gain, stored likewise, zero for the tracker\n  without integral action.\n- `x_trim`: the plant state at trim, a vector of length `NX`.\n- `u_trim`: the control input at trim, a vector of length `NU`.\n- `z_trim`: the command variables at trim, a vector of length `NZ`.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`DiscreteLQRTracker`](@ref), [`AbstractLQRTracker`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1761
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2752
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1765
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2756
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1923
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2921
             }
           ]
         },
         {
-          "name": "Redstone.Blocks.DiscreteLQRTracker",
-          "docstring": "    DiscreteLQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                       x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                       z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                       hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker\n    DiscreteLQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                                   x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                                   z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                                   hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker{NX, NU, NZ}\n\nA discrete [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe [block](@ref g-block) takes the parameters, defaults, [ports](@ref g-port),\noutputs and law of [`LQRTracker`](@ref) to the discrete [tier](@ref g-tier). A\n[store](@ref g-store) field `q` stands in for its continuous state, and a\nsecond, `saturated`, holds its code. `Δt` is the component's own period. The\ninputs are `x`, `z` and `z_ref`, and the two outputs come from\n[stage 2](@ref g-stage-function),\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nand `u`, its clamp to `[u_min, u_max]` per channel. Each [tick](@ref g-tick)\nmoves the integral term by forward Euler and the correction's exact step,\n\n    q⁺ = q + Δt ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nwith its slots `ε` and `ref` filled over the two anti-windup axes and the\nintegrator input `e = K_int (z_ref - z)`, channel by channel, by the table of\n[`ControllerBlock`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`, and a channel not engaged\nwithout tracking freezes. `tracking` adds the input `v`. `tracking = true` with\na `Tt` given infinite in any channel is refused as an `ArgumentError`. With the\nhold, the reference falls back to `u` in each channel that is free. All of this\nis as in `LQRTracker`. Every `Tt` is stable: `Tt = Inf` switches the correction\noff, and `Tt = 0` is legal and brings `u_raw` to the reference by the next\ntick, so a channel not engaged with tracking follows `v` exactly.\n\nThe ports, the nine parameters and their types, the [`AsPort`](@ref) spelling,\nthe size inference and the explicit spelling, the second form, are those of\n`LQRTracker`, and so are the refusals.\n\nA third output, `saturated`, publishes the `Int8` code of the block's own clamp\nper channel at `SVector{NU, Int8}`: `1` with `u_raw` at or above `u_max`, `-1`\nat or below `u_min` and `0` between. `s_update` writes it to the store from\n`u_raw` at the tick, and `y_state` publishes it from stage 1 at the next. It is\ntherefore one tick stale, and flips only on a tick [boundary](@ref g-boundary).\nIt serves the hold of an outer block in a cascade, wired to its input\n`saturation`, each channel reaching a scalar consumer through\n[`Unpack`](@ref)`{Int8, NU}`. The outer integrator takes one extra step before\nthe hold engages, and as a stage-1 port the code closes no cycle through the\nouter block's `u`. The block never reads its own code, since its own windup is\nthe correction's.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, as for `LQRTracker`. A `z_ref` or a\ntracking input computed memorylessly from the block's own `u` is refused as an\n`AlgebraicCycle` classified real: a discrete member's dependences are traced\nfrom its structure, so no [hop](@ref g-hop) is named dead. A scheduled parameter\ncomputed memorylessly from `u` closes a cycle likewise.\n\n# Keywords\n\nThe keywords are those of `LQRTracker`, with the same meanings and defaults.\n\n- `K_fbk`: the `NU × NX` feedback gain.\n- `K_fwd`: the `NU × NZ` feedforward gain.\n- `K_int`: the `NU × NZ` integral gain.\n- `x_trim`: the plant state at trim.\n- `u_trim`: the control input at trim.\n- `z_trim`: the command variables at trim.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off\n  and `0` to correct within one tick.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`, the parameter\n  `Hold`.\n- `tracking`: `true` to add the input `v`, the parameter `Track`.\n\nSee also [`LQRTrackerBlock`](@ref), [`DiscretePID`](@ref).\n",
+          "name": "Redstone.Library.DiscreteLQRTracker",
+          "docstring": "    DiscreteLQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                       x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                       z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                       hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker\n    DiscreteLQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                                   x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                                   z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                                   hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker{NX, NU, NZ}\n\nA discrete [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe [library component](@ref g-library-component) takes the parameters,\ndefaults, [ports](@ref g-port), outputs and law of [`LQRTracker`](@ref) to the\ndiscrete [tier](@ref g-tier). A [store](@ref g-store) field `q` stands in for\nits continuous state, and a second, `saturated`, holds its code. `Δt` is the\n[component](@ref g-component)'s own period.\n\nThe inputs are `x`, `z` and `z_ref`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]` per channel:\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nEach [tick](@ref g-tick) moves the integral term by forward Euler and the\ncorrection's exact step:\n\n    q⁺ = q + Δt ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nThe two anti-windup axes fill the slots `ε` and `ref` over the integrator input\n`e = K_int (z_ref - z)`. They fill them channel by channel, by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`. A channel not engaged without\ntracking freezes. `tracking` adds the input `v`. With the hold, the reference\nfalls back to `u` in each channel that is free. All of this is as in\n`LQRTracker`.\n\n`tracking = true` with a `Tt` given infinite in any channel is refused as an\n`ArgumentError`, as in `LQRTracker`. So is a `u_min` above `u_max`, both given\nas values, and so is a `Tt` given as a value and negative in any channel.\n\nEvery `Tt` is stable. `Tt = Inf` switches the correction off. `Tt = 0` is legal\nand brings `u_raw` to the reference plus the tick's integral step `Δt ε` by the\nnext tick. A channel not engaged with tracking lands `u_raw` on the tick's `v`\none tick later, exact for a constant `v` while the direct terms hold.\n\nThe ports, the nine parameters and their types, the [`AsPort`](@ref) spelling,\nthe size inference and the explicit spelling, the second form, are those of\n`LQRTracker`, and so are the refusals.\n\nA third output, `saturated`, publishes the `Int8` code of the component's own\nclamp per channel at `SVector{NU, Int8}`. The code is `1` with `u_raw` at or\nabove `u_max`, `-1` at or below `u_min` and `0` between. The component stores\nthe code from `u_raw` at the tick and publishes it from stage 1 at the next. It\nis therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary).\n\nThe code serves the hold of an outer controller in a cascade, wired to its input\n`saturation`, each channel reaching a scalar consumer through\n[`Unpack`](@ref)`{Int8, NU}`. The outer integrator takes one extra step before\nthe hold engages. As a stage-1 port the code closes no cycle through the outer\ncomponent's `u`.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, as for `LQRTracker`. A `z_ref` or a\ntracking input computed memorylessly from the component's own `u` is refused as\nan `AlgebraicCycle` classified real. A parameter port computed memorylessly from\n`u` closes a cycle likewise.\n\n# Keywords\n\n- `K_fbk`: the `NU × NX` feedback gain.\n- `K_fwd`: the `NU × NZ` feedforward gain.\n- `K_int`: the `NU × NZ` integral gain.\n- `x_trim`: the plant state at trim.\n- `u_trim`: the control input at trim.\n- `z_trim`: the command variables at trim.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off\n  and `0` to correct within one tick.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`AbstractLQRTracker`](@ref), [`DiscretePID`](@ref).\n",
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 1761
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 2752
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2037
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3049
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/M9csa/src/blocks.jl",
-              "line": 2035
+              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "line": 3047
             }
           ]
         }

@@ -32,15 +32,15 @@
   const totals = $derived.by(() => {
     const nodes = model?.structure?.nodes;
     if (!nodes) return undefined;
-    let leaves = 0, assemblies = 0, wires = 0;
+    let primitives = 0, assemblies = 0, wires = 0;
     for (const n of nodes) {
-      if (n.class === "leaf") leaves++;
+      if (n.class === "primitive") primitives++;
       else {
         assemblies++;
         wires += n.wires.length;
       }
     }
-    return { leaves, assemblies, wires };
+    return { primitives, assemblies, wires };
   });
   const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -61,7 +61,7 @@
     <span class="kind">{model.kind}</span>
     <span class="counts" title="over the whole model">
       {#if totals}
-        {count(totals.leaves, "primitive", "primitives")}, {count(totals.assemblies, "assembly", "assemblies")}, {count(totals.wires, "wire", "wires")}
+        {count(totals.primitives, "primitive", "primitives")}, {count(totals.assemblies, "assembly", "assemblies")}, {count(totals.wires, "wire", "wires")}
       {:else}
         no structure
       {/if}

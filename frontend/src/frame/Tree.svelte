@@ -73,7 +73,7 @@
     return (folderOf(model.tree!, r.path)?.members ?? []).reduce((n, m) => n + (marks.has(m) ? 1 : 0) + (counts.get(m) ?? 0), 0);
   }
   const steps = $derived(stepsOf(model));
-  /** A row's dot: the tier's color, or in rate mode the triple's step, a colored extra or the shared neutral past them, the continuous color, an assembly with no discrete leaf gray. */
+  /** A row's dot: the tier's color, or in rate mode the triple's step, a colored extra or the shared neutral past them, the continuous color, an assembly with no discrete primitive gray. */
   const dot = (r: Row) => {
     const n = model.tree!.byPath.get(r.path)!;
     if (mode === "tier") return n.class === "assembly" ? palette.assembly : n.tier === "discrete" ? palette.discrete : palette.continuous;
