@@ -10,6 +10,17 @@ makes.
 
 The bullets stand in working order, the first one next.
 
+- **Two type labels in Firefox on macOS** (found 2026-11-16, the first
+  local Firefox run). `wires.spec.ts`'s label rule fails on two labels
+  that pass in Chromium and in CI's Linux Firefox, and failed the same way
+  before the pin. `kinds`' `s|out|phase` box starts 1.2 units right of its
+  `x`, where the rule allows under 1. `closed_loop`'s `plant|out|h` box
+  starts 2.25 right of its `x` and 0.25 left of the port's point, so its
+  `x` sits 2.5 left of the port, where Chromium puts it right. Open:
+  whether Firefox places the label, measures its box or starts the wire
+  differently; a probe of the three in both browsers settles it. Until
+  then a local run on a Mac shows these two checks red. The user put this
+  item at the head of the work order on 2026-11-16.
 - **Icons for the library's new components.** Seven library components
   reached the core after the old pin `035aa95` and are on neither
   `visual_grammar.md` answer 7's roster nor `frontend/src/lib/icons.ts`'s:
@@ -22,7 +33,7 @@ The bullets stand in working order, the first one next.
   `library.json` each say one instance of every shipped component.
   Answer 7 is amended with their glyphs first, under the rule on amending
   a record; the user ruled on 2026-11-16, at the pin to the core's
-  `6afd6fb`, that this item heads the work order.
+  `6afd6fb`, that this item comes before increment 10.
 - **The inspector, stage 1, its remaining increments**: the static
   inspector over the descriptor. Its records, none normative, are
   `initial_design.md` and one per axis beside it: `descriptor_design.md`
@@ -155,16 +166,6 @@ the increment it came from.
 - **Firefox's skipped checks** (increment 6). Its clipboard skip takes
   `live.spec.ts`'s whole hosted-copy check, so the no-connection and
   no-download pins do not run under Firefox.
-- **Two type labels in Firefox on macOS** (found 2026-11-16, the first
-  local Firefox run). `wires.spec.ts`'s label rule fails on two labels
-  that pass in Chromium and in CI's Linux Firefox, and failed the same way
-  before the pin. `kinds`' `s|out|phase` box starts 1.2 units right of its
-  `x`, where the rule allows under 1. `closed_loop`'s `plant|out|h` box
-  starts 2.25 right of its `x` and 0.25 left of the port's point, so its
-  `x` sits 2.5 left of the port, where Chromium puts it right. Open:
-  whether Firefox places the label, measures its box or starts the wire
-  differently; a probe of the three in both browsers settles it. Until
-  then a local run on a Mac shows these two checks red.
 - **The base grid's peach** (increment 6). Step 0 goes to a block ticking
   on the base grid; `closed_loop` has none, so its palette starts at
   anchor 1 and the peach goes to `sensing`.
