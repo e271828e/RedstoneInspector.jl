@@ -251,6 +251,17 @@ test("a face with no producer: the pane offers no trace, and t and the right-cli
   await expect(statusRoute(page)).toContainText(plain("tracing `plant/δt`"));
 });
 
+test("a face with no producer: the pane's fed-by line reads nothing, and an output face, its own producer, still reads itself", async ({ page }) => {
+  await drop(page, "closed_loop", unfed());
+  const fedBy = pane(page).locator('h3:text-is("Fed by") + p');
+  await page.locator('rect.port[data-port="plant|in|δe"]').click();
+  await expect(pane(page)).toHaveAttribute("data-id", "plant|in|δe");
+  await expect(fedBy).toHaveText("nothing");
+  await page.locator('rect.port[data-port="plant|out|h"]').click();
+  await expect(pane(page)).toHaveAttribute("data-id", "plant|out|h");
+  await expect(fedBy).toHaveText("itself");
+});
+
 test("closed_loop: on a level the route does not cross nothing dims, the status bar saying why; the levels it crosses dim", async ({ page }) => {
   await drop(page, "closed_loop");
   await tag(page, "⟨in⟩h_ref").click();

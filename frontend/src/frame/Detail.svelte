@@ -221,7 +221,7 @@
         <p class="root-input">root input: <code>{facts.rootInput.name}</code> <code>{facts.rootInput.type}</code></p>
       {/if}
       <h3>Fed by</h3>
-      <p>{#if facts.producer}{@render faceLink("producer", facts.producer)}{:else if facts.rootInput}the model's input{:else}itself{/if}</p>
+      <p>{#if facts.producer}{@render faceLink("producer", facts.producer)}{:else if facts.rootInput}the model's input{:else if facts.face.side === "out"}itself{:else}nothing{/if}</p>
       {#if facts.consumers}
         <h3>Feeds</h3>
         <ul class="consumers">{#each facts.consumers as c, i (i)}<li>{@render faceLink("consumer", c)}</li>{:else}<li>nothing</li>{/each}</ul>
