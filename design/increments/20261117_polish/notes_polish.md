@@ -67,3 +67,16 @@ recommendation. None of them called for a brief.
     fixtures' `<depot>` labels.
 13. **`frontend/MAP.md` past 700 lines** gets its own trim, an unordered
     item in `pending.md`, not part of the batch.
+
+## The look pass
+
+The user's rulings at the look, 2026-11-17.
+
+14. **An input face with no producer reads "nothing"** in the pane's
+    "fed by" line, where it read "itself", contradicting the status bar's
+    "has no producer". "Itself" stays for an output face, which is its own
+    producer. The cold review found it (F4); the wording predates the
+    batch, which first shows it.
+15. **An opened assembly selected by its own row keeps the open button
+    and no mark.** The primitive root keeps the mark either way, since an
+    assembly's open button is real and a primitive has none.

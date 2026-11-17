@@ -447,6 +447,31 @@ feedthrough edges and 13 discrete primitives; the new `Constant`s are
 `pair`, a `NamedTuple`, and `gear`, the `Gear` enum's `up`; a `Junction`
 over a user function stays `fn`, and `Fn` is `apply`.*
 
+**The polish batch.** Added from `pending.md`'s work order after the
+icons, by the user's ruling of 2026-11-17 that it comes before increment
+10: sixteen frontend items the landed increments left, each ruled on its
+bullet. Among them, a loop's drawer row lists each wire pair's declared
+hops with a link to the declaring method; a pin a loop's chain leaves
+through takes a `loop` badge; a route that no longer resolves after a
+push clears with a notice; a level on which a focus lights nothing does
+not dim; a folder expands with its node; and the page gains a favicon.
+It amends `workspace.md` answers 2, 4 and 8 and `visual_grammar.md`
+answers 8 and 9. *Landed on 2026-11-17 at `ef670cc` of
+`RedstoneInspector.jl`, five commits, without a brief: the loop row's
+contract is in `frontend/MAP.md` and the rulings, the cold review's and
+the look's included, in `increments/20261117_polish/notes_polish.md`.
+Facts the next briefs take: a hop whose holder's qualified type is
+`Redstone` or under `Redstone.` has no link, so no fixture's loop row
+links anything, every holder being a `Group`; the status bar's one-off
+notice is `session.notice`, set by `say` and cleared by the next push,
+open, selection or trace; `containers`' `scale` is now the assembly
+`Scale` holding the keyed container `taps = (c = Gain(10.0),)`, so the
+model has 8 nodes, 2 assemblies and 6 root children, the outline 11 rows
+of which 9 show at load, and `s2/out` feeds `scale/taps/c/e`; the pane's
+"fed by" line reads "nothing" on an input face with no producer. The
+gate stood at 128 Julia tests, 526 unit tests, and 500 browser checks
+passed and 4 skipped, the Firefox clipboard checks.*
+
 **Increment 10: the deployment overlay.** On both tracks, after a design
 session that writes the eighth record, `design/deployment_overlay.md`
 (added 2026-11-04, the user's ruling after increment 8's reading 1): what
