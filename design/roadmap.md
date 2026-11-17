@@ -467,15 +467,35 @@ closes the bare-`@ref` note `build_release.md` carried and amends
 qualified refs. The inspector
 half: the pin bump, the timing tab's rows and chart, the legend's values,
 the page's link rule keeping its module-joining as the fallback for a ref
-the writer left bare. Visible: the deployment fixture's schedule on the
-timing tab. Draws on the new record, `workspace.md` answers 6 and 7,
+the writer left bare. Folded in on 2026-11-17 from `pending.md`'s open
+items, by the user's ruling: in the core half, the schema's description
+names `RedstoneInspector.jl/design/descriptor_design.md` in place of
+`design/inspector/descriptor_design.md`, the copy following at the pin
+bump; in the inspector half, the fit reserves the legend, which the
+concrete values lengthen and which can sit over the drawing's bottom-left
+corner, and the type labels' room, which widens every level 12% on
+`pid_controller` to 42% on `lqr_controller` and so lowers every fit scale,
+is weighed with it; the base grid's peach is looked at again with the
+legend's values, since step 0 goes only to a block ticking on the base
+grid, so `closed_loop`'s palette starts at anchor 1 and the peach goes to
+`sensing`. For the design session, a root input's seedability: the spec
+pins a root input when any consumer's entry pins, and it is then
+unseedable; open are whether the root-inputs tab shows it under
+"seedable", and whether the client derives it from the consumers' flags,
+which miss a discrete consumer's wholesale pin, or the format carries it,
+which widens the 1.1 bump past the `schedule` section. Visible: the
+deployment fixture's schedule on the timing tab. Draws on the new record, `workspace.md` answers 6 and 7,
 `visual_grammar.md` answer 6, `build_release.md` answer 7.
 
 **Increment 11: the release.** `scripts/release.jl`, the `release` job
 with the tag-absent rule, Pages, the `base` path, the version baked into
 the page, the Vimium patterns, the docs address constant and the
 README's images, captured by the `frontend` job and deployed with Pages,
-then the first release by the checklist. Visible: the hosted copy, the
+then the first release by the checklist. Folded in on 2026-11-17 from
+`pending.md`'s open items, by the user's ruling: a check that runs the
+real server, `inspect` serving the built bundle, where until then the live
+tab is looked at by hand through `inspect` with `bundle_dir` at
+`frontend/dist`. Visible: the hosted copy, the
 README's images, and `Pkg.add` by URL at the tag serving the bundle. Draws on
 `build_release.md` answers 1, 6, 7 and 8.
 

@@ -76,9 +76,10 @@ Open items live in `pending.md`.
    restores its own zoom and pan when revisited, kept per path for the
    session. The breadcrumb spells the open level's path as links, the root
    labelled as the tree labels it; Backspace or Alt-Up goes to the parent.
-   A move to an ancestor of the level left, by these keys, the breadcrumb
-   or back, selects the ancestor's child on the path, so the keyboard
-   continues from it. The open level is the page's URL hash,
+   Any move to an ancestor of the level left, by these keys, the
+   breadcrumb, back or forward, or a double-click on its tree row, selects the
+   ancestor's child on the path, so the keyboard continues from it. The
+   open level is the page's URL hash,
    `#level=aircraft/loops`, so back and forward move between levels, a
    reload reopens the level and a level is linkable in the hosted copy; the file is never in the URL. On load
    the root opens, fitted, the tree one level deep, nothing selected; a
@@ -89,7 +90,9 @@ Open items live in `pending.md`.
    fallback fits. Drag pans, the wheel zooms about the pointer, a corner
    button and `0` fit, `+` and `-` zoom.
    *Amended 2026-11-02 (increment 6's look pass): the selection of the
-   ancestor's child on a move up joined.*
+   ancestor's child on a move up joined. Amended 2026-11-17 (the user's
+   ruling on `pending.md`'s open items): the rule named the keys, the
+   breadcrumb and back alone, where the page applies it to every move up.*
    *Why:* a single click must select, including a closed assembly, so
    opening needs a second gesture everywhere. *Rejected:* a history entry
    per selection, which turns the back button into an undo of clicks.
@@ -208,8 +211,10 @@ Open items live in `pending.md`.
    edges into it, labelled presumed. A primitive with both stages stands in
    both groups, each time with that stage's ports. The drawer opens on load
    only when a diagnostic exists, on that tab, and otherwise stays
-   collapsed to its tab strip with the counts readable; its height is a
-   remembered splitter; every row in
+   collapsed to its tab strip with the counts readable; a push or a
+   replacement leaves it as it stands, opening it on the diagnostics when
+   the new model carries one; its height is a remembered splitter; every
+   row in
    every tab selects on the canvas and navigates as a tree click does, a
    release that leaves a text selection inside an analysis row excepted;
    each tab is a self-contained component for stage 3's panels and stage
@@ -222,7 +227,8 @@ Open items live in `pending.md`.
    both stages' ports, which gave a primitive with stage 1 outputs alone a
    position that orders nothing. Amended 2026-11-12 (increment 8's second
    look, 1.8): a drag selecting a row's text also selected the row's
-   target.*
+   target. Amended 2026-11-17 (the user's ruling on `pending.md`'s open
+   items): the drawer on a push or a replacement was unstated.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -382,7 +388,7 @@ Open items live in `pending.md`.
     |---|---|
     | `h` `j` `k` `l` | on the canvas or with nothing focused, move the selection to the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, scroll, `h` and `l` sideways; on the help page, `j` and `k` scroll |
     | arrows | on the canvas or with nothing focused, pan the canvas; in the tree, the detail pane and the drawer, what `h j k l` do there; with Shift, the same |
-    | Shift with `h`, `l` | back, forward between levels; nothing before the first |
+    | Shift with `h`, `l` | back, forward between the levels opened since the page loaded; nothing before the first or past the last |
     | Shift with `j`, Enter | open the selected assembly |
     | Shift with `k`, Backspace or Alt-Up | go to the parent |
     | `0` `+` `-` | fit, zoom in, zoom out |
@@ -436,7 +442,9 @@ Open items live in `pending.md`.
     `m`, `i`, Cmd-O, Ctrl-O, `u` and `U` did not exist; and the ring showed
     for the keyboard only in every region. Amended 2026-11-15 (increment
     8b's look, 1.8 and 2.2): Shift with an arrow was unruled, and the
-    canvas's ring after a click and a key was unstated.*
+    canvas's ring after a click and a key was unstated. Amended 2026-11-17
+    (the user's ruling on `pending.md`'s open items): Shift with `l` had no
+    bound, where the page stops it at the deepest level the load opened.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a
