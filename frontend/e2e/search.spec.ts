@@ -2,6 +2,7 @@
 // the field; the results stand in the outline's place while it has focus; hits
 // take the dashed halo on the open level and the rest dims; the tree's rows take
 // the dashed marker with counts up collapsed rows. The counts are the oracle's.
+// A face hit under a `type:` term shows its owner's type (the polish batch).
 import { test, type Page } from "@playwright/test";
 import { drop, expect, press, readyLevel, shot } from "./fixtures";
 
@@ -217,4 +218,20 @@ test("closed_loop: n and N walk every hit in the list's order, opening its level
   await expectAt(12);
   await press(page, "Shift+N");
   await expectAt(11);
+});
+
+test("closed_loop: a face hit found by a type: term shows its owner's type with the match marked; one found by its name alone shows none", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await field(page).fill("type:sumjunc face:in1");
+  const hit = page.locator('.results .hit[data-path="sensing/altimeter"][data-face="in1"]');
+  await expect(hit).toHaveCount(1);
+  await expect(hit.locator(".type")).toHaveText("SumJunction");
+  await expect(hit.locator(".type mark")).toHaveText("SumJunc");
+  await shot(page, "closed_loop", "", "type-hit");
+  await field(page).fill("type:library.sum face:in1");
+  await expect(hit.locator(".type")).toHaveText("Redstone.Library.SumJunction");
+  await expect(hit.locator(".type mark")).toHaveText("Library.Sum");
+  await field(page).fill("path:altimeter face:in1");
+  await expect(hit).toHaveCount(1);
+  await expect(hit.locator(".type")).toHaveCount(0);
 });

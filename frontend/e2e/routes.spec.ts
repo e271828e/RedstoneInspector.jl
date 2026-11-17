@@ -4,9 +4,10 @@
 // child entered and each pin crossed, the level dimmed, the status bar naming it;
 // it survives navigation and selection, clears on Escape, the trace repeated or
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
-// read off the DOM.
+// read off the DOM. The polish batch: a push clearing a route that no longer
+// resolves, `t` on a face with no producer, a level the route misses not dimmed.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, dropOver, effectiveOpacity, expect, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { blockBoxes, drop, dropOver, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
@@ -195,9 +196,72 @@ test("a push keeps a route whose origin the new model declares, recomputed, and 
   await dropOver(page, "rates");
   await page.locator(readyLevel("")).waitFor();
   await expect(statusRoute(page)).toHaveCount(0);
+  await expect(page.locator("footer.status span.notice")).toHaveText("the route from h_ref no longer resolves in this model; cleared");
   await expect(svg(page)).not.toHaveClass(/route-focus/);
   await expect(page.locator("path.casing.route")).toHaveCount(0);
   await expect(page.locator('nav.tree span.mark[data-mark="route"]')).toHaveCount(0);
+});
+
+/** closed_loop with the root's wire into plant's δe removed: the face declared, fed by nothing. */
+const unfed = () => {
+  const d = JSON.parse(fixtureText("closed_loop"));
+  const root = d.build.structure.nodes[0];
+  root.wires = root.wires.filter((w: any) => !(w.to.path === "plant" && w.to.port === "δe"));
+  return JSON.stringify(d);
+};
+const notice = (page: Page) => page.locator("footer.status span.notice");
+
+test("a push that keeps the origin but no longer feeds it clears the route, the status bar saying so until the next selection", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await page.locator('rect.port[data-port="plant|in|δe"]').click();
+  await press(page, "t");
+  await expect(statusRoute(page)).toContainText(plain("tracing `plant/δe`"));
+  await dropOver(page, "closed_loop", unfed());
+  await expect(statusRoute(page)).toHaveCount(0);
+  await expect(svg(page)).not.toHaveClass(/route-focus/);
+  await expect(page.locator("path.casing.route")).toHaveCount(0);
+  await expect(notice(page)).toHaveText("the route from plant/δe no longer resolves in this model; cleared");
+  await expect(notice(page).locator("code")).toHaveText("plant/δe");
+  await shot(page, "closed_loop", "", "route-cleared");
+  await page.locator('g.block[data-id="sensing"]').click();
+  await expect(notice(page)).toHaveCount(0);
+});
+
+test("a face with no producer: the pane offers no trace, and t says there is nothing to trace", async ({ page }) => {
+  await drop(page, "closed_loop", unfed());
+  await page.locator('rect.port[data-port="plant|in|δe"]').click();
+  await expect(pane(page)).toHaveAttribute("data-kind", "port");
+  await expect(pane(page).locator("button.trace")).toHaveCount(0);
+  await press(page, "t");
+  await expect(notice(page)).toHaveText("nothing to trace: plant/δe has no producer");
+  await expect(statusRoute(page)).toHaveCount(0);
+  await expect(svg(page)).not.toHaveClass(/route-focus/);
+  await shot(page, "closed_loop", "", "nothing-to-trace");
+  // a face with a producer still traces, the message gone
+  await page.locator('rect.port[data-port="plant|in|δt"]').click();
+  await expect(notice(page)).toHaveCount(0);
+  await press(page, "t");
+  await expect(statusRoute(page)).toContainText(plain("tracing `plant/δt`"));
+});
+
+test("closed_loop: on a level the route does not cross nothing dims, the status bar saying why; the levels it crosses dim", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await tag(page, "⟨in⟩h_ref").click();
+  await press(page, "t");
+  await expect(svg(page)).toHaveClass(/\broute-focus\b/);
+  await openPath(page, "sensing");
+  await expect(svg(page)).not.toHaveClass(/route-focus/);
+  await expect(svg(page)).not.toHaveAttribute("data-focus");
+  await expect(page.locator("svg.canvas .lit")).toHaveCount(0);
+  for (const id of ["sensing/noise", "sensing/altimeter"]) expect(await effectiveOpacity(page, `g.block[data-id="${id}"] > .shape`)).toBe(1);
+  await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`"));
+  await expect(page.locator("footer.status span.focus-note")).toHaveText("the route does not cross this level, so nothing dims");
+  await shot(page, "closed_loop", "sensing", "route-not-here");
+  await press(page, "Backspace");
+  await page.locator(readyLevel("")).waitFor();
+  await expect(svg(page)).toHaveClass(/\broute-focus\b/);
+  await expect(page.locator("footer.status span.focus-note")).toHaveCount(0);
+  expect(await effectiveOpacity(page, 'g.block[data-id="sensing"] > .shape')).toBeCloseTo(0.35, 5);
 });
 
 test("rates: src/out traced from the menu, fast and slow badged, fast opened by its badge with fast/outer badged and inner's input terminal", async ({ page }) => {

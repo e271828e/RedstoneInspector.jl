@@ -1,12 +1,26 @@
 // Wire styles by kind, the trunks' dots and the type labels (visual_grammar.md
 // answers 4 and 10, workspace.md answer 7). Counts from the oracle (`grammar.py`).
+// The type labels ignore the pointer (the polish batch).
 import { test, type Page } from "@playwright/test";
 import { shortType } from "../src/lib/wires";
-import { drop, dropOver, expect, fixtureText, press, shot } from "./fixtures";
+import { clickWire, drop, dropOver, expect, fixtureText, press, shot } from "./fixtures";
 
 type End = { path: string; port: string };
 type Wire = { from: End; to: End };
 /** A fixture's root wires in declaration order, each with its id and its producer's port id. */
+/** A root producer's full type from the fixture: a root input's, a primitive output's, an assembly output's through its output wire. */
+function producerType(fixture: string, path: string, port: string): string | undefined {
+  const s = JSON.parse(fixtureText(fixture)).build.structure;
+  const nodes = new Map<string, any>(s.nodes.map((n: any) => [n.path, n]));
+  const walk = (p: string, name: string): string | undefined => {
+    const n = nodes.get(p);
+    if (n.class === "primitive") return n.outputs.find((f: any) => f.name === name)?.type;
+    const w = n.wires.find((x: Wire) => x.to.path === p && x.to.port === name);
+    return w && w.from.path !== p ? walk(w.from.path, w.from.port) : undefined;
+  };
+  return path === "" ? s.root_inputs.find((r: any) => r.name === port)?.type : walk(path, port);
+}
+
 function rootWires(fixture: string): { id: string; port: string; from: End; to: End }[] {
   const root = JSON.parse(fixtureText(fixture)).build.structure.nodes.find((n: { path: string }) => n.path === "");
   return root.wires.map((w: Wire) => ({
@@ -47,7 +61,7 @@ const translation = (t: string) => t.match(/-?[\d.]+/g)!.map(Number);
 /**
  * The root's type labels against the rule (visual_grammar.md answer 4 as amended): one label per producer port, its
  * `data-wire` the port's first wire, start-anchored a few units right of the port's point and below the wire leaving
- * it, the unqualified type whole, the full type in its title; the labels' group after the blocks. The port's point is
+ * it, the unqualified type of its producer face whole, no title; the labels' group after the blocks. The port's point is
  * the first wire's first point. The place reads the first character's box, since Firefox pads a text's `getBBox`.
  * Returns the labels drawn, by port.
  */
@@ -63,7 +77,7 @@ async function expectLabels(page: Page, fixture: string): Promise<Map<string, st
       const text = t ? [...t.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("") : undefined;
       const box = t?.getExtentOfChar(0);
       out[port] = {
-        start, text, wire: t?.getAttribute("data-wire"), title: t?.querySelector("title")?.textContent,
+        start, text, wire: t?.getAttribute("data-wire"), titled: !!t?.querySelector("title"),
         x: Number(t?.getAttribute("x")), anchor: t && getComputedStyle(t).textAnchor,
         box: box && { x: box.x, y: box.y },
         afterBlocks: t ? !!(document.querySelector("g.blocks")!.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING) : undefined,
@@ -73,7 +87,7 @@ async function expectLabels(page: Page, fixture: string): Promise<Map<string, st
   }, [...byPort]);
   const labels = new Map<string, string>();
   for (const [port, v] of Object.entries(drawn) as [string, {
-    start: [number, number]; text?: string; wire?: string; title?: string; x: number; anchor?: string;
+    start: [number, number]; text?: string; wire?: string; titled: boolean; x: number; anchor?: string;
     box?: { x: number; y: number }; afterBlocks?: boolean;
   }][]) {
     expect(v.text, `${port} labelled`).toBeDefined();
@@ -88,7 +102,10 @@ async function expectLabels(page: Page, fixture: string): Promise<Map<string, st
     expect(v.box!.y - v.start[1], `${port} below its wire`).toBeGreaterThanOrEqual(-0.5);
     expect(v.box!.y - v.start[1], `${port} just below`).toBeLessThanOrEqual(8);
     // the unqualified type whole, never cut
-    expect(v.text, port).toBe(shortType(v.title!));
+    const [block, , name] = port.split("|");
+    const type = producerType(fixture, block.startsWith("⟨in⟩") ? "" : block, name);
+    expect(v.text, port).toBe(shortType(type!));
+    expect(v.titled, port).toBe(false);
     expect(v.text, port).not.toMatch(/…$/);
     expect(v.text, port).not.toMatch(QUALIFIED);
     expect(v.afterBlocks, port).toBe(true);
@@ -135,10 +152,15 @@ test("kinds: one wire of every class, each drawn by its kind; the type labels by
   expect(await transforms(page)).toEqual(placed);
   const labels = await expectLabels(page, "kinds");
   const n = labels.size;
-  // the module dropped from the text, kept in the title: v's StaticArraysCore.SVector
+  // the module dropped from the text, kept in the pane: v's StaticArraysCore.SVector
   expect(labels.get("i|out|y")).toBe("Int8");
   expect(labels.get("v|out|y")).toMatch(/^SVector\{/);
-  await expect(page.locator('text.type-label[data-port="v|out|y"] > title')).toHaveText(/^StaticArraysCore\.SVector\{/);
+  // no title on a label, which ignores the pointer: the pane carries the whole type of its wire
+  await expect(page.locator("text.type-label title")).toHaveCount(0);
+  const vWire = (await page.locator('text.type-label[data-port="v|out|y"]').getAttribute("data-wire"))!;
+  await clickWire(page, vWire);
+  await expect(page.locator("aside.detail p.type code")).toHaveText(/^StaticArraysCore\.SVector\{/);
+  await press(page, "Escape");
   // 9 px, on a halo of the background painted under the text
   const look = await page.locator('text.type-label[data-port="i|out|y"]').evaluate((t) => {
     const c = getComputedStyle(t);
@@ -208,4 +230,28 @@ test("closed_loop: the labels by their ports; mode's trunk dots on its branches;
     const [ex, ey] = port.startsWith("plant|") ? [x + dx, y + dy] : [x, y];
     expect(Math.abs(now[port][0] - ex) + Math.abs(now[port][1] - ey), port).toBeLessThan(0.01);
   }
+});
+
+test("kinds: a type label ignores the pointer, the element under it the same with the labels hidden", async ({ page }) => {
+  await drop(page, "kinds");
+  await press(page, "y");
+  const labels = page.locator("text.type-label");
+  await expect(labels.first()).toBeVisible();
+  const hits = await labels.evaluateAll((ts) => ts.map((t) => {
+    const r = t.getBoundingClientRect();
+    const under = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return { events: getComputedStyle(t).pointerEvents, label: !!under?.closest("text.type-label") };
+  }));
+  expect(hits.length).toBeGreaterThan(0);
+  for (const h of hits) expect(h).toEqual({ events: "none", label: false });
+  // the element under each label's centre is the one there with the labels hidden
+  const centres = await labels.evaluateAll((ts) => ts.map((t) => { const r = t.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }));
+  const under = () => page.evaluate((ps) => ps.map(({ x, y }) => {
+    const e = document.elementFromPoint(x, y)!;
+    return `${e.tagName}.${e.getAttribute("class")}[${e.getAttribute("data-id") ?? e.getAttribute("data-hit") ?? e.getAttribute("data-port") ?? ""}]`;
+  }), centres);
+  const shown = await under();
+  await press(page, "y");
+  await expect(labels).toHaveCount(0);
+  expect(await under()).toEqual(shown);
 });

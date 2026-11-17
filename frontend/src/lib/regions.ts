@@ -26,6 +26,9 @@ export function regionsOf(tree: Tree, level: string): Region[] {
   return [...byField.values()];
 }
 
-/** A child's label on the canvas: a keyed member's key, every other child's segment. */
-export const label = (tree: Tree, path: string): string =>
-  tree.membership.get(path) === "keyed" ? tree.byPath.get(path)!.key! : (tree.segment.get(path) ?? "");
+/**
+ * A block's label on the canvas: a keyed member's key, every other child's segment, and a primitive root's block,
+ * the one block with an empty segment, the model's label.
+ */
+export const label = (tree: Tree, path: string, rootLabel: string): string =>
+  path === "" ? rootLabel : tree.membership.get(path) === "keyed" ? tree.byPath.get(path)!.key! : (tree.segment.get(path) ?? "");

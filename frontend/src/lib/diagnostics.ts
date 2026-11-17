@@ -2,7 +2,7 @@
 // answers 2 and 6): the drawer's rows, a loop's chain of declared wires by the
 // resolution in reverse, what each level draws, the tree's propagated marks,
 // where a row's click goes and what a focused diagnostic lights.
-import type { BuildBody, Cycle, Diagnostic, Endpoint, FailureBody, Wire } from "./descriptor";
+import type { BuildBody, Cycle, Diagnostic, Endpoint, FailureBody, Location, TracedMember, Wire } from "./descriptor";
 import type { Selection } from "./detail";
 import type { Lit } from "./focus";
 import { inPinId, outPinId, portId } from "./level";
@@ -37,23 +37,60 @@ export interface Hop {
 const wireId = (level: string, to: Face) => portId(to.path === level ? outPinId(to.port) : to.path, "in", to.port);
 
 /**
- * A loop's terminal pairs mapped onto the declared wires between the two primitives: from each pair's consumer up
- * through `feeder` to its producer. A walk that ends anywhere else contributes nothing.
+ * One terminal pair mapped onto the declared wires between its two primitives, consumer first: from the pair's
+ * consumer up through `feeder` to its producer. A walk that ends anywhere else gives nothing.
  */
-export function chainOf(model: Model, cycle: Cycle): Hop[] {
+function pairChain(model: Model, w: Wire): Hop[] {
   const res = model.resolution;
   if (!res) return [];
-  return cycle.wires.flatMap((w) => {
-    const goal = faceKey({ path: w.from.path, side: "out", port: w.from.port });
-    const hops: Hop[] = [];
-    let to: Face = { path: w.to.path, side: "in", port: w.to.port };
-    for (let f = res.feeder.get(faceKey(to)); f; f = res.feeder.get(faceKey(to))) {
-      hops.push({ level: f.level, wire: wireId(f.level, to), from: f.face, to });
-      if (faceKey(f.face) === goal) return hops;
-      to = f.face;
-    }
-    return [];
-  });
+  const goal = faceKey({ path: w.from.path, side: "out", port: w.from.port });
+  const hops: Hop[] = [];
+  let to: Face = { path: w.to.path, side: "in", port: w.to.port };
+  for (let f = res.feeder.get(faceKey(to)); f; f = res.feeder.get(faceKey(to))) {
+    hops.push({ level: f.level, wire: wireId(f.level, to), from: f.face, to });
+    if (faceKey(f.face) === goal) return hops;
+    to = f.face;
+  }
+  return [];
+}
+
+/** A loop's terminal pairs mapped onto the declared wires between the two primitives, each pair's from its consumer up. */
+export const chainOf = (model: Model, cycle: Cycle): Hop[] => cycle.wires.flatMap((w) => pairChain(model, w));
+
+/** The assembly method that declares a level's wire: from the level's own input, to its own output, else between children. */
+export type Declaration = "input_wires" | "output_wires" | "local_wires";
+/** A declared wire of a loop's pair, with the method of the assembly holding it that declares it, and that method's location. */
+export interface DeclaredHop extends Hop {
+  declaration: Declaration;
+  location?: Location;
+}
+/** The drawer's loop row: each terminal pair with its declared wires producer first, each member with its tracing mode. */
+export interface LoopFacts {
+  wires: { from: Endpoint; to: Endpoint; hops: DeclaredHop[] }[];
+  /** Each member with its mode, none when `traced` omits it; `presumed` when traced structurally, every input taken to reach every output. */
+  members: { path: string; mode?: TracedMember["mode"]; presumed: boolean }[];
+}
+
+/** Whether a type is the core's own, `Redstone` or a module under it: its methods lie in the core's source, which the user does not edit. */
+export const isCoreType = (name: string | undefined): boolean => !!name && (name === "Redstone" || name.startsWith("Redstone."));
+
+/**
+ * The loop row's facts: each pair's declared wires located by their holder's `types` row, none for a holder of the
+ * core's own type, such as a `Group`, whose declaring methods are the core's accessors; each member's mode.
+ */
+export function loopFacts(model: Model, cycle: Cycle): LoopFacts {
+  const s = model.structure;
+  const located = (h: Hop): DeclaredHop => {
+    const declaration: Declaration = h.from.path === h.level ? "input_wires" : h.to.path === h.level ? "output_wires" : "local_wires";
+    const type = model.tree?.byPath.get(h.level)?.type;
+    const location = isCoreType(type) ? undefined : s?.types.find((t) => t.name === type)?.locations.find((l) => l.function === declaration);
+    return { ...h, declaration, location };
+  };
+  const mode = new Map(cycle.traced.map((t) => [t.path, t.mode]));
+  return {
+    wires: cycle.wires.map((w) => ({ from: w.from, to: w.to, hops: pairChain(model, w).reverse().map(located) })),
+    members: cycle.members.map((path) => ({ path, mode: mode.get(path), presumed: mode.get(path) === "structural" })),
+  };
 }
 
 /** A node diagnostic's badge: the function at fault or the kind, titled with the message's first line. */
@@ -78,6 +115,8 @@ export interface Overlay {
   chords: Chord[];
   /** A closed child the chain continues inside, with the loop's index. */
   continues: Map<string, { severity: Severity; index: number }>;
+  /** A pin of the level's own the chain leaves the level through, off the root, with the loop's index. */
+  leaves: Map<string, { severity: Severity; index: number }>;
 }
 
 /** One diagnostic's marks on one level, by id. */
@@ -158,7 +197,7 @@ const keep = (a: Badge | undefined, b: Badge | undefined) => (!a ? b : !b ? a : 
 
 /** What a level draws: every diagnostic's and warning's marks on it, merged. Nothing for a structureless model. */
 export function overlayOf(model: Model, level: string): Overlay {
-  const o: Overlay = { blocks: new Map(), ports: new Map(), wires: new Map(), chords: [], continues: new Map() };
+  const o: Overlay = { blocks: new Map(), ports: new Map(), wires: new Map(), chords: [], continues: new Map(), leaves: new Map() };
   if (!model.tree) return o;
   for (const d of diagnosticsOf(model)) {
     const s = d.severity, m = marksOn(model, level, d);
@@ -170,9 +209,11 @@ export function overlayOf(model: Model, level: string): Overlay {
     for (const p of m.ports) o.ports.set(p, worse(o.ports.get(p), s));
     for (const w of m.wires) o.wires.set(w, worse(o.wires.get(w), s));
     for (const c of m.chords) o.chords.push({ ...c, severity: s });
-    for (const c of m.continues) {
-      const was = o.continues.get(c);
-      if (!was || (was.severity === "warning" && s === "error")) o.continues.set(c, { severity: s, index: d.index });
+    for (const [list, into] of [[m.continues, o.continues], [level === "" ? [] : m.pins, o.leaves]] as const) {
+      for (const c of list) {
+        const was = into.get(c);
+        if (!was || (was.severity === "warning" && s === "error")) into.set(c, { severity: s, index: d.index });
+      }
     }
   }
   return o;

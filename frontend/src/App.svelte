@@ -31,7 +31,7 @@
   import { faceText, originOf, routeDrawing, routeLevels, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
     back, clearLegendFocus, clearRoute, climb, closeHelp, escape, forward, load, open, openDrawer, openFromHistory, select, session, setFocus,
-    setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
+    say, setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
@@ -97,6 +97,14 @@
     : focus === "diagnostic" ? litBy(model!, session.level, focusedDiagnostic!)
     : focus === "legend" ? legendLit(model!, session.level, legendFocus!) : undefined,
   );
+  // A focus with nothing on the open level dims nothing there, and the status bar says why.
+  const unlit = $derived(!!lit && !lit.blocks.size && !lit.wires.size && !lit.ports.size);
+  const focusNote = $derived(
+    !unlit ? undefined
+    : focus === "route" ? "the route does not cross this level, so nothing dims"
+    : focus === "diagnostic" ? "the focused diagnostic has nothing on this level, so nothing dims"
+    : "the focused rate has nothing on this level, so nothing dims",
+  );
   const focusKey = $derived(
     focus === "route" ? faceText(traced!.origin) : focus === "diagnostic" ? String(focusedDiagnostic!.index) : focus === "legend" ? legendFocus : undefined,
   );
@@ -155,9 +163,14 @@
     if (s) select(s);
   }
 
-  /** The trace action from the pane, the menu or `t`: a face with a route traced, or its standing route cleared. */
+  /**
+   * The trace action from the pane, the menu or `t`: a face with a route traced, or its standing route cleared; a
+   * face with no producer, which the pane offers no button for, says so in the status bar.
+   */
   function traceFrom(face: Face | undefined) {
-    if (face && (sameFace(face, session.route) || routeOf(model!, face))) trace(face);
+    if (!face) return;
+    if (sameFace(face, session.route) || routeOf(model!, face)) trace(face);
+    else say(`nothing to trace: \`${faceText(face)}\` has no producer`);
   }
 
   // The help page leaves the frame or the landing mounted and inert, which drops the focus inside it: the element
@@ -449,7 +462,8 @@
         {#if model.tree}
           {#key model}
             <Canvas
-              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} order={prefs.order} selected={drawn} hits={lit ? undefined : hits} {lit} {focus} {focusKey} {legendFocus} {overlay} {routeDrawn}
+              bind:this={canvasView} {model} path={session.level} mode={prefs.mode} labels={prefs.labels} order={prefs.order} selected={drawn} hits={lit && !unlit ? undefined : hits} lit={unlit ? undefined : lit} focus={unlit ? undefined : focus}
+              focusKey={unlit ? undefined : focusKey} {legendFocus} {overlay} {routeDrawn}
               view={session.views.get(session.level)} layout={session.layouts.get(session.level)}
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
@@ -480,8 +494,8 @@
       {/snippet}
       {#snippet status()}
         <StatusBar
-          {model} mode={prefs.mode} fallback={session.note} connection={live.state} received={live.text !== undefined}
-          download={pushed ? live.text : undefined} route={traced && routeStatus(traced.origin, traced)} onclear={clearRoute}
+          {model} mode={prefs.mode} fallback={session.note} notice={session.notice} connection={live.state} received={live.text !== undefined}
+          download={pushed ? live.text : undefined} route={traced && routeStatus(traced.origin, traced)} {focusNote} onclear={clearRoute}
         />
       {/snippet}
     </Frame>

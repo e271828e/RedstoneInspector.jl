@@ -27,7 +27,7 @@ describe("feedthrough edges", () => {
 
   it("containers: the chain of gains, its root input adding none", () => {
     expect(named("containers")).toEqual([
-      "gains/a/out → gains/b/e", "gains/b/out → pair/1/e", "pair/1/out → s1/e", "s1/out → s2/e", "s2/out → scale/e",
+      "gains/a/out → gains/b/e", "gains/b/out → pair/1/e", "pair/1/out → s1/e", "s1/out → s2/e", "s2/out → scale/taps/c/e",
     ]);
   });
 

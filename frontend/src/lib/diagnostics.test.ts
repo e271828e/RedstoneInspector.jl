@@ -1,7 +1,7 @@
 // The overlay's data from the oracle (`overlay.py`, brief 7's scratchpad, over the committed fixtures).
 import { describe, expect, it } from "vitest";
 import type { Diagnostic } from "./descriptor";
-import { chainOf, diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./diagnostics";
+import { chainOf, diagnosticsOf, diagnosticTarget, isCoreType, litBy, loopFacts, overlayOf, treeMarks } from "./diagnostics";
 import { fixtureJson, fixtureModel, fixtureNames } from "./fixtures";
 import { parseDescriptor } from "./loader";
 import { loadModel, type Model } from "./model";
@@ -81,6 +81,15 @@ describe("overlayOf", () => {
     expect(ctl.blocks.get("ctl/pi")!.badge).toBeUndefined();
     expect(sorted(ctl.wires.keys())).toEqual(["ctl/pi|in|y", "⟨out⟩u|in|u"]);
     expect(ctl.continues.size).toBe(0);
+  });
+
+  it("failure_nested: inside ctl the chain leaves through the pins ⟨in⟩y and ⟨out⟩u, each taking the loop; the root leaves through none", () => {
+    const m = fixtureModel("failure_nested");
+    expect(overlayOf(m, "").leaves.size).toBe(0);
+    expect(Object.fromEntries(overlayOf(m, "ctl").leaves)).toEqual({
+      "⟨in⟩y": { severity: "error", index: 0 }, "⟨out⟩u": { severity: "error", index: 0 },
+    });
+    expect(overlayOf(fixtureModel("failure_cycle"), "").leaves.size).toBe(0);
   });
 
   it("failure_dead: one chord across m from its input g to its output F, m and g2 haloed", () => {
@@ -177,6 +186,59 @@ describe("treeMarks", () => {
   it("nothing on a structureless failure or a clean build", () => {
     expect(treeMarks(fixtureModel("failure_structure")).size).toBe(0);
     expect(treeMarks(fixtureModel("closed_loop")).size).toBe(0);
+  });
+});
+
+describe("loopFacts, the drawer's loop row (the oracle's loop_row.py)", () => {
+    const facts = (name: string) => {
+    const m = fixtureModel(name);
+    const f = loopFacts(m, diagnosticsOf(m).find((d) => d.cycle)!.cycle!);
+    return {
+      wires: f.wires.map((w) => [`${w.from.path}/${w.from.port} → ${w.to.path}/${w.to.port}`, w.hops.map((h) =>
+        [h.level, `${h.from.path}/${h.from.port} → ${h.to.path}/${h.to.port}`, h.declaration, h.location && `${h.location.file}:${h.location.line}`])]),
+      members: f.members.map((x) => [x.path, x.mode, x.presumed]),
+    };
+  };
+
+  it("failure_cycle: each pair one root wire in the root's local_wires, unlinked as a Group's, the core's source; ctl traced structurally, presumed", () => {
+    expect(facts("failure_cycle")).toEqual({
+      wires: [
+        ["plant/power → ctl/y", [["", "plant/power → ctl/y", "local_wires", undefined]]],
+        ["ctl/y → plant/u", [["", "ctl/y → plant/u", "local_wires", undefined]]],
+      ],
+      members: [["plant", "global", false], ["ctl", "structural", true]],
+    });
+  });
+
+  it("failure_nested: a pair through ctl's boundary, producer first, in the root's local_wires and ctl's input_wires or output_wires", () => {
+    expect(facts("failure_nested")).toEqual({
+      wires: [
+        ["plant/power → ctl/pi/y", [["", "plant/power → ctl/y", "local_wires", undefined], ["ctl", "ctl/y → ctl/pi/y", "input_wires", undefined]]],
+        ["ctl/pi/y → plant/u", [["ctl", "ctl/pi/y → ctl/u", "output_wires", undefined], ["", "ctl/u → plant/u", "local_wires", undefined]]],
+      ],
+      members: [["plant", "global", false], ["ctl/pi", "structural", true]],
+    });
+  });
+
+  it("failure_dead: both members traced globally, none presumed", () => {
+    expect(facts("failure_dead").members).toEqual([["m", "global", false], ["g2", "global", false]]);
+  });
+
+  it("a holder of a user type is linked to its declaring method's location; one whose type locates none stays unlinked", () => {
+    const d = fixtureJson("failure_nested") as any;
+    d.failure.structure.nodes.find((n: any) => n.path === "ctl").type = "Main.User.Ctl";
+    d.failure.structure.types.push({ name: "Main.User.Ctl", locations: [{ function: "output_wires", file: "<repo>/ctl.jl", line: 7 }] });
+    const loaded = parseDescriptor(JSON.stringify(d), "failure_nested.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    const m = loadModel(loaded);
+    const hops = loopFacts(m, diagnosticsOf(m)[0].cycle!).wires[0].hops;
+    expect(hops.map((h) => [h.declaration, h.location?.line])).toEqual([["local_wires", undefined], ["input_wires", undefined]]);
+    const back = loopFacts(m, diagnosticsOf(m)[0].cycle!).wires[1].hops;
+    expect(back.map((h) => [h.declaration, h.location && `${h.location.file}:${h.location.line}`])).toEqual([["output_wires", "<repo>/ctl.jl:7"], ["local_wires", undefined]]);
+  });
+
+  it("isCoreType: Redstone and its submodules, not a name merely starting with Redstone", () => {
+    expect(["Redstone", "Redstone.Library.Group", "RedstoneExamples.Longitudinal", "Main.User.Ctl", undefined].map(isCoreType)).toEqual([true, true, false, false, false]);
   });
 });
 

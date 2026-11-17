@@ -6,8 +6,9 @@
 // standing the canvas shows the focus and the tree the query's marks. The lit
 // sets are the look fixer's oracle's (`continuous.py <fixtures> <key> closed_loop`);
 // the legend's steps, renumbered by the assembly rule of 2026-11-02, read by hand.
+// A level with nothing of the focused line does not dim (the polish batch).
 import { test, type Page } from "@playwright/test";
-import { drop, dropOver, expect, openPath, press, readyLevel, shot } from "./fixtures";
+import { drop, dropOver, effectiveOpacity, expect, openPath, press, readyLevel, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const line = (page: Page, sel: string) => page.locator(`.viewport .legend li${sel} button.line`);
@@ -53,6 +54,28 @@ test("closed_loop: anchor 4's line lights the gray pid_controller and its wire, 
   await expect(page.locator("svg.canvas .lit")).toHaveCount(0);
   await expect(page.locator("nav.tree .row.hit")).toHaveCount(0);
   expect(await opacity(page, 'g.block[data-id="pid_controller/h_ctl"] > .shape')).toBe("1");
+});
+
+test("closed_loop: sensing's line held onto pid_controller, which has none of it, dims nothing there, the status bar saying why", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "r");
+  await openPath(page, "sensing");
+  await line(page, "[data-step]").first().click();
+  await expect(svg(page)).toHaveAttribute("data-focus", "1,1,0");
+  await press(page, "Backspace");
+  await page.locator(readyLevel("")).waitFor();
+  await openPath(page, "pid_controller");
+  await expect(svg(page)).not.toHaveClass(/legend-focus/);
+  await expect(svg(page)).not.toHaveAttribute("data-focus");
+  await expect(page.locator("svg.canvas .lit")).toHaveCount(0);
+  expect(await effectiveOpacity(page, 'g.block[data-id="pid_controller/q_ctl"] > .shape')).toBe(1);
+  await expect(page.locator("footer.status span.focus-note")).toHaveText("the focused rate has nothing on this level, so nothing dims");
+  await shot(page, "closed_loop", "pid_controller", "focus-not-here");
+  // the focus stands: back on sensing it lights and dims again
+  await press(page, "Backspace");
+  await openPath(page, "sensing");
+  await expect(svg(page)).toHaveAttribute("data-focus", "1,1,0");
+  await expect(page.locator("footer.status span.focus-note")).toHaveCount(0);
 });
 
 test("closed_loop: the continuous line lights plant, the assemblies with a continuous primitive beneath and plant's 17 wires", async ({ page }) => {

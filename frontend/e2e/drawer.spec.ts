@@ -4,6 +4,9 @@
 // on its level; the empty states; the tree's propagated marks; a push dropping
 // the focus. Counts from the oracle (`overlay.py`). The drawer's own keys, h j k l
 // and the arrows scrolling its body, and `d` closing it with the focus (increment 8b).
+// The polish batch: the location under the message, a loop's wires linked to their
+// declarations and its presumed members (the oracle `loop_row.py`), and a focused
+// diagnostic with nothing on the level dimming nothing.
 import { test, type Page } from "@playwright/test";
 import { drop, dropOver, expect, expectScrollKeys, fixtureText, press, readyLevel, shot, viewBox, widen } from "./fixtures";
 
@@ -88,9 +91,87 @@ test("failure_nested: the loop's row carries no location and selects its first m
   await expect(row(page, 0).locator(".path")).toHaveText("plant");
 });
 
+test("failure_nested: the loop's row lists each wire under its message, each declared wire linked to its holder's declaration, the structural member presumed", async ({ page }) => {
+  await drop(page, "failure_nested");
+  const r = row(page, 0);
+  const wires = r.locator(".under.loop ul.loop-wires > li.loop-wire");
+  expect(await wires.evaluateAll((ls) => ls.map((l) => [l.getAttribute("data-from"), l.getAttribute("data-to")]))).toEqual([
+    ["plant/power", "ctl/pi/y"], ["ctl/pi/y", "plant/u"],
+  ]);
+  // each pair's declared wires, producer first: the holder, its declaring method, the link's line (loop_row.py)
+  const hops = await wires.evaluateAll((ls) => ls.map((l) => [...l.querySelectorAll("li.hop")].map((h) =>
+    [h.getAttribute("data-level"), h.getAttribute("data-declaration"), h.querySelector("a.declaration")?.textContent?.replace(/^.*:/, "")])));
+  // every holder is a Group, whose declaring methods lie in the core's source: no link
+  expect(hops).toEqual([
+    [["", "local_wires", undefined], ["ctl", "input_wires", undefined]],
+    [["ctl", "output_wires", undefined], ["", "local_wires", undefined]],
+  ]);
+  // the members: plant traced globally, ctl/pi structurally and so presumed
+  expect(await r.locator("p.members span.member").evaluateAll((ms) => ms.map((m) => [m.getAttribute("data-path"), m.getAttribute("data-mode"), !!m.querySelector(".presumed")]))).toEqual([
+    ["plant", "global", false], ["ctl/pi", "structural", true],
+  ]);
+  await expect(r.locator(".presumed")).toHaveAttribute("title", /^Traced structurally/);
+  // under the message, outside the row's button, and no type location
+  await expect(r.locator("a.location")).toHaveCount(0);
+  await expect(r.locator("button.row .loop-wires")).toHaveCount(0);
+  const [message, under] = [(await r.locator("span.message").boundingBox())!, (await r.locator(".under").boundingBox())!];
+  expect(under.y).toBeGreaterThanOrEqual(message.y + message.height - 0.5);
+  await drawer(page).evaluate((d) => { d.closest<HTMLElement>(".pane")!.style.height = "320px"; });
+  await shot(page, "failure_nested", "", "loop-row");
+});
+
+test("failure_probe: a row's location link sits under its message, left-aligned with it", async ({ page }) => {
+  await drop(page, "failure_probe");
+  const r = row(page, 0);
+  const [message, link] = [(await r.locator("span.message").boundingBox())!, (await r.locator("a.location").boundingBox())!];
+  expect(link.y).toBeGreaterThanOrEqual(message.y + message.height - 0.5);
+  expect(Math.abs(link.x - message.x)).toBeLessThanOrEqual(1);
+});
+
+/** failure_nested with ctl of a user type whose output_wires has a location of the user's. */
+const userCtl = () => {
+  const d = JSON.parse(fixtureText("failure_nested"));
+  d.failure.structure.nodes.find((n: any) => n.path === "ctl").type = "Main.User.Ctl";
+  d.failure.structure.types.push({ name: "Main.User.Ctl", locations: [{ function: "output_wires", file: "<repo>/ctl.jl", line: 7 }] });
+  return JSON.stringify(d);
+};
+
+test("failure_nested with ctl of a user type: its output_wires linked, the root's Group wires not", async ({ page }) => {
+  await drop(page, "failure_nested", userCtl());
+  await expect(row(page, 0).locator("a.declaration")).toHaveCount(1);
+  await expect(row(page, 0).locator('li.hop[data-level="ctl"][data-declaration="output_wires"] a.declaration')).toHaveText("<repo>/ctl.jl:7");
+  await expect(row(page, 0).locator('li.hop[data-level=""] a.declaration')).toHaveCount(0);
+});
+
+test("failure_nested with ctl of a user type: a click on a declaration copies its file label, and leaves the row unfocused", async ({ page, context, browserName }) => {
+  test.skip(browserName === "firefox", "clipboard permissions are Chromium's");
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await drop(page, "failure_nested", userCtl());
+  const link = row(page, 0).locator('li.hop[data-declaration="output_wires"] a.declaration');
+  await expect(link).toHaveAttribute("title", "Copy the file label of the wire's declaration, output_wires of ctl");
+  const label = (await link.textContent())!;
+  await link.click();
+  await expect(row(page, 0).locator(".copied")).toHaveCount(1);
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(label);
+  await expect(row(page, 0)).not.toHaveClass(/\bcurrent\b/);
+});
+
+test("failure_probe: the error on t focused, the level s holds none of it and dims nothing, the status bar saying why", async ({ page }) => {
+  await drop(page, "failure_probe");
+  await row(page, 0).locator(".kind").click();
+  await expect(svg(page)).toHaveClass(/\bdiagnostic-focus\b/);
+  await page.locator('g.block[data-id="s"]').dblclick();
+  await page.locator(readyLevel("s")).waitFor();
+  await expect(row(page, 0)).toHaveClass(/\bcurrent\b/);
+  await expect(svg(page)).not.toHaveClass(/diagnostic-focus/);
+  await expect(page.locator("svg.canvas .lit")).toHaveCount(0);
+  await expect(page.locator("footer.status span.focus-note")).toHaveText("the focused diagnostic has nothing on this level, so nothing dims");
+});
+
 test("failure_cycle: the row selects plant", async ({ page }) => {
   await drop(page, "failure_cycle");
-  await row(page, 0).click();
+  // the row's button, above the wires and members listed under it
+  await row(page, 0).locator("button.row").click();
   await expect(page.locator('g.block.selected[data-id="plant"]')).toHaveCount(1);
 });
 

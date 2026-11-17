@@ -107,7 +107,7 @@
         <button
           class="chevron" tabindex="-1" aria-label={expanded.has(r.path) ? "collapse" : "expand"}
           onclick={(e) => { e.stopPropagation(); ontoggle(r.path); }} ondblclick={(e) => e.stopPropagation()}
-        >▸</button>
+        ><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg></button>
       {:else}
         <span class="gap"></span>
       {/if}
@@ -148,10 +148,12 @@
   .row:hover { background: var(--strip); }
   .row.selected { background: var(--row-selected); }
   .row.open { font-weight: 600; border-left-color: var(--open-marker); }
+  /* A drawn chevron, larger than the system font's ▸ (increment 4's look). */
   .chevron {
-    width: 14px; height: 14px; padding: 0; border: 0; background: none; cursor: pointer; flex: none;
-    font: 12px system-ui, sans-serif; color: var(--text-light); transition: transform 80ms;
+    display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; padding: 0; border: 0;
+    background: none; cursor: pointer; flex: none; color: var(--text-light); transition: transform 80ms;
   }
+  .chevron svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .row.expanded > .chevron { transform: rotate(90deg); }
   .gap { width: 14px; flex: none; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }

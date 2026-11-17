@@ -35,6 +35,7 @@ import Redstone: build, Deployment
 import RedstoneInspector: inspect
 
 inspect(model)                                        # build the root and draw it
+inspect(model; name = "closed_loop")                  # the same, labelled closed_loop in its own tab
 inspect(Deployment(build(model); Δt_frame = 1//100))  # draw a deployment
 inspect(broken)                                       # draw the failure, then rethrow
 inspect(err)                                          # draw the DiagnosticError in the REPL's last error
@@ -42,7 +43,9 @@ inspect(err)                                          # draw the DiagnosticError
 
 The first call starts a local server on `http://127.0.0.1:8601/` and opens the
 page in your browser. Later calls push to the open tab. Each `name` is its own
-channel: `inspect(x; name = "variant")` draws at `/?tab=variant`.
+channel: `inspect(x; name = "variant")` draws at `/?tab=variant`. The page
+shows `name` as the model's label and names its download after it; without a
+`name` the label is the root's type, `Group` for a root built with `Group`.
 
 Press `?` in the page for the legend and the keyboard. A click on a source
 location opens it in your editor through `InteractiveUtils.edit`.

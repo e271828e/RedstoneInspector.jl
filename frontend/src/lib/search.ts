@@ -1,6 +1,7 @@
 // Search over the model (workspace.md answer 5): case-insensitive substrings over
 // paths, types with their aliases and face names, never a regular expression and
 // never a parse of a name. Docstrings and parameters are not searched.
+import type { Node } from "./descriptor";
 import { faceSelection, type Selection } from "./detail";
 import { inPinId, outPinId, portId } from "./level";
 import type { Model } from "./model";
@@ -27,7 +28,9 @@ export interface FaceHit {
   path: string;
   side: Side;
   name: string;
-  match: { path: Range[]; name: Range[] };
+  /** The owner's type as a node hit's label shows it, when a `type:` term matched; the row then shows it. */
+  type?: string;
+  match: { path: Range[]; name: Range[]; type: Range[] };
 }
 export interface Found {
   /** Every node hit, in walk order. */
@@ -77,6 +80,12 @@ const has = (text: string, needle: string) => text.toLowerCase().includes(needle
 const typeText = (n: { type: string; alias?: string }) => `${n.type} ${n.alias ?? ""}`;
 const needles = (terms: Term[], ...fields: (Field | undefined)[]) => terms.filter((t) => fields.includes(t.field)).map((t) => t.text);
 
+/** A node's type as a hit row shows it: the display name when it holds every matched type needle, else the qualified alias or type. */
+function typeLabel(n: Node, typeNeedles: string[]): string {
+  const shown = displayName(n);
+  return typeNeedles.every((x) => has(shown, x)) ? shown : n.alias ?? n.type;
+}
+
 /** The node and face hits of a parsed query over the whole model; none without terms. */
 export function searchModel(model: Model, query: Term[]): Found {
   const nodes: NodeHit[] = [];
@@ -89,18 +98,23 @@ export function searchModel(model: Model, query: Term[]): Found {
       : has(n.path, t.text) || has(typeText(n), t.text));
     if (nodeHit) {
       const typeNeedles = needles(query, undefined, "type").filter((x) => has(typeText(n), x));
-      const shown = displayName(n);
-      const label = typeNeedles.every((x) => has(shown, x)) ? shown : n.alias ?? n.type;
+      const label = typeLabel(n, typeNeedles);
       nodes.push({ path: n.path, label, match: { path: ranges(n.path, needles(query, undefined, "path")), label: ranges(label, typeNeedles) } });
     }
+    // a face hit's type terms all matched its owner's type, so its row shows that type with the match marked
+    const faceTypeNeedles = needles(query, "type");
+    const faceType = faceTypeNeedles.length ? typeLabel(n, faceTypeNeedles) : undefined;
     for (const [side, list] of [["in", n.inputs], ["out", n.outputs]] as const) {
       for (const f of list) {
         const faceHit = query.length > 0 && query.every((t) =>
           t.field === "path" ? has(n.path, t.text) : t.field === "type" ? has(typeText(n), t.text) : has(f.name, t.text));
         if (faceHit) {
           faces.push({
-            path: n.path, side, name: f.name,
-            match: { path: ranges(n.path, needles(query, "path")), name: ranges(f.name, needles(query, undefined, "face")) },
+            path: n.path, side, name: f.name, type: faceType,
+            match: {
+              path: ranges(n.path, needles(query, "path")), name: ranges(f.name, needles(query, undefined, "face")),
+              type: faceType === undefined ? [] : ranges(faceType, faceTypeNeedles),
+            },
           });
         }
       }

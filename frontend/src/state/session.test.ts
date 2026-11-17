@@ -4,7 +4,7 @@ import { parseDescriptor } from "../lib/loader";
 import { loadModel } from "../lib/model";
 import {
   clearDiagnosticFocus, clearRoute, climb, closeHelp, diagnosticCount, escape, hashOf, isHelpHash, levelOfHash, load, open, openFromHistory, openHelp,
-  select, session, setQuery, toggleDiagnosticFocus, toggleHelp, toggleLegendFocus, trace,
+  select, session, setQuery, toggleDiagnosticFocus, toggleExpanded, toggleHelp, toggleLegendFocus, trace,
 } from "./session.svelte";
 
 describe("the drawer's open rule on load", () => {
@@ -178,6 +178,34 @@ describe("the standing route", () => {
     expect(session.route).toBeUndefined();
   });
 
+  it("is cleared by a push whose model still declares its origin but no longer feeds it, with a notice a selection clears", () => {
+    const δe = { path: "plant", side: "in" as const, port: "δe" };
+    const d = fixtureJson("closed_loop") as any;
+    const root = d.build.structure.nodes[0];
+    root.wires = root.wires.filter((w: any) => !(w.to.path === "plant" && w.to.port === "δe"));
+    const loaded = parseDescriptor(JSON.stringify(d), "closed_loop.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    load(undefined);
+    load(fixtureModel("closed_loop"));
+    trace(δe);
+    load(loadModel(loaded));
+    expect(session.route).toBeUndefined();
+    expect(session.notice).toBe("the route from `plant/δe` no longer resolves in this model; cleared");
+    select({ level: "", target: { kind: "block", id: "plant" } });
+    expect(session.notice).toBeUndefined();
+    trace(hRef);
+    load(loadModel(loaded));
+    expect([session.route, session.notice]).toEqual([hRef, undefined]);
+  });
+
+  it("is cleared by a push whose model no longer declares its origin, with the same notice", () => {
+    load(undefined);
+    load(fixtureModel("closed_loop"));
+    trace(hRef);
+    load(fixtureModel("rates"));
+    expect([session.route, session.notice]).toEqual([undefined, "the route from `h_ref` no longer resolves in this model; cleared"]);
+  });
+
   it("Escape clears it ahead of the focused diagnostic", () => {
     load(fixtureModel("failure_cycle"));
     select({ level: "", target: { kind: "block", id: "plant" } });
@@ -187,6 +215,31 @@ describe("the standing route", () => {
     expect([session.route, session.diagnosticFocus, session.selection?.target.id]).toEqual([undefined, 0, "plant"]);
     escape();
     expect(session.diagnosticFocus).toBeUndefined();
+  });
+});
+
+describe("a folder under a non-root node (workspace.md answer 2 as amended by the polish batch)", () => {
+  it("expands with its node, by the chevron, by opening and by a selection beneath; a node already expanded leaves a collapsed folder alone", () => {
+    load(undefined);
+    load(fixtureModel("containers"));
+    expect(session.expanded).toEqual(new Set(["", "gains", "pair"]));
+    toggleExpanded("scale");
+    expect(session.expanded).toEqual(new Set(["", "gains", "pair", "scale", "scale/taps"]));
+    toggleExpanded("scale/taps");
+    select({ level: "", target: { kind: "block", id: "scale" } });
+    expect(session.expanded.has("scale/taps")).toBe(false);
+    toggleExpanded("scale");
+    expect(session.expanded.has("scale")).toBe(false);
+    toggleExpanded("scale");
+    expect(session.expanded.has("scale/taps")).toBe(true);
+    load(undefined);
+    load(fixtureModel("containers"));
+    open("scale");
+    expect(session.expanded.has("scale/taps")).toBe(true);
+    load(undefined);
+    load(fixtureModel("containers"));
+    select({ level: "scale", target: { kind: "folder", id: "scale/taps" } });
+    expect(session.expanded).toEqual(new Set(["", "gains", "pair", "scale", "scale/taps"]));
   });
 });
 

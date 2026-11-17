@@ -4,6 +4,7 @@
 // probe failure's badge reading the function, amber for a warning, the port and
 // wire marks on a synthetic descriptor, no dimming until a badge focuses its
 // diagnostic. Counts from the oracle (`overlay.py`); geometry read off the DOM.
+// A loop's badge on a pin it leaves through (answer 8 as amended by the polish batch).
 import { test, type Page } from "@playwright/test";
 import { drop, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot } from "./fixtures";
 
@@ -70,12 +71,47 @@ test("failure_nested: plant and the root's two hops, ctl's loop badge opening ct
   await expect(halo(page, "ctl/pi")).toHaveAttribute("data-severity", "error");
   await expect(page.locator("rect.mark-halo")).toHaveCount(1);
   expect(await markWires(page)).toEqual(["ctl/pi|in|y", "⟨out⟩u|in|u"]);
-  await expect(page.locator("g.badge")).toHaveCount(0);
+  // the chain leaves ctl through its two pins, each with the loop's badge (answer 8 as amended by the polish batch)
+  expect(await page.locator("g.badge").evaluateAll((bs) => bs.map((b) => [b.getAttribute("data-id"), b.getAttribute("data-role")]).sort())).toEqual([
+    ["⟨in⟩y", "continues"], ["⟨out⟩u", "continues"],
+  ]);
   await shot(page, "failure_nested", "ctl", "overlay");
   // the tree: a red mark on the members, on ctl (a level the chain touches) and on the root, which holds them beneath
   const mark = (path: string) => page.locator(`nav.tree .row[data-path="${path}"] span.mark[data-mark="error"]`);
   for (const p of ["plant", "ctl", "ctl/pi"]) await expect(mark(p)).toHaveAttribute("title", "1 error");
   await expect(mark("")).toHaveAttribute("title", "1 error, beneath");
+});
+
+test("failure_nested: inside ctl the pins the chain leaves through take the loop badge on their top edge at the outer end; a click climbs to the root with the chain drawn", async ({ page }) => {
+  await drop(page, "failure_nested");
+  await openPath(page, "ctl");
+  // in level units: the pill's rect, and the pin's capsule placed by its group's translation
+  const geometry = (id: string) => page.locator(`g.badge[data-role="continues"][data-id="${id}"] rect`).evaluate((r: SVGRectElement, id) => {
+    const g = document.querySelector<SVGGElement>(`g.block[data-id="${id}"]`)!;
+    const s = g.querySelector<SVGRectElement>(":scope > rect.shape")!;
+    const m = g.transform.baseVal.consolidate()!.matrix;
+    const v = (a: SVGAnimatedLength) => a.baseVal.value;
+    return {
+      r: { left: v(r.x), right: v(r.x) + v(r.width), top: v(r.y), bottom: v(r.y) + v(r.height) },
+      s: { left: m.e + v(s.x), right: m.e + v(s.x) + v(s.width), top: m.f + v(s.y) },
+    };
+  }, id);
+  // the inset of 4 from the outer end, the pill straddling the top edge
+  const inPin = await geometry("⟨in⟩y");
+  expect(inPin.r.left).toBeCloseTo(inPin.s.left + 4, 3);
+  const outPin = await geometry("⟨out⟩u");
+  expect(outPin.r.right).toBeCloseTo(outPin.s.right - 4, 3);
+  for (const g of [inPin, outPin]) expect(g.r.top < g.s.top && g.s.top < g.r.bottom).toBe(true);
+  const badge = page.locator('g.badge[data-role="continues"][data-id="⟨in⟩y"]');
+  await expect(badge).toHaveAttribute("data-severity", "error");
+  await expect(badge.locator("text.badge-text")).toHaveText("loop");
+  await expect(badge.locator("title")).toHaveText("The loop leaves this level here; go to the parent to follow the chain.");
+  await badge.click();
+  await page.locator(readyLevel("")).waitFor();
+  expect(await markWires(page)).toEqual(["ctl|in|y", "plant|in|u"]);
+  await expect(page.locator('g.badge[data-id="ctl"][data-role="continues"]')).toHaveCount(1);
+  // the root's pins take none
+  await expect(page.locator('g.badge[data-id^="⟨"]')).toHaveCount(0);
 });
 
 test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle", async ({ page }) => {

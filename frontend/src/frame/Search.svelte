@@ -111,6 +111,7 @@
               <span class="where">{#each pieces(h.path || "/", h.path ? h.match.path : []) as p, k (k)}{#if p.mark}<mark>{p.text}</mark>{:else}{p.text}{/if}{/each}</span>
               <span class="side">{h.side}</span>
               <span class="face">{#each pieces(h.name, h.match.name) as p, k (k)}{#if p.mark}<mark>{p.text}</mark>{:else}{p.text}{/if}{/each}</span>
+              {#if h.type !== undefined}<span class="type">{#each pieces(h.type, h.match.type) as p, k (k)}{#if p.mark}<mark>{p.text}</mark>{:else}{p.text}{/if}{/each}</span>{/if}
             {:else}
               <span class="where">{#each pieces(h.path || model.label, h.path ? h.match.path : []) as p, k (k)}{#if p.mark}<mark>{p.text}</mark>{:else}{p.text}{/if}{/each}</span>
               <span class="label">{#each pieces(h.label, h.match.label) as p, k (k)}{#if p.mark}<mark>{p.text}</mark>{:else}{p.text}{/if}{/each}</span>
@@ -152,7 +153,7 @@
   .hit:hover { background: var(--strip); }
   .hit.active { background: var(--row-selected); border-left-color: var(--highlight); }
   .where { overflow: hidden; text-overflow: ellipsis; }
-  .side, .label { color: var(--text-light); }
+  .side, .label, .type { color: var(--text-light); }
   .side { font-size: 11px; }
   .face { font-weight: 600; }
   mark { background: none; color: var(--highlight); font-weight: 700; }

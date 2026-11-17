@@ -77,11 +77,13 @@ export const outlineRows = (tree: Tree, label: string, expanded: ReadonlySet<str
 /** Every row. */
 export const allRows = (tree: Tree, label: string): Row[] => walk(tree, label, () => true);
 
+/** A node's folder rows' paths, in walk order; none for a folder's path or a node without keyed children. */
+export const foldersOf = (tree: Tree, path: string): string[] =>
+  childEntries(tree, path).flatMap((k) => (typeof k === "string" ? [] : [k.folder]));
+
 /** The default expansion: the root and the root's folders, one level deep. */
 export function defaultExpansion(tree: Tree): Set<string> {
-  const s = new Set([""]);
-  for (const k of childEntries(tree, "")) if (typeof k !== "string") s.add(k.folder);
-  return s;
+  return new Set(["", ...foldersOf(tree, "")]);
 }
 
 /** A folder's parent node, field and members in walk order; undefined when the path is no folder. */

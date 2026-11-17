@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { fixtureModel } from "./fixtures";
-import { allRows, ancestors, defaultExpansion, folderOf, outlineRows, rowSelection, treeStep } from "./outline";
+import { allRows, ancestors, defaultExpansion, folderOf, foldersOf, outlineRows, rowSelection, treeStep } from "./outline";
 
 // The oracle's rows, node and folder, in full and at load (the root and its folders expanded).
 const ROWS: [string, number, number][] = [
   ["aircraft", 2, 2],
   ["closed_loop", 30, 7],
   ["closed_loop_deployment", 30, 7],
-  ["containers", 9, 9],
+  ["containers", 11, 9],
   ["descent", 4, 4],
   ["failure_cycle", 3, 3],
   ["failure_dead", 4, 4],
@@ -44,12 +44,14 @@ describe("containers' folders", () => {
   const { all, tree } = rowsOf("containers");
   const row = (p: string) => all.find((r) => r.path === p)!;
 
-  it("two folder rows under the root, holding the keyed nodes", () => {
+  it("two folder rows under the root and one under scale, holding the keyed nodes", () => {
     expect(all.filter((r) => r.kind === "folder").map((r) => [r.path, r.parent, r.depth, r.label]))
-      .toEqual([["gains", "", 1, "gains"], ["pair", "", 1, "pair"]]);
+      .toEqual([["gains", "", 1, "gains"], ["pair", "", 1, "pair"], ["scale/taps", "scale", 2, "taps"]]);
     expect(all.filter((r) => r.parent === "gains").map((r) => r.path)).toEqual(["gains/a", "gains/b"]);
     expect(all.filter((r) => r.parent === "pair").map((r) => r.path)).toEqual(["pair/1"]);
+    expect(all.filter((r) => r.parent === "scale/taps").map((r) => r.path)).toEqual(["scale/taps/c"]);
     for (const p of ["gains/a", "gains/b", "pair/1"]) expect(row(p).depth).toBe(2);
+    expect(row("scale/taps/c").depth).toBe(3);
   });
 
   it("the transparent and plain children are rows of the root", () => {
@@ -60,6 +62,14 @@ describe("containers' folders", () => {
     expect(folderOf(tree, "gains")).toEqual({ parent: "", field: "gains", members: ["gains/a", "gains/b"] });
     expect(folderOf(tree, "s1")).toBeUndefined();
     expect(folderOf(tree, "nothing")).toBeUndefined();
+  });
+
+  it("foldersOf lists a node's folders, the root's two and scale's one; a node without keyed children and a folder have none", () => {
+    expect(foldersOf(tree, "")).toEqual(["gains", "pair"]);
+    expect(foldersOf(tree, "scale")).toEqual(["scale/taps"]);
+    expect(foldersOf(tree, "s1")).toEqual([]);
+    expect(foldersOf(tree, "gains")).toEqual([]);
+    expect(ancestors(tree, "scale/taps/c")).toEqual(["", "scale", "scale/taps"]);
   });
 
   it("a keyed node's ancestors include its folder", () => {

@@ -104,11 +104,23 @@ test("at / the hello names the default channel", async ({ page }) => {
   expect(JSON.parse(mock.sent[0])).toEqual({ type: "hello", channel: "", major: 1 });
 });
 
-test("the hosted copy: no connection, no download, and a location click copies", async ({ page, context, browserName }) => {
+test("the hosted copy: no connection, no download", async ({ page }) => {
+  const attempt = page.waitForEvent("websocket");
+  await drop(page, "closed_loop");
+  // the preview server refuses the socket: the page is the hosted copy once it closes
+  const socket = await attempt;
+  if (!socket.isClosed()) await socket.waitForEvent("close");
+  await expect(status(page)).toHaveAttribute("data-kind", "build");
+  await page.locator('g.block[data-id="plant"]').click();
+  await expect(page.locator("aside.detail .locations li button.location").first()).toHaveAttribute("title", "Copy the file label");
+  await expect(connection(page)).toHaveCount(0);
+  await expect(page.locator("button.download")).toHaveCount(0);
+});
+
+test("the hosted copy: a location click copies the file label", async ({ page, context, browserName }) => {
   test.skip(browserName === "firefox", "clipboard permissions are Chromium's");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await drop(page, "closed_loop");
-  await expect(status(page)).toHaveAttribute("data-kind", "build");
   await page.locator('g.block[data-id="plant"]').click();
   const first = page.locator("aside.detail .locations li").first();
   await expect(first.locator("button.location")).toHaveAttribute("title", "Copy the file label");
@@ -116,6 +128,4 @@ test("the hosted copy: no connection, no download, and a location click copies",
   await first.locator("button.location").click();
   await expect(first.locator(".copied")).toHaveCount(1);
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(label);
-  await expect(connection(page)).toHaveCount(0);
-  await expect(page.locator("button.download")).toHaveCount(0);
 });

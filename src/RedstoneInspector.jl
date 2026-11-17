@@ -77,7 +77,10 @@ differs from the running one is a warning. The descriptor goes to the channel
 `name`, `""` by default, which the page opens as `/?tab=name`: every tab
 connected on that channel receives it, and a browser tab opens when none is,
 unless the `open_browser` preference is `false`. `name` is also the envelope's
-`name`, as for `write_descriptor`.
+`name`, as for `write_descriptor`. The page shows it as the model's label and
+names the download after it. Without it the label is the root's type, `Group`
+for a root built with `Group`, so `inspect(model; name = "closed_loop")` names
+the model.
 
 The root form builds `root` and pushes the build's descriptor. When the build
 fails, it pushes the failure descriptor and rethrows the `DiagnosticError`.

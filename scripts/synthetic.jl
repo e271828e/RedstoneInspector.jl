@@ -115,14 +115,14 @@ y_types(::Gain) = (out = Float64,)
 y_direct(c::Gain, (; u)) = (out = c.k * u.e,)
 
 """
-A chain of gains through a keyed container `gains`, a `Tuple` container `pair`,
-the name-transparent container `stages` and the component field `scale`.
+Gains through a keyed container `gains`, a `Tuple` container `pair`, the
+name-transparent container `stages` and the field `scale`, a `Scale` assembly.
 """
-struct Containers <: AbstractComponent
+struct Containers{S <: AbstractComponent} <: AbstractComponent
     gains::NamedTuple{(:a, :b), Tuple{Gain, Gain}}
     pair::Tuple{Gain}
     stages::NamedTuple{(:s1, :s2), Tuple{Gain, Gain}}
-    scale::Gain
+    scale::S
 end
 
 transparent_container(::Containers) = :stages
@@ -132,7 +132,7 @@ input_wires(::Containers) = ("u" => "gains/a/e",)
 output_wires(::Containers) = ("scale/out" => "y",)
 
 containers() = Containers((a = Gain(2.0), b = Gain(3.0)), (Gain(4.0),),
-                          (s1 = Gain(0.5), s2 = Gain(0.25)), Gain(10.0))
+                          (s1 = Gain(0.5), s2 = Gain(0.25)), Scale((c = Gain(10.0),)))
 
 # --- primitive: one primitive as the root ----------------------------------------
 
@@ -354,5 +354,16 @@ failure_probe() = Group((s = SelectedNothing(Gain(2.0), Gain(3.0)), t = Thrower(
 
 "A clean build with one `EmptyFaceSelection` warning."
 warning() = SelectedNothing(Gain(2.0), Gain(3.0))
+
+# --- containers' scale, last so that no other fixture's locations move ----------
+
+"An assembly holding its one gain in the keyed container `taps`, below `containers`' root."
+struct Scale <: AbstractComponent
+    taps::NamedTuple{(:c,), Tuple{Gain}}
+end
+
+local_wires(::Scale) = ()
+input_wires(::Scale) = ("e" => "taps/c/e",)
+output_wires(::Scale) = ("taps/c/out" => "out",)
 
 end # module Synthetic

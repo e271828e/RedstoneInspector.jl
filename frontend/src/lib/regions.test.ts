@@ -14,7 +14,7 @@ describe("regionsOf", () => {
       { path: "gains", field: "gains", members: ["gains/a", "gains/b"] },
       { path: "pair", field: "pair", members: ["pair/1"] },
     ]);
-    expect(tree.children.get("")!.map((c) => label(tree, c))).toEqual(["a", "b", "1", "s1", "s2", "scale"]);
+    expect(tree.children.get("")!.map((c) => label(tree, c, "containers"))).toEqual(["a", "b", "1", "s1", "s2", "scale"]);
     expect(tree.children.get("")).toEqual(["gains/a", "gains/b", "pair/1", "s1", "s2", "scale"]);
   });
 
@@ -31,6 +31,14 @@ describe("regionsOf", () => {
     const tree = buildTree({ nodes, root_inputs: [], anchors: [], scopes: [], types: [] } as StructureSection);
     expect(regionsOf(tree, "ctl")).toEqual([{ path: "ctl/loops", field: "loops", members: ["ctl/loops/x", "ctl/loops/y"] }]);
     expect(regionsOf(tree, "")).toEqual([]);
-    expect(["ctl/loops/x", "ctl/plain", "ctl/s"].map((p) => label(tree, p))).toEqual(["x", "plain", "s"]);
+    expect(["ctl/loops/x", "ctl/plain", "ctl/s"].map((p) => label(tree, p, "root"))).toEqual(["x", "plain", "s"]);
+  });
+
+  it("a primitive root's block, the one with an empty segment, takes the model's label; no other block does", () => {
+    const m = fixtureModel("primitive");
+    expect(m.tree!.segment.get("") ?? "").toBe("");
+    expect(label(m.tree!, "", m.label)).toBe("primitive");
+    const c = fixtureModel("closed_loop").tree!;
+    expect(c.children.get("")!.map((p) => label(c, p, "closed_loop"))).toEqual(c.children.get("")!.map((p) => c.segment.get(p)));
   });
 });

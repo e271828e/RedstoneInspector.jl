@@ -9,7 +9,8 @@
 // assembly has its Open button, its wires among the facts and its rate scopes after
 // the locations (the second look's 3.1 and 3.2); pinning stated on a primitive's own
 // face alone (3.4); a location's file name kept whole with its line number (3.5);
-// the pane's own keys, h j k l and the arrows scrolling it (increment 8b).
+// the pane's own keys, h j k l and the arrows scrolling it (increment 8b); a primitive
+// root's "open level" mark (answer 4 as amended by the polish batch).
 import { test, type Page } from "@playwright/test";
 import { clickWire, drop, expect, expectScrollKeys, fixtureText, openPath, paneRing, press, readyLevel, shot, viewBox, widen } from "./fixtures";
 
@@ -501,4 +502,18 @@ test("closed_loop: a producer link's click re-renders the pane, which keeps the 
   await press(page, "j");
   await expect(pane(page)).toHaveAttribute("data-id", id!);
   await expect(page.locator(`svg.canvas[data-level="${level}"] g.block.selected`)).toHaveCount(0);
+});
+
+test("primitive: with nothing selected the pane takes the open level's mark where an open button would stand; the root selected keeps it, its pin does not", async ({ page }) => {
+  await drop(page, "primitive");
+  await expect(pane(page)).toHaveAttribute("data-kind", "primitive");
+  await expect(pane(page)).toHaveAttribute("data-id", "");
+  await expect(pane(page).locator(".path-line button.copy + span.level-mark")).toHaveText("open level");
+  await expect(pane(page).locator("button.open-level")).toHaveCount(0);
+  await shot(page, "primitive", "", "detail-level-mark");
+  await page.locator('g.block[data-id=""]').click();
+  await expect(pane(page).locator("span.level-mark")).toHaveCount(1);
+  await page.locator('g.block[data-id="⟨in⟩u"]').click();
+  await expect(pane(page)).toHaveAttribute("data-kind", "pin");
+  await expect(pane(page).locator("span.level-mark")).toHaveCount(0);
 });

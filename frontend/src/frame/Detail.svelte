@@ -191,7 +191,8 @@
       {@render header(facts.segment, facts.displayName, facts.path, false, false, true)}
       {@render node(facts, facts.scopes)}
     {:else if "signature" in facts}
-      {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly")}
+      <!-- a primitive root's level is the primitive itself, so its pane carries the open level's mark -->
+      {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly", false, facts.path === level)}
       {@render node(facts)}
     {:else if facts.kind === "folder"}
       {@render header(facts.field, "folder", facts.path)}

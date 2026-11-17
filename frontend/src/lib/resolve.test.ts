@@ -144,7 +144,7 @@ describe("routes", () => {
     const r = res("containers");
     expect(terminalConsumers(r, face("", "in", "u"))).toEqual([face("gains/a", "in", "e")]);
     const rt = route(r, "", "out", "y")!;
-    expect(rt.producer).toEqual(face("scale", "out", "out"));
+    expect(rt.producer).toEqual(face("scale/taps/c", "out", "out"));
     expect(rt.consumers).toEqual([face("", "out", "y")]);
   });
 

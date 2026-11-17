@@ -13,7 +13,7 @@
           "path": "",
           "class": "assembly",
           "type": "Main.Synthetic.Containers",
-          "signature": "Main.Synthetic.Containers",
+          "signature": "Main.Synthetic.Containers{Main.Synthetic.Scale}",
           "inputs": [
             {
               "name": "u"
@@ -301,6 +301,47 @@
         {
           "path": "scale",
           "field": "scale",
+          "class": "assembly",
+          "type": "Main.Synthetic.Scale",
+          "signature": "Main.Synthetic.Scale",
+          "inputs": [
+            {
+              "name": "e"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "out"
+            }
+          ],
+          "wires": [
+            {
+              "from": {
+                "path": "scale",
+                "port": "e"
+              },
+              "to": {
+                "path": "scale/taps/c",
+                "port": "e"
+              }
+            },
+            {
+              "from": {
+                "path": "scale/taps/c",
+                "port": "out"
+              },
+              "to": {
+                "path": "scale",
+                "port": "out"
+              }
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "path": "scale/taps/c",
+          "field": "taps",
+          "key": "c",
           "class": "primitive",
           "tier": "continuous",
           "timing": {
@@ -353,7 +394,7 @@
       "types": [
         {
           "name": "Main.Synthetic.Containers",
-          "docstring": "A chain of gains through a keyed container `gains`, a `Tuple` container `pair`,\nthe name-transparent container `stages` and the component field `scale`.\n",
+          "docstring": "Gains through a keyed container `gains`, a `Tuple` container `pair`, the\nname-transparent container `stages` and the field `scale`, a `Scale` assembly.\n",
           "locations": [
             {
               "function": "local_wires",
@@ -396,6 +437,27 @@
               "line": 112
             }
           ]
+        },
+        {
+          "name": "Main.Synthetic.Scale",
+          "docstring": "An assembly holding its one gain in the keyed container `taps`, below `containers`' root.",
+          "locations": [
+            {
+              "function": "local_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 365
+            },
+            {
+              "function": "input_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 366
+            },
+            {
+              "function": "output_wires",
+              "file": "<repo>/scripts/synthetic.jl",
+              "line": 367
+            }
+          ]
         }
       ]
     },
@@ -406,7 +468,7 @@
         "pair/1",
         "s1",
         "s2",
-        "scale"
+        "scale/taps/c"
       ],
       "components": [
         {
@@ -445,7 +507,7 @@
           ]
         },
         {
-          "path": "scale",
+          "path": "scale/taps/c",
           "stage1": [],
           "stage2": [
             "out"

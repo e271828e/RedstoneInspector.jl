@@ -10,10 +10,10 @@ import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
 import type { Model } from "../lib/model";
 import { rekeyFocus } from "../lib/focus";
-import { ancestors, defaultExpansion, folderOf } from "../lib/outline";
+import { ancestors, defaultExpansion, folderOf, foldersOf } from "../lib/outline";
 import { isLevel, rekey } from "../lib/rekey";
 import type { Face } from "../lib/resolve";
-import { rekeyRoute, sameFace } from "../lib/routes";
+import { faceText, rekeyRoute, routeOf, sameFace } from "../lib/routes";
 import type { Tree } from "../lib/tree";
 import type { View } from "../lib/view";
 
@@ -35,6 +35,7 @@ let diagnosticFocus = $state<number | undefined>();
 let route = $state.raw<Face | undefined>();
 let focus = $state<Region | undefined>();
 let note = $state<string | undefined>();
+let notice = $state<string | undefined>();
 let help = $state(false);
 
 export const session = {
@@ -61,6 +62,8 @@ export const session = {
   get focus() { return focus; },
   /** The fallback note, while it stands. */
   get note() { return note; },
+  /** A one-off status message, until the next push, open, selection or trace: a route a push cleared, nothing to trace. */
+  get notice() { return notice; },
   /** The help page shows, in place of the frame or the landing. */
   get help() { return help; },
 };
@@ -138,7 +141,8 @@ function opensDrawer(m: Model): boolean {
 /**
  * A new model. The first, or one after a refusal, resets everything: the root open, its row expanded one level,
  * nothing selected, no route, the drawer open on diagnostics only when one exists. A replacement rekeys the
- * per-tab state, the route kept while the new model declares its origin face, and notes a fallen level; the drawer
+ * per-tab state, the route kept while the new model declares its origin face and it resolves, a route that no
+ * longer resolves cleared with a notice, and notes a fallen level; the drawer
  * stays, opening on diagnostics when the new model carries one. In both, a hash naming a level of the new model
  * wins and the focused diagnostic is dropped.
  */
@@ -146,6 +150,7 @@ export function load(m: Model | undefined) {
   const hashed = browser ? levelOfHash(location.hash) : undefined;
   const replacing = !!model && !!m;
   diagnosticFocus = undefined; // a diagnostic has no key to rekey by
+  notice = undefined;
   if (m && replacing) {
     const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
     level = r.level;
@@ -155,7 +160,11 @@ export function load(m: Model | undefined) {
     layouts = new Map([...r.layouts].map(([p, l]) => [p, { ...l, stale: true }]));
     query = r.query;
     legendFocus = legendFocus === undefined ? undefined : rekeyFocus(legendFocus, model!, m);
-    route = route && rekeyRoute(route, m);
+    // a route stands while its origin is declared and still resolves; one dropped either way clears, said so
+    const was = route;
+    const kept = was && rekeyRoute(was, m);
+    route = kept && routeOf(m, kept) ? kept : undefined;
+    if (was && !route) notice = `the route from \`${faceText(was)}\` no longer resolves in this model; cleared`;
     note = r.note;
     if (opensDrawer(m)) drawer = { open: true, tab: "diagnostics" };
   } else {
@@ -183,9 +192,12 @@ export function load(m: Model | undefined) {
   if (!help) replaceHash();
 }
 
+/** Rows expanded; a node expanding brings its folders with it (workspace.md answer 2), a node already expanded does not. */
 function expand(paths: string[]) {
-  if (paths.every((p) => expanded.has(p))) return;
-  expanded = new Set([...expanded, ...paths]);
+  const added = paths.filter((p) => !expanded.has(p));
+  if (!added.length) return;
+  const tree = model?.tree;
+  expanded = new Set([...expanded, ...added, ...(tree ? added.flatMap((p) => foldersOf(tree, p)) : [])]);
 }
 
 /** On a move up to an ancestor of the level left, the ancestor's child on the path, selected so the keyboard continues from it. */
@@ -207,6 +219,7 @@ function show(path: string): boolean {
   level = path;
   selection = childOnPath(tree, path, left);
   note = undefined;
+  notice = undefined;
   expand([...ancestors(tree, path), path]);
   return true;
 }
@@ -271,6 +284,7 @@ export function toggleHelp() {
 export function select(s: Selection | undefined) {
   const tree = model?.tree;
   selection = s;
+  notice = undefined;
   if (!tree || !s) return;
   const { kind, id } = s.target;
   if ((kind === "block" && tree.byPath.has(id)) || (kind === "folder" && folderOf(tree, id))) expand(ancestors(tree, id));
@@ -280,9 +294,11 @@ export function select(s: Selection | undefined) {
   }
 }
 
+/** A row's chevron: collapses an expanded row, else expands it, a node with its folders. */
 export function toggleExpanded(path: string) {
+  if (!expanded.has(path)) return expand([path]);
   const next = new Set(expanded);
-  if (!next.delete(path)) next.add(path);
+  next.delete(path);
   expanded = next;
 }
 
@@ -332,10 +348,16 @@ export function clearDiagnosticFocus() {
 /** The trace action: the route from the face, or none when it is the standing route's origin. */
 export function trace(origin: Face) {
   route = sameFace(route, origin) ? undefined : origin;
+  notice = undefined;
 }
 
 export function clearRoute() {
   route = undefined;
+}
+
+/** A one-off status message, shown until the next push, open, selection or trace. */
+export function say(text: string) {
+  notice = text;
 }
 
 /** Escape's chain: the help page, then the route, then the focused diagnostic, then the legend's focus, then a standing query, then the selection. */

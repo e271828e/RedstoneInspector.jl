@@ -1,5 +1,6 @@
 // Every fixture draws each level with the oracle's counts (visual_grammar.md
-// answers 1 to 4, build_release.md answer 5).
+// answers 1 to 4, build_release.md answer 5); a primitive root's block labelled
+// with the model's label (the polish batch).
 import { test } from "@playwright/test";
 import { counts, drop, expect, openPath, readyLevel, shot } from "./fixtures";
 
@@ -25,7 +26,7 @@ const TABLE: Record<string, Record<string, Pins>> = {
   descent: { "": row(5, 4, 2, 0, 0, 7, 0) },
   closed_loop: CLOSED_LOOP,
   closed_loop_deployment: CLOSED_LOOP,
-  containers: { "": row(8, 7, 1, 1, 0, 0, 0) },
+  containers: { "": row(8, 7, 1, 1, 1, 0, 0), scale: row(3, 2, 1, 1, 0, 0, 0) },
   primitive: { "": row(5, 4, 2, 2, 0, 1, 0) },
   kinds: { "": row(18, 10, 0, 9, 0, 9, 6) },
   rates: {
@@ -69,4 +70,15 @@ test("failure_structure draws nothing and says so", async ({ page }) => {
   await expect(page.locator("pre.outcome")).toContainText("no structure to draw");
   await expect(page.locator("svg.canvas")).toHaveCount(0);
   await shot(page, "failure_structure", "");
+});
+
+test("primitive: the root's block draws the model's label on its bold first line", async ({ page }) => {
+  await drop(page, "primitive");
+  const segment = page.locator('g.block[data-id=""] text.segment');
+  await expect(segment).toHaveText("primitive");
+  expect(await segment.evaluate((t) => getComputedStyle(t).fontWeight)).toBe("600");
+  // the first line fits the block
+  const [text, shape] = await Promise.all([segment.evaluate((t: SVGTextElement) => t.getComputedTextLength()), page.locator('g.block[data-id=""] > .shape').evaluate((r: SVGRectElement) => r.width.baseVal.value)]);
+  expect(text).toBeLessThan(shape);
+  await shot(page, "primitive", "", "root-label");
 });

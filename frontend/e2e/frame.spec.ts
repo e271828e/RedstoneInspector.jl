@@ -1,7 +1,8 @@
 // The frame (workspace.md answers 1, 6, 10 and 11): the status bar's kind, totals and help link,
 // the drawer's strip, counts and open rule, the splitters and the collapsed panes
 // kept per browser across a reload and a new drop; `m` and `i` collapsing the side
-// panes, and the ring fixed on a focused pane's box while its body scrolls (increment 8b).
+// panes, and the ring fixed on a focused pane's box while its body scrolls (increment 8b);
+// a long route line's ellipsis and title with its clear control kept (the polish batch).
 import { test, type Page } from "@playwright/test";
 import { drop, expect, fixtureText, press, shot, status } from "./fixtures";
 
@@ -182,4 +183,26 @@ test("large: the ring stays on the pane's box while its body scrolls, for the tr
     expect(await page.locator(scroller).evaluate((e) => e.scrollTop), pane).toBe(400);
     expect(await ring(), pane).toEqual(before);
   }
+});
+
+test("closed_loop at a narrow width: the route line ends in an ellipsis, its whole text the title under the pointer, the clear control at its right inside the bar", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 700 });
+  await drop(page, "closed_loop");
+  await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
+  await press(page, "t");
+  const line = status(page).locator("span.route > .line");
+  await expect(line).toHaveAttribute("title", "tracing h_ref: 2 consumers across 3 levels");
+  const look = await line.evaluate((l) => {
+    const r = l.getBoundingClientRect(), c = getComputedStyle(l);
+    const under = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return { clipped: l.scrollWidth > l.clientWidth, overflow: c.textOverflow, titled: under?.closest("[title]") === l, right: r.right };
+  });
+  expect(look).toEqual({ clipped: true, overflow: "ellipsis", titled: true, right: look.right });
+  const [bar, clear, help] = [(await status(page).boundingBox())!, (await status(page).locator("button.clear-route").boundingBox())!, (await status(page).locator("a.help").boundingBox())!];
+  expect(clear.x).toBeGreaterThanOrEqual(look.right - 0.5);
+  expect(clear.x + clear.width).toBeLessThanOrEqual(bar.x + bar.width);
+  expect(help.x + help.width).toBeLessThanOrEqual(bar.x + bar.width);
+  await shot(page, "closed_loop", "", "status-narrow");
+  await status(page).locator("button.clear-route").click();
+  await expect(status(page).locator("span.route")).toHaveCount(0);
 });

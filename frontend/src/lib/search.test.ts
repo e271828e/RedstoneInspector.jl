@@ -96,11 +96,26 @@ describe("searchModel, the oracle's table", () => {
 
   it("emphasises the matched text per field", () => {
     const f = find("closed_loop", "path:plant face:h");
-    expect(f.faces[0].match).toEqual({ path: [[0, 5]], name: [[0, 1]] });
+    expect(f.faces[0].match).toEqual({ path: [[0, 5]], name: [[0, 1]], type: [] });
+    expect(f.faces[0].type).toBeUndefined();
     const n = find("closed_loop", "pid h").nodes[0];
     expect(n.path).toBe("pid_controller/h_ctl");
     expect(n.match.path).toEqual([[0, 3], [15, 16]]);
     expect(ranges("aXa", ["a", "xa"])).toEqual([[0, 3]]);
+  });
+});
+
+describe("a face hit's type", () => {
+  it("a type: term shows the owner's type on each face hit, the display name holding the match, else the qualified alias, the match marked", () => {
+    const short = find("closed_loop", "type:sumjunc face:in1").faces;
+    expect(short.map((h) => [h.path, h.name, h.type, h.match.type])).toEqual([["sensing/altimeter", "in1", "SumJunction", [[0, 7]]]]);
+    const long = find("closed_loop", "type:library.sum face:in2").faces;
+    expect(long.map((h) => [h.type, h.match.type])).toEqual([["Redstone.Library.SumJunction", [[9, 20]]]]);
+  });
+
+  it("a face hit found without a type: term shows no type", () => {
+    const f = find("closed_loop", "path:altimeter in1").faces;
+    expect(f.map((h) => [h.name, h.type])).toEqual([["in1", undefined]]);
   });
 });
 

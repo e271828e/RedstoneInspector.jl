@@ -160,7 +160,7 @@
   const LABEL_BASELINE = 8;
   /**
    * One type label per producer port: its unqualified type whole, at ELK's place by the port, which a dragged
-   * block carries; the whole type in its title, the first wire its wire.
+   * block carries; the first wire its wire. The detail pane carries the whole type.
    */
   const typeLabels = $derived.by(() => {
     if (!labels || !shown) return [];
@@ -170,7 +170,7 @@
       const { block, side, name } = parsePortId(t.port);
       const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
       if (!at || !box || !p) return [];
-      return [{ port: t.port, type: t.type, text: shortType(t.type), wire: t.wires[0], x: box.x + p.x + at.x, y: box.y + p.y + at.y + LABEL_BASELINE }];
+      return [{ port: t.port, text: shortType(t.type), wire: t.wires[0], x: box.x + p.x + at.x, y: box.y + p.y + at.y + LABEL_BASELINE }];
     });
   });
   /** The drawn level's regions, and each keyed member's region path. */
@@ -236,7 +236,7 @@
 
   $effect(() => {
     const level = levelOf(tree, model.resolution!, path);
-    const sizes = sizeLevel(level, tree);
+    const sizes = sizeLevel(level, tree, model.label);
     const [saved, v] = untrack(() => [savedLayout, savedView] as const);
     run++;
     hovered = undefined;
@@ -533,8 +533,8 @@
   }
   /**
    * The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a
-   * continuation's, then the route's on a child it enters; on a pin the route crosses, off the root, one pill
-   * straddling its top edge at its outer end.
+   * continuation's, then the route's on a child it enters. On a pin a loop's chain or the route crosses, off the
+   * root, the loop's pill then the route's straddle its top edge from its outer end inward.
    */
   const overlayBadges = $derived.by(() => {
     type Pill = { block: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
@@ -545,10 +545,19 @@
       const box = shown.geometry.boxes.get(b.id);
       if (!box) continue;
       if (b.role === "in" || b.role === "out") {
-        if (!routeDrawn?.pins.has(b.id) || shown.level.path === "") continue;
-        const w = width("route");
-        const x = b.role === "in" ? box.x + BADGE_INSET : box.x + box.width - BADGE_INSET - w;
-        out.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it.", x, y: box.y + BADGE_TOP, w });
+        if (shown.level.path === "") continue;
+        const pills: Pill[] = [];
+        const c = overlay?.leaves.get(b.id);
+        if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
+        if (routeDrawn?.pins.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
+        let left = box.x + BADGE_INSET, right = box.x + box.width - BADGE_INSET;
+        for (const q of pills) {
+          const w = width(q.text);
+          const x = b.role === "in" ? left : right - w;
+          out.push({ ...q, x, y: box.y + BADGE_TOP, w });
+          left += w + BADGE_GAP;
+          right -= w + BADGE_GAP;
+        }
         continue;
       }
       const pills: Pill[] = [];
@@ -566,7 +575,7 @@
     }
     return out;
   });
-  /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, a route's on a pin the parent. */
+  /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, either on a pin the parent. */
   function badgeClick(q: (typeof overlayBadges)[number]) {
     if (q.role === "diagnostic") onbadge?.(q.index!);
     else if (tree.byPath.has(q.block)) onopen?.(q.block);
@@ -753,7 +762,7 @@
               {#if b.role === "assembly"}
                 <rect x="3" y="3" width={box.width - 6} height={box.height - 6} rx="2" fill="none" stroke={c.stroke} />
               {/if}
-              <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{label(tree, b.path)}</text>
+              <text class="segment" x={PAD} y={15} style="font:{SEGMENT_FONT}">{label(tree, b.path, model.label)}</text>
               {#if !icon}
                 <text class="display" x={PAD} y={29} style="font:{NAME_FONT}">{cutName(b.displayName)}</text>
               {:else if icon.kind === "glyph"}
@@ -809,7 +818,7 @@
         <!-- above the blocks, each on a halo of the background -->
         <g class="type-labels">
           {#each typeLabels as t (t.port)}
-            <text class="type-label" class:lit={wireLit(t.wire)} data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} style="font:{LABEL_FONT}"><title>{t.type}</title>{t.text}</text>
+            <text class="type-label" class:lit={wireLit(t.wire)} data-port={t.port} data-wire={t.wire} x={t.x} y={t.y} style="font:{LABEL_FONT}">{t.text}</text>
           {/each}
         </g>
       {/if}
@@ -950,7 +959,8 @@
   .wire[data-kind="struct"] { stroke-width: 5; }
   .wire-core { fill: none; stroke: var(--bg); stroke-width: 1.6; pointer-events: none; }
   .junction { pointer-events: none; }
-  text.type-label { fill: var(--text-light); stroke: var(--bg); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; pointer-events: visiblePainted; }
+  /* A label ignores the pointer, so a block dragged under it keeps its clicks; the pane carries the whole type. */
+  text.type-label { fill: var(--text-light); stroke: var(--bg); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; pointer-events: none; }
   .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }
   .casing { fill: none; stroke: var(--highlight); stroke-linejoin: round; pointer-events: none; }
   .casing.selected { stroke-width: 7; opacity: 0.4; }

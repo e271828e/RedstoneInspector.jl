@@ -4,19 +4,24 @@
   // the standing route with its clear control (workspace.md answer 8); in the
   // live tab the connection's state and the descriptor's download; the help
   // link at its right end. Under the landing panel it shows the connection
-  // and the link.
+  // and the link. The one-off notice and the focus note join; each text ends in
+  // an ellipsis when long, titled whole, the route's clear control kept beside it.
   import type { Model } from "../lib/model";
   import { downloadName } from "../lib/protocol";
   import type { LiveState } from "../state/live.svelte";
   import type { Mode } from "../state/prefs.svelte";
 
-  let { model, mode = "tier", fallback, route, connection, received = false, download, onclear }: {
+  let { model, mode = "tier", fallback, notice, route, focusNote, connection, received = false, download, onclear }: {
     model?: Model;
     /** The canvas's color mode, shown after the counts. */
     mode?: Mode;
     fallback?: string;
+    /** A one-off message, its face in backquotes: a route a push cleared, nothing to trace. */
+    notice?: string;
     /** The standing route's status, its face in backquotes: "tracing `h_ref`: 2 consumers across 3 levels". */
     route?: string;
+    /** Why the open level does not dim under the standing focus. */
+    focusNote?: string;
     /** The live connection's state; nothing shows in the hosted copy or before the handshake resolves. */
     connection?: LiveState;
     /** A descriptor has arrived over the socket. */
@@ -26,8 +31,8 @@
     /** The route's clear control. */
     onclear?: () => void;
   } = $props();
-  /** The status split around its backquoted face. */
-  const routeParts = $derived(route?.split("`"));
+  /** A line's text with its backquotes dropped: its hover title. */
+  const plain = (text: string) => text.replaceAll("`", "");
 
   const totals = $derived.by(() => {
     const nodes = model?.structure?.nodes;
@@ -56,22 +61,21 @@
   }
 </script>
 
+{#snippet coded(text: string)}{#each text.split("`") as part, i (i)}{#if i % 2}<code>{part}</code>{:else}{part}{/if}{/each}{/snippet}
+
 <footer class="status" data-kind={model?.kind}>
   {#if model}
     <span class="kind">{model.kind}</span>
-    <span class="counts" title="over the whole model">
-      {#if totals}
-        {count(totals.primitives, "primitive", "primitives")}, {count(totals.assemblies, "assembly", "assemblies")}, {count(totals.wires, "wire", "wires")}
-      {:else}
-        no structure
-      {/if}
-    </span>
+    {@const counts = totals ? `${count(totals.primitives, "primitive", "primitives")}, ${count(totals.assemblies, "assembly", "assemblies")}, ${count(totals.wires, "wire", "wires")}` : "no structure"}
+    <span class="counts line" title={totals ? `${counts}, over the whole model` : counts}>{counts}</span>
     <span class="mode" data-mode={mode}>{mode} colors</span>
-    {#if model.note}<span class="note">{model.note}</span>{/if}
-    {#if fallback}<span class="fallback">{fallback}</span>{/if}
-    {#if routeParts}
-      <span class="route">{routeParts[0]}<code>{routeParts[1]}</code>{routeParts[2]} <button class="clear-route" title="Clear the route" onclick={() => onclear?.()}>clear</button></span>
+    {#if model.note}<span class="note line" title={model.note}>{model.note}</span>{/if}
+    {#if fallback}<span class="fallback line" title={plain(fallback)}>{@render coded(fallback)}</span>{/if}
+    {#if notice}<span class="notice line" title={plain(notice)}>{@render coded(notice)}</span>{/if}
+    {#if route}
+      <span class="route"><span class="line" title={plain(route)}>{@render coded(route)}</span><button class="clear-route" title="Clear the route" onclick={() => onclear?.()}>clear</button></span>
     {/if}
+    {#if focusNote}<span class="focus-note line" title={focusNote}>{focusNote}</span>{/if}
   {/if}
   {#if connection === "connected" || connection === "lost"}
     <span class="connection" data-state={connection}>
@@ -98,6 +102,11 @@
   .connection ~ .help { margin-left: 0; }
   .connection[data-state="lost"] { font-weight: 600; }
   .download, .clear-route { font: 11px system-ui, sans-serif; padding: 0 6px; }
-  .route { color: var(--highlight); }
-  .route code { font-size: 11px; }
+  /* The route's line and clear control are the bar's own items, so the line and the other text spans shrink to an
+     ellipsis while the control keeps its width. */
+  .route { display: contents; color: var(--highlight); }
+  .line { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .clear-route { flex: none; margin-left: -10px; }
+  .notice, .focus-note { color: var(--text-light); }
+  .line code { font-size: 11px; }
 </style>

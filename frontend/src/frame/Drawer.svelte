@@ -2,12 +2,15 @@
   // The drawer (workspace.md answer 6): four tabs with their counts, open on load
   // only when a diagnostic exists. The diagnostics tab lists every diagnostic and
   // warning with a text filter, a row's click focusing it and selecting what it
-  // names; the other three tabs are components of their own, a row's click
-  // selecting what it names.
+  // names, its location link under its message; a loop's row lists its wires,
+  // each linked to the declaration of the assembly holding it, and its members,
+  // one traced structurally presumed. The other three tabs are components of
+  // their own, a row's click selecting what it names.
   import { tick } from "svelte";
   import { palette } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
-  import type { Indexed } from "../lib/diagnostics";
+  import { loopFacts, type Indexed } from "../lib/diagnostics";
+  import type { Face } from "../lib/resolve";
   import type { Model } from "../lib/model";
   import { diagnosticCount, type Tab } from "../state/session.svelte";
   import Order from "./tabs/Order.svelte";
@@ -86,7 +89,18 @@
     }
   }
   const fileLabel = (file: string, line: number) => `${file}:${line}`;
+  /** A face as a loop's wire spells it, `path/port`. */
+  const faceText = (f: { path: string; port: string }) => `${f.path}/${f.port}`;
+  const hopText = (from: Face, to: Face) => `${faceText(from)} → ${faceText(to)}`;
+  const PRESUMED = "Traced structurally: no tracer value reaches this member, so every input is presumed to reach every output.";
 </script>
+
+{#snippet locationLink(file: string, line: number, title: string, cls = "location")}
+  <a
+    class={cls} class:editor href={"#"} title={title}
+    onclick={(e) => { e.preventDefault(); e.stopPropagation(); if (!onlocation(file, line)) copy(fileLabel(file, line)); }}
+  >{fileLabel(file, line)}</a>{#if copied === fileLabel(file, line)} <span class="copied">copied</span>{/if}
+{/snippet}
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <section
@@ -119,10 +133,29 @@
                     <span class="message">{d.message}</span>
                   </button>
                   {#if loc}
-                    <a
-                      class="location" class:editor href={"#"} title={editor ? "Open in the editor" : "Copy the file label"}
-                      onclick={(e) => { e.preventDefault(); e.stopPropagation(); if (!onlocation(loc.file, loc.line)) copy(fileLabel(loc.file, loc.line)); }}
-                    >{fileLabel(loc.file, loc.line)}</a>{#if copied === fileLabel(loc.file, loc.line)} <span class="copied">copied</span>{/if}
+                    <div class="under">{@render locationLink(loc.file, loc.line, editor ? "Open in the editor" : "Copy the file label")}</div>
+                  {:else if d.cycle && model.tree}
+                    {@const loop = loopFacts(model, d.cycle)}
+                    <div class="under loop">
+                      <ul class="loop-wires">
+                        {#each loop.wires as w (faceText(w.from) + faceText(w.to))}
+                          <li class="loop-wire" data-from={faceText(w.from)} data-to={faceText(w.to)}>
+                            <code class="pair">{hopText({ ...w.from, side: "out" }, { ...w.to, side: "in" })}</code>
+                            <ul class="hops">
+                              {#each w.hops as h (h.level + h.wire)}
+                                <li class="hop" data-level={h.level} data-wire={h.wire} data-declaration={h.declaration}>
+                                  <code>{h.declaration}</code> of <code>{h.level || "/"}</code>{#if h.from.path !== w.from.path || h.to.path !== w.to.path}, <code>{hopText(h.from, h.to)}</code>{/if}
+                                  {#if h.location}{@render locationLink(h.location.file, h.location.line, `${editor ? "Open" : "Copy the file label of"} the wire's declaration, ${h.declaration} of ${h.level || "the root"}`, "declaration")}{/if}
+                                </li>
+                              {/each}
+                            </ul>
+                          </li>
+                        {/each}
+                      </ul>
+                      <p class="members">
+                        members{#each loop.members as m (m.path)}{" "}<span class="member" data-path={m.path} data-mode={m.mode}><code>{m.path}</code>{#if m.presumed}{" "}<span class="presumed" title={PRESUMED}>presumed</span>{/if}</span>{/each}
+                      </p>
+                    </div>
                   {/if}
                 </li>
               {/each}
@@ -158,11 +191,21 @@
   .diagnostics { color: var(--text); }
   .filter { box-sizing: border-box; width: 100%; max-width: 360px; margin-bottom: 6px; font: 12px system-ui, sans-serif; }
   ul.diagnostics { list-style: none; margin: 0; padding: 0; }
-  .diagnostic { display: flex; align-items: baseline; gap: 10px; padding-right: 8px; border-left: 3px solid var(--hue); }
+  .diagnostic { padding-right: 8px; border-left: 3px solid var(--hue); }
   .row {
-    flex: 1; min-width: 0; display: block; padding: 4px 8px; border: 0; background: none; font: inherit; color: inherit;
+    display: block; width: 100%; padding: 4px 8px; border: 0; background: none; font: inherit; color: inherit;
     text-align: left; cursor: pointer;
   }
+  /* Under the message: the location, or a loop's wires and members. */
+  .under { padding: 0 8px 4px; font-size: 12px; overflow-wrap: anywhere; }
+  .loop-wires, .hops { list-style: none; margin: 0; padding: 0; }
+  .hops { padding-left: 16px; color: var(--text-light); }
+  .loop code { font-size: 11px; }
+  .pair { color: var(--text); }
+  .declaration { margin-left: 6px; }
+  .members { margin: 2px 0 0; color: var(--text-light); }
+  .member { margin-left: 6px; }
+  .presumed { font-style: italic; }
   .diagnostic + .diagnostic { margin-top: 4px; }
   .diagnostic[data-severity="error"] { --hue: var(--error); }
   .diagnostic[data-severity="warning"] { --hue: var(--warning); }
@@ -171,9 +214,9 @@
   .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
   .kind { font-weight: 600; color: var(--hue); }
   .path { font-family: ui-monospace, monospace; font-size: 12px; }
-  .location { font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-light); text-decoration: none; cursor: copy; }
-  .location.editor { cursor: pointer; }
-  .location:hover { text-decoration: underline; }
+  .location, .declaration { font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-light); text-decoration: none; cursor: copy; }
+  .location.editor, .declaration.editor { cursor: pointer; }
+  .location:hover, .declaration:hover { text-decoration: underline; }
   .copied { font-size: 11px; color: var(--text-light); }
   .message { display: block; margin: 2px 0 0; font: 12px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
   .empty { margin: 0; color: var(--text-light); }

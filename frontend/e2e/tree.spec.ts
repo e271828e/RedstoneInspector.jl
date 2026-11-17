@@ -1,6 +1,8 @@
 // The model tree (workspace.md answer 2): rows and folders, the default
 // expansion, selection shared both ways, the chevron expanding, the double-click
-// opening, the open level's row, the tree's own h j k l and arrows.
+// opening, the open level's row, the tree's own h j k l and arrows; the polish
+// batch's drawn chevron, a folder under a non-root node expanding with it, and a
+// selection made while the pane is collapsed scrolled into view on expanding.
 import { test, type Page } from "@playwright/test";
 import { drop, expect, openPath, paneRing, press, readyLevel, rows, shot, viewBox } from "./fixtures";
 
@@ -90,6 +92,57 @@ test("containers: the folder rows and the keyed rows under them", async ({ page 
   // the folder's one mark on the canvas is its region's halo
   await expect(page.locator("svg.canvas .selected")).toHaveCount(1);
   await expect(page.locator('svg.canvas g.region[data-path="gains"]')).toHaveClass(/\bselected\b/);
+});
+
+test("containers: the folder taps under scale expands with scale, by the chevron, by l and by opening scale", async ({ page }) => {
+  await drop(page, "containers");
+  await expect(row(page, "scale")).not.toHaveClass(/\bexpanded\b/);
+  await row(page, "scale").locator("button.chevron").click();
+  await expect(row(page, "scale/taps")).toHaveClass(/\bexpanded\b/);
+  await expect(row(page, "scale/taps")).toHaveAttribute("data-depth", "2");
+  await expect(row(page, "scale/taps/c")).toHaveAttribute("data-depth", "3");
+  await shot(page, "containers", "", "folder-under-node");
+  // a folder collapsed by hand comes back expanded with its node
+  await row(page, "scale/taps").locator("button.chevron").click();
+  await expect(row(page, "scale/taps/c")).toHaveCount(0);
+  await row(page, "scale").locator("button.chevron").click();
+  await expect(row(page, "scale/taps")).toHaveCount(0);
+  await row(page, "scale").click();
+  await press(page, "l");
+  await expect(row(page, "scale/taps/c")).toHaveCount(1);
+  // opening scale on the canvas, with the row collapsed again
+  await row(page, "scale").locator("button.chevron").click();
+  await page.locator('g.block[data-id="scale"]').dblclick();
+  await page.locator(readyLevel("scale")).waitFor();
+  await expect(row(page, "scale/taps")).toHaveClass(/\bexpanded\b/);
+  await expect(row(page, "scale/taps/c")).toHaveCount(1);
+});
+
+test("large: a selection made while the tree pane is collapsed scrolls its row into view when the pane expands", async ({ page }) => {
+  await drop(page, "large");
+  await press(page, "m");
+  await expect(page.locator('.pane[data-pane="tree"]')).toHaveClass(/\bcollapsed\b/);
+  await page.locator('g.block[data-id="b150"]').click();
+  await press(page, "m");
+  const body = page.locator('.pane[data-pane="tree"] .body');
+  await expect(row(page, "b150")).toHaveClass(/\bselected\b/);
+  await expect.poll(() => body.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
+  const [b, r] = [(await body.boundingBox())!, (await row(page, "b150").boundingBox())!];
+  expect(r.y).toBeGreaterThanOrEqual(b.y);
+  expect(r.y + r.height).toBeLessThanOrEqual(b.y + b.height);
+});
+
+test("closed_loop: the chevron is drawn, at least 10 px tall, a quarter turn on an expanded row, with no glyph in the row's text", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const chevron = (path: string) => row(page, path).locator("button.chevron svg");
+  const box = (await chevron("sensing").boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(10);
+  expect(box.width).toBeGreaterThanOrEqual(10);
+  await expect(row(page, "sensing").locator("button.chevron")).toHaveText("");
+  const turn = (path: string) => row(page, path).locator("button.chevron").evaluate((b) => getComputedStyle(b).transform);
+  expect(await turn("sensing")).toBe("none");
+  await expect.poll(() => turn("")).toMatch(/^matrix\(0, 1, -1, 0|^matrix\(6\.\d+e-17, 1, -1, 6\.\d+e-17/);
+  await shot(page, "closed_loop", "", "chevron");
 });
 
 test("rates: opening and selecting on the canvas expands, selects and marks the rows", async ({ page }) => {

@@ -100,7 +100,7 @@ export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: st
   return n?.class === "primitive" && !!(side === "in" ? n.inputs : n.outputs).find((f) => f.name === name)?.pinned;
 }
 
-export function sizeBlock(b: Block, tree: Tree): BlockSize {
+export function sizeBlock(b: Block, tree: Tree, rootLabel: string): BlockSize {
   if (b.role === "in" || b.role === "out") {
     const tag = b.role === "in" && b.rootInput;
     const width = Math.ceil(textWidth(b.name, PIN_FONT)) + 2 * PAD + (tag ? POINT + SLOT : 0);
@@ -114,7 +114,7 @@ export function sizeBlock(b: Block, tree: Tree): BlockSize {
   for (let i = 0; i < rows; i++) body = Math.max(body, face("in", b.inputs[i]) + face("out", b.outputs[i]));
   const icon = iconOf(tree.byPath.get(b.path)!);
   const second = icon ? iconWidth(icon) : textWidth(cutName(b.displayName), NAME_FONT);
-  const head = Math.max(textWidth(label(tree, b.path), SEGMENT_FONT), second);
+  const head = Math.max(textWidth(label(tree, b.path, rootLabel), SEGMENT_FONT), second);
   const width = Math.ceil(Math.max(MIN_WIDTH, head + 2 * PAD, body + 2 * PAD + GUTTER));
   const row = (i: number) => HEADER + i * ROW + ROW / 2;
   return {
@@ -127,8 +127,8 @@ export function sizeBlock(b: Block, tree: Tree): BlockSize {
 }
 
 /** Every block's size on a level, by block id. */
-export const sizeLevel = (level: Level, tree: Tree): Map<string, BlockSize> =>
-  new Map(level.blocks.map((b) => [b.id, sizeBlock(b, tree)]));
+export const sizeLevel = (level: Level, tree: Tree, rootLabel: string): Map<string, BlockSize> =>
+  new Map(level.blocks.map((b) => [b.id, sizeBlock(b, tree, rootLabel)]));
 
 /** Every type label on a level, by producer port id: its unqualified type whole, one line high; none for an unknown type. */
 export function sizeLabels(model: Model, level: Level): Map<string, EdgeLabel> {

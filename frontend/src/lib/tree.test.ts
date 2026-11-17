@@ -10,7 +10,7 @@ const TABLE: [string, number, number, number, [number, number, number]][] = [
   ["descent", 4, 1, 3, [0, 0, 3]],
   ["closed_loop", 30, 6, 6, [0, 0, 29]],
   ["closed_loop_deployment", 30, 6, 6, [0, 0, 29]],
-  ["containers", 7, 1, 6, [1, 3, 2]],
+  ["containers", 8, 2, 6, [1, 4, 2]],
   ["primitive", 1, 0, 0, [0, 0, 0]],
   ["kinds", 10, 1, 9, [0, 0, 9]],
   ["rates", 8, 4, 3, [0, 0, 7]],
