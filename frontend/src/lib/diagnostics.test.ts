@@ -237,6 +237,19 @@ describe("loopFacts, the drawer's loop row (the oracle's loop_row.py)", () => {
     expect(back.map((h) => [h.declaration, h.location && `${h.location.file}:${h.location.line}`])).toEqual([["output_wires", "<repo>/ctl.jl:7"], ["local_wires", undefined]]);
   });
 
+  it("a root of a user type whose row locates local_wires links each root-level hop", () => {
+    const d = fixtureJson("failure_cycle") as any;
+    d.failure.structure.nodes.find((n: any) => n.path === "").type = "Main.User.Loop";
+    d.failure.structure.types.push({ name: "Main.User.Loop", locations: [{ function: "local_wires", file: "<repo>/loop.jl", line: 3 }] });
+    const loaded = parseDescriptor(JSON.stringify(d), "failure_cycle.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    const m = loadModel(loaded);
+    const hops = loopFacts(m, diagnosticsOf(m)[0].cycle!).wires.flatMap((w) => w.hops);
+    expect(hops.map((h) => [h.level, h.declaration, h.location && `${h.location.file}:${h.location.line}`])).toEqual([
+      ["", "local_wires", "<repo>/loop.jl:3"], ["", "local_wires", "<repo>/loop.jl:3"],
+    ]);
+  });
+
   it("isCoreType: Redstone and its submodules, not a name merely starting with Redstone", () => {
     expect(["Redstone", "Redstone.Library.Group", "RedstoneExamples.Longitudinal", "Main.User.Ctl", undefined].map(isCoreType)).toEqual([true, true, false, false, false]);
   });

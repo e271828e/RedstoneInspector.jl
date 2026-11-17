@@ -92,7 +92,7 @@ test("closed_loop: a hash naming a level wins when the model arrives, fitted", a
   await expectView(page, v);
 });
 
-test("closed_loop: a drop over the model rekeys the session by path, a refusal unloads it", async ({ page }) => {
+test("closed_loop: a drop over the model rekeys the session by path, the fallback note naming the path in code, a refusal unloads it", async ({ page }) => {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="sensing"]').dblclick();
   await page.locator(readyLevel("sensing")).waitFor();
@@ -123,6 +123,9 @@ test("closed_loop: a drop over the model rekeys the session by path, a refusal u
   const fallback = page.locator("footer.status .fallback");
   await expect(fallback).toContainText("sensing");
   await expect(fallback).toContainText("the root");
+  // the backquoted path rendered as code, the title plain
+  await expect(fallback.locator("code")).toHaveText("sensing");
+  await expect(fallback).toHaveAttribute("title", "sensing is not in this model; showing the root");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
   // nothing selected: the detail shows the root level
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");

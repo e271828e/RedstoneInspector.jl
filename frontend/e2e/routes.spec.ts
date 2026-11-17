@@ -5,7 +5,7 @@
 // it survives navigation and selection, clears on Escape, the trace repeated or
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
 // read off the DOM. The polish batch: a push clearing a route that no longer
-// resolves, `t` on a face with no producer, a level the route misses not dimmed.
+// resolves, `t` and the menu on a face with no producer, a level the route misses not dimmed.
 import { test, type Page } from "@playwright/test";
 import { blockBoxes, drop, dropOver, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
 
@@ -227,7 +227,7 @@ test("a push that keeps the origin but no longer feeds it clears the route, the 
   await expect(notice(page)).toHaveCount(0);
 });
 
-test("a face with no producer: the pane offers no trace, and t says there is nothing to trace", async ({ page }) => {
+test("a face with no producer: the pane offers no trace, and t and the right-click menu say there is nothing to trace", async ({ page }) => {
   await drop(page, "closed_loop", unfed());
   await page.locator('rect.port[data-port="plant|in|δe"]').click();
   await expect(pane(page)).toHaveAttribute("data-kind", "port");
@@ -237,6 +237,13 @@ test("a face with no producer: the pane offers no trace, and t says there is not
   await expect(statusRoute(page)).toHaveCount(0);
   await expect(svg(page)).not.toHaveClass(/route-focus/);
   await shot(page, "closed_loop", "", "nothing-to-trace");
+  // the right-click menu's Trace says so too, after a selection cleared the notice
+  await page.locator('g.block[data-id="plant"]').click();
+  await expect(notice(page)).toHaveCount(0);
+  await page.locator('rect.port[data-port="plant|in|δe"]').click({ button: "right" });
+  await page.locator(".viewport div.menu button.trace").click();
+  await expect(notice(page)).toHaveText("nothing to trace: plant/δe has no producer");
+  await expect(statusRoute(page)).toHaveCount(0);
   // a face with a producer still traces, the message gone
   await page.locator('rect.port[data-port="plant|in|δt"]').click();
   await expect(notice(page)).toHaveCount(0);

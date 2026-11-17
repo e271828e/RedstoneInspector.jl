@@ -101,6 +101,9 @@ test("containers: the folder taps under scale expands with scale, by the chevron
   await expect(row(page, "scale/taps")).toHaveClass(/\bexpanded\b/);
   await expect(row(page, "scale/taps")).toHaveAttribute("data-depth", "2");
   await expect(row(page, "scale/taps/c")).toHaveAttribute("data-depth", "3");
+  // the shot waits out the chevron's 80 ms turn
+  await expect.poll(() => row(page, "scale").locator("button.chevron").evaluate((b) => getComputedStyle(b).transform))
+    .toMatch(/^matrix\(0, 1, -1, 0|^matrix\(6\.\d+e-17, 1, -1, 6\.\d+e-17/);
   await shot(page, "containers", "", "folder-under-node");
   // a folder collapsed by hand comes back expanded with its node
   await row(page, "scale/taps").locator("button.chevron").click();

@@ -2,7 +2,8 @@
 // the drawer's strip, counts and open rule, the splitters and the collapsed panes
 // kept per browser across a reload and a new drop; `m` and `i` collapsing the side
 // panes, and the ring fixed on a focused pane's box while its body scrolls (increment 8b);
-// a long route line's ellipsis and title with its clear control kept (the polish batch).
+// a long route line's ellipsis and title with its clear control kept, the counts' and a
+// notice's ellipsis and title too (the polish batch).
 import { test, type Page } from "@playwright/test";
 import { drop, expect, fixtureText, press, shot, status } from "./fixtures";
 
@@ -185,7 +186,7 @@ test("large: the ring stays on the pane's box while its body scrolls, for the tr
   }
 });
 
-test("closed_loop at a narrow width: the route line ends in an ellipsis, its whole text the title under the pointer, the clear control at its right inside the bar", async ({ page }) => {
+test("closed_loop at a narrow width: the route line ends in an ellipsis, its whole text the title under the pointer, the clear control at its right inside the bar; the counts and a notice end in an ellipsis, titled whole", async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 700 });
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
@@ -205,4 +206,20 @@ test("closed_loop at a narrow width: the route line ends in an ellipsis, its who
   await shot(page, "closed_loop", "", "status-narrow");
   await status(page).locator("button.clear-route").click();
   await expect(status(page).locator("span.route")).toHaveCount(0);
+
+  // the counts and a notice, from t on a face with no producer, end in an ellipsis too, each titled whole
+  const unfed = JSON.parse(fixtureText("closed_loop"));
+  const root = unfed.build.structure.nodes[0];
+  root.wires = root.wires.filter((w: any) => !(w.to.path === "plant" && w.to.port === "δe"));
+  await drop(page, "closed_loop", JSON.stringify(unfed));
+  await page.locator('rect.port[data-port="plant|in|δe"]').click();
+  await press(page, "t");
+  for (const sel of [".counts", "span.notice"]) {
+    const seg = status(page).locator(sel);
+    await expect(seg).toHaveCount(1);
+    const { text, title, overflow } = await seg.evaluate((e) => ({ text: e.textContent!, title: e.getAttribute("title") ?? "", overflow: getComputedStyle(e).textOverflow }));
+    expect(text.length).toBeGreaterThan(0);
+    expect(title).toContain(text);
+    expect(overflow).toBe("ellipsis");
+  }
 });
