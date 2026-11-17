@@ -296,8 +296,10 @@ Open items live in `pending.md`.
    halos its members; its wires are terminal pairs, which the client maps
    onto the chain of declared wires between the two primitives by answer
    18's resolution in reverse, drawn on every level the chain touches, a
-   badge on a closed child where the chain continues inside, a red dot on
-   each such level in the tree. The verdict is text, not a second color. A
+   badge on a closed child where the chain continues inside and, off the
+   root, on a pin where the chain leaves the level, as a route's, its click
+   climbing to the parent with the chain lit, a red dot on each such level
+   in the tree. The verdict is text, not a second color. A
    dead hop is a dashed chord across its member from the input square to the
    output square with a cross at its middle, shown under either verdict. No
    dimming by default; a dimmed state exists for axis 5's focus. Warnings
@@ -306,7 +308,9 @@ Open items live in `pending.md`.
    their distance from red, amber and the highlight hue (answer 6).
    A structure-step failure has no diagram, only the list (answer 6).
    *Amended 2026-11-02 (increment 6's look pass, both rounds): the whole
-   palette kept off the reserved hues, then its strokes alone.*
+   palette kept off the reserved hues, then its strokes alone. Amended
+   2026-11-17 (the polish batch): a pin the chain leaves through took no
+   badge, the reader climbing by the breadcrumb.*
    *Why:* the two questions a loop raises, where it closes and which hop is
    false, become things seen rather than reconstructed from slash paths:
    the chord names the member whose contract to question and the wire into

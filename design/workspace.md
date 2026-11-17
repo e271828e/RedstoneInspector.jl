@@ -37,7 +37,8 @@ Open items live in `pending.md`.
    labelled by the envelope `name`, else the root type's display name; an
    assembly row expands, a primitive row does not; a keyed container's
    elements sit under a folder row named by the field, which is no node and
-   on a click highlights the region and shows the field in the detail pane;
+   on a click highlights the region and shows the field in the detail pane,
+   and which expands with its node, under the root or below it;
    a transparent container's elements sit under the parent. Root inputs are
    faces and stay in the drawer; a primitive root is one row. A row shows a
    color dot following the canvas's mode, the segment and the display name
@@ -60,7 +61,8 @@ Open items live in `pending.md`.
    *Amended 2026-11-01 (increment 5's look pass): the tree had no keys of
    its own. Amended 2026-11-12 (increment 8b, the user's rulings): the
    arrows panned the canvas from the tree, and no rule covered a tree with
-   no row selected.*
+   no row selected. Amended 2026-11-17 (the polish batch): a folder under a
+   non-root node started collapsed when its node expanded.*
    *Why:* the tree is the descriptor's node list, so it costs nothing to
    derive and always agrees with the canvas; selecting a closed assembly to
    read its detail must not force opening it. *Rejected:* root inputs as
@@ -103,7 +105,9 @@ Open items live in `pending.md`.
    the open level as it shows a closed assembly, with the words "open
    level" where the open button stands, its rate scopes after the
    locations and a face row selecting the level's pin; the root so gains its
-   docstring, locations and parameters. A primitive block shows, in order:
+   docstring, locations and parameters. A primitive root's level is the
+   primitive itself, so its pane shows the primitive's layout with the same
+   words "open level" beside the copy button. A primitive block shows, in order:
    - the header: segment, display name and path, a copy button and, on an
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
@@ -155,7 +159,9 @@ Open items live in `pending.md`.
    closed assembly showed no wire count; an assembly's face read its
    terminal producer's pinned flag, "not pinned" for one a root input
    feeds; and a pin's or a port's line opened with the word "pin" or
-   "port".*
+   "port". Amended 2026-11-17 (the polish batch): a primitive root's pane
+   with nothing selected carried no "open level" mark, the same as with the
+   primitive selected.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following

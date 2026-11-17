@@ -147,7 +147,9 @@ full text stays.
 - **Clipboard permissions.** Headless Chromium reads the clipboard only after
   `context.grantPermissions(["clipboard-read", "clipboard-write"])`.
 - **`scrollIntoView` in a hidden pane.** A collapsed tree renders no rows, so
-  a selection made while collapsed scrolls nothing, nor does expanding it.
+  a selection made while collapsed scrolls nothing then; expanding remounts
+  `Tree`, whose effect scrolls the selected row into view on mount (probed
+  2026-11-17, both browsers).
 - **Narrowing in templates.** An `{:else if}` on a union discriminant does not
   narrow the later branches; the pane narrows with `"signature" in facts` and
   `"id" in facts`.
@@ -157,8 +159,8 @@ full text stays.
 - **Class collisions.** The canvas's old wrapper `.frame` and the drawer's
   `section.pane.drawer` each made a contract selector match twice; the
   wrapper is `.viewport` and the panes carry only `pane` and `data-pane`.
-- **A row's text.** A tree row's text includes the chevron's glyph; checks read
-  `.segment`.
+- **A row's text.** The chevron is a drawn `svg`, no glyph, since 2026-11-17;
+  checks still read `.segment`, the row's text holding the name too.
 - **A face row's middle.** Playwright clicks an element's centre, which in a
   face row can be a link; the check clicks `.face-name`.
 - **Word breaking in the pane.** `overflow-wrap: anywhere` let a cell shrink to
