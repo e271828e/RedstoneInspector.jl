@@ -12,9 +12,11 @@ The bullets stand in working order, the first one next.
 
 - **The polish batch**, before increment 10, by the user's ruling of
   2026-11-17: frontend fixes from the open items the landed increments
-  left, under one short brief that writes down the loop row's contract,
-  closed by one look pass. Each item carries the increment it came from
-  and, where the user ruled, the ruling.
+  left, closed by one look pass. Each item carries the increment it came
+  from and, where the user ruled, the ruling. Landed at `6c033b1` with no
+  brief, the loop row's contract in `frontend/MAP.md` and the rulings in
+  `increments/20261117_polish/notes_polish.md`; the cold review's fixes
+  and the look pass are next.
   - **A loop's drawer row has no location** (increment 7). The row was to
     link each member's `y_direct`, which the format does not locate; the
     user dropped that on 2026-11-05, since the remedy for a loop is
@@ -181,8 +183,13 @@ the increment it came from.
   4's widgets want bounds. Locations beyond the declarations: the stage
   functions `y_state`, `y_direct`, `x_deriv`, `s_update` and the event
   functions, none of them owed for a loop, whose row takes the structural
-  reading the polish batch gives it. Each is a minor bump ruled in the core's spec and log
-  first (D-433).
+  reading the polish batch gives it. The call that builds an assembly: a
+  core `Group`'s `types` row locates the core's own accessors, so the loop
+  row links no hop a `Group` holds (`notes_polish.md` ruling 3). Each is a
+  minor bump ruled in the core's spec and log first (D-433).
+- **`frontend/MAP.md` past its size** (the polish batch). The map is about
+  730 lines against `design/rules.md`'s "about 700", 714 before the batch.
+  A trim outside any increment's text brings it back.
 - **A rational part past `2^53`** (the core's exact-arithmetic audit,
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
   section 2.8). The descriptor writes an anchor's `T` and `τ` as the JSON

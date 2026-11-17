@@ -45,7 +45,10 @@ recommendation. None of them called for a brief.
 8. **"The face's type" is the owner's type.** A `type:` term matches the
    owner node's type, so that is the type the row shows.
 9. **The open level's mark stands with the primitive root selected too**,
-   since the pane shows the same facts, as an opened assembly's does.
+   since the pane shows the same facts. An opened assembly's pane takes the
+   mark with nothing selected, but with its own row selected it shows the
+   open button and no mark, as it did before the batch; that difference is
+   for the look.
 10. **The collapsed tree needed no code.** A selection made while the
     pane is collapsed already scrolls into view on expanding, in both
     browsers, so the item lands as a check.
@@ -56,11 +59,11 @@ recommendation. None of them called for a brief.
     origin no longer resolves. The fallback note renders its backquoted
     text as code, as the other notices do. A type label drops its
     `<title>`, which cannot show once the label ignores the pointer.
-13. **The core's source is told by the holder's type name**, the
+12. **The core's source is told by the holder's type name**, the
     coordinator's ruling within ruling 3, for the user to strike. A
     holder whose qualified type is `Redstone` or under `Redstone.` gets
     no link. The location's `file` would serve as well only for one
     install: it differs between a depot copy, a dev checkout and the
     fixtures' `<depot>` labels.
-14. **`frontend/MAP.md` past 700 lines** gets its own trim, an unordered
+13. **`frontend/MAP.md` past 700 lines** gets its own trim, an unordered
     item in `pending.md`, not part of the batch.

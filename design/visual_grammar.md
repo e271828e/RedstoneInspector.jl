@@ -333,12 +333,15 @@ Open items live in `pending.md`.
    origin's halo, a badge on each closed child entered, the terminal port
    marked, a dot per level in the tree. Search hits take a dashed halo, the
    selected hit the solid one. Focus on a diagnostic, a route, a legend line or a search
-   dims everything uninvolved by opacity, never by color. Composition from
+   dims everything uninvolved by opacity, never by color; a level on which
+   the focus lights nothing does not dim, the status bar saying why.
+   Composition from
    bottom to top: dim, normal, route casing, selection halo, error overlay,
    so the error hue always wins; a dragged block draws above its neighbours
    with its halo on; the keyboard focus ring is the halo.
    *Amended 2026-11-02 (increment 6's look pass): a legend line's focus
-   joined the dimming foci.*
+   joined the dimming foci. Amended 2026-11-17 (the polish batch): a focus
+   with nothing on the open level dimmed the whole level.*
    *Why:* a halo composes with a tier fill, a filled root tag and an
    outlined pin alike, which a fill or stroke change does not; a route and
    a selection differ in shape, a chain with an origin against one element,

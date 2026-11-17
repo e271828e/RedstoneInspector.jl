@@ -279,11 +279,18 @@ Open items live in `pending.md`.
    gets the badge, a click on it going to the parent with the route lit,
    and the status bar names the route, "tracing `aircraft/δe`: 3 consumers
    across 2 levels", with a clear control. It survives navigation and a
-   push whose descriptor still has its origin, recomputed; it clears on
-   Escape, on the trace action repeated or on another route; selecting
-   something else leaves it standing. This amends `initial_design.md`'s
-   answer 9, whose "selecting a root face highlights its chain" becomes an
-   explicit trigger.
+   push whose descriptor still has its origin and still resolves it,
+   recomputed; a push that drops the origin or no longer resolves it clears
+   the route, the status bar saying so. It clears on Escape, on the trace
+   action repeated or on another route; selecting something else leaves it
+   standing. A face with no producer has no route: the pane shows no trace
+   button, and `t` or the menu's trace entry says in the status bar that
+   there is nothing to trace. This amends `initial_design.md`'s answer 9,
+   whose "selecting a root face highlights its chain" becomes an explicit
+   trigger.
+   *Amended 2026-11-17 (the polish batch): a push that kept the origin but
+   no longer resolved it left the route standing undrawn, and `t` on a face
+   with no producer said nothing.*
    *Why:* a route dims the level, which must not fire on every click near
    its edge; the route belongs to the value, not to the end clicked.
    *Rejected:* tracing on selection; half routes by the face's side.
