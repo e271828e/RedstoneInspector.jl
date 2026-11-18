@@ -126,6 +126,14 @@ the increment it came from.
   name, which the audit may rename; the core's `pending.md` bullet "The
   exported-name audit" owns both. A rename reaches the schema, the
   fixtures and the page.
+- **`descent()` left the core's examples** (the core's tutorial arc,
+  `e70da63`). `scripts/fixtures.jl` imports it and writes `descent.json`,
+  which 20 frontend test files read. The core's `approach(solution)`
+  replaces it, the piloted loop as the child `vehicle` with the gear and
+  the stop request. The pin at `6afd6fb` still has `descent()`, so nothing
+  breaks until the next bump. That bump either builds the small model in
+  the script, the plant with a `GroundContact` and a `StopRequest`, or
+  moves the tests to a fixture of `approach`.
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8).
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when
