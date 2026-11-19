@@ -28,7 +28,15 @@ The bullets stand in working order, the first one next.
   with the schema's record path, the fit's room for the legend, the base
   grid's peach and the question of a root input's seedability, which its
   roadmap entry carries; then the look pass, the next bullet; then 11, the
-  release, with a check that runs the real server. The Firefox project blocks CI as Chromium's does, by the
+  release, with a check that runs the real server. Stage reached on 10:
+  its design session opened on 2026-11-19 and is not closed.
+  `deployment_overlay.md` is a draft with thirteen answers and six open
+  questions, and the handover is
+  `increments/inspector_10_deployment_overlay/notes_inspector_10.md`. The
+  session widened the increment: the descriptor comes to parity with
+  `show`, the core's work comes first, in the first bullet of
+  `Redstone.jl/design/pending.md`, and the events get an increment 10b.
+  The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is
   settled. The built-in Julia GUI is parked (D-310).
