@@ -67,7 +67,7 @@ Open items live in `pending.md`.
 
 3. **The carrier field and the door.** `DiagnosticError` gains `structure`
    after `warnings`, typed `Any` because `diagnostics.jl` is included before
-   `assembly.jl` declares `Structure` and `declare.jl` throws the carrier
+   `structure.jl` declares `Structure` and `declare.jl` throws the carrier
    before any artifact exists; both constructors default it to `nothing`.
    The door hoists its `structure` local above the `try`, assigns it where
    the `Structure` is built inside the `with` block, and its one `catch`
@@ -81,7 +81,7 @@ Open items live in `pending.md`.
    reference and the catch outside the `with` sees it; the rewrap already
    sat at the door and not at the barriers, which know nothing of warnings
    or structure. *Rejected:* `Union{Nothing, Structure}`, undeclarable at
-   the carrier's definition; moving the carrier below `assembly.jl`, which
+   the carrier's definition; moving the carrier below `structure.jl`, which
    `declare.jl` forbids.
 
 4. **Fixtures and tests.** One fixture per case, each validated after the
