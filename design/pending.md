@@ -143,6 +143,14 @@ the increment it came from.
   breaks until the next bump. That bump builds the small model in the
   script, the plant with a `GroundContact` and a `StopRequest`, and the
   tests stay (`deployment_overlay.md` answer 16).
+- **`Period` and `Hz` retire in the core** (the core's D-469, ruled on
+  2026-11-20 and not yet landed there). `Absolute` takes its period as a
+  bare integer or `Rational` in seconds, so `Absolute(Hz(50))` becomes
+  `Absolute(1//50)`. `scripts/synthetic.jl` calls `Hz` seven times and
+  `test/runtests.jl` once, and each imports the name. The pin at `6afd6fb`
+  still has both names, so nothing breaks until a bump passes the core's
+  commit. That bump rewrites the eight calls and drops the two imports.
+  The values are the same, so no fixture changes.
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8).
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when
