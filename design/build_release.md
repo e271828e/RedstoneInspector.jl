@@ -387,11 +387,13 @@ Open items live in `pending.md`.
      gives every entry that id, so it becomes `<docs>/glossary/#g-component`.
      ``[`init!`](@ref)`` is a bare name, and Documenter anchors each
      docstring on the API page by its qualified binding, `Redstone.x_init`,
-     `Redstone.Library.Junction`, so it becomes `<docs>/api/#<module>.<name>`
-     with the module taken from the row the docstring belongs to, whose
-     key is the type's qualified base name. A docstring on a type outside
-     `Redstone` has no hosted page and its links render as code text, as
-     `workspace.md`'s answer 4 prescribes. `<docs>` is one constant in the
+     `Redstone.Library.Junction`. The core's writer adds that binding as
+     the link's target where the name resolves to an exported one, and a
+     link whose target stands under `Redstone.` becomes
+     `<docs>/api/#<target>`, in any type's docstring. Every other link, a
+     bare one included, renders as its text, and a glossary link is drawn
+     only in the docstring of a type under `Redstone.`
+     (`deployment_overlay.md` answer 15). `<docs>` is one constant in the
      bundle, `https://e271828e.github.io/Redstone.jl/dev/` until the core's
      first release and `stable/` after.
    - *The Markdown renderer.* `marked`, small and common, bundled like
@@ -411,7 +413,11 @@ Open items live in `pending.md`.
      copy is a pinned snapshot that lags the record between bumps, so an
      identity pointing at it would name the wrong file half the time.
    *Amended 2026-11-16 (the pin to the core's `6afd6fb`, D-453): the API
-   anchor's example was `Redstone.Blocks.Junction`.*
+   anchor's example was `Redstone.Blocks.Junction`. Amended 2026-11-20
+   (`deployment_overlay.md` answer 15): a bare name took the module of
+   the row its docstring belongs to, which left a link from `Library`
+   into `Redstone` dead, and a docstring on a type outside `Redstone`
+   drew no link.*
    *Rejected:* two builds, one per address, the second bundle
    `live_session.md`'s answer 5 refused; linking a bare `@ref` to the API
    page without an anchor, a link turned into a search; a `$id` carrying

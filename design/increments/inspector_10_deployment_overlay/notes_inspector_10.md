@@ -5,6 +5,15 @@ session resumes it from this file, the draft record
 `design/deployment_overlay.md` and the two `pending.md` bullets named
 below. It reads those and the rules, never the old transcript.
 
+**Closed on 2026-11-20.** The six questions of section 4 are ruled, in
+the record's answers 7, 12, 14, 15, 16 and 17, and the record is no
+longer a draft. Answer 14 corrects two facts below: the build refuses a
+`Pinned` leaf inside an entry (D-265), so that blind spot does not exist,
+and the pin a client cannot see is an abstract entry's. Sections 1 to 4
+and 7 describe the session as it stood on 2026-11-19. Section 6's steps 1
+to 4 are done with the commit that adds this note, and step 5, the core's
+four parts, is next.
+
 ## 1. The state
 
 - **The session is a design session, and nothing is built.** No brief, no

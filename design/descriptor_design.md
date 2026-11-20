@@ -44,8 +44,12 @@ Open items live in `pending.md`.
    schemas, which give up the shared version check the bridge will rely on.
 2. **The build body mirrors the artifact.** A `structure` section projects
    the `Structure`, an `outputs` section projects `Outputs`, `warnings`
-   holds the `Build`'s own warnings, an empty array when none, and later
-   bumps add `events` and the deployment's own sections. The failure body
+   holds the `Build`'s own warnings, an empty array when none, and an
+   `events` section projects `Events`. The deployment body adds its
+   parameters, a `schedule` section and its own warnings, and `structure`
+   holds the grid report, derived from the anchors. What the body carries
+   is set by the parity rule (`deployment_overlay.md` answers 1 and 4 to
+   7). The failure body
    embeds `structure` unchanged when the carrier holds one. Face types and
    kind markers live in `structure`: the declaration reader takes an
    instance and its tier, both held by the `Structure`, so they exist
@@ -54,7 +58,9 @@ Open items live in `pending.md`.
    `initial_design.md`'s axis 2 note, which had `descriptor` read the
    types from the activation's tables.
    *Amended 2026-10-28 (`failure_descriptor.md` answer 1): the build body
-   had no `warnings`.*
+   had no `warnings`. Amended 2026-11-20 (`deployment_overlay.md` answers
+   1 and 4 to 7): `events` and the deployment's sections were left to
+   later bumps, and no rule set the body's content.*
    *Why:* the boundary falls where the build's own steps fall, so what a
    failure descriptor can carry is what the schema says it carries, with no
    subset rule to maintain. *Rejected:* flat concept sections at the body
@@ -209,14 +215,17 @@ Open items live in `pending.md`.
    the anchor it hangs from with its period multiple and phase in that
    anchor's ticks, and `structure` carries `anchors` and `scopes`:
    ```json
-   "anchors": [{"T": {"num": 1, "den": 100}, "tau": {"num": 0, "den": 1},
+   "anchors": [{"dt": {"num": 1, "den": 100}, "tau": {"num": 0, "den": 1},
                 "scope": "aircraft", "key": "loops"}],
    "scopes":  [{"path": "aircraft", "key": "loops",
                 "timing": {"anchor": 1, "m": 1, "c": 0}}]
    ```
    Anchor 0, the base grid, has no row, as in the artifact. Rationals are
    `{"num", "den"}` objects. The per-component chain of `sample_times` links
-   waits for a bump.
+   is not carried. The deployment's side is the `schedule` section
+   (`deployment_overlay.md` answer 5).
+   *Amended 2026-11-20 (`deployment_overlay.md` answers 3 and 5): the
+   anchor's period had the key `T`.*
    *Why:* this widens the working order, which deferred the timing tables,
    because answer 9's core tier colors blocks by rate and a block's rate is
    its timing row. The rows are in the `Structure` the section mirrors, and
@@ -226,13 +235,18 @@ Open items live in `pending.md`.
 10. **Instance context: three rules.**
     - *Docstring.* The type's docstring as its Markdown source, one string
       in the `types` row, from the docsystem's entry for the base name;
-      absent when the type has none. The client renders the Markdown.
+      absent when the type has none. The writer adds a target to each bare
+      `@ref` link whose name resolves to an exported binding and changes
+      nothing else (`deployment_overlay.md` answer 15). The client renders
+      the Markdown.
     - *Locations.* Julia records no location for a `struct`, so the row
       carries the declaration methods' locations, found by `methods(f,
       Tuple{T})` for each the type defines, in this fixed order: `u_types`,
       `y_types`, `x_init`, `s_init`, `m_init`, `sample_times`,
       `local_wires`, `input_wires`, `output_wires`, `stop_reason`,
-      `transparent_container`. Each is `{"function", "file", "line"}`, the
+      `transparent_container`, with `state_events` joining the list at the
+      place the core's §13.9 gives it (`deployment_overlay.md` answer 7).
+      Each is `{"function", "file", "line"}`, the
       file as Julia reports it, uncleaned, since the live session's open-in-
       editor wants it absolute and the hosted copy only displays it.
     - *Parameter summary.* Per node, `parameters` lists each inert field, the
@@ -240,6 +254,9 @@ Open items live in `pending.md`.
       them, with `repr` under `:compact` and `:limit` cut at 80 characters
       with an ellipsis. For a `PID` that is one entry, `fixed`.
 
+    *Amended 2026-11-20 (`deployment_overlay.md` answers 7 and 15): the
+    docstring was the source unchanged, and `state_events` was not among
+    the located declarations.*
     *Why:* docstrings and locations are per type and summaries per instance,
     which is answer 2's `types` table. The cut exists so a `Constant`
     holding a lookup table never swells the file, and the summary stays

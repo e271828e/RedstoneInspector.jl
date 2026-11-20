@@ -104,7 +104,8 @@ Open items live in `pending.md`.
    port square, Escape clearing it. With nothing selected the pane shows
    the open level as it shows a closed assembly, with the words "open
    level" where the open button stands, its rate scopes after the
-   locations and a face row selecting the level's pin; the root so gains its
+   locations, each as a frames table, and a face row selecting the
+   level's pin; the root so gains its
    docstring, locations and parameters. A primitive root's level is the
    primitive itself, so its pane shows the primitive's layout with the same
    words "open level" beside the copy button. A primitive block shows, in order:
@@ -112,10 +113,10 @@ Open items live in `pending.md`.
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
      that says what it means: the qualified type with the alias beside it;
-     the class and tier; the rate read out as a phrase, "every 4th base
-     tick, offset 1" or "every tick of `q_ctl`, 1/50 s", with the anchor,
-     `m` and `c` in its hover title and no row for a continuous primitive,
-     which no rate gates; and, when `key` is present, the membership with
+     the class and tier; the rate as a frames table, a row per frame with
+     its period and its phase (`deployment_overlay.md` answer 10), and no
+     table for a continuous primitive, which no rate gates; and, when
+     `key` is present, the membership with
      its container's kind written out, "transparent container `children`,
      key `plant`" or "keyed container `gains`, key `a`";
    - the signature in monospace, wrapped and collapsed under the title
@@ -161,7 +162,10 @@ Open items live in `pending.md`.
    feeds; and a pin's or a port's line opened with the word "pin" or
    "port". Amended 2026-11-17 (the polish batch): a primitive root's pane
    with nothing selected carried no "open level" mark, the same as with the
-   primitive selected.*
+   primitive selected. Amended 2026-11-20 (`deployment_overlay.md` answer
+   10): the rate was read out as a phrase, "every 4th base tick, offset
+   1" or "every tick of `q_ctl`, 1/50 s", with the anchor, `m` and `c` in
+   its hover title, and a rate scope had no table.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -202,14 +206,21 @@ Open items live in `pending.md`.
    message, the error hue and amber, a text filter, the count on the tab, a
    click selecting the element and navigating to it, a loop opening its
    first member's level with the chain lit; the empty state says so. Root
-   inputs: name, type, kind phrase, terminal consumers one to a line and,
-   from stage 2, the claiming writer, a row selecting the root pin; the
-   home of stage 3's input widgets. Timing: anchors with index, `T`, `tau`
-   and the declaring scope and key, anchor 0 as the base grid; scopes with
-   path, key and triple; components, every discrete primitive with its
-   triple in walk order, sortable by period, with its rate-mode swatch; the
-   deployment overlay's schedule rows and hyperperiod chart join here, a
-   build descriptor saying they need a deployment. Execution order: two
+   inputs: name, type, kind phrase, the pinned mark, terminal consumers
+   one to a line, those that pin marked with the cause
+   (`deployment_overlay.md` answer 14), and, from stage 2, the claiming
+   writer, a row selecting the root pin; the home of stage 3's input
+   widgets. Timing, in the notation of `deployment_overlay.md` answer 3
+   with its equations as the tables' caption: anchors as `Aₖ (key)` with
+   `Δtₖ`, `τₖ`, the declaring scope and each pool entry's factor, anchor
+   0 as the base grid; scopes and components in the same columns, every
+   discrete primitive in walk order with `k`, `m`, `c`, `Δt` and `τ`,
+   sortable by period, with its rate-mode swatch. A deployment heads the
+   tab with its parameters and the steps per frame, adds `Dₖ` and `Φₖ` to
+   the anchors and `D` and `Φ` to the scopes and components, and draws
+   the hyperperiod chart, which a build descriptor says needs a
+   deployment (`deployment_overlay.md` answers 9 and 11). Execution
+   order: two
    groups, as the core's §5.3 runs a sweep. The first lists every primitive
    with a stage 1 port, unnumbered, since stage 1 runs in any order. The
    second lists every primitive with a stage 2 port in `outputs.order`'s
@@ -234,7 +245,12 @@ Open items live in `pending.md`.
    position that orders nothing. Amended 2026-11-12 (increment 8's second
    look, 1.8): a drag selecting a row's text also selected the row's
    target. Amended 2026-11-17 (the user's ruling on `pending.md`'s open
-   items): the drawer on a push or a replacement was unstated.*
+   items): the drawer on a push or a replacement was unstated. Amended
+   2026-11-20 (`deployment_overlay.md` answers 3, 9, 11 and 14): the
+   timing tab listed anchors with index, `T` and `tau`, and scopes and
+   components with their triples, and waited for the overlay's schedule
+   rows as a table of their own; the root inputs had no pinned mark,
+   their `pinned` being false in every file.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -252,16 +268,20 @@ Open items live in `pending.md`.
    positions beneath it, "3–5, 8"; a primitive with stage 1 outputs alone
    carries none; the badges use the text color, and the overlay's pills on
    that edge draw over a badge they meet. A
-   deployment descriptor adds the concrete `Δt` and `(D, Φ)` to the legend
-   and the schedule rows and the hyperperiod chart, a timeline over one
-   hyperperiod with a row per triple and a mark per firing, to the drawer's
-   timing tab, all waiting on the overlay bump.
+   deployment descriptor makes the `Δt` of the legend's `A₀` lines
+   concrete and adds the hyperperiod chart to the drawer's timing tab: a
+   row per distinct `(D, Φ)` with the swatch of every triple on it and a
+   mark per tick, the timeline whole or omitted, and the frame tops over
+   the joint period (`deployment_overlay.md` answers 11 and 13).
    *Amended 2026-11-11 (increment 8's look pass, 1.7): every primitive
    carried its position in `outputs.order`, stage 1 primitives among them,
    though the core runs stage 1 in any order. Amended 2026-11-12 (increment
    8's second look, 2.3 and 2.4): the badge sat in the top-left corner, and
    the rate pill on the bottom edge was left out where it met the overlay's
-   pills.*
+   pills. Amended 2026-11-20 (`deployment_overlay.md` answers 11 and 13):
+   the legend was to gain the concrete `Δt` and `(D, Φ)` on every line,
+   and the chart was a timeline over one hyperperiod with a row per
+   triple, both waiting on a bump of the format.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.

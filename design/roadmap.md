@@ -59,6 +59,10 @@ answers by record and number.
 - `build_release.md`: the release mechanics, the pin, the repo layout,
   the generated types, the tests, CI, the hosted address, the checklist,
   answers 1 to 8.
+- `deployment_overlay.md`: the descriptor at parity with `show`, the
+  timing notation, the timing tab, the pane's frames table, the chart,
+  the legend, a root input's pin, the docstring links, the fixtures and
+  the staging of increments 10 and 10b, answers 1 to 17.
 - `rules.md`: the inspector's rules beyond the core's, the frontend's
   pipeline among them.
 - `pending.md`: the work order and the open items, first bullet next.
@@ -472,45 +476,51 @@ of which 9 show at load, and `s2/out` feeds `scale/taps/c/e`; the pane's
 gate stood at 128 Julia tests, 526 unit tests, and 500 browser checks
 passed and 4 skipped, the Firefox clipboard checks.*
 
-**Increment 10: the deployment overlay.** On both tracks, after a design
-session that writes the eighth record, `design/deployment_overlay.md`
-(added 2026-11-04, the user's ruling after increment 8's reading 1): what
-the deployment body carries beyond the build, the base step, each
-primitive's concrete period and phase in base ticks, the hyperperiod and the
-grid report the bound schedule prints; how the timing tab's schedule rows
-and the hyperperiod chart draw, a timeline over one hyperperiod with a row
-per triple and a mark per firing; and the legend's lines gaining the
-concrete `Δt` and `(D, Φ)`. The core half: the format's minor bump to 1.1, a
-`schedule` section on the deployment body and nothing else, with the §13.9
-sentence and its log entry, `descriptor(deployment)`, the schema and the
-regenerated deployment fixture; folded in, the writer qualifies every bare
-`@ref` link whose binding it can resolve from the type's module
-(`which(mod, name)` giving the defining module), so `local_wires` in a
-`Library` docstring reaches `Redstone.local_wires` on the API page, which
-closes the bare-`@ref` note `build_release.md` carried and amends
-`descriptor_design.md`'s answer 10, the docstring source carrying
-qualified refs. The inspector
-half: the pin bump, the timing tab's rows and chart, the legend's values,
-the page's link rule keeping its module-joining as the fallback for a ref
-the writer left bare. Folded in on 2026-11-17 from `pending.md`'s open
-items, by the user's ruling: in the core half, the schema's description
-names `RedstoneInspector.jl/design/descriptor_design.md` in place of
-`design/inspector/descriptor_design.md`, the copy following at the pin
-bump; in the inspector half, the fit reserves the legend, which the
-concrete values lengthen and which can sit over the drawing's bottom-left
-corner, and the type labels' room, which widens every level 12% on
-`pid_controller` to 42% on `lqr_controller` and so lowers every fit scale,
-is weighed with it; the base grid's peach is looked at again with the
-legend's values, since step 0 goes only to a block ticking on the base
-grid, so `closed_loop`'s palette starts at anchor 1 and the peach goes to
-`sensing`. For the design session, a root input's seedability: the spec
-pins a root input when any consumer's entry pins, and it is then
-unseedable; open are whether the root-inputs tab shows it under
-"seedable", and whether the client derives it from the consumers' flags,
-which miss a discrete consumer's wholesale pin, or the format carries it,
-which widens the 1.1 bump past the `schedule` section. Visible: the
-deployment fixture's schedule on the timing tab. Draws on the new record, `workspace.md` answers 6 and 7,
-`visual_grammar.md` answer 6, `build_release.md` answer 7.
+**Increment 10: the deployment overlay.** On both tracks, after the
+design session of 2026-11-19 and 2026-11-20 that wrote the eighth record,
+`design/deployment_overlay.md` (added 2026-11-04, the user's ruling after
+increment 8's reading 1; rewritten 2026-11-20 to the record's scope, which
+replaced a `schedule` section "and nothing else" and a bump of the format
+with the parity rule and the format at 1.0). The core half comes first and
+is the first bullet of `Redstone.jl/design/pending.md`, in four parts: the
+notation, the grid report derived from the structure, the descriptor at
+parity with `show`, and `show(::Deployment)` in the notation, which the
+inspector does not wait on (the record's answers 1 to 8, 12, 14, 15 and
+17). The inspector half starts at the pin bump, once the core has pushed
+its parts one to three:
+
+- the fixtures of answer 16, three more deployments, `descent` rebuilt in
+  the script and the synthetic `timing`;
+- the schema copy, whose description names
+  `RedstoneInspector.jl/design/descriptor_design.md`, and the loader's
+  refusal of a deployment body without `schedule` (answer 2);
+- the timing tab in the notation, a deployment filling the tables in,
+  with its head list and the steps per frame (answers 3 and 9);
+- the pane's frames table (answer 10), with its check that at most one
+  link lies between a primitive and its nearest scope row;
+- the hyperperiod chart, a row per distinct `(D, Φ)`, whole or omitted,
+  with the frame tops over the joint period (answers 8 and 11);
+- the legend's short lines, the fit's room for the legend and the
+  palette's comment on the peach (answer 13);
+- the root-inputs tab's pinned mark and its pinning consumers (answer
+  14);
+- the link rule that reads a link's target (answer 15).
+
+The three event parameters and the `events` section are read and not
+shown. Visible: `library_deployment`'s chart of four rows on the timing
+tab. Draws on the record, and on `workspace.md` answers 4, 6 and 7,
+`visual_grammar.md` answer 6, `descriptor_design.md` answers 2, 9 and 10
+and `build_release.md` answer 7 as the record amends them.
+
+**Increment 10b: the events.** After a short design session of its own,
+and before the look pass (the record's answers 7 and 12, the user's
+ruling of 2026-11-20). The session decides how a state event is drawn, a
+mark on a block, rows in the pane, a legend line; where `firing_budget`,
+`localization_tol` and `localization_budget` show; and whether the
+drawing wants more from the format, the guard and handler locations
+among it, which is a free change until the release. Its look-and-adjust
+pass may open the look pass. Visible: `approach_deployment`'s `touchdown`
+on `gear`.
 
 **Increment 11: the release.** `scripts/release.jl`, the `release` job
 with the tag-absent rule, Pages, the `base` path, the version baked into

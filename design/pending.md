@@ -16,34 +16,32 @@ The bullets stand in working order, the first one next.
   (axes 1 and 2, §13.9, D-432),
   `visual_grammar.md` (axis 3), `prototypes/render_spike/report.md`
   (axis 4), `workspace.md` (axis 5), `live_session.md` (axis 6),
-  `failure_descriptor.md` (the failure bump, D-434) and `build_release.md`
-  (axis 7). `roadmap.md` stages the build in eleven increments and records
+  `failure_descriptor.md` (the failure bump, D-434), `build_release.md`
+  (axis 7) and `deployment_overlay.md` (increment 10's design).
+  `roadmap.md` stages the build in eleven increments and records
   each landed one with the facts the next briefs take. Increments 1 to 9
   and 8b have landed, as have the pin to the core's `6afd6fb` and the
   icons for its new components and the polish batch. Next, 10, the
-  deployment overlay on both tracks after its design session writes the
-  eighth record, `deployment_overlay.md`, with the writer's qualified
-  `@ref` links folded in, so a bare `@ref` to a name in a parent module
-  reaches its anchor (amending `descriptor_design.md` answer 10), and
-  with the schema's record path, the fit's room for the legend, the base
-  grid's peach and the question of a root input's seedability, which its
-  roadmap entry carries; then the look pass, the next bullet; then 11, the
+  deployment overlay, whose design session closed on 2026-11-20 with the
+  eighth record, `deployment_overlay.md`, answers 1 to 17. The core's
+  work comes first, the first bullet of `Redstone.jl/design/pending.md`
+  in four parts, and increment 10 starts at the pin bump once the core
+  has pushed its parts one to three. Then 10b, the events, after a short
+  design session of its own that also decides where the three event
+  parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  its design session opened on 2026-11-19 and is not closed.
-  `deployment_overlay.md` is a draft with thirteen answers and six open
-  questions, and the handover is
-  `increments/inspector_10_deployment_overlay/notes_inspector_10.md`. The
-  session widened the increment: the descriptor comes to parity with
-  `show`, the core's work comes first, in the first bullet of
-  `Redstone.jl/design/pending.md`, and the events get an increment 10b.
+  designed and not briefed, waiting on the core. The session's handover
+  is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is
   settled. The built-in Julia GUI is parked (D-310).
-- **The look pass before the release**, between increments 10 and 11, by
-  the user's ruling of 2026-11-17: the canvas's open look items, judged by
-  eye in one session after 10 has changed the legend and before 11
-  captures the README's images.
+- **The look pass before the release**, between increments 10b and 11,
+  by the user's rulings of 2026-11-17 and 2026-11-20: the canvas's open
+  look items, judged by eye in one session after 10 has changed the
+  legend and 10b has drawn the events, and before 11 captures the
+  README's images. The hyperperiod chart's threshold and pitch are
+  its too (`deployment_overlay.md` answer 11).
   - **The text levels' floors** (increment 6). A root whose fit falls
     below a floor loads without its names: `library` fits at about 0.36,
     at `segments`, and `large` below the first floor. At 0.52 the display
@@ -104,18 +102,21 @@ Items with no order among them: the format's open bumps, the records'
 open questions, and the open items the landed increments left, each with
 the increment it came from.
 
-- **Format bumps still open.** The per-component chain of `sample_times`
-  links that `descriptor_design.md` answer 9 left out, and the state
-  events, both outside increment 10's narrowed scope. A `string` kind when
+- **Format changes still open.** The per-component chain of `sample_times`
+  links that `descriptor_design.md` answer 9 left out, wanted only if the
+  check of `deployment_overlay.md` answer 10 fails at increment 10's
+  prototype. A `string` kind when
   a `String` port appears, and `min`/`max` on an integer marker if stage
   4's widgets want bounds. Locations beyond the declarations: the stage
   functions `y_state`, `y_direct`, `x_deriv`, `s_update` and the event
-  functions, none of them owed for a loop, whose row takes the structural
+  functions, the last weighed at 10b's design session, none of them owed
+  for a loop, whose row takes the structural
   reading the polish batch gives it. The call that builds an assembly: a
   core `Group`'s `types` row locates the core's own accessors, so the loop
   row links no hop a `Group` holds (`increments/20261117_polish/notes_polish.md`
-  ruling 3). Each is a
-  minor bump ruled in the core's spec and log first (D-433).
+  ruling 3). Each is ruled
+  in the core's spec and log first, a free change until the first release
+  and a minor bump after it (`deployment_overlay.md` answer 2).
 - **`frontend/MAP.md` past its size** (the polish batch). The map is about
   730 lines against `design/rules.md`'s "about 700", 714 before the batch.
   A trim outside any increment's text brings it back.
@@ -139,9 +140,9 @@ the increment it came from.
   which 20 frontend test files read. The core's `approach(solution)`
   replaces it, the piloted loop as the child `vehicle` with the gear and
   the stop request. The pin at `6afd6fb` still has `descent()`, so nothing
-  breaks until the next bump. That bump either builds the small model in
-  the script, the plant with a `GroundContact` and a `StopRequest`, or
-  moves the tests to a fixture of `approach`.
+  breaks until the next bump. That bump builds the small model in the
+  script, the plant with a `GroundContact` and a `StopRequest`, and the
+  tests stay (`deployment_overlay.md` answer 16).
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8).
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when

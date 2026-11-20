@@ -66,9 +66,10 @@ no entry here.
   carries: members, wires as terminal pairs, the classification, the dead
   hops and the tracing modes (`failure_descriptor.md` answer 2).
 - **Deployment descriptor.** The descriptor of a `Deployment`. Its body
-  embeds the build body it deploys and holds nothing else until the
-  deployment overlay's bump adds the schedule and grid facts
-  (`initial_design.md` answer 5, `descriptor_design.md` answer 13).
+  embeds the build body it deploys and holds the deployment's periods,
+  algorithm, step bounds and budgets, its `schedule` section and its own
+  warnings (`initial_design.md` answer 5, `descriptor_design.md` answer
+  13, `deployment_overlay.md` answers 4 and 5).
 - **Descriptor frame.** A text frame carrying the pretty-printed envelope
   as its own bytes, told from a control message by its `format_version`
   key (`live_session.md` answer 5).
@@ -111,11 +112,16 @@ no entry here.
   Redstone's: the envelope's `format_version`, a `{"major", "minor"}`
   object. A minor bump only adds fields, which a reader ignores when it
   does not know them; a major bump may break readers, and a reader refuses
-  a major it does not know (`initial_design.md` answer 7,
-  `descriptor_design.md` answer 1).
+  a major it does not know. The format stays at 1.0 and changes freely
+  until the first release (`initial_design.md` answer 7,
+  `descriptor_design.md` answer 1, `deployment_overlay.md` answer 2).
 - **Frame.** The grid of tree, canvas, detail pane and drawer with its
   splitters, replaced by stage 4's dock while the panes stay. Not the
   core's frame, one iteration of the loop (`workspace.md` answer 1).
+- **Frames table.** The detail pane's rendering of a discrete
+  primitive's timing: one row per frame, its rate scope, its anchor, the
+  base grid and seconds, each with a period and a phase
+  (`deployment_overlay.md` answer 10).
 - **Generator.** A program that writes code from a description, here the
   TypeScript declarations from the schema copy (`build_release.md`
   answer 4).
@@ -157,6 +163,10 @@ no entry here.
 - **Job, workflow.** GitHub Actions' units: a workflow is one file run on
   a trigger, a job one machine's sequence of steps inside it, and `needs`
   orders jobs (`build_release.md` answer 6).
+- **Joint period.** The shortest time after which both the schedule and
+  the frame tops repeat: the least common multiple of the hyperperiod and
+  `Δt_frame`, taken in time. It is the span of the chart's timeline when
+  the frame tops are drawn (`deployment_overlay.md` answer 11).
 - **`kind`.** Three senses in the format, told apart by where the field
   sits. The envelope's `kind` names its body: `build`, `deployment` or
   `failure`. A primitive face's `kind` holds its kind marker, whose own
@@ -170,9 +180,10 @@ no entry here.
   (`workspace.md` answer 10).
 - **Legend.** The canvas-corner list in rate mode: a line for the
   continuous color when anything continuous is visible, then every triple
-  visible on the open level's blocks and wires, each read out, the overlay
-  bump adding its concrete `Δt`. A click on a line focuses it
-  (`visual_grammar.md` answer 6).
+  visible on the open level's blocks and wires, each as its anchor, `m`,
+  `c` and `Δt`, which a deployment makes concrete on the `A₀` lines. A
+  click on a line focuses it (`visual_grammar.md` answer 6,
+  `deployment_overlay.md` answer 13).
 - **Level.** What the canvas draws at a time: an assembly's children as
   blocks, its own faces as pins, its wires (`visual_grammar.md` answer 3).
 - **Live inspector.** Stage 3: the page connected to the bridge, showing
@@ -216,6 +227,9 @@ no entry here.
 - **Parent rule.** The client's rule for a node's parent: the longest node
   path that is a proper prefix of its path, which skips a container's
   non-node path (`descriptor_design.md` answer 4).
+- **Parity rule.** The descriptor carries every fact `show` prints of a
+  `Build` or a `Deployment`, or the facts from which a client derives it
+  exactly, and no internals (`deployment_overlay.md` answer 1).
 - **Pending map.** The client's one record of what it has staged and not
   yet seen applied, keyed by root-input face, the mirror of the staging
   cell (`initial_design.md` stage 2, Settled).
@@ -303,3 +317,7 @@ no entry here.
 - **Types table.** `structure.types`, one row per qualified base name with
   the docstring and the locations, so a repeated type is described once
   (`descriptor_design.md` answers 3 and 10).
+- **`τ`, a component's.** A discrete component's phase in seconds,
+  `Φ·Δt_base`, the time of its first tick after `t₀`; equal to
+  `τₖ + c·Δtₖ`, so a build knows it for a component on an anchor other
+  than `A₀`. The anchor's own is `τₖ` (`deployment_overlay.md` answer 3).

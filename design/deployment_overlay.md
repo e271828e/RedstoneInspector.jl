@@ -1,9 +1,7 @@
 # The deployment overlay: the eighth record of the inspector's stage 1
 
-**Draft. The session of 2026-11-19 is still open, and the questions under
-"Pending questions" are not ruled.**
-
-The record of the design session that fixed increment 10: what a
+The record of the design session of 2026-11-19 and 2026-11-20 that fixed
+increment 10: what a
 descriptor carries beyond version one's build, the notation the page uses
 for a discrete component's timing, the timing tab, the detail pane's
 timing, the hyperperiod chart, and the core work that comes first. It
@@ -19,33 +17,14 @@ The session widened the increment twice. The roadmap asked for a
 existed (D-443). The session replaced that scope with a rule, answer 1,
 and the rule brought in the deployment's parameters, the events and the
 grid report. The user's wish for one notation, answer 3, then reached the
-core's spec, its `show` and three of its fields.
+core's spec, its `show` and three of its fields. The second day added
+the root input's pin to `show(::Structure)` and to the format, answer 14.
 
 ## Pending questions
 
-Each with the recommendation made in the session where one was made.
-
-- **A root input's seedability.** Whether the root-inputs tab shows it,
-  and whether the client derives it or the format carries it. The core
-  decides it at a `Dual` activation by asking each consumer's entry
-  (`Redstone.jl/src/linearize.jl`, `_seeded_tap`), a discrete consumer
-  pins by tier, and only a `Float64` leaf is seedable at all.
-- **The `@ref` rule's edges.** What the writer does with a name the
-  type's module imports from outside `Redstone`, and what the page links.
-  At the core's tip every bare `@ref` in the 42 component docstrings
-  resolves, 112 into the type's own module and 9 from `Library` into
-  `Redstone`.
-- **The fixtures.** Which deployments are committed, since
-  `closed_loop_deployment` has ten rows on one `(D, Φ)`, and what the pin
-  bump does about `descent()`, which left the core's examples.
-- **The events section's shape.** Answer 7 gives the proposed one.
-- **When 10b runs**: before the look pass, as recommended, or after the
-  release.
-- **The spec and log homes, and the order of the commits.**
-
-Two questions the session raised belong to the core and stand in its
-`pending.md`: whether `Period` and `Hz` retire, and whether the build
-refuses a pool that admits no deployment.
+Open items live in `pending.md`. Two questions the session raised belong
+to the core and stand in its `pending.md`: whether `Period` and `Hz`
+retire, and whether the build refuses a pool that admits no deployment.
 
 ## Answered questions
 
@@ -240,26 +219,45 @@ refuses a pool that admits no deployment.
 
 7. **The events: carried now, drawn in 10b.** The build body gains an
    `events` section that mirrors the `Events` artifact, and `state_events`
-   joins the declarations a `types` row locates. The proposed shape, one
-   row per component that declares an event, as `show` prints, here the
-   core's `approach` example:
+   joins the declarations a `types` row locates. The section holds the
+   artifact's one field, `components`, one row per primitive in walk
+   order, so one index addresses it and `outputs.components` alike. Here
+   the one declaring row among the 19 of the core's `approach` example:
 
    ```json
-   "events": [{"path": "gear",
-               "events": [{"name": "touchdown", "policy": "localized"}],
-               "bundle": ["m", "u", "y", "t"]}]
+   "events": {"components": [
+     …,
+     {"path": "gear",
+      "events": [{"name": "touchdown", "policy": "localized"}],
+      "bundle": ["m", "u", "y", "t"]}]}
    ```
 
-   Increment 10 draws none of it. Increment 10b draws the events after a
-   short design session of its own, and decides there where
-   `firing_budget`, `localization_tol` and `localization_budget` show.
+   A primitive that declares no event has `"events": []` and `"bundle":
+   []`. A row's events stand in declaration order, which is their priority
+   order. A policy is `localized` or `non_localized`, the artifact's
+   symbols as `show` prints them. Increment 10 draws none of it. Increment
+   10b draws the events after a short design session of its own, and
+   decides there where `firing_budget`, `localization_tol` and
+   `localization_budget` show.
    *Why:* one change to the format, one spec edit, one log entry and one
    pin bump serve what answer 1 treats as one gap, and a reader ignores
    fields it does not use. How an event is drawn is a question of the
    visual grammar, a mark on a block, rows in the pane, a legend line,
-   and wants its own look. *Rejected:* the events in a later change to
-   the format with their own increment, tidier per increment and twice
-   the pin moves and fixture rounds. *Cost accepted:* the section is
+   and wants its own look. The rows are the artifact's rows, as in every
+   other section: `structure.anchors`, `outputs.components` and
+   `schedule.rows` each hold what their artifact holds. A missing row is
+   then an error a reader can detect, and the empty rows cost about 9 kB
+   of `large`'s 368. The section is not a field on the node because a
+   policy comes from the nominal probe, which a failure descriptor never
+   has, `descriptor_design.md` answer 8's reason for the output stages.
+   *Rejected:* the events in a later change to the format with their own
+   increment, tidier per increment and twice the pin moves and fixture
+   rounds; one row per declaring component, as `show` prints and as the
+   session first proposed, the one section whose rows would follow
+   `show`'s selection and not the artifact's; the `Events` type itself
+   retired for a bare vector, which the session weighed and the user
+   declined, the type giving `build.events` its table and its documented
+   name. *Cost accepted:* the section is
    designed before its drawing, bounded by mirroring the artifact; what
    the drawing later wants, the guard and handler locations among it, is
    a further change.
@@ -394,10 +392,20 @@ refuses a pool that admits no deployment.
     and the schema's record path; and `show(::Deployment)` in the
     notation, which the inspector does not wait on. Increment 10 then
     moves the pin and draws the timing tab, the pane's frames table, the
-    chart and the legend. Increment 10b draws the events.
+    chart and the legend. Increment 10b draws the events, and runs before
+    the look pass and the release: 10, 10b, the look pass, 11.
     *Why:* the timing tab is rebuilt in this increment and the format is
     free until the release, so the page is built once against the final
-    shape.
+    shape. 10b comes before the release because its design session may
+    still change the format, which is free only until then (answer 2).
+    It comes before the look pass because an event mark changes the
+    canvas the pass judges. The release then ships at the parity of
+    answer 1, and the README's images show the events. *Rejected:* 10b
+    after the release, the soonest release, with a page that omits
+    printed facts, a format frozen before its drawing is designed, and a
+    second capture and release; 10b between the look pass and the
+    release, the same delay with the marks judged twice. *Cost accepted:*
+    the release waits for 10b.
 
 13. **The legend: a short line, room in the fit, the peach as step 0.**
     A line keeps what a color needs, which clock it is and how fast it
@@ -432,36 +440,164 @@ refuses a pool that admits no deployment.
     frame; the peach reserved for `A₀ · m 1 · c 0`, which costs
     `closed_loop` a color it is already short of.
 
+14. **A root input's `pinned`: the meet's.** The writer computes D-168's
+    meet for each root input and writes it in the row's existing `pinned`
+    field. It is true when some consumer's entry refuses the root
+    input's type walked to a `Dual`: a continuous consumer by its
+    `Pinned` marker or by an abstract entry that admits no `Dual`, a
+    discrete one by tier. The meet needs no `Dual` activation, since a
+    consumer's entry at a scalar is a function of its declaration, its
+    tier and the scalar (`Redstone.jl/src/declare.jl`, `contract_at`).
+    The row also gains `pinned_by`, the consumers whose entries refuse,
+    each an endpoint, an empty array when none:
+
+    ```json
+    {"name": "h_ref", "type": "Float64", "kind": {"kind": "float"}, "pinned": true,
+     "pinned_by": [{"path": "autopilot/alt_hold", "port": "h_ref"}]}
+    ```
+
+    The cause has no key: a consumer on the discrete tier pins by tier,
+    one on the continuous tier by declaration. In the core,
+    `show(::Structure)` marks each input route that ends at a pinning
+    consumer, "pinned by tier" or "pinned by declaration", from the list
+    `linearize`'s refusal already builds. The root-inputs tab shows the
+    pinned mark again and marks those consumers among a root input's
+    terminal consumers, with the cause. The page states no verdict on
+    seedability. §14.10's type rule,
+    a `Float64` leaf reached by at most one index step, shows in the
+    type and kind columns, and the help page states it once. This amends
+    `workspace.md` answer 6, whose note of 2026-11-11 dropped the mark.
+    *Why:* the field was `false` in every file, the writer reading the
+    type the wire pass had stripped of its marker, so the ruling corrects
+    a field. §8.2 gives the word: "the root input pins at every
+    activation if any consumer's entry pins". The input routes list each
+    terminal consumer of each root input, the set the meet runs over, so
+    a mark there names the consumer and the cause where the user already
+    reads. The cause decides the remedy (§14.10): a declared pin can be
+    promoted, a pin by tier cannot. With the mark in `show`, the parity
+    rule brings the consumers into the format, and the page's marks are
+    exact. The build refuses a marker below the top of an entry (D-265),
+    so a face's flag covers every declared pin, and the one pin a client
+    could not see for itself is the abstract entry's, which subtyping
+    decides. *Rejected:* the tab silent, the user learning at
+    `linearize`'s refusal; the client deriving the pin from the
+    consumers' flags and tiers, a second implementation of the meet that
+    misses the abstract entry; a `seedable` verdict in the format, which
+    would be per tap, a vector input having one per component; `show`
+    unchanged, the page alone carrying the fact; the word "pinned" beside
+    the name on `show`'s heading, which says the input is frozen and not
+    by whom or why; a root-inputs table in `show` with the types, which
+    the user wrote. *To check when the core's part is built:* that an `AbstractFloat` entry pins, which
+    was read off `_accepts_wire` and not run.
+
+15. **The `@ref` links: the writer adds the target, the page reads it.**
+    The writer rewrites each bare link whose name resolves from the
+    type's module to a binding its owner exports. It adds the owner as
+    the target and keeps the text, so `` [`Pinned`](@ref) `` in a
+    `Library` docstring becomes `` [`Pinned`](@ref Redstone.Pinned) ``.
+    Any other link stays as written. The page links a target under
+    `Redstone.` to the core's API page, whatever the type's module, and
+    shows every other link as its text, a bare one included. A glossary
+    id links only in the docstring of a type under `Redstone.`. This
+    amends `descriptor_design.md` answer 10 and the roadmap's ruling
+    that the page keeps its module-joining as a fallback.
+    *Why:* the page joined a bare name to the type's module, so the 9
+    bare links from `Library` into `Redstone` were dead, `Pinned` and
+    `Group`'s `local_wires` among them. At the core's tip the 42
+    component docstrings hold 277 glossary links, 112 bare links into
+    the type's own module, those 9 and 2 links qualified as written, and
+    every bare one is a plain identifier that resolves. The core's docs
+    build checks that every exported name with a docstring stands on the
+    API page (`checkdocs = :exports`), so a link to an exported name has
+    its anchor by construction. After the writer's pass a bare link is
+    one that did not resolve, and joining it to a module makes a dead
+    link. A rule on the target lets a user's docstring reach the core's
+    API page. *Rejected:* the module-joining kept as a fallback;
+    `which(mod, name)` alone, which also qualifies an internal name with
+    no anchor; the text qualified with the target, which changes what the
+    author wrote; a glossary id linked from a user's docstring, a user's
+    `g-…` id not being the core's. *To check when the core's part is
+    built:* that the 121 bare links all name exported bindings, and that
+    the docs build's check covers `Redstone.Library`.
+
+16. **The fixtures: three more deployments, `descent` rebuilt, and one
+    model for the cases that need the writer.** At the pin bump the
+    script builds `descent` itself, the plant with a `GroundContact` and
+    a `StopRequest`, the core's examples having dropped it, and the tests
+    that read `descent.json` stay as they are. Three deployments join
+    `closed_loop_deployment`:
+
+    | fixture | what it shows |
+    |---|---|
+    | `closed_loop_deployment`, kept | ten rows on one `(D, Φ)`: one chart row with ten swatches |
+    | `library_deployment`, `Δt_frame = 1//100` | 13 rows on 4 distinct `(D, Φ)`, `(2, 1)` among them and `(2, 0)` from two triples; a grid report with two pool entries; a base tick finer than the coarsest admissible `1//50`; events |
+    | `rates_deployment`, `Δt_frame = 1//100`, `Δt_base = 1//200` | the one model with rate scopes, 3 rows and a hyperperiod of 40; a frame of two base ticks, so the frame tops are drawn |
+    | `approach_deployment` | the tutorial's model on two clocks, 11 rows, and the examples' one event, `gear`'s `touchdown`, which 10b draws |
+
+    A case no model shows is served in one of two ways. An inline copy,
+    a committed deployment with one field edited in the test, serves
+    where one independent field decides the case: a frame that is not a
+    whole number of base ticks, and a proposing algorithm with `h_min`.
+    The writer's output serves where sections must agree: an anchor with
+    a nonzero `τₖ`, a pool entry with alternatives, and a root input
+    pinned by declaration. A new synthetic model, `timing`, holds those
+    three, in the pattern of `kinds` and `library`. The timeline past
+    the threshold needs no file: a unit test passes a small threshold.
+    *Why:* `descent` has three primitives and about twenty test files
+    read it, where `approach` has 19 under a child `vehicle`, so the move
+    would rewrite every assertion on a path or a count for nothing. Each
+    deployment shows what no other does. A hand edit that must keep two
+    sections in agreement tests the test's arithmetic and not the
+    writer's, and a hand edit of one independent field cannot make a file
+    disagree with itself. *Rejected:* the tests moved to a fixture of
+    `approach`; `autopilot` committed, 8 rows on the two clocks
+    `approach` already has; an inline copy for a nonzero `τₖ`, which
+    moves every row beneath the anchor. *Cost accepted:* about 300 kB of
+    new fixtures beside 870. *To check at the pin bump:* that
+    `closed_loop`'s `h_ref` is pinned by tier, which gives the tab its
+    first pinned root input; and what makes a pool entry carry
+    alternatives, the case leaving `timing` for `pending.md` if it is
+    costly to provoke.
+
+17. **The core's homes and the order of the work.** Five log entries
+    carry the session's rulings on the framework and the format, each
+    with its spec edit, the next five numbers of the core's log:
+
+    | entry | position | annotates | spec |
+    |---|---|---|---|
+    | the notation | an anchor's period is `Δtₖ`; `Anchor.T` and `Absolute.T` become `Δt`; `Absolute(Δt, τ)`; a component's phase in seconds is `τ` | D-261's `(T, τ)` | §9.2, §10.5, the glossary's anchor and phase entries |
+    | the grid report's placement | the report is derived from the anchors; `show(::Structure)` prints it; `Deployment` drops `grid` | D-254, under D-261 | §9.2 |
+    | the descriptor's content | the parity rule; the format at 1.0 and free until the release; the flat deployment body; `schedule` with the anchors' rows; `events`; `grid` in `structure`; the key `dt`; the `@ref` targets | D-432's third bullet, D-433's docstring bullet | §13.9 |
+    | a root input's pin, shown and carried | `show(::Structure)` marks each input route that ends at a pinning consumer; the descriptor's `pinned` is the meet's and `pinned_by` lists the consumers | D-433's bullet on a root input's `pinned`, D-257 | §9.2, §13.9, with a pointer from §14.10 |
+    | `show(::Deployment)` in the notation | one row per component with `m`, `c`, `D`, `Φ`, `Δt` and `τ`; the anchors' `Dₖ` and `Φₖ`; the chart with the frame tops | D-257's chart | §9.2 |
+
+    When 10b runs and which fixtures are committed earn no entry. The
+    work runs in this order: this record's close, with its parents'
+    notes, the roadmap and `pending.md`; the core's `pending.md`; the
+    core's parts one to three, each as a spec and log commit followed by
+    its code, the descriptor's part landing two entries; the push, on the
+    user's word and no earlier than part three; increment 10, from the
+    pin bump. Part four and the tutorial's loose change come before the
+    push or run beside increment 10. The user expects to run both first,
+    and increment 10 then beside the tutorial's next increments.
+    *Why:* the core's `design/rules/log_rules.md` gives an entry to a
+    design ruling with rejected alternatives and, by D-314 and D-448, to
+    a rename, and none to the order of work. The root input's pin stands
+    apart from the descriptor's content because it changes `show` and
+    rests on §8.2's meet. The record lands before the spec because it is
+    the session's minutes and not normative; `AGENTS.md`'s "lands there
+    first" binds the page's code, which waits for the pin. The inspector
+    reads the descriptor and never `show`'s text, so it needs parts one
+    to three alone. *Rejected:* one entry for the descriptor with the
+    root input's pin inside it; the record kept a draft until the spec
+    lands.
+
 ## Design axes
 
-What this record hands on.
-
-- **The core's four parts**, in `Redstone.jl/design/pending.md`'s first
-  bullet, each with its spec edit and, where an alternative lost, its log
-  entry.
-- **Increment 10**, the inspector's half, briefed against the core's
-  landed tree.
-- **Increment 10b**, the events, after its own design session.
-- **The amendments this record owes its parents** when it lands, each a
-  dated note: `workspace.md` answers 4, 6 and 7, `visual_grammar.md`
-  answer 6, `descriptor_design.md` answers 2 and 9, and the roadmap's
-  entry for increment 10 with a new one for 10b.
+What this record hands on stands in `roadmap.md`'s staging, increments
+10 and 10b, and in the first bullet of `Redstone.jl/design/pending.md`,
+the core's four parts.
 
 ## Glossary
 
-Draft entries, to move to `glossary.md` when the record lands.
-
-- **Frames table.** The detail pane's rendering of a discrete
-  primitive's timing: one row per frame, its rate scope, its anchor, the
-  base grid and seconds, each with a period and a phase (answer 10).
-- **Joint period.** The shortest time after which both the schedule and
-  the frame tops repeat: the least common multiple of the hyperperiod and
-  `Δt_frame`, taken in time. It is the span of the chart's timeline when
-  the frame tops are drawn (answer 11).
-- **Parity rule.** The descriptor carries every fact `show` prints of a
-  `Build` or a `Deployment`, or the facts from which a client derives it
-  exactly, and no internals (answer 1).
-- **`τ`, a component's.** A discrete component's phase in seconds,
-  `Φ·Δt_base`, the time of its first tick after `t₀`; equal to
-  `τₖ + c·Δtₖ`, so a build knows it for a component on an anchor other
-  than `A₀`. The anchor's own is `τₖ` (answer 3).
+Terms are defined in `glossary.md`.

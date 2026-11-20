@@ -24,7 +24,7 @@ the work, `src/` and `test/` the package, `frontend/` the page,
 
 | What | Where |
 |---|---|
-| the design records of stage 1, one per axis, none normative | `design/initial_design.md`, `descriptor_design.md`, `visual_grammar.md`, `workspace.md`, `live_session.md`, `failure_descriptor.md`, `build_release.md`; a ruling is cited as "`workspace.md` answer 9" |
+| the design records of stage 1, one per axis and one for increment 10, none normative | `design/initial_design.md`, `descriptor_design.md`, `visual_grammar.md`, `workspace.md`, `live_session.md`, `failure_descriptor.md`, `build_release.md`, `deployment_overlay.md`; a ruling is cited as "`workspace.md` answer 9" |
 | the terms the records coin, one entry each with the answer that rules it | `design/glossary.md`; the core's terms are in `Redstone.jl/design/spec.md`'s Appendix D |
 | the staging of stage 1 and each landed increment's facts | `design/roadmap.md` |
 | the work order, the open items, what waits on the core | `design/pending.md`, first bullet next; the state of an open task lives on its bullet, nowhere else |

@@ -168,13 +168,15 @@ Open items live in `pending.md`.
    toggle, keys a discrete primitive's color on its full timing triple, the
    compiled clock against the nearest anchor: same triple, same tick
    instants under every deployment; the authored chain of `Relative` entries
-   is not shown, and where an anchored clock lands on the base grid is the
+   colors nothing, the detail pane's frames table showing the pair the
+   author wrote, and where an anchored clock lands on the base grid is the
    deployment overlay's fact, not the build's. Continuous primitives keep
    the continuous color. The palette is categorical, at most eight steps,
    constructed rather than searched: eight hues evenly spread round the
    OKLCh hue circle at one chroma, the fills alternating two lightness bands
    by step and light enough for the text at AA contrast, each stroke its
-   fill's hue darkened, step 0 a warm peach opposite the continuous blue.
+   fill's hue darkened, step 0 a warm peach opposite the continuous blue,
+   a place in the palette and no clock's own color.
    The steps are distinct under normal vision and never identical under
    simulated weak color vision, the legend focus telling any two apart.
    The fills, which also color the wires, keep their distance from the
@@ -199,9 +201,11 @@ Open items live in `pending.md`.
    legend in a canvas corner lists first a line for the continuous color
    when a continuous primitive, an assembly with no discrete primitive or a
    continuous producer's wire is visible, then every triple visible on the
-   open level, on a block or a wire, each read out, "anchor 1 (1/10 s) ×
-   2, phase 1"; the overlay bump adds the concrete `Δt` and `(D, Φ)` per
-   line. A click on a legend line focuses its triple, the continuous line
+   open level, on a block or a wire, each a short line, `A₁ (noise) · m 2
+   · c 1` and its `Δt`, symbolic on `A₀` for a build and concrete for a
+   deployment, with `D`, `Φ` and `τ` in the line's tooltip; the fit leaves
+   the legend's box free (`deployment_overlay.md` answers 3 and 13). A
+   click on a legend line focuses its triple, the continuous line
    its color: the blocks on it, the closed assemblies with a primitive of it
    beneath and the wires it tints are lit, the rest dimmed as for a
    search, and the tree marks its rows with counts up collapsed ones. A
@@ -221,7 +225,11 @@ Open items live in `pending.md`.
    and the strokes, not the fills, kept off the reserved hues. Amended
    2026-11-12 (increment 8's second look, 2.3): the badge's place was "one
    corner", built at the top edge's right and moved to the bottom edge's
-   left by the first look.*
+   left by the first look. Amended 2026-11-20 (`deployment_overlay.md`
+   answers 3, 10 and 13): the authored chain was shown nowhere; a legend
+   line read "anchor 1 (1/10 s) × 2, phase 1" and was to gain the concrete
+   `Δt` and `(D, Φ)`; the legend could sit over the drawing; and the peach
+   was taken for the base grid's color.*
    *Why:* two blocks under different anchors are two clocks by design, and
    a color keyed on the deployment's `(D, Φ)` would merge or split them per
    deployment. An assembly ticks on nothing, so its scope row is a frame,
