@@ -191,13 +191,15 @@ retire, and whether the build refuses a pool that admits no deployment.
      "admissible": {"num": 1, "den": 50},
      "pool":   [{"anchor": 1, "kind": "period", "factor": 5},
                 {"anchor": 2, "kind": "period", "factor": 1}],
-     "primes": [{"prime": 2, "power": 1, "suppliers": [0, 1]},
-                {"prime": 5, "power": 2, "suppliers": [0]}]
+     "primes": [{"prime": 2, "power": 1, "suppliers": [1, 2]},
+                {"prime": 5, "power": 2, "suppliers": [1]}]
    }
    ```
 
    A pool entry names its anchor by index and says whether it is the
    period or the offset. Its value, scope and key are that anchor's row.
+   A prime's suppliers name pool entries by position, counted from 1 as
+   every stored position in the file is.
    `alternatives` appears on an entry that has some. A model with no
    anchors has an empty pool and no `admissible`. In the core,
    `show(::Structure)` derives the report and prints it under the anchor
@@ -206,6 +208,8 @@ retire, and whether the build refuses a pool that admits no deployment.
    keep the report in their payloads. So a build's page shows the report,
    a failure past the structure step shows it, and a deployment adds one
    comparison, its `Δt_base` against the coarsest admissible one.
+   *Amended 2026-11-21 (the core's D-467, commit 1537538): the example
+   counted the suppliers from 0.*
    *Why:* the report is a pure function of the anchors, and it answers
    which base ticks a model admits, which a user wants before choosing
    one. With the anchor index the page puts each factor beside the value
@@ -491,16 +495,27 @@ retire, and whether the build refuses a pool that admits no deployment.
     was read off `_accepts_wire` and not run.
 
 15. **The `@ref` links: the writer adds the target, the page reads it.**
-    The writer rewrites each bare link whose name resolves from the
-    type's module to a binding its owner exports. It adds the owner as
-    the target and keeps the text, so `` [`Pinned`](@ref) `` in a
-    `Library` docstring becomes `` [`Pinned`](@ref Redstone.Pinned) ``.
-    Any other link stays as written. The page links a target under
+    The writer rewrites each bare link whose name, an identifier or a
+    dotted path of identifiers, resolves from the type's module to a
+    binding its owner exports. It adds the owner as the target and keeps
+    the text, so `` [`Pinned`](@ref) `` in a `Library` docstring becomes
+    `` [`Pinned`](@ref Redstone.Pinned) ``. A name that resolves to a
+    module takes the module as its target. Any other link stays as
+    written, a macro's or an operator's among them. The page links a target under
     `Redstone.` to the core's API page, whatever the type's module, and
     shows every other link as its text, a bare one included. A glossary
     id links only in the docstring of a type under `Redstone.`. This
     amends `descriptor_design.md` answer 10 and the roadmap's ruling
     that the page keeps its module-joining as a fallback.
+    *Amended 2026-11-21 (the core's D-467, commits 81d6b76 and fb4c3dc):
+    the rule named neither the form of a name nor a module's target, and
+    a module's own name took the target `MyPkg.MyPkg`. The core's run
+    counted 124 bare links in 45 component docstrings, where the session
+    counted 121 in 42 below. The checks below came back as follows. No
+    bare link names an exported binding, since the core exports nothing
+    until its export audit (D-226), so the pass rewrites none of them.
+    The docs build's check lists `Redstone` alone (`docs/make.jl`,
+    `modules = [Redstone]`) and leaves `Redstone.Library` outside it.*
     *Why:* the page joined a bare name to the type's module, so the 9
     bare links from `Library` into `Redstone` were dead, `Pinned` and
     `Group`'s `local_wires` among them. At the core's tip the 42
