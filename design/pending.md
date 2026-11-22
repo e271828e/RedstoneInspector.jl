@@ -151,6 +151,17 @@ the increment it came from.
   still has both names, so nothing breaks until a bump passes that
   commit. That bump rewrites the eight calls and drops the two imports.
   The values are the same, so no fixture changes.
+- **`Group` moved to the core** (the core's D-472, landed at `336a79e` on
+  2026-11-21). Its name is `Redstone.Group`, no longer
+  `Redstone.Library.Group`. `test/runtests.jl` and `scripts/synthetic.jl`
+  import it from the library. Four frontend tests spell the old name:
+  `detail.test.ts`, `diagnostics.test.ts`, `docstring.test.ts` and the
+  e2e `detail.spec.ts`. Twelve fixtures carry it in their `type` and
+  `signature` fields. The pin at `6afd6fb` still has the old name, so
+  nothing breaks until a bump passes that commit. That bump moves the two
+  imports to `Redstone`, regenerates the fixtures and rewrites the four
+  tests. `isCoreType` takes any name under `Redstone.`, so no code
+  changes.
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8).
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when
