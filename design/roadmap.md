@@ -481,13 +481,13 @@ design session of 2026-11-19 and 2026-11-20 that wrote the eighth record,
 `design/deployment_overlay.md` (added 2026-11-04, the user's ruling after
 increment 8's reading 1; rewritten 2026-11-20 to the record's scope, which
 replaced a `schedule` section "and nothing else" and a bump of the format
-with the parity rule and the format at 1.0). The core half comes first and
-is the first bullet of `Redstone.jl/design/pending.md`, in four parts: the
-notation, the grid report derived from the structure, the descriptor at
-parity with `show`, and `show(::Deployment)` in the notation, which the
-inspector does not wait on (the record's answers 1 to 8, 12, 14, 15 and
-17). The inspector half starts at the pin bump, once the core has pushed
-its parts one to three:
+with the parity rule and the format at 1.0). The core half came first, in
+four parts: the notation, the grid report derived from the structure, the
+descriptor at parity with `show`, and `show(::Deployment)` in the notation,
+which the inspector did not wait on (the record's answers 1 to 8, 12, 14,
+15 and 17). All four are landed and pushed, as the core's D-464, D-466,
+D-467, D-468 and D-471, and the core's `pending.md` has retired their
+bullet. The inspector half starts at the pin bump:
 
 - the fixtures of answer 16, three more deployments, `descent` rebuilt in
   the script and the synthetic `timing`;

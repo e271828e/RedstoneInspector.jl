@@ -10,7 +10,8 @@ builds on `descriptor_design.md`'s answers 2 and 9, on
 and says where it amends them. Like its parents it is not normative. Its
 rulings on the format and the framework land in the core's spec and log
 first, and the core's `Redstone.jl/design/pending.md` orders that work in
-its first bullet.
+its first bullet. *Amended 2026-11-22: that work is landed and pushed, and
+the core has retired the bullet. Answer 17 names the entries.*
 
 The session widened the increment twice. The roadmap asked for a
 `schedule` section "and nothing else", written before the frame period
@@ -606,12 +607,20 @@ retire, and whether the build refuses a pool that admits no deployment.
     to three alone. *Rejected:* one entry for the descriptor with the
     root input's pin inside it; the record kept a draft until the spec
     lands.
+    *Amended 2026-11-22: the five entries are the core's D-464, D-466,
+    D-467, D-468 and D-471, in the table's order. They are not the next
+    five numbers, since D-465, D-469 and D-470 landed among them: the
+    build's refusal of a structure no deployment binds, the retirement
+    of `Period` and `Hz`, and the refusal of a `localization_tol` that is
+    not finite. All four parts are landed and pushed, and the core's
+    `pending.md` has retired their bullet.*
 
 ## Design axes
 
 What this record hands on stands in `roadmap.md`'s staging, increments
 10 and 10b, and in the first bullet of `Redstone.jl/design/pending.md`,
-the core's four parts.
+the core's four parts. *Amended 2026-11-22: the four parts are landed and
+pushed, and that bullet is retired.*
 
 ## Glossary
 

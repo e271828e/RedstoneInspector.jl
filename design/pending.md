@@ -24,13 +24,14 @@ The bullets stand in working order, the first one next.
   icons for its new components and the polish batch. Next, 10, the
   deployment overlay, whose design session closed on 2026-11-20 with the
   eighth record, `deployment_overlay.md`, answers 1 to 17. The core's
-  work comes first, the first bullet of `Redstone.jl/design/pending.md`
-  in four parts, and increment 10 starts at the pin bump once the core
-  has pushed its parts one to three. Then 10b, the events, after a short
+  work came first, in four parts, and is landed and pushed (the core's
+  D-464, D-466, D-467, D-468 and D-471), so increment 10 starts at the
+  pin bump. Then 10b, the events, after a short
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  designed and not briefed, waiting on the core. The session's handover
+  designed and not briefed, with the core's work pushed and the pin bump
+  next. The session's handover
   is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
