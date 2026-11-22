@@ -25,8 +25,36 @@ The bullets stand in working order, the first one next.
   deployment overlay, whose design session closed on 2026-11-20 with the
   eighth record, `deployment_overlay.md`, answers 1 to 17. The core's
   work came first, in four parts, and is landed and pushed (the core's
-  D-464, D-466, D-467, D-468 and D-471), so increment 10 starts at the
-  pin bump. Then 10b, the events, after a short
+  D-464, D-466, D-467, D-468 and D-471). Increment 10 runs in three
+  steps, in this order, by the user's ruling of 2026-11-22:
+  - **The pin bump**, a commit of its own ahead of the increment. It
+    moves the pin from `6afd6fb` to a core commit whose CI is green, and
+    makes every change the implemented parts need: the three bullets
+    below on `descent()`, on `Period` and `Hz` and on `Group`, and the
+    regenerated fixtures. It stops where every existing feature works on
+    the new fixtures and nothing new is drawn. The core's descriptor
+    changed shape with D-467, so the bump may need items the roadmap
+    lists under increment 10, such as the schema copy and the loader's
+    reading of the deployment body. It takes those it needs and no more.
+    It answers the two checks that `deployment_overlay.md` answer 16
+    leaves for the pin bump, and it closes with a look at the existing
+    tabs on the new fixtures.
+  - **The record at the new pin**, a commit that brings
+    `deployment_overlay.md` up to date before the increment is briefed.
+    The record closed on 2026-11-20 and was amended on 2026-11-21 for
+    D-467. It is read against the core's §13.9 as pinned, against the
+    regenerated fixtures, and against what the core landed since: D-469,
+    D-471 and the commits after it on the schedule rows' order and on
+    what a descriptor client derives (`7388e28`, `121da1a`), and D-477's
+    new diagnostic kind. One open item of the core's `pending.md`
+    touches it, a schedule row's `Δt` that is not the float nearest its
+    exact period. The roadmap's list for increment 10 loses what the
+    bump took. A finding that the core must change moves the pin again,
+    before the launch and not during the increment.
+  - **The implementation**, briefed and launched from the amended
+    record.
+
+  Then 10b, the events, after a short
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
