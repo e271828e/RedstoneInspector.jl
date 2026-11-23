@@ -96,6 +96,17 @@ Each was the user's to make by the rules and was delegated.
 10. **The fixes of the cold review are the owner's to land**, as one
     commit, with the reviewer checking the delta. *Rejected:* a
     separate fixer, for findings of this size.
+11. **A deployment's own `warnings` are not read by the bump.** The
+    review found that the diagnostics tab lists the build's warnings
+    and drops the deployment's, which the format now carries. No
+    committed fixture has one, the old core wrote none, and the record
+    gives them no place on the page, so reading them is new behavior
+    and goes to the second step. *Rejected:* the one reader line now,
+    with an inline copy to test it.
+12. **`pending.md` takes the review's open items on the second step's
+    bullet**, and the key `dt` on the bullet about a rational part past
+    `2^53`. The other bullets stay as they are, the second step
+    reading them against the pin.
 
 ## The shape built
 
@@ -230,8 +241,14 @@ For the second step, which reads the record against them.
 - **Two failure messages changed.** `failure_cycle`'s and
   `failure_nested`'s `AlgebraicCycle` messages take the core's new
   wording (its `a6b5da5`).
-- **One parameter value changed**: the closure `f` of `closed_loop`'s
+- **One closure's name changed**: the `f` of `closed_loop`'s
   `lqr_controller/engaged` prints as `#28`, where it printed as `#17`.
+  The name also stands in three signatures of each of `closed_loop`
+  and its deployment, the root's, `lqr_controller`'s and `engaged`'s.
+- **A deployment's own warnings** stand under `deployment.warnings`,
+  empty in `closed_loop_deployment`. `Δt_base = :derive` over anchors
+  at 1/10 and 1/15 writes a `GridUtilization` there, by the reviewer's
+  probe.
 
 ## The look
 
@@ -265,10 +282,14 @@ color modes outside the pane and the cycle message. The tree, the
 status bar, the legend, the root-inputs tab and the execution-order tab
 are the same text on every fixture, and so is the timing tab but for
 the sentence. `containers`, `primitive`, `warning` and
-`failure_structure` are the same in every file. The 105 screenshots of
-the browser checks agree.
+`failure_structure` are the same in every file. Of the 105 screenshots
+of the browser checks 80 differ, in the same ways and by a tree chevron
+caught mid-turn in a shot taken right after a click.
 
-The captures do not open a docstring. `Group`'s is rewritten in the
+The captures do not open a docstring or a signature, show no child
+level in rate colors, run no search and use Chromium alone. The unit
+tests and the browser checks cover the readers behind each. `Group`'s
+docstring is rewritten in the
 core, and its five bare links now join to `Redstone`, the module that
 owns the five names. Nothing new is drawn: the
 root-inputs tab shows no pinned mark and the timing tab no schedule.
@@ -278,7 +299,9 @@ root-inputs tab shows no pinned mark and the timing tab no schedule.
 - **A file of the old core breaks the page.** A build or a failure
   written before the pin has anchors under `T`. The loader accepts it,
   the format being 1.0 in both, and the readers then throw on the
-  missing `dt`. Answer 2's refusal covers a deployment without
+  missing `dt`. The reviewer dropped the old `rates.json`: the canvas
+  draws, the rate colors do not switch on, the timing tab is empty and
+  the console holds the error. Answer 2's refusal covers a deployment without
   `schedule` alone. A refusal on a structure without `grid` would cover
   all three kinds.
 - **`signature` depends on the session.** In a live session a user who
@@ -288,6 +311,9 @@ root-inputs tab shows no pinned mark and the timing tab no schedule.
   display text (D-433), so this is the page's to weigh.
 - **`pending.md`'s "Format changes still open"** lists the rate chain
   as open, and the core now carries it.
+- **The docstring check of ruling 5** pins the joining of a bare name
+  to the row's module, which the record's answer 15 retires. The
+  implementation inverts it.
 - **`frontend/MAP.md`** needed no change: the bump adds no file, no
   selector and no key.
 
@@ -322,4 +348,31 @@ captures against the look's index. An empty review is acceptable.
 
 ## The review's record
 
-The review runs once the code has landed, and its record goes here.
+One high-tier agent reviewed `3dd015e`, `5a37bce` and `9e2603b` on
+2026-11-23, in a worktree of its own. Its gate was green at the same
+counts. It found no reader the bump missed, traced every fixture
+difference to a core commit or to the script, and confirmed the notes'
+figures. All seven mutants turned a check red, with no survivor. Its
+own probe of answer 16's two checks agrees, and adds two cases: one
+anchor `Absolute(1//10, 1//30)` alone has an offset of factor 3 with
+the alternative `0`, and `Absolute(1//10, 1//20)` beside
+`Absolute(1//50)` has one of factor 2 with `1/25` and `3/50`.
+
+Nothing was a must-fix. The findings, as adjudicated:
+
+- **A deployment's own warnings never reach the diagnostics tab.** Not
+  fixed here, by ruling 11. It goes to the second step.
+- **Open items stood in the notes alone.** Fixed by ruling 12.
+- **The notes' look said the browser checks' screenshots agree**, where
+  80 of 105 differ. Fixed above, with what the captures leave out.
+- **The closure's name changes in six signatures too.** Fixed above.
+- **The docstring check's name cited a pending note that is gone.** It
+  now names the case.
+- **`scheduleNote`'s comment** described the old sentence. Fixed.
+- **A line of `pending.md` ran to 108 characters.** Rewrapped.
+- **The bump's commit message is long and reads ambiguously.** Left,
+  since rewording a commit is the user's call.
+
+The reviewer agreed with rulings 1 to 3, 6 and 8 to 10, and with 4, 5
+and 7 on these terms: the new sentence comes first in the user's look,
+the check's name states its case, and the old file's gap is handed on.

@@ -44,9 +44,15 @@ The bullets stand in working order, the first one next.
     new diagnostic kind. One open item of the core's `pending.md`
     touches it, a schedule row's `Δt` that is not the float nearest its
     exact period. The roadmap's list for increment 10 loses what the
-    bump took, which the bump's notes name. A finding that the core
-    must change moves the pin again, before the launch and not during
-    the increment.
+    bump took, which the bump's notes name. The bump's review hands
+    this step three items to place: a deployment's own `warnings`,
+    which the diagnostics tab does not read; a build or a failure
+    written by the old core, which the loader accepts and whose anchors
+    the readers fail on, answer 2's refusal covering a deployment
+    alone; and the rate chain, which the core now carries on the node
+    as `rates` while "Format changes still open" below still lists it.
+    A finding that the core must change moves the pin again, before
+    the launch and not during the increment.
   - **The implementation**, briefed and launched from the amended
     record.
 
@@ -55,7 +61,8 @@ The bullets stand in working order, the first one next.
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
   designed and not briefed, with the pin bump landed and not pushed,
-  its cold review and the user's look at it owed, and the record at the new pin next. The session's handover
+  cold-reviewed, the user's look at it owed, and the record at the new
+  pin next. The session's handover
   is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
@@ -147,7 +154,7 @@ the increment it came from.
   A trim outside any increment's text brings it back.
 - **A rational part past `2^53`** (the core's exact-arithmetic audit,
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
-  section 2.8). The descriptor writes an anchor's `T` and `τ` as the JSON
+  section 2.8). The descriptor writes an anchor's `dt` and `tau` as the JSON
   integers `num` and `den`, exact in the file. `rational` in
   `frontend/src/lib/analysis.ts` reads them into JavaScript numbers,
   which are exact only below `2^53`, so a period of `1//(2^61 - 1)` prints
