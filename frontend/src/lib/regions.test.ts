@@ -28,7 +28,7 @@ describe("regionsOf", () => {
       asm("ctl/loops/x", { field: "loops", key: "x" }), asm("ctl/plain", { field: "plain" }), asm("ctl/loops/y", { field: "loops", key: "y" }),
       asm("ctl/s", { field: "stages", key: "s" }),
     ];
-    const tree = buildTree({ nodes, root_inputs: [], anchors: [], scopes: [], types: [] } as StructureSection);
+    const tree = buildTree({ nodes, root_inputs: [], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [] } as StructureSection);
     expect(regionsOf(tree, "ctl")).toEqual([{ path: "ctl/loops", field: "loops", members: ["ctl/loops/x", "ctl/loops/y"] }]);
     expect(regionsOf(tree, "")).toEqual([]);
     expect(["ctl/loops/x", "ctl/plain", "ctl/s"].map((p) => label(tree, p, "root"))).toEqual(["x", "plain", "s"]);

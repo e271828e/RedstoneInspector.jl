@@ -229,10 +229,10 @@ test("closed_loop: a drag that makes or changes a text selection in a row select
   await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
 });
 
-test("closed_loop_deployment: the schedule note says the format carries none", async ({ page }) => {
+test("closed_loop_deployment: the schedule note says the page does not draw the schedule yet", async ({ page }) => {
   await drop(page, "closed_loop_deployment");
   await openTab(page, "timing");
-  await expect(body(page).locator("p.schedule-note")).toContainText("carries no schedule");
+  await expect(body(page).locator("p.schedule-note")).toContainText("does not draw");
   await expect(body(page).locator("table.anchors tr.anchor")).toHaveCount(11);
 });
 
@@ -329,6 +329,6 @@ test("a push keeps the open tab and redraws it from the new model", async ({ pag
   await openTab(page, "timing");
   await expect(body(page).locator("p.schedule-note")).toContainText("need a deployment");
   await dropOver(page, "closed_loop_deployment");
-  await expect(body(page).locator("p.schedule-note")).toContainText("carries no schedule");
+  await expect(body(page).locator("p.schedule-note")).toContainText("does not draw");
   await expect(drawer(page)).toHaveAttribute("data-tab", "timing");
 });

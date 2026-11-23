@@ -211,11 +211,11 @@ describe("componentRows", () => {
 });
 
 describe("scheduleNote", () => {
-  it("tells a build it needs a deployment and a deployment that format 1.0 carries no schedule", () => {
+  it("tells a build it needs a deployment and a deployment that the page does not draw its schedule yet", () => {
     expect(scheduleNote(cl)).toBe("The schedule rows and the hyperperiod chart need a deployment.");
     expect(scheduleNote(fixtureModel("failure_cycle"))).toBe(scheduleNote(cl));
     expect(scheduleNote(fixtureModel("closed_loop_deployment"))).toBe(
-      "This deployment carries no schedule: the format's version 1.0 holds the build alone, and the schedule rows and the hyperperiod chart wait for its next minor version.",
+      "This page does not draw a deployment's schedule rows and hyperperiod chart yet.",
     );
   });
 });

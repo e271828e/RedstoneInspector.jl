@@ -68,6 +68,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -107,6 +108,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -144,11 +146,16 @@
           "kind": {
             "kind": "float"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         }
       ],
       "anchors": [],
       "scopes": [],
+      "grid": {
+        "pool": [],
+        "primes": []
+      },
       "types": [
         {
           "name": "Main.Synthetic.SelectedNothing",
@@ -212,6 +219,20 @@
           "stage2": [
             "out"
           ]
+        }
+      ]
+    },
+    "events": {
+      "components": [
+        {
+          "path": "g",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "src",
+          "events": [],
+          "bundle": []
         }
       ]
     },

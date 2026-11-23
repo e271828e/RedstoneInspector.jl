@@ -100,10 +100,10 @@ describe("the continuous line", () => {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
           wires: [{ from: { path: "", port: "x" }, to: { path: "D", port: "u" } }, { from: { path: "D", port: "v" }, to: { path: "", port: "y" } }] },
-        { ...id, path: "D", field: "D", class: "primitive", tier: "discrete", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("u")], outputs: [f("v")] },
-        ...(withContinuous ? [{ ...id, path: "C", field: "C", class: "primitive" as const, tier: "continuous" as const, timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [] }] : []),
+        { ...id, path: "D", field: "D", class: "primitive", tier: "discrete", timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [f("u")], outputs: [f("v")] },
+        ...(withContinuous ? [{ ...id, path: "C", field: "C", class: "primitive" as const, tier: "continuous" as const, timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [], outputs: [] }] : []),
       ],
-      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+      root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };
     const tree = buildTree(structure);
     return { tree, structure, resolution: buildResolution(tree, structure) } as Model;
@@ -111,7 +111,7 @@ describe("the continuous line", () => {
   /** An inline model: the root input `x` into an assembly `A` of the discrete primitives `D1` and `D2` on two clocks, `A` into the root output `y`. */
   function mixedOnly(): Model {
     const primitive = (name: string, m: number) =>
-      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
+      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, rates: [], inputs: [f("u")], outputs: [f("v")] });
     const structure: StructureSection = {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "y" }],
@@ -121,7 +121,7 @@ describe("the continuous line", () => {
             { from: { path: "A/D2", port: "v" }, to: { path: "A", port: "y" } }] },
         primitive("D1", 1), primitive("D2", 2),
       ],
-      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+      root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };
     const tree = buildTree(structure);
     return { tree, structure, resolution: buildResolution(tree, structure) } as Model;

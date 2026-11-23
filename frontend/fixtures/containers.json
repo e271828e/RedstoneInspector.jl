@@ -109,6 +109,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -149,6 +150,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -189,6 +191,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -229,6 +232,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -269,6 +273,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -349,6 +354,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Main.Synthetic.Gain",
           "signature": "Main.Synthetic.Gain",
           "inputs": [
@@ -386,11 +392,16 @@
           "kind": {
             "kind": "float"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         }
       ],
       "anchors": [],
       "scopes": [],
+      "grid": {
+        "pool": [],
+        "primes": []
+      },
       "types": [
         {
           "name": "Main.Synthetic.Containers",
@@ -512,6 +523,40 @@
           "stage2": [
             "out"
           ]
+        }
+      ]
+    },
+    "events": {
+      "components": [
+        {
+          "path": "gains/a",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "gains/b",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "pair/1",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "s1",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "s2",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "scale/taps/c",
+          "events": [],
+          "bundle": []
         }
       ]
     },

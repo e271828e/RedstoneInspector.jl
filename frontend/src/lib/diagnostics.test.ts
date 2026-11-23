@@ -251,7 +251,7 @@ describe("loopFacts, the drawer's loop row (the oracle's loop_row.py)", () => {
   });
 
   it("isCoreType: Redstone and its submodules, not a name merely starting with Redstone", () => {
-    expect(["Redstone", "Redstone.Library.Group", "RedstoneExamples.Longitudinal", "Main.User.Ctl", undefined].map(isCoreType)).toEqual([true, true, false, false, false]);
+    expect(["Redstone", "Redstone.Group", "RedstoneExamples.Longitudinal", "Main.User.Ctl", undefined].map(isCoreType)).toEqual([true, true, false, false, false]);
   });
 });
 

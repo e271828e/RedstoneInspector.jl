@@ -80,7 +80,7 @@ describe("rekeyFocus", () => {
     const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
     const primitive = (name: string, m: number) =>
-      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, inputs: [f("u")], outputs: [f("v")] });
+      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, rates: [], inputs: [f("u")], outputs: [f("v")] });
     // an assembly `A` of the discrete primitives `D1` and `D2` on two clocks, alone under the root
     const structure: StructureSection = {
       nodes: [
@@ -88,7 +88,7 @@ describe("rekeyFocus", () => {
         { ...id, path: "A", field: "A", class: "assembly", inputs: [], outputs: [], wires: [{ from: { path: "A/D1", port: "v" }, to: { path: "A/D2", port: "u" } }] },
         primitive("D1", 1), primitive("D2", 2),
       ],
-      root_inputs: [], anchors: [], scopes: [], types: [],
+      root_inputs: [], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };
     const tree = buildTree(structure);
     const next = { tree, structure, resolution: buildResolution(tree, structure) } as Model;

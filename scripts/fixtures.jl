@@ -22,7 +22,7 @@ end
 
 using Redstone, RedstoneExamples, RedstoneInspector
 import Redstone: Simulation, Deployment, DiagnosticError, build, trim!, linearize, set
-import RedstoneExamples: aircraft, level_flight, longitudinal_taps, lqr_gains, closed_loop, descent
+import RedstoneExamples: aircraft, level_flight, longitudinal_taps, lqr_gains, closed_loop
 import RedstoneInspector: write_descriptor
 include("synthetic.jl")
 
@@ -51,6 +51,14 @@ function write_failure_fixture(base_name, root)
     end
     error("the build of `$base_name` succeeded")
 end
+
+# The aircraft with the ground and a stop request. The core's examples dropped
+# this model, so the script builds it (deployment_overlay.md answer 16). The
+# types stay qualified: a name imported here would print bare in `signature`.
+descent() = Redstone.Group((; plant = RedstoneExamples.Longitudinal(), gear = RedstoneExamples.GroundContact(),
+                              stop = Redstone.Library.StopRequest(reason = "touchdown"));
+                           input_wires = ("δe" => "plant/δe", "δt" => "plant/δt"),
+                           local_wires = ("plant/h" => "gear/h", "gear/contact" => "stop/u"))
 
 mkpath(FIXTURE_DIR)
 mkpath(SCHEMA_DIR)

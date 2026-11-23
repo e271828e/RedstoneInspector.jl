@@ -12,8 +12,8 @@
         {
           "path": "",
           "class": "assembly",
-          "type": "Redstone.Library.Group",
-          "signature": "Redstone.Library.Group{@NamedTuple{sum::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}, or::Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}, and::Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}, pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, unpack::Redstone.Library.Unpack{Float64, 2}, switch::Redstone.Library.Switch{Float64}, stop::Redstone.Library.StopRequest, constant::Redstone.Library.Constant{Float64}, step::Redstone.Library.Step{Float64, true}, source::Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}, noise::Redstone.Library.GaussianWhiteNoise{Float64}, integrator::Redstone.Library.Integrator{Float64, false}, limited::Redstone.Library.LimitedIntegrator{Float64, true, false}, lag::Redstone.Library.FirstOrderLag{Float64}, ss::Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}, tf::Redstone.Library.TransferFunction{1, false, 1, 2, 1}, relay::Redstone.Library.Relay{Float64}, unit_delay::Redstone.Library.UnitDelay{Float64}, d_integrator::Redstone.Library.DiscreteIntegrator{Float64, false}, rate_limiter::Redstone.Library.RateLimiter{Float64}, dss::Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}, dtf::Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}, zoh_ss::Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}, zoh_tf::Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}, d_limited::Redstone.Library.DiscreteLimitedIntegrator{Float64, false}, delay::Redstone.Library.Delay{Float64, 3, false}, freeze::Redstone.Library.Freeze{Float64}, pid::Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, d_pid::Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, lqr::Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, d_lqr::Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, fn::Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}, apply::Redstone.Library.Fn{Float64, Float64, typeof(Main.Synthetic.half)}, pair::Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}, fields::Redstone.Library.Fields{@NamedTuple{a::Float64, b::Float64}}, gear::Redstone.Library.Constant{Main.Synthetic.Gear}, select::Redstone.Library.Select{Float64, Main.Synthetic.Gear}, sequence::Redstone.Library.Sequence{Float64, true}, backlash::Redstone.Library.Backlash{Float64}, ld_integrator::Redstone.Library.LimitedDoubleIntegrator{Float64, true}, comparator::Redstone.Library.Comparator{Float64, true}}, NTuple{45, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, Tuple{}, @NamedTuple{noise::Redstone.Absolute, dss::Redstone.Absolute, d_limited::Redstone.Relative, d_pid::Redstone.Relative}}",
+          "type": "Redstone.Group",
+          "signature": "Redstone.Group{@NamedTuple{sum::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}, or::Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}, and::Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}, pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, unpack::Redstone.Library.Unpack{Float64, 2}, switch::Redstone.Library.Switch{Float64}, stop::Redstone.Library.StopRequest, constant::Redstone.Library.Constant{Float64}, step::Redstone.Library.Step{Float64, true}, source::Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}, noise::Redstone.Library.GaussianWhiteNoise{Float64}, integrator::Redstone.Library.Integrator{Float64, false}, limited::Redstone.Library.LimitedIntegrator{Float64, true, false}, lag::Redstone.Library.FirstOrderLag{Float64}, ss::Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}, tf::Redstone.Library.TransferFunction{1, false, 1, 2, 1}, relay::Redstone.Library.Relay{Float64}, unit_delay::Redstone.Library.UnitDelay{Float64}, d_integrator::Redstone.Library.DiscreteIntegrator{Float64, false}, rate_limiter::Redstone.Library.RateLimiter{Float64}, dss::Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}, dtf::Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}, zoh_ss::Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}, zoh_tf::Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}, d_limited::Redstone.Library.DiscreteLimitedIntegrator{Float64, false}, delay::Redstone.Library.Delay{Float64, 3, false}, freeze::Redstone.Library.Freeze{Float64}, pid::Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, d_pid::Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, lqr::Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, d_lqr::Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, fn::Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}, apply::Redstone.Library.Fn{Float64, Float64, typeof(Main.Synthetic.half)}, pair::Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}, fields::Redstone.Library.Fields{@NamedTuple{a::Float64, b::Float64}}, gear::Redstone.Library.Constant{Main.Synthetic.Gear}, select::Redstone.Library.Select{Float64, Main.Synthetic.Gear}, sequence::Redstone.Library.Sequence{Float64, true}, backlash::Redstone.Library.Backlash{Float64}, ld_integrator::Redstone.Library.LimitedDoubleIntegrator{Float64, true}, comparator::Redstone.Library.Comparator{Float64, true}}, NTuple{45, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, Tuple{}, @NamedTuple{noise::Redstone.Absolute, dss::Redstone.Absolute, d_limited::Redstone.Relative, d_pid::Redstone.Relative}}",
           "inputs": [
             {
               "name": "a"
@@ -547,6 +547,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Junction",
           "alias": "Redstone.Library.SumJunction",
           "signature": "Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}",
@@ -596,6 +597,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Junction",
           "alias": "Redstone.Library.Or",
           "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}",
@@ -645,6 +647,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Junction",
           "alias": "Redstone.Library.And",
           "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}",
@@ -694,6 +697,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Junction",
           "alias": "Redstone.Library.Pack",
           "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
@@ -749,6 +753,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Unpack",
           "signature": "Redstone.Library.Unpack{Float64, 2}",
           "inputs": [
@@ -798,6 +803,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Switch",
           "signature": "Redstone.Library.Switch{Float64}",
           "inputs": [
@@ -849,6 +855,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.StopRequest",
           "signature": "Redstone.Library.StopRequest",
           "inputs": [
@@ -893,6 +900,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Constant",
           "signature": "Redstone.Library.Constant{Float64}",
           "inputs": [],
@@ -924,6 +932,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Step",
           "signature": "Redstone.Library.Step{Float64, true}",
           "inputs": [],
@@ -963,6 +972,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Source",
           "signature": "Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}",
           "inputs": [],
@@ -994,6 +1004,20 @@
             "m": 1,
             "c": 0
           },
+          "rates": [
+            {
+              "scope": "",
+              "key": "noise",
+              "dt": {
+                "num": 1,
+                "den": 10
+              },
+              "tau": {
+                "num": 0,
+                "den": 1
+              }
+            }
+          ],
           "type": "Redstone.Library.GaussianWhiteNoise",
           "signature": "Redstone.Library.GaussianWhiteNoise{Float64}",
           "inputs": [],
@@ -1037,6 +1061,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Integrator",
           "signature": "Redstone.Library.Integrator{Float64, false}",
           "inputs": [
@@ -1077,6 +1102,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.LimitedIntegrator",
           "signature": "Redstone.Library.LimitedIntegrator{Float64, true, false}",
           "inputs": [
@@ -1133,6 +1159,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.FirstOrderLag",
           "signature": "Redstone.Library.FirstOrderLag{Float64}",
           "inputs": [
@@ -1177,6 +1204,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.StateSpace",
           "signature": "Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
@@ -1233,6 +1261,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.TransferFunction",
           "signature": "Redstone.Library.TransferFunction{1, false, 1, 2, 1}",
           "inputs": [
@@ -1277,6 +1306,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Relay",
           "signature": "Redstone.Library.Relay{Float64}",
           "inputs": [
@@ -1329,6 +1359,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.UnitDelay",
           "signature": "Redstone.Library.UnitDelay{Float64}",
           "inputs": [
@@ -1369,6 +1400,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.DiscreteIntegrator",
           "signature": "Redstone.Library.DiscreteIntegrator{Float64, false}",
           "inputs": [
@@ -1409,6 +1441,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.RateLimiter",
           "signature": "Redstone.Library.RateLimiter{Float64}",
           "inputs": [
@@ -1457,6 +1490,20 @@
             "m": 1,
             "c": 0
           },
+          "rates": [
+            {
+              "scope": "",
+              "key": "dss",
+              "dt": {
+                "num": 1,
+                "den": 50
+              },
+              "tau": {
+                "num": 0,
+                "den": 1
+              }
+            }
+          ],
           "type": "Redstone.Library.DiscreteStateSpace",
           "signature": "Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
@@ -1513,6 +1560,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.DiscreteTransferFunction",
           "signature": "Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}",
           "inputs": [
@@ -1557,6 +1605,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.DiscretizedStateSpace",
           "signature": "Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
           "inputs": [
@@ -1592,6 +1641,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.DiscretizedTransferFunction",
           "signature": "Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}",
           "inputs": [
@@ -1636,6 +1686,14 @@
             "m": 2,
             "c": 0
           },
+          "rates": [
+            {
+              "scope": "",
+              "key": "d_limited",
+              "K": 2,
+              "phi": 0
+            }
+          ],
           "type": "Redstone.Library.DiscreteLimitedIntegrator",
           "signature": "Redstone.Library.DiscreteLimitedIntegrator{Float64, false}",
           "inputs": [
@@ -1692,6 +1750,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Delay",
           "signature": "Redstone.Library.Delay{Float64, 3, false}",
           "inputs": [
@@ -1732,6 +1791,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Freeze",
           "signature": "Redstone.Library.Freeze{Float64}",
           "inputs": [
@@ -1767,6 +1827,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.PID",
           "signature": "Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
           "inputs": [
@@ -1855,6 +1916,14 @@
             "m": 2,
             "c": 1
           },
+          "rates": [
+            {
+              "scope": "",
+              "key": "d_pid",
+              "K": 2,
+              "phi": 1
+            }
+          ],
           "type": "Redstone.Library.DiscretePID",
           "signature": "Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
           "inputs": [
@@ -1951,6 +2020,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.LQRTracker",
           "signature": "Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
           "inputs": [
@@ -2077,6 +2147,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.DiscreteLQRTracker",
           "signature": "Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
           "inputs": [
@@ -2217,6 +2288,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Junction",
           "signature": "Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}",
           "inputs": [
@@ -2257,6 +2329,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Fn",
           "signature": "Redstone.Library.Fn{Float64, Float64, typeof(Main.Synthetic.half)}",
           "inputs": [
@@ -2297,6 +2370,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Constant",
           "signature": "Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}",
           "inputs": [],
@@ -2336,6 +2410,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Fields",
           "signature": "Redstone.Library.Fields{@NamedTuple{a::Float64, b::Float64}}",
           "inputs": [
@@ -2383,6 +2458,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Constant",
           "signature": "Redstone.Library.Constant{Main.Synthetic.Gear}",
           "inputs": [],
@@ -2418,6 +2494,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Select",
           "signature": "Redstone.Library.Select{Float64, Main.Synthetic.Gear}",
           "inputs": [
@@ -2473,6 +2550,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Sequence",
           "signature": "Redstone.Library.Sequence{Float64, true}",
           "inputs": [],
@@ -2508,6 +2586,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Backlash",
           "signature": "Redstone.Library.Backlash{Float64}",
           "inputs": [
@@ -2552,6 +2631,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.LimitedDoubleIntegrator",
           "signature": "Redstone.Library.LimitedDoubleIntegrator{Float64, true}",
           "inputs": [
@@ -2620,6 +2700,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.Comparator",
           "signature": "Redstone.Library.Comparator{Float64, true}",
           "inputs": [
@@ -2661,7 +2742,8 @@
           "kind": {
             "kind": "boolean"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         },
         {
           "name": "b",
@@ -2669,12 +2751,13 @@
           "kind": {
             "kind": "boolean"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         }
       ],
       "anchors": [
         {
-          "T": {
+          "dt": {
             "num": 1,
             "den": 10
           },
@@ -2686,7 +2769,7 @@
           "key": "noise"
         },
         {
-          "T": {
+          "dt": {
             "num": 1,
             "den": 50
           },
@@ -2699,35 +2782,70 @@
         }
       ],
       "scopes": [],
+      "grid": {
+        "admissible": {
+          "num": 1,
+          "den": 50
+        },
+        "pool": [
+          {
+            "anchor": 1,
+            "kind": "period",
+            "factor": 1
+          },
+          {
+            "anchor": 2,
+            "kind": "period",
+            "factor": 5
+          }
+        ],
+        "primes": [
+          {
+            "prime": 2,
+            "power": 1,
+            "suppliers": [
+              1,
+              2
+            ]
+          },
+          {
+            "prime": 5,
+            "power": 2,
+            "suppliers": [
+              2
+            ]
+          }
+        ]
+      },
       "types": [
         {
-          "name": "Redstone.Library.Group",
-          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+          "name": "Redstone.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3134
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3131
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3132
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3133
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3135
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 982
             }
           ]
         },
@@ -2737,18 +2855,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 117
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 116
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 119
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 118
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 116
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 115
             }
           ]
         },
@@ -2758,18 +2876,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 193
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 192
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 194
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 193
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 192
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 191
             }
           ]
         },
@@ -2779,18 +2897,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 262
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 261
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 263
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 262
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 261
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 260
             }
           ]
         },
@@ -2800,23 +2918,23 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 440
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 441
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
               "line": 439
             },
             {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 440
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 438
+            },
+            {
               "function": "stop_reason",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 443
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 442
             }
           ]
         },
@@ -2826,13 +2944,13 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 351
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 350
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 350
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 349
             }
           ]
         },
@@ -2842,18 +2960,23 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1642
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1641
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1640
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1639
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1641
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1640
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1646
             }
           ]
         },
@@ -2863,13 +2986,13 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 900
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 899
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 899
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 898
             }
           ]
         },
@@ -2879,13 +3002,13 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 859
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 858
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 858
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 857
             }
           ]
         },
@@ -2895,18 +3018,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 961
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 960
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 962
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 961
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 960
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 959
             }
           ]
         },
@@ -2916,23 +3039,28 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1843
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1842
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1844
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1843
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1841
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1840
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1842
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1841
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1877
             }
           ]
         },
@@ -2942,18 +3070,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1012
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1011
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1013
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1012
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1011
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1010
             }
           ]
         },
@@ -2963,18 +3091,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1049
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1048
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1050
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1049
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1048
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1047
             }
           ]
         },
@@ -2984,18 +3112,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1049
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1048
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1050
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1049
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1048
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1047
             }
           ]
         },
@@ -3005,23 +3133,28 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2142
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2141
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2143
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2142
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2140
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2139
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2141
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2140
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2148
             }
           ]
         },
@@ -3031,18 +3164,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 382
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 381
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 383
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 382
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 381
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 380
             }
           ]
         },
@@ -3052,18 +3185,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 607
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 606
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 608
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 607
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 606
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 605
             }
           ]
         },
@@ -3073,18 +3206,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 726
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 725
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 727
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 726
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 725
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 724
             }
           ]
         },
@@ -3094,18 +3227,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1330
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1329
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1331
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1330
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1329
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1328
             }
           ]
         },
@@ -3115,18 +3248,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1330
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1329
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1331
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1330
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1329
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1328
             }
           ]
         },
@@ -3136,18 +3269,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1330
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1329
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1331
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1330
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1329
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1328
             }
           ]
         },
@@ -3157,18 +3290,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1330
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1329
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1331
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1330
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1329
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1328
             }
           ]
         },
@@ -3178,18 +3311,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 668
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 667
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 669
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 668
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 667
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 666
             }
           ]
         },
@@ -3199,18 +3332,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 546
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 545
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 547
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 546
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 545
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 544
             }
           ]
         },
@@ -3220,18 +3353,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 408
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 407
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 409
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 408
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 407
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 406
             }
           ]
         },
@@ -3241,18 +3374,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2382
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2381
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2386
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2385
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2558
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2557
             }
           ]
         },
@@ -3262,18 +3395,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2382
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2381
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2695
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2694
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2694
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2693
             }
           ]
         },
@@ -3283,18 +3416,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2752
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2751
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2756
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2755
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2921
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2920
             }
           ]
         },
@@ -3304,18 +3437,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2752
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2751
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3049
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 3048
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3047
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 3046
             }
           ]
         },
@@ -3325,18 +3458,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 169
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 168
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 170
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 169
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 168
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 167
             }
           ]
         },
@@ -3346,18 +3479,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 231
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 230
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 232
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 231
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 230
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 229
             }
           ]
         },
@@ -3367,18 +3500,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 318
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 317
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 320
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 319
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 317
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 316
             }
           ]
         },
@@ -3388,18 +3521,23 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1721
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1720
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1719
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1718
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 1720
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1719
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 1725
             }
           ]
         },
@@ -3409,18 +3547,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 778
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 777
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 779
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 778
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 777
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 776
             }
           ]
         },
@@ -3430,23 +3568,28 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2013
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2012
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2014
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2013
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2011
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2010
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2012
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2011
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2038
             }
           ]
         },
@@ -3456,23 +3599,28 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2246
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2245
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2247
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2246
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2244
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2243
             },
             {
               "function": "m_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 2245
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2244
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 2258
             }
           ]
         }
@@ -3823,6 +3971,307 @@
             "y"
           ],
           "stage2": []
+        }
+      ]
+    },
+    "events": {
+      "components": [
+        {
+          "path": "sum",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "or",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "and",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "pack",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "unpack",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "switch",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "stop",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "constant",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "step",
+          "events": [
+            {
+              "name": "fire",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "m",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "source",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "noise",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "integrator",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "limited",
+          "events": [
+            {
+              "name": "hit_upper",
+              "policy": "localized"
+            },
+            {
+              "name": "hit_lower",
+              "policy": "localized"
+            },
+            {
+              "name": "leave_upper",
+              "policy": "localized"
+            },
+            {
+              "name": "leave_lower",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "x",
+            "m",
+            "u",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "lag",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "ss",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "tf",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "relay",
+          "events": [
+            {
+              "name": "switch_on",
+              "policy": "localized"
+            },
+            {
+              "name": "switch_off",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "m",
+            "u",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "unit_delay",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "d_integrator",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "rate_limiter",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "dss",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "dtf",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "zoh_ss",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "zoh_tf",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "d_limited",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "delay",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "freeze",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "pid",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "d_pid",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "lqr",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "d_lqr",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "fn",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "apply",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "pair",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "fields",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "gear",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "select",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "sequence",
+          "events": [
+            {
+              "name": "advance",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "m",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "backlash",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "ld_integrator",
+          "events": [
+            {
+              "name": "hit_upper",
+              "policy": "localized"
+            },
+            {
+              "name": "hit_lower",
+              "policy": "localized"
+            },
+            {
+              "name": "leave_upper",
+              "policy": "localized"
+            },
+            {
+              "name": "leave_lower",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "x",
+            "m",
+            "u",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "comparator",
+          "events": [
+            {
+              "name": "switch_on",
+              "policy": "localized"
+            },
+            {
+              "name": "switch_off",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "m",
+            "u",
+            "y",
+            "t"
+          ]
         }
       ]
     },

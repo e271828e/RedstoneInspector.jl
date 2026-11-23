@@ -86,12 +86,12 @@ describe("searchModel, the oracle's table", () => {
     expect(find("closed_loop", "face:sensing").nodes).toEqual([]);
   });
 
-  it("large b: 171 nodes, 100 rows, total 171", () => {
+  it("large b: 170 nodes, 100 rows, total 170", () => {
     const f = find("large", "b");
-    expect(f.nodes).toHaveLength(171);
+    expect(f.nodes).toHaveLength(170);
     expect(f.rows).toHaveLength(CAP);
     expect(CAP).toBe(100);
-    expect(f.total).toBe(171);
+    expect(f.total).toBe(170);
   });
 
   it("emphasises the matched text per field", () => {

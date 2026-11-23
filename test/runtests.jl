@@ -3,8 +3,7 @@
 
 using Test, RedstoneInspector, Redstone, JSON, JSONSchema
 import Redstone: AbstractComponent, x_init, s_init, u_types, y_types, y_state, y_direct,
-    x_deriv, s_update, Absolute, Hz, Build, Deployment, DiagnosticError, descriptor, build
-import Redstone.Library: Group
+    x_deriv, s_update, Absolute, Group, Build, Deployment, DiagnosticError, descriptor, build
 import RedstoneInspector: write_descriptor
 
 # The core README's quick start: a plant with a state and a direct output under
@@ -40,7 +39,7 @@ loop(feedback) = Group((plant = Plant(2.0, 0.3), ctl = PI(3.0, 2.0));
     local_wires = ("ctl/y" => "plant/u", "plant/$feedback" => "ctl/y"),
     input_wires = "ref" => "ctl/ref",
     output_wires = "plant/y" => "y",
-    sample_times = (ctl = Absolute(Hz(50)),))
+    sample_times = (ctl = Absolute(1//50),))
 
 text(x; kw...) = String(take!(let io = IOBuffer(); write_descriptor(io, x; kw...); io end))
 

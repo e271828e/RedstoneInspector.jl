@@ -13,8 +13,8 @@
           {
             "path": "",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, sensing::Redstone.Library.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute}}, pid_controller::Redstone.Library.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}, lqr_controller::Redstone.Library.Group{@NamedTuple{tracker::Redstone.Library.DiscreteLQRTracker{5, 2, 2, true, true, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{2, 5, Float64, 10}, K_fwd::StaticArraysCore.SMatrix{2, 2, Float64, 4}, K_int::StaticArraysCore.SMatrix{2, 2, Float64, 4}, x_trim::StaticArraysCore.SVector{5, Float64}, u_trim::StaticArraysCore.SVector{2, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{2, Float64}, u_min::StaticArraysCore.SVector{2, Float64}, u_max::StaticArraysCore.SVector{2, Float64}}}, state_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{5, Float64}, 5, typeof(Redstone.Library.pack)}, z_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, z_ref_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, command_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, u_unpack::Redstone.Library.Unpack{Float64, 2}, free_pair::Redstone.Library.Constant{StaticArraysCore.SVector{2, Int8}}, engaged::Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#17#18\"}}, NTuple{7, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Vararg{Pair{String, String}, 10}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{tracker::Redstone.Absolute}}, selection::Redstone.Library.Group{@NamedTuple{select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}, actuators::Redstone.Library.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}}, NTuple{23, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String, String}}}, Tuple{}, @NamedTuple{}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, sensing::Redstone.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute}}, pid_controller::Redstone.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}, lqr_controller::Redstone.Group{@NamedTuple{tracker::Redstone.Library.DiscreteLQRTracker{5, 2, 2, true, true, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{2, 5, Float64, 10}, K_fwd::StaticArraysCore.SMatrix{2, 2, Float64, 4}, K_int::StaticArraysCore.SMatrix{2, 2, Float64, 4}, x_trim::StaticArraysCore.SVector{5, Float64}, u_trim::StaticArraysCore.SVector{2, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{2, Float64}, u_min::StaticArraysCore.SVector{2, Float64}, u_max::StaticArraysCore.SVector{2, Float64}}}, state_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{5, Float64}, 5, typeof(Redstone.Library.pack)}, z_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, z_ref_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, command_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, u_unpack::Redstone.Library.Unpack{Float64, 2}, free_pair::Redstone.Library.Constant{StaticArraysCore.SVector{2, Int8}}, engaged::Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#28#29\"}}, NTuple{7, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Vararg{Pair{String, String}, 10}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{tracker::Redstone.Absolute}}, selection::Redstone.Group{@NamedTuple{select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}, actuators::Redstone.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}}, NTuple{23, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String, String}}}, Tuple{}, @NamedTuple{}}",
             "inputs": [
               {
                 "name": "h_ref"
@@ -359,6 +359,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "RedstoneExamples.Longitudinal",
             "signature": "RedstoneExamples.Longitudinal",
             "inputs": [
@@ -493,8 +494,8 @@
             "field": "children",
             "key": "sensing",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute}}",
             "inputs": [
               {
                 "name": "h"
@@ -567,6 +568,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "sensing",
+                "key": "noise",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.GaussianWhiteNoise",
             "signature": "Redstone.Library.GaussianWhiteNoise{Float64}",
             "inputs": [],
@@ -610,6 +625,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
             "alias": "Redstone.Library.SumJunction",
             "signature": "Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}",
@@ -653,8 +669,8 @@
             "field": "children",
             "key": "pid_controller",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}",
             "inputs": [
               {
                 "name": "h_ref"
@@ -956,6 +972,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "pid_controller",
+                "key": "h_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.DiscretePID",
             "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
             "inputs": [
@@ -1076,6 +1106,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "pid_controller",
+                "key": "θ_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.DiscretePID",
             "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
             "inputs": [
@@ -1196,6 +1240,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "pid_controller",
+                "key": "q_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.DiscretePID",
             "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
             "inputs": [
@@ -1316,6 +1374,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "pid_controller",
+                "key": "V_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.DiscretePID",
             "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
             "inputs": [
@@ -1436,6 +1508,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Constant",
             "signature": "Redstone.Library.Constant{Int8}",
             "inputs": [],
@@ -1461,8 +1534,8 @@
             "field": "children",
             "key": "lqr_controller",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{tracker::Redstone.Library.DiscreteLQRTracker{5, 2, 2, true, true, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{2, 5, Float64, 10}, K_fwd::StaticArraysCore.SMatrix{2, 2, Float64, 4}, K_int::StaticArraysCore.SMatrix{2, 2, Float64, 4}, x_trim::StaticArraysCore.SVector{5, Float64}, u_trim::StaticArraysCore.SVector{2, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{2, Float64}, u_min::StaticArraysCore.SVector{2, Float64}, u_max::StaticArraysCore.SVector{2, Float64}}}, state_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{5, Float64}, 5, typeof(Redstone.Library.pack)}, z_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, z_ref_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, command_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, u_unpack::Redstone.Library.Unpack{Float64, 2}, free_pair::Redstone.Library.Constant{StaticArraysCore.SVector{2, Int8}}, engaged::Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#17#18\"}}, NTuple{7, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Vararg{Pair{String, String}, 10}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{tracker::Redstone.Absolute}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{tracker::Redstone.Library.DiscreteLQRTracker{5, 2, 2, true, true, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{2, 5, Float64, 10}, K_fwd::StaticArraysCore.SMatrix{2, 2, Float64, 4}, K_int::StaticArraysCore.SMatrix{2, 2, Float64, 4}, x_trim::StaticArraysCore.SVector{5, Float64}, u_trim::StaticArraysCore.SVector{2, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{2, Float64}, u_min::StaticArraysCore.SVector{2, Float64}, u_max::StaticArraysCore.SVector{2, Float64}}}, state_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{5, Float64}, 5, typeof(Redstone.Library.pack)}, z_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, z_ref_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, command_pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, u_unpack::Redstone.Library.Unpack{Float64, 2}, free_pair::Redstone.Library.Constant{StaticArraysCore.SVector{2, Int8}}, engaged::Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#28#29\"}}, NTuple{7, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Vararg{Pair{String, String}, 10}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{tracker::Redstone.Absolute}}",
             "inputs": [
               {
                 "name": "V"
@@ -1748,6 +1821,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "lqr_controller",
+                "key": "tracker",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.DiscreteLQRTracker",
             "signature": "Redstone.Library.DiscreteLQRTracker{5, 2, 2, true, true, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{2, 5, Float64, 10}, K_fwd::StaticArraysCore.SMatrix{2, 2, Float64, 4}, K_int::StaticArraysCore.SMatrix{2, 2, Float64, 4}, x_trim::StaticArraysCore.SVector{5, Float64}, u_trim::StaticArraysCore.SVector{2, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{2, Float64}, u_min::StaticArraysCore.SVector{2, Float64}, u_max::StaticArraysCore.SVector{2, Float64}}}",
             "inputs": [
@@ -1930,6 +2017,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
             "alias": "Redstone.Library.Pack",
             "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{5, Float64}, 5, typeof(Redstone.Library.pack)}",
@@ -2009,6 +2097,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
             "alias": "Redstone.Library.Pack",
             "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
@@ -2064,6 +2153,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
             "alias": "Redstone.Library.Pack",
             "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
@@ -2119,6 +2209,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
             "alias": "Redstone.Library.Pack",
             "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
@@ -2174,6 +2265,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Unpack",
             "signature": "Redstone.Library.Unpack{Float64, 2}",
             "inputs": [
@@ -2223,6 +2315,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Constant",
             "signature": "Redstone.Library.Constant{StaticArraysCore.SVector{2, Int8}}",
             "inputs": [],
@@ -2260,8 +2353,9 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Junction",
-            "signature": "Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#17#18\"}",
+            "signature": "Redstone.Library.Junction{Bool, StaticArraysCore.SVector{2, Bool}, 1, RedstoneExamples.var\"#28#29\"}",
             "inputs": [
               {
                 "name": "in1",
@@ -2291,7 +2385,7 @@
             "parameters": [
               {
                 "name": "f",
-                "value": "#17"
+                "value": "#28"
               }
             ]
           },
@@ -2300,8 +2394,8 @@
             "field": "children",
             "key": "selection",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}",
             "inputs": [
               {
                 "name": "δe_pid"
@@ -2489,6 +2583,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Switch",
             "signature": "Redstone.Library.Switch{Float64}",
             "inputs": [
@@ -2540,6 +2635,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.Switch",
             "signature": "Redstone.Library.Switch{Float64}",
             "inputs": [
@@ -2591,6 +2687,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "selection",
+                "key": "command_δe",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.UnitDelay",
             "signature": "Redstone.Library.UnitDelay{Float64}",
             "inputs": [
@@ -2631,6 +2741,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "selection",
+                "key": "command_δt",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.UnitDelay",
             "signature": "Redstone.Library.UnitDelay{Float64}",
             "inputs": [
@@ -2665,8 +2789,8 @@
             "field": "children",
             "key": "actuators",
             "class": "assembly",
-            "type": "Redstone.Library.Group",
-            "signature": "Redstone.Library.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}",
             "inputs": [
               {
                 "name": "δe_cmd"
@@ -2779,6 +2903,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "actuators",
+                "key": "δe_limiter",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.RateLimiter",
             "signature": "Redstone.Library.RateLimiter{Float64}",
             "inputs": [
@@ -2827,6 +2965,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.FirstOrderLag",
             "signature": "Redstone.Library.FirstOrderLag{Float64}",
             "inputs": [
@@ -2871,6 +3010,20 @@
               "m": 1,
               "c": 0
             },
+            "rates": [
+              {
+                "scope": "actuators",
+                "key": "δt_limiter",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
             "type": "Redstone.Library.RateLimiter",
             "signature": "Redstone.Library.RateLimiter{Float64}",
             "inputs": [
@@ -2919,6 +3072,7 @@
               "m": 1,
               "c": 0
             },
+            "rates": [],
             "type": "Redstone.Library.FirstOrderLag",
             "signature": "Redstone.Library.FirstOrderLag{Float64}",
             "inputs": [
@@ -2960,7 +3114,13 @@
             "kind": {
               "kind": "float"
             },
-            "pinned": false
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "pid_controller/h_ctl",
+                "port": "r"
+              }
+            ]
           },
           {
             "name": "V_ref",
@@ -2968,7 +3128,13 @@
             "kind": {
               "kind": "float"
             },
-            "pinned": false
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "pid_controller/V_ctl",
+                "port": "r"
+              }
+            ]
           },
           {
             "name": "mode",
@@ -2976,12 +3142,13 @@
             "kind": {
               "kind": "boolean"
             },
-            "pinned": false
+            "pinned": false,
+            "pinned_by": []
           }
         ],
         "anchors": [
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -2993,7 +3160,7 @@
             "key": "noise"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3005,7 +3172,7 @@
             "key": "h_ctl"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3017,7 +3184,7 @@
             "key": "θ_ctl"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3029,7 +3196,7 @@
             "key": "q_ctl"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3041,7 +3208,7 @@
             "key": "V_ctl"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3053,7 +3220,7 @@
             "key": "tracker"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3065,7 +3232,7 @@
             "key": "command_δe"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3077,7 +3244,7 @@
             "key": "command_δt"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3089,7 +3256,7 @@
             "key": "δe_limiter"
           },
           {
-            "T": {
+            "dt": {
               "num": 1,
               "den": 50
             },
@@ -3102,35 +3269,127 @@
           }
         ],
         "scopes": [],
+        "grid": {
+          "admissible": {
+            "num": 1,
+            "den": 50
+          },
+          "pool": [
+            {
+              "anchor": 1,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 2,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 3,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 4,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 5,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 6,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 7,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 8,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 9,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 10,
+              "kind": "period",
+              "factor": 1
+            }
+          ],
+          "primes": [
+            {
+              "prime": 2,
+              "power": 1,
+              "suppliers": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ]
+            },
+            {
+              "prime": 5,
+              "power": 2,
+              "suppliers": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ]
+            }
+          ]
+        },
         "types": [
           {
-            "name": "Redstone.Library.Group",
-            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+            "name": "Redstone.Group",
+            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
             "locations": [
               {
                 "function": "sample_times",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3134
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 981
               },
               {
                 "function": "local_wires",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3131
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 978
               },
               {
                 "function": "input_wires",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3132
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 979
               },
               {
                 "function": "output_wires",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3133
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 980
               },
               {
                 "function": "transparent_container",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3135
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 982
               }
             ]
           },
@@ -3140,18 +3399,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-                "line": 45
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 52
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-                "line": 46
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 53
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-                "line": 44
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 51
               }
             ]
           },
@@ -3161,13 +3420,13 @@
             "locations": [
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 859
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 858
               },
               {
                 "function": "s_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 858
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 857
               }
             ]
           },
@@ -3177,18 +3436,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 117
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 116
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 119
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 118
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 116
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 115
               }
             ]
           },
@@ -3198,18 +3457,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 2382
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2381
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 2695
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2694
               },
               {
                 "function": "s_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 2694
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2693
               }
             ]
           },
@@ -3219,13 +3478,13 @@
             "locations": [
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 351
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 350
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 350
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 349
               }
             ]
           },
@@ -3235,18 +3494,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 2752
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2751
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3049
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 3048
               },
               {
                 "function": "s_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 3047
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 3046
               }
             ]
           },
@@ -3256,18 +3515,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 193
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 192
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 194
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 193
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 192
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 191
               }
             ]
           },
@@ -3277,18 +3536,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 262
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 261
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 263
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 262
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 261
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 260
               }
             ]
           },
@@ -3298,18 +3557,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 382
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 381
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 383
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 382
               },
               {
                 "function": "s_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 381
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 380
               }
             ]
           },
@@ -3319,18 +3578,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 726
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 725
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 727
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 726
               },
               {
                 "function": "s_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 725
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 724
               }
             ]
           },
@@ -3340,18 +3599,18 @@
             "locations": [
               {
                 "function": "u_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 1012
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1011
               },
               {
                 "function": "y_types",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 1013
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1012
               },
               {
                 "function": "x_init",
-                "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-                "line": 1011
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1010
               }
             ]
           }
@@ -3576,7 +3835,249 @@
           }
         ]
       },
+      "events": {
+        "components": [
+          {
+            "path": "plant",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "sensing/noise",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "sensing/altimeter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid_controller/h_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid_controller/θ_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid_controller/q_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid_controller/V_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid_controller/free",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/tracker",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/state_pack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/z_pack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/z_ref_pack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/command_pack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/u_unpack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/free_pair",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr_controller/engaged",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "selection/select_δe",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "selection/select_δt",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "selection/command_δe",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "selection/command_δt",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "actuators/δe_limiter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "actuators/δe_lag",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "actuators/δt_limiter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "actuators/δt_lag",
+            "events": [],
+            "bundle": []
+          }
+        ]
+      },
       "warnings": []
-    }
+    },
+    "dt_frame": {
+      "num": 1,
+      "den": 100
+    },
+    "dt_base": {
+      "num": 1,
+      "den": 100
+    },
+    "h_max": {
+      "num": 1,
+      "den": 100
+    },
+    "algorithm": {
+      "text": "RK4()",
+      "proposes": false
+    },
+    "firing_budget": 4,
+    "localization_tol": 1.0e-6,
+    "localization_budget": 8,
+    "attempt_budget": 7,
+    "schedule": {
+      "anchors": [
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        }
+      ],
+      "rows": [
+        {
+          "path": "sensing/noise",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "pid_controller/h_ctl",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "pid_controller/θ_ctl",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "pid_controller/q_ctl",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "pid_controller/V_ctl",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "lqr_controller/tracker",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "selection/command_δe",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "selection/command_δt",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "actuators/δe_limiter",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "actuators/δt_limiter",
+          "D": 2,
+          "phi": 0
+        }
+      ],
+      "scopes": []
+    },
+    "warnings": []
   }
 }

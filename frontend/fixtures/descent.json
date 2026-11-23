@@ -12,8 +12,8 @@
         {
           "path": "",
           "class": "assembly",
-          "type": "Redstone.Library.Group",
-          "signature": "Redstone.Library.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, gear::RedstoneExamples.GroundContact, stop::Redstone.Library.StopRequest}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{}, @NamedTuple{}}",
+          "type": "Redstone.Group",
+          "signature": "Redstone.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, gear::RedstoneExamples.GroundContact, stop::Redstone.Library.StopRequest}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{}, @NamedTuple{}}",
           "inputs": [
             {
               "name": "δe"
@@ -95,6 +95,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "RedstoneExamples.Longitudinal",
           "signature": "RedstoneExamples.Longitudinal",
           "inputs": [
@@ -235,6 +236,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "RedstoneExamples.GroundContact",
           "signature": "RedstoneExamples.GroundContact",
           "inputs": [
@@ -275,6 +277,7 @@
             "m": 1,
             "c": 0
           },
+          "rates": [],
           "type": "Redstone.Library.StopRequest",
           "signature": "Redstone.Library.StopRequest",
           "inputs": [
@@ -316,7 +319,8 @@
           "kind": {
             "kind": "float"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         },
         {
           "name": "δt",
@@ -324,40 +328,45 @@
           "kind": {
             "kind": "float"
           },
-          "pinned": false
+          "pinned": false,
+          "pinned_by": []
         }
       ],
       "anchors": [],
       "scopes": [],
+      "grid": {
+        "pool": [],
+        "primes": []
+      },
       "types": [
         {
-          "name": "Redstone.Library.Group",
-          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) built on the fly, whose values are the ad-hoc\ntopologies.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which return its fields.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+          "name": "Redstone.Group",
+          "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3134
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3131
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3132
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3133
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 3135
+              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "line": 982
             }
           ]
         },
@@ -367,18 +376,18 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-              "line": 45
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 52
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-              "line": 46
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 53
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-              "line": 44
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 51
             }
           ]
         },
@@ -388,23 +397,28 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-              "line": 92
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
-              "line": 93
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
               "line": 90
             },
             {
-              "function": "m_init",
-              "file": "<depot>/packages/RedstoneExamples/3zx56/src/longitudinal.jl",
+              "function": "y_types",
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
               "line": 91
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 88
+            },
+            {
+              "function": "m_init",
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 89
+            },
+            {
+              "function": "state_events",
+              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "line": 95
             }
           ]
         },
@@ -414,23 +428,23 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 440
-            },
-            {
-              "function": "y_types",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 441
-            },
-            {
-              "function": "x_init",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
               "line": 439
             },
             {
+              "function": "y_types",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 440
+            },
+            {
+              "function": "x_init",
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 438
+            },
+            {
               "function": "stop_reason",
-              "file": "<depot>/packages/Redstone/YsX4y/src/library.jl",
-              "line": 443
+              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "line": 442
             }
           ]
         }
@@ -468,6 +482,35 @@
           "stage2": [
             "y"
           ]
+        }
+      ]
+    },
+    "events": {
+      "components": [
+        {
+          "path": "plant",
+          "events": [],
+          "bundle": []
+        },
+        {
+          "path": "gear",
+          "events": [
+            {
+              "name": "touchdown",
+              "policy": "localized"
+            }
+          ],
+          "bundle": [
+            "m",
+            "u",
+            "y",
+            "t"
+          ]
+        },
+        {
+          "path": "stop",
+          "events": [],
+          "bundle": []
         }
       ]
     },

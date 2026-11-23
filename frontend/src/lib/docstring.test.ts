@@ -46,9 +46,9 @@ describe("rewriteRefs", () => {
     const r = row(lib, "Redstone.Library.LQRTracker");
     expect(rewriteRefs(r.docstring!, r.name)).toContain(`[\`trim!\`](${DOCS_URL}api/#Redstone.trim!)`);
   });
-  it("joins the Group row's bare local_wires with the row's module, the pending note's case", () => {
-    const r = row(lib, "Redstone.Library.Group");
-    expect(rewriteRefs(r.docstring!, r.name)).toContain(`[\`local_wires\`](${DOCS_URL}api/#Redstone.Library.local_wires)`);
+  it("joins the Freeze row's bare Pinned with the row's module, the pending note's case", () => {
+    const r = row(lib, "Redstone.Library.Freeze");
+    expect(rewriteRefs(r.docstring!, r.name)).toContain(`[\`Pinned\`](${DOCS_URL}api/#Redstone.Library.Pinned)`);
   });
   it("leaves a link outside Redstone as its text", () => {
     expect(rewriteRefs("See [`init!`](@ref) and [component](@ref g-component).", "Main.Plant")).toBe("See `init!` and component.");

@@ -7,7 +7,7 @@ import { iconOf } from "./icons";
 function primitive(type: string, extra: Partial<PrimitiveNode> = {}, kind: KindMarker = { kind: "float" }): Node {
   return {
     path: "x", type, signature: type, parameters: [], class: "primitive", tier: "continuous",
-    timing: { anchor: 0, m: 1, c: 0 }, inputs: [], outputs: [{ name: "y", type: "Float64", kind, pinned: false }], ...extra,
+    timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [], outputs: [{ name: "y", type: "Float64", kind, pinned: false }], ...extra,
   };
 }
 const B = "Redstone.Library.";

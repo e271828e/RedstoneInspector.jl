@@ -52,7 +52,7 @@ describe("timingPhrase", () => {
 });
 
 describe("ratePhrase", () => {
-  const q = { key: "q_ctl", T: { num: 1, den: 50 }, tau: { num: 0, den: 1 }, scope: "pid_controller" };
+  const q = { key: "q_ctl", dt: { num: 1, den: 50 }, tau: { num: 0, den: 1 }, scope: "pid_controller" };
   it.each([
     [{ anchor: 0, m: 1, c: 0 }, "every base tick"],
     [{ anchor: 0, m: 4, c: 0 }, "every 4th base tick"],
@@ -109,7 +109,7 @@ describe("closed_loop's elements", () => {
     const { kind, scopes, ...rest } = l;
     expect([kind, l.wires, scopes]).toEqual(["level", 30, []]);
     expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined });
-    expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Library.Group"]);
+    expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Group"]);
     expect(by(l.inputs, "h_ref").consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
     const pid = levelFacts(cl, "pid_controller") as LevelFacts;
     expect([pid.kind, pid.segment, pid.membership?.field]).toEqual(["level", "pid_controller", "children"]);
@@ -244,9 +244,9 @@ describe("other fixtures", () => {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [],
           wires: [{ from: { path: "", port: "x" }, to: { path: "L", port: "e" } }] },
-        { ...id, path: "L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, inputs: [f("e")], outputs: [] },
+        { ...id, path: "L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [f("e")], outputs: [] },
       ],
-      root_inputs: [f("x")], anchors: [], scopes: [], types: [],
+      root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };
     const tree = buildTree(structure);
     const one = { tree, structure, resolution: buildResolution(tree, structure) } as Model;

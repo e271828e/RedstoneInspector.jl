@@ -48,7 +48,7 @@ export const mixed = (model: Model, path: string): boolean => clocksBeneath(mode
 /** A triple's period in seconds, the anchor's `T` times `m`; the base grid before every anchor. */
 function period(model: Model, t: Triple): number {
   if (t[0] === 0) return -1;
-  const T = model.structure!.anchors[t[0] - 1].T;
+  const T = model.structure!.anchors[t[0] - 1].dt;
   return (T.num / T.den) * t[1];
 }
 
@@ -71,7 +71,7 @@ export const stepsOf = (model: Model): Map<string, number> => new Map(tripleOrde
 
 /** A triple read out: `anchor 1 (1/10 s) × 2, phase 1`, `base grid` for anchor 0, `× m` past 1, the phase past 0. */
 export function tripleText(model: Model, t: Triple): string {
-  const T = t[0] === 0 ? undefined : model.structure!.anchors[t[0] - 1].T;
+  const T = t[0] === 0 ? undefined : model.structure!.anchors[t[0] - 1].dt;
   const head = T ? `anchor ${t[0]} (${T.num}/${T.den} s)` : "base grid";
   return `${head}${t[1] > 1 ? ` × ${t[1]}` : ""}${t[2] > 0 ? `, phase ${t[2]}` : ""}`;
 }

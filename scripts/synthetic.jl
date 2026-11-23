@@ -4,8 +4,8 @@ module Synthetic
 using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
-    transparent_container, input_passthrough, Absolute, Relative, Hz
-import Redstone.Library: Group, Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
+    transparent_container, input_passthrough, Absolute, Relative, Group
+import Redstone.Library: Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
     DiscreteTransferFunction, DiscretizedStateSpace, DiscretizedTransferFunction,
@@ -100,7 +100,7 @@ function large()
           local_wires = Tuple(level_wires),
           input_wires = ntuple(i -> "u$i" => Tuple(root_consumers[i]), 4),
           output_wires = ("$(component_names[end])/out1" => "y1", "$(component_names[end - 1])/out1" => "y2"),
-          sample_times = NamedTuple{Tuple(anchored)}(ntuple(_ -> Absolute(Hz(50)), length(anchored))))
+          sample_times = NamedTuple{Tuple(anchored)}(ntuple(_ -> Absolute(1//50), length(anchored))))
 end
 
 # --- containers: the three memberships -----------------------------------------
@@ -217,7 +217,7 @@ rates() = Group((; src = Ramp(),
                    slow = held());
                 local_wires = ("src/out" => "fast/in", "src/out" => "slow/in"),
                 output_wires = ("fast/inner" => "inner", "fast/outer" => "outer", "slow/out" => "slow"),
-                sample_times = (fast = Absolute(Hz(50)), slow = Absolute(Hz(10))))
+                sample_times = (fast = Absolute(1//50), slow = Absolute(1//10)))
 
 # --- library: one of every shipped library component --------------------------------
 
@@ -267,7 +267,7 @@ function library()
                          "select/y" => "backlash/u", "backlash/y" => "ld_integrator/u",
                          "ld_integrator/out" => "comparator/u", "ld_integrator/velocity" => "apply/u"),
           input_wires = ("a" => ("or/in1", "and/in1"), "b" => "or/in2"),
-          sample_times = (noise = Absolute(Hz(10)), dss = Absolute(Hz(50)), d_limited = Relative(2),
+          sample_times = (noise = Absolute(1//10), dss = Absolute(1//50), d_limited = Relative(2),
                           d_pid = Relative(2, 1)))
 end
 
@@ -291,7 +291,7 @@ failure_cycle() = Group((plant = Plant(2.0, 0.3), ctl = PI(3.0, 2.0));
                         local_wires = ("ctl/y" => "plant/u", "plant/power" => "ctl/y"),
                         input_wires = ("ref" => "ctl/ref", "d" => "plant/d"),
                         output_wires = "plant/y" => "y",
-                        sample_times = (ctl = Absolute(Hz(50)),))
+                        sample_times = (ctl = Absolute(1//50),))
 
 "Two-input summing junction."
 struct Sum <: AbstractComponent end
@@ -311,7 +311,7 @@ failure_nested() = Group((plant = Plant(2.0, 0.3),
                           ctl = Group((; pi = PI(3.0, 2.0));
                                       input_wires = ("ref" => "pi/ref", "y" => "pi/y"),
                                       output_wires = "pi/y" => "u",
-                                      sample_times = (pi = Absolute(Hz(50)),)));
+                                      sample_times = (pi = Absolute(1//50),)));
                          local_wires = ("ctl/u" => "plant/u", "plant/power" => "ctl/y"),
                          input_wires = ("ref" => "ctl/ref", "d" => "plant/d"),
                          output_wires = "plant/y" => "y")

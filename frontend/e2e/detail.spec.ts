@@ -56,7 +56,7 @@ test.describe("closed_loop", () => {
     await expect(pane(page).locator(".path-line button.copy + span.level-mark")).toHaveCount(1);
     await expect(pane(page).locator("p.facts")).toHaveCount(0);
     await expectLabels(page, ["type", "class", "children", "wires"]);
-    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Library.Group");
+    await expect(fact(page, "type").locator(".type")).toHaveText("Redstone.Group");
     await expect(fact(page, "class")).toHaveText("assembly");
     await expect(fact(page, "children")).toHaveText("6");
     await expect(fact(page, "wires")).toHaveText("30");

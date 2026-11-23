@@ -142,8 +142,8 @@ test("large: b lists 100 rows and the refine note", async ({ page }) => {
   await drop(page, "large");
   await search(page, "b");
   await expect(hitRows(page)).toHaveCount(100);
-  await expect(groupCount(page, "nodes")).toHaveText("171");
-  await expect(page.locator(".results .refine")).toHaveText("171 hits; showing 100, refine the query");
+  await expect(groupCount(page, "nodes")).toHaveText("170");
+  await expect(page.locator(".results .refine")).toHaveText("170 hits; showing 100, refine the query");
 });
 
 test("rates: hold marks fast and slow with one beneath each, and fast/outer once fast expands", async ({ page }) => {

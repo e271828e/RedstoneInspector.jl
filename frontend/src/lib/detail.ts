@@ -38,7 +38,7 @@ const rational = (r: Rational) => `${r.num}/${r.den}`;
 export function timingPhrase(t: Timing, anchors: Anchor[]): string {
   const a = t.anchor === 0 ? undefined : anchors[t.anchor - 1];
   const base = t.anchor === 0 ? "the base grid" : `anchor ${a?.key ?? t.anchor}`;
-  const rate = a ? ` (T ${rational(a.T)} s, tau ${rational(a.tau)} s)` : "";
+  const rate = a ? ` (T ${rational(a.dt)} s, tau ${rational(a.tau)} s)` : "";
   return `${base}${rate}, m ${t.m}, c ${t.c}`;
 }
 
@@ -57,7 +57,7 @@ export function ratePhrase(t: Timing, anchors: Anchor[]): string {
   const a = t.anchor === 0 ? undefined : anchors[t.anchor - 1];
   const head = t.anchor === 0 ? `${every} base tick`
     : !a ? `${every} tick of anchor ${t.anchor}`
-    : `${every} tick of ${a.key}, ${rational(a.T)} s${a.tau.num === 0 ? "" : `, tau ${rational(a.tau)} s`}`;
+    : `${every} tick of ${a.key}, ${rational(a.dt)} s${a.tau.num === 0 ? "" : `, tau ${rational(a.tau)} s`}`;
   return t.c > 0 ? `${head}, offset ${t.c}` : head;
 }
 
@@ -96,7 +96,7 @@ export interface FaceFacts {
   phrase?: string;
   /**
    * On a primitive's own face alone, where the marker is declared; none on an assembly's face, which declares none,
-   * nor on a root input, whose `pinned` version 1 of the format writes false whatever the model declares.
+   * nor on a root input, whose `pinned` is the fan-out meet's and waits for the root-inputs tab (deployment_overlay.md answer 14).
    */
   pinned?: boolean;
   /** A primitive output's stage, from `outputs.components`. */

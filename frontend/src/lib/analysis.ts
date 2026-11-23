@@ -160,7 +160,7 @@ export function anchorRows(model: Model): (BaseRow | AnchorRow)[] {
   if (!s) return [];
   return [
     { kind: "anchor", index: 0, base: true },
-    ...s.anchors.map((a, i): AnchorRow => ({ kind: "anchor", index: i + 1, T: rational(a.T), tau: rational(a.tau), scope: a.scope, key: a.key })),
+    ...s.anchors.map((a, i): AnchorRow => ({ kind: "anchor", index: i + 1, T: rational(a.dt), tau: rational(a.tau), scope: a.scope, key: a.key })),
   ];
 }
 
@@ -177,7 +177,7 @@ export function scopeRows(model: Model): ScopeRow[] {
 /** A triple's period: `T × m` reduced, `1/25 s`; base ticks for anchor 0, whose `Δt` a build does not know. */
 function periodText(model: Model, t: Triple): string {
   if (t[0] === 0) return `${t[1]} base tick${t[1] === 1 ? "" : "s"}`;
-  const T = model.structure!.anchors[t[0] - 1].T;
+  const T = model.structure!.anchors[t[0] - 1].dt;
   const num = T.num * t[1], g = gcd(num, T.den);
   return `${num / g}/${T.den / g} s`;
 }
@@ -202,7 +202,7 @@ export function componentRows(model: Model, byPeriod = false): ComponentRow[] {
 export function scheduleNote(model: Model): string | undefined {
   if (!model.structure) return undefined;
   return model.kind === "deployment"
-    ? "This deployment carries no schedule: the format's version 1.0 holds the build alone, and the schedule rows and the hyperperiod chart wait for its next minor version."
+    ? "This page does not draw a deployment's schedule rows and hyperperiod chart yet."
     : "The schedule rows and the hyperperiod chart need a deployment.";
 }
 
