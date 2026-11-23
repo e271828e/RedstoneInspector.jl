@@ -390,8 +390,11 @@ Open items live in `pending.md`.
      `Redstone.Library.Junction`. The core's writer adds that binding as
      the link's target where the name resolves to an exported one, and a
      link whose target stands under `Redstone.` becomes
-     `<docs>/api/#<target>`, in any type's docstring. Every other link, a
-     bare one included, renders as its text, and a glossary link is drawn
+     `<docs>/api/#<target>`, in any type's docstring. Until the core's
+     export audit the writer adds no target to the core's own links, so
+     until then a bare link in the docstring of a type under `Redstone.`
+     joins to that type's module. Every other link renders as its text,
+     and a glossary link is drawn
      only in the docstring of a type under `Redstone.`
      (`deployment_overlay.md` answer 15). `<docs>` is one constant in the
      bundle, `https://e271828e.github.io/Redstone.jl/dev/` until the core's
@@ -417,7 +420,11 @@ Open items live in `pending.md`.
    (`deployment_overlay.md` answer 15): a bare name took the module of
    the row its docstring belongs to, which left a link from `Library`
    into `Redstone` dead, and a docstring on a type outside `Redstone`
-   drew no link.*
+   drew no link. Amended 2026-11-23 (`deployment_overlay.md` answer 15,
+   the record at the new pin, the user away): every bare link was to
+   render as its text at once, which at the pin is every bare link of
+   the core's, the writer's pass rewriting none until the core exports
+   names.*
    *Rejected:* two builds, one per address, the second bundle
    `live_session.md`'s answer 5 refused; linking a bare `@ref` to the API
    page without an anchor, a link turned into a search; a `$id` carrying

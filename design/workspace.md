@@ -114,7 +114,8 @@ Open items live in `pending.md`.
    - a short list of labelled facts, each label carrying a hover title
      that says what it means: the qualified type with the alias beside it;
      the class and tier; the rate as a frames table, a row per frame with
-     its period and its phase (`deployment_overlay.md` answer 10), and no
+     its period and its phase and the chain of `sample_times` links on a
+     line under it (`deployment_overlay.md` answer 10), and no
      table for a continuous primitive, which no rate gates; and, when
      `key` is present, the membership with
      its container's kind written out, "transparent container `children`,
@@ -165,7 +166,10 @@ Open items live in `pending.md`.
    primitive selected. Amended 2026-11-20 (`deployment_overlay.md` answer
    10): the rate was read out as a phrase, "every 4th base tick, offset
    1" or "every tick of `q_ctl`, 1/50 s", with the anchor, `m` and `c` in
-   its hover title, and a rate scope had no table.*
+   its hover title, and a rate scope had no table. Amended 2026-11-23
+   (`deployment_overlay.md` answer 10, the record at the new pin, the
+   user away): the pane showed no chain, which the core now carries on
+   the node as `rates`.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -205,7 +209,9 @@ Open items live in `pending.md`.
    Diagnostics: one row per diagnostic with kind, attributed path and
    message, the error hue and amber, a text filter, the count on the tab, a
    click selecting the element and navigating to it, a loop opening its
-   first member's level with the chain lit; the empty state says so. Root
+   first member's level with the chain lit; a deployment's own warnings
+   follow its build's (`deployment_overlay.md` answer 4); the empty state
+   says so. Root
    inputs: name, type, kind phrase, the pinned mark, terminal consumers
    one to a line, those that pin marked with the cause
    (`deployment_overlay.md` answer 14), and, from stage 2, the claiming
@@ -213,7 +219,8 @@ Open items live in `pending.md`.
    widgets. Timing, in the notation of `deployment_overlay.md` answer 3
    with its equations as the tables' caption: anchors as `Aₖ (key)` with
    `Δtₖ`, `τₖ`, the declaring scope and each pool entry's factor, anchor
-   0 as the base grid; scopes and components in the same columns, every
+   0 as the base grid, and under them the pool's alternatives and the
+   prime attribution; scopes and components in the same columns, every
    discrete primitive in walk order with `k`, `m`, `c`, `Δt` and `τ`,
    sortable by period, with its rate-mode swatch. A deployment heads the
    tab with its parameters and the steps per frame, adds `Dₖ` and `Φₖ` to
@@ -250,7 +257,11 @@ Open items live in `pending.md`.
    timing tab listed anchors with index, `T` and `tau`, and scopes and
    components with their triples, and waited for the overlay's schedule
    rows as a table of their own; the root inputs had no pinned mark,
-   their `pinned` being false in every file.*
+   their `pinned` being false in every file. Amended 2026-11-23
+   (`deployment_overlay.md` answers 4 and 9, the record at the new pin,
+   the user away): the diagnostics tab listed the warnings of a
+   deployment's build and not the deployment's own, and the timing tab
+   gave the pool's alternatives and the prime attribution no place.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -365,8 +376,10 @@ Open items live in `pending.md`.
     and reads the header: another `format_version.major` is refused naming
     both versions, a higher minor loads with unknown fields ignored and a
     status note, a missing body or a body without `structure.nodes` is
-    refused naming what is missing; the schema itself is never validated
-    at runtime. The label is the envelope `name`, else the file's base name
+    refused naming what is missing, and so is a file from an older core,
+    told by a structure without `grid` or a deployment without
+    `schedule` (`deployment_overlay.md` answer 2); the schema itself is
+    never validated at runtime. The label is the envelope `name`, else the file's base name
     for a dropped or picked file, else the root type's display name, one
     step more than `visual_grammar.md`'s answer 10. A second file in a tab
     replaces the model under answer 9's rules; two models are two tabs. The
@@ -382,7 +395,10 @@ Open items live in `pending.md`.
     any other site.
     *Amended 2026-11-01 (increment 5's look pass): the leave prompt joined,
     and the statement's last clause read "loads nothing from the
-    network".*
+    network". Amended 2026-11-23 (`deployment_overlay.md` answer 2, the
+    record at the new pin, the user away): a file from an older core
+    loaded, the header saying 1.0 in both, and its anchors broke the
+    readers.*
     *Why:* a wrong file should fail in words, and the structural check is
     the cheapest thing that does it; the hosted copy and the live session
     share one bundle, so the statement holds for both. *Rejected:* a

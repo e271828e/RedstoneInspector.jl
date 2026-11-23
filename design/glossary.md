@@ -120,7 +120,8 @@ no entry here.
   core's frame, one iteration of the loop (`workspace.md` answer 1).
 - **Frames table.** The detail pane's rendering of a discrete
   primitive's timing: one row per frame, its rate scope, its anchor, the
-  base grid and seconds, each with a period and a phase
+  base grid and seconds, each with a period and a phase, and under it
+  the chain of `sample_times` links its node carries as `rates`
   (`deployment_overlay.md` answer 10).
 - **Generator.** A program that writes code from a description, here the
   TypeScript declarations from the schema copy (`build_release.md`

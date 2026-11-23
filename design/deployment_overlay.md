@@ -23,9 +23,11 @@ the root input's pin to `show(::Structure)` and to the format, answer 14.
 
 ## Pending questions
 
-Open items live in `pending.md`. Two questions the session raised belong
-to the core and stand in its `pending.md`: whether `Period` and `Hz`
-retire, and whether the build refuses a pool that admits no deployment.
+Open items live in `pending.md`. Two questions the session raised
+belonged to the core, whether `Period` and `Hz` retire and whether the
+build refuses a pool that admits no deployment. The core has ruled both,
+as its D-469 and D-465. *Amended 2026-11-23 (the record at the new pin,
+the user away): both stood open in the core's `pending.md`.*
 
 ## Answered questions
 
@@ -33,10 +35,15 @@ retire, and whether the build refuses a pool that admits no deployment.
    `show` prints of a `Build` or a `Deployment`, or the facts from which a
    client derives it exactly, and no internals. The second clause covers
    what the client already derives, the feedthrough edges and the routes,
-   and now the hyperperiod and the steps per frame. One printed thing
+   and now the hyperperiod, the steps per frame, each schedule row's
+   exact seconds and the chart over the joint period. One printed thing
    stays out: the build's activation list, which is the state of a cache.
    The rule replaces §13.9's sentence that version one carries "what a
    client needs to draw and explain the component tree".
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   clause named the hyperperiod and the steps per frame alone. The core's
+   §13.9 now also names each row's exact seconds and the chart over the
+   joint period (its commit 121da1a).*
    *Why:* `initial_design.md` answer 5 already titles the content "the
    artifacts' facts plus instance context", and answer 9 has the page
    "turn what `show` prints today into something to navigate", so the
@@ -50,11 +57,30 @@ retire, and whether the build refuses a pool that admits no deployment.
 
 2. **The format stays at 1.0 until the first release.** It changes freely
    until then, and version 1.0 is the format as of that release. The
-   schema requires the new sections. The page's loader refuses a
-   deployment body without `schedule`, in the words it uses for a body
-   without nodes, telling the reader to write the file again. The page
-   keeps no path for an older file, so the timing tab's sentence on a
-   deployment that "carries no schedule" goes.
+   schema requires the new sections. The header cannot tell a file that
+   an older core wrote, since both say 1.0, so the page's loader tells it
+   by structure. It refuses a body whose structure has no `grid`,
+   whatever the kind, and then a deployment body without `schedule`.
+   Each refusal names the missing key, as the refusal of a body without
+   nodes does, and adds that an older Redstone wrote the file and that
+   the reader should write it again with the current one. The refusal
+   for missing nodes keeps its words. A failure that carries no
+   structure has nothing to check and loads. The page keeps no path for an older file. The timing tab's
+   sentence on a deployment goes when the tab draws the schedule (answer
+   9).
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   refusal covered a deployment without `schedule` alone. A build or a
+   failure written by the core before `7ea3600` then loaded, and its
+   anchors, keyed `T`, broke the readers: the canvas drew, the rate
+   colors and the timing tab did not, and the console held the error
+   (the pin bump's review). The tab's sentence said that the deployment
+   "carries no schedule". The pin bump put a true sentence in its place,
+   which the implementation removes. The refusal was to use "the words
+   it uses for a body without nodes, telling the reader to write the
+   file again", and those words say no such thing. The core added `grid`
+   and `schedule` in one commit, its `44d52cc`, after the key `dt`, so
+   `grid` alone tells every older file and the `schedule` check is a
+   second guard.*
    *Why:* D-433's annotation, D-434 and D-437 each added to version one
    unbumped, "no reader to protect while unreleased", and a rule replaces
    the repeated exception. A minor bump only adds fields, so a 1.1 schema
@@ -73,7 +99,8 @@ retire, and whether the build refuses a pool that admits no deployment.
    ```
 
    An anchor has the same two pairs, `(Δtₖ, τₖ)` in seconds and
-   `(Dₖ, Φₖ)` in base ticks, and anchor 0 is `Δt₀ = Δt_base`, `D₀ = 1`.
+   `(Dₖ, Φₖ)` in base ticks, and anchor 0 is `Δt₀ = Δt_base`, `τ₀ = 0`,
+   `D₀ = 1`, `Φ₀ = 0`.
    One law composes them in each unit:
 
    ```
@@ -92,18 +119,27 @@ retire, and whether the build refuses a pool that admits no deployment.
    scopes can declare the same key, and the tooltip gives the declaring
    scope.
 
-   `τ` without a subscript, a component's phase in seconds, is the page's
-   coinage. `Φ·Δt_base` is the time of the component's first tick after
-   `t₀`, and it lies inside the first hyperperiod since `0 ≤ Φ < D`. The
-   spec has no letter for it. It gives `τ` to an `Absolute` entry's offset
-   in seconds, which the coinage extends.
+   `τ` without a subscript is a component's phase in seconds.
+   `Φ·Δt_base` is the time of the component's first tick after `t₀`, and
+   it lies inside the first hyperperiod since `0 ≤ Φ < D`. The session
+   coined the letter by extending the `τ` that the spec gave to an
+   `Absolute` entry's offset in seconds, and the core's §9.2 names the
+   quantity so since D-464.
 
-   The core takes the notation first, so that the page and the REPL
-   agree: `Δtₖ` where the spec and `show(::Structure)` say `T`,
-   `Absolute`'s first argument named `Δt` where it was `q`, the fields
-   `Anchor.T` and `Absolute.T` renamed `Δt`, and the anchor's JSON key
-   `T` renamed `dt`. `Period.T` keeps its name until the core rules on
-   retiring `Period` and `Hz`.
+   The core has the same notation, so the page and the REPL agree (its
+   D-464). The spec and `show(::Structure)` write an anchor's period
+   `Δtₖ`, the fields `Anchor.Δt` and `Absolute.Δt` hold it, and the
+   anchor's JSON key is `dt`. `Absolute(Δt, τ)` takes both arguments as
+   bare exact numbers of seconds, an integer or a `Rational`, since the
+   core retired `Period` and `Hz` (its D-469). `Absolute(1//50)` is a
+   50 Hz entry.
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   paragraph listed what the core was to take, from `T`, `q`, `Anchor.T`
+   and the JSON key `T`, and kept `Period.T` until the core ruled on
+   `Period` and `Hz`. The core took the notation as D-464 and retired
+   both types as D-469. A component's `τ` was the page's coinage alone,
+   the spec having no letter for it. Anchor 0's `τ₀` and `Φ₀` were
+   unstated.*
    *Why:* the page printed `c` as "phase" in the legend and as "offset"
    in the pane, while the core gives "phase" to `Φ` and calls `τ` the
    anchor's offset: one quantity under two words, and each word on two
@@ -138,11 +174,22 @@ retire, and whether the build refuses a pool that admits no deployment.
    }
    ```
 
-   `h_max` is the resolved bound. `h_min` is present only when set. The
+   `h_max` is the resolved bound. `h_min` is present only when set. A
+   proposing method requires one, and a fixed-step method may carry one
+   that it does not use. The
    algorithm is the text its `show` prints and one flag, `proposes`, which
    decides whether the steps per frame are a count or a range. `warnings`
    holds the deployment's own, encoded as the build's are, an empty array
-   when there are none.
+   when there are none. The diagnostics tab lists them after the build's
+   warnings and under the same rules: each is a row, the tab's count
+   includes it, the tree and the canvas mark its path, and a warning
+   alone does not open the drawer.
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   record gave the deployment's warnings no place on the page, and the
+   diagnostics tab read the build's alone (the pin bump's review).
+   `show(::Deployment)` prints them, so answer 1 owes them one. This
+   amends `workspace.md` answer 6. That a proposing method always
+   carries `h_min` was unstated (the core's §9.2, D-460).*
    *Why:* the two periods are the `Deployment`'s fields, where the
    `Schedule` holds neither. The frame positions the frame tops against
    the schedule, which the chart draws. The algorithm, the step bounds
@@ -166,13 +213,29 @@ retire, and whether the build refuses a pool that admits no deployment.
    ```
 
    `anchors` follows the order of `structure.anchors`, anchor 0 without a
-   row as everywhere else. A component's row has no `anchor`, which its
-   node's `timing` holds, no chain of `sample_times` links, which is a
-   build fact whose home would be the node, and no float `Δt`, which the
-   page computes exact as `D` times `dt_base`. The writer computes each
+   row as everywhere else. `rows` holds the discrete primitives in walk
+   order, and `scopes` follows the order of `structure.scopes`. The page
+   joins a row to its node by path, and a scope's row to its
+   `structure.scopes` row by path and key, so it relies on neither
+   order. A component's row has no `anchor`, which its node's `timing`
+   holds, no chain of `sample_times` links, which its node holds as
+   `rates` (answer 10), and no float `Δt`. The page computes `Δt` as `D`
+   times `dt_base` and `τ` as `Φ` times `dt_base`, each as an exact
+   fraction over the integers the file holds and never as a product of
+   floats. The writer computes each
    anchor's `Dₖ` and `Φₖ` as `Δtₖ / Δt_base` and `τₖ / Δt_base`. In
-   `structure.anchors` the key `T` becomes `dt`, which amends
+   `structure.anchors` the period's key is `dt`, which amends
    `descriptor_design.md` answer 9.
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   orders of `rows` and `scopes` were unstated, and the core's §13.9 now
+   gives them (its commit 7388e28). The chain's home "would be the
+   node", and the core carries it there as `rates` since D-467's
+   amendment of 2026-11-20. The exact product was stated for `Δt` alone.
+   The `Schedule`'s own float `Δt` is `D` times the float of `Δt_base`,
+   which is not always the float nearest the period: three ticks of
+   `1//10` read `0.30000000000000004`. That is an open item of the
+   core's `pending.md`. It does not reach the page, which reads no float
+   from the file.*
    *Why:* `descriptor_design.md` answer 2 has each section project one
    artifact, and §9.2 calls the `Schedule` the single source of truth for
    `Δt`. Binding is exact rational division, and a JavaScript number is
@@ -201,16 +264,27 @@ retire, and whether the build refuses a pool that admits no deployment.
    period or the offset. Its value, scope and key are that anchor's row.
    A prime's suppliers name pool entries by position, counted from 1 as
    every stored position in the file is.
-   `alternatives` appears on an entry that has some. A model with no
-   anchors has an empty pool and no `admissible`. In the core,
+   `alternatives` appears on an entry that has some, the offsets to
+   declare in its place. A prime's row carries `unfactored` when its
+   number is a cofactor the core's trial division left unfactored, and
+   its suppliers are then the entries that share a factor with it. A
+   model with no
+   anchors has an empty pool, no primes and no `admissible`. In the core,
    `show(::Structure)` derives the report and prints it under the anchor
-   table, and `Deployment` drops its `grid` field. The refusal's message,
+   table, and `Deployment` has no `grid` field. The refusal's message,
    the derivation line and `GridUtilization` stay the deployment's and
    keep the report in their payloads. So a build's page shows the report,
    a failure past the structure step shows it, and a deployment adds one
-   comparison, its `Δt_base` against the coarsest admissible one.
+   comparison, its `Δt_base` against the coarsest admissible one. The
+   comparison reads as `show(::Deployment)` prints it: the coarsest
+   value and the whole number the base tick divides it by, the number
+   left out where it is 1.
    *Amended 2026-11-21 (the core's D-467, commit 1537538): the example
-   counted the suppliers from 0.*
+   counted the suppliers from 0. Amended 2026-11-23 (the record at the
+   new pin, the user away): the answer did not name `unfactored`, which
+   the core's D-467 added, nor an empty `primes`, and gave the
+   comparison no form, which the core's D-471 has since fixed in
+   `show`.*
    *Why:* the report is a pure function of the anchors, and it answers
    which base ticks a model admits, which a user wants before choosing
    one. With the anchor index the page puts each factor beside the value
@@ -269,7 +343,11 @@ retire, and whether the build refuses a pool that admits no deployment.
 
 8. **The hyperperiod: derived by the client.** The page computes the
    least common multiple of the rows' `D` with `BigInt` and shows it in
-   base ticks and in seconds.
+   base ticks and in seconds. A deployment with no discrete primitive
+   has no rows, and the page then shows no hyperperiod and no chart.
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   case with no rows was unstated. `show(::Deployment)` prints "no rows"
+   there and no chart.*
    *Why:* the core holds it as a `BigInt`, since coprime periods take it
    past `Int`, and a JSON number is exact in JavaScript only below
    `2^53`. The derivation is one lcm over integers the file holds, and
@@ -300,12 +378,41 @@ retire, and whether the build refuses a pool that admits no deployment.
    ```
 
    The anchors table keeps its "declared in" column and shows each pool
-   entry's factor beside the value it belongs to, with a line above it
-   for the coarsest admissible base tick. The rate scopes' table takes
-   the same columns as the components'. The steps per frame are derived:
-   a fixed-step method takes `⌈Δt_frame / h_max⌉`, a proposing one from
-   that count up to `⌊Δt_frame / h_min⌋`. This amends `workspace.md`
-   answer 6.
+   entry's factor beside the value it belongs to, a period's beside
+   `Δtₖ` and an offset's beside `τₖ`, with a line above it for the
+   coarsest admissible base tick. A deployment's line takes its place
+   and states `Δt_base` against that tick (answer 6), or that `Δt_base`
+   is the coarsest admissible where the two are equal. Under the table stands the rest of the
+   grid report, as `show(::Structure)` words it. An offset entry with
+   alternatives gets a line naming the offsets to declare in its place
+   and the base tick they keep, its factor times the coarsest. The
+   prime attribution is one line with the denominator's factors, then a
+   row per prime power with its suppliers, each named by its anchor and
+   its kind, and a row marked `unfactored` says so. A grid whose
+   coarsest tick is a whole number of seconds has no primes and shows no
+   prime line. A structure with no anchors shows none of it. The rate
+   scopes' table takes the components' columns, with the key after the
+   path. A build's tab ends with a sentence saying that the base grid's
+   columns and the chart need a deployment.
+
+   The steps per frame are derived, as `show(::Deployment)` prints them.
+   A fixed-step method takes `⌈Δt_frame / h_max⌉`. A proposing one takes
+   from that count up to `⌊Δt_frame / h_min⌋`, and the upper count is
+   never below the lower. A row's ticks all land on frame tops when
+   `Δt_frame` divides both `D·Δt_base` and `Φ·Δt_base`, and the row
+   splits frames otherwise. Where some row splits, the list calls the
+   count the steps per unsplit frame and names the rows that split. This
+   amends `workspace.md` answer 6.
+   *Amended 2026-11-23 (the record at the new pin, the user away): the
+   answer gave the pool's alternatives and the prime attribution no
+   place on the page. Whether a deployment shows one line on the
+   coarsest tick or two, the scopes' key column, a grid with no primes
+   and the build's last sentence were unstated. The steps' upper count
+   had no floor at the lower
+   one, and the rule for a row that splits frames and the words "per
+   unsplit frame" were unstated. Each now follows `show`, which the
+   core's suite compares with a client of the descriptor line by line
+   (`Redstone.jl/test/test_descriptor.jl`).*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is
@@ -322,20 +429,45 @@ retire, and whether the build refuses a pool that admits no deployment.
     ```
                           period         phase
     scope  fast/outer     K  = 3         φ = 1          ticks of fast/outer
-    anchor A₁ (fast)      m  = 6         c = 2          ticks of A₁
-    base grid             D  = 24        Φ = 8          base ticks
-    seconds               Δt = 3/25 s    τ = 1/25 s
+    anchor A₂ (fast)      m  = 6         c = 3          ticks of A₂
+    base grid             D  = 36        Φ = 18         base ticks
+    seconds               Δt = 3/25 s    τ = 3/50 s
+    fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)
     ```
 
-    A build shows it without the base grid row, and a component on `A₀`
-    shows `m·Δt_base` in the seconds row. The scope row is derived
-    against the nearest enclosing rate scope's row, whose own pair is
-    `(mₛ, cₛ)`: `K = m / mₛ` and `φ = (c − cₛ) / mₛ`. A component whose
-    own entry is `Absolute` has no `(K, φ)`, and its first row reads
-    "opens `A₁` at the root". The open level's pane shows a rate scope
-    with the same table. This amends `workspace.md` answer 4, and
+    The example is `timing_deployment`'s `fast/outer/hold` (answer 16).
+    A build shows the table without the base grid row, and a component
+    on `A₀` shows `m·Δt_base` and `c·Δt_base` in the seconds row. The
+    scope row is derived against the nearest enclosing rate scope's row,
+    whose own pair is `(mₛ, cₛ)`: `K = m / mₛ` and `φ = (c − cₛ) / mₛ`.
+    Where no keyed assembly encloses the component, that scope is the
+    root, at `(1, 0)` on `A₀`, and its ticks are base ticks. A component
+    whose anchor differs from the enclosing scope's has an `Absolute`
+    entry of its own and no `(K, φ)`, and its first row reads "opens
+    `A₁` at the root", naming the scope that declares the anchor. The
+    derived pair is the component's own `sample_times` entry where it
+    has one, the last link of its `rates`, and `(1, 0)` where it has
+    none. Under the table one line spells the whole chain from the
+    node's `rates`, as `show(::Structure)` prints it, outermost first
+    and the component's own link last. A component with an empty chain
+    has no line. The open level's pane shows a rate scope with the same
+    table, by the same derivation, and no chain line, an assembly's node
+    carrying no `rates`. This amends `workspace.md` answer 4, and
     `visual_grammar.md` answer 6, whose "the authored chain is not shown"
     now holds for color alone.
+    *Amended 2026-11-23 (the record at the new pin, the user away): the
+    chain was shown nowhere, the root as the outermost scope and the
+    test for an `Absolute` entry were unstated, and the example matched
+    no fixture. The core carries the chain on the node as `rates`
+    (D-467's amendment of 2026-11-20), since an explicit `Relative(1)`
+    changes no timing, and `show(::Structure)` prints it, so answer 1
+    owes it a place. The check below came back as follows. The core's
+    fold gives each child at most one link, its own, composed as
+    `m = K·mₛ` and `c = cₛ + φ·mₛ`, and a scope row to every keyed
+    assembly (`Redstone.jl/src/structure.jl`, `_child_scope` and
+    `_walk!`). So the derived pair is the declared one by construction,
+    and it is on every primitive of the 16 fixtures and of the
+    deployments built in scratch at the pin.*
     *Why:* the seconds row holds everything the pane's sentence said, and
     the column heads give the words. The scope pair is what the author
     wrote, so it links the pane to the source, and it needs no change to
@@ -371,12 +503,22 @@ retire, and whether the build refuses a pool that admits no deployment.
     Vertical lines mark the frame tops at their exact positions, which
     can fall between base ticks. The timeline then spans the joint
     period, the least common multiple of the hyperperiod and `Δt_frame`
-    taken in time, and the threshold applies to that span. The lines
-    are drawn only when some base tick is not a frame top. By default
-    `Δt_base` is `Δt_frame`, and the caption says that every base tick is
-    a frame top. Each row says whether its ticks all land on frame tops
-    or split frames, as `show` does. This amends `workspace.md` answer 7,
-    which had a row per triple.
+    taken in time, and the threshold applies to that span, to its base
+    ticks and to its frame tops alike, and the minimum pitch to the
+    finer of the base tick and the frame. The lines
+    are drawn only when some base tick is not a frame top. Where
+    `Δt_frame` divides `Δt_base`, every base tick is one: no lines are
+    drawn, and the caption says so and gives the frames in one base
+    tick, which is 1 by default. Each row says whether its ticks all land on frame tops
+    or split frames, by answer 9's rule, as `show` does. This amends
+    `workspace.md` answer 7, which had a row per triple.
+    *Amended 2026-11-23 (the record at the new pin, the user away): the
+    threshold counted base ticks alone, which bounds no frame tops where
+    the frame is far finer than the base tick and does not divide it.
+    The pitch was a base tick's alone, and the caption covered the
+    default alone, not a base tick of several frames. The core's `show(::Deployment)` now charts the same facts (D-471),
+    with a row per component, a column per exact unit and a guard at 100
+    columns. The page keeps its own rows, pitch and threshold.*
     *Why:* §9.2 has the schedule answer "what coincides with what", and
     `visual_grammar.md` answer 6 keys color on the triple because where
     an anchored clock lands is the deployment's fact, which a row per
@@ -391,14 +533,21 @@ retire, and whether the build refuses a pool that admits no deployment.
     when the pattern does not close there. *Cost accepted:* the frame
     tops go beyond `show`, the rule of answer 1 setting the minimum.
 
-12. **The staging.** The core's work comes first, in four parts its
-    `pending.md` orders: the notation; the grid report derived from the
-    structure; the descriptor, with the writer's qualified `@ref` links
-    and the schema's record path; and `show(::Deployment)` in the
-    notation, which the inspector does not wait on. Increment 10 then
-    moves the pin and draws the timing tab, the pane's frames table, the
-    chart and the legend. Increment 10b draws the events, and runs before
-    the look pass and the release: 10, 10b, the look pass, 11.
+12. **The staging.** The core's work came first, in four parts: the
+    notation; the grid report derived from the structure; the
+    descriptor, with the writer's `@ref` targets and the schema's record
+    path; and `show(::Deployment)` in the notation. Increment 10 follows
+    in three steps: the pin bump, this record brought to the new pin,
+    and the implementation, which draws the timing tab, the pane's
+    frames table, the chart and the legend. Increment 10b draws the
+    events, and runs before the look pass and the release: 10, 10b, the
+    look pass, 11.
+    *Amended 2026-11-23 (the record at the new pin, the user away): the
+    core's parts were still to come, and increment 10 was one step that
+    moved the pin and drew. The parts landed as the core's D-464, D-466,
+    D-467, D-468 and D-471. The user split the increment in three on
+    2026-11-22, and the pin bump landed on 2026-11-23 at the core's
+    `7ea3600`.*
     *Why:* the timing tab is rebuilt in this increment and the format is
     free until the release, so the page is built once against the final
     shape. 10b comes before the release because its design session may
@@ -458,7 +607,7 @@ retire, and whether the build refuses a pool that admits no deployment.
 
     ```json
     {"name": "h_ref", "type": "Float64", "kind": {"kind": "float"}, "pinned": true,
-     "pinned_by": [{"path": "autopilot/alt_hold", "port": "h_ref"}]}
+     "pinned_by": [{"path": "pid_controller/h_ctl", "port": "r"}]}
     ```
 
     The cause has no key: a consumer on the discrete tier pins by tier,
@@ -467,11 +616,21 @@ retire, and whether the build refuses a pool that admits no deployment.
     consumer, "pinned by tier" or "pinned by declaration", from the list
     `linearize`'s refusal already builds. The root-inputs tab shows the
     pinned mark again and marks those consumers among a root input's
-    terminal consumers, with the cause. The page states no verdict on
+    terminal consumers, with the cause. In increment 10 the mark is the
+    tab's alone: a root input's tag on the canvas and its pin's pane
+    show none. The page states no verdict on
     seedability. §14.10's type rule,
     a `Float64` leaf reached by at most one index step, shows in the
     type and kind columns, and the help page states it once. This amends
     `workspace.md` answer 6, whose note of 2026-11-11 dropped the mark.
+    *Amended 2026-11-23 (the record at the new pin, the user away): the
+    example named a consumer that no fixture has, and it is now
+    `closed_loop`'s. Where the mark shows beyond the tab was unstated,
+    and `pending.md` holds the question for the tag and the pane. The
+    check below came back: an `AbstractFloat` entry pins, verified by
+    running in the core's descriptor increment
+    (`Redstone.jl/design/increments/20261120_descriptor_content/notes_descriptor_content.md`,
+    section 4).*
     *Why:* the field was `false` in every file, the writer reading the
     type the wire pass had stripped of its marker, so the ruling corrects
     a field. §8.2 gives the word: "the root input pins at every
@@ -503,11 +662,16 @@ retire, and whether the build refuses a pool that admits no deployment.
     `` [`Pinned`](@ref Redstone.Pinned) ``. A name that resolves to a
     module takes the module as its target. Any other link stays as
     written, a macro's or an operator's among them. The page links a target under
-    `Redstone.` to the core's API page, whatever the type's module, and
-    shows every other link as its text, a bare one included. A glossary
-    id links only in the docstring of a type under `Redstone.`. This
-    amends `descriptor_design.md` answer 10 and the roadmap's ruling
-    that the page keeps its module-joining as a fallback.
+    `Redstone.` to the core's API page, whatever the type's module. A
+    glossary id links only in the docstring of a type under `Redstone.`.
+    Until the core's export audit the writer rewrites none of the core's
+    own links, so until then a bare link in the docstring of a type
+    under `Redstone.` still joins to that type's module, as the page did
+    before the pass. Every other link shows as its text. The pin bump
+    that follows the audit drops the joining, and a bare link is then
+    text everywhere. This
+    amends `descriptor_design.md` answer 10 and `build_release.md`
+    answer 7.
     *Amended 2026-11-21 (the core's D-467, commits 81d6b76 and fb4c3dc):
     the rule named neither the form of a name nor a module's target, and
     a module's own name took the target `MyPkg.MyPkg`. The core's run
@@ -516,7 +680,16 @@ retire, and whether the build refuses a pool that admits no deployment.
     bare link names an exported binding, since the core exports nothing
     until its export audit (D-226), so the pass rewrites none of them.
     The docs build's check lists `Redstone` alone (`docs/make.jl`,
-    `modules = [Redstone]`) and leaves `Redstone.Library` outside it.*
+    `modules = [Redstone]`) and leaves `Redstone.Library` outside it.
+    Amended 2026-11-23 (the record at the new pin, the user away): the
+    page was to show every bare link as its text at once. At the pin no
+    bare link in any fixture has a target, so that rule would turn each
+    into plain text. `library` has 101, of which the joining links 97 to
+    a name that stands on the API page. The joining stays until the
+    audit, at the cost of the four it still sends to a dead anchor, from
+    `Redstone.Library` into `Redstone`: `Pinned` twice, `StopFlag` and
+    `stop_reason`. The answer also amended a roadmap ruling on the
+    joining as a fallback, which the roadmap no longer holds.*
     *Why:* the page joined a bare name to the type's module, so the 9
     bare links from `Library` into `Redstone` were dead, `Pinned` and
     `Group`'s `local_wires` among them. At the core's tip the 42
@@ -536,29 +709,61 @@ retire, and whether the build refuses a pool that admits no deployment.
     built:* that the 121 bare links all name exported bindings, and that
     the docs build's check covers `Redstone.Library`.
 
-16. **The fixtures: three more deployments, `descent` rebuilt, and one
-    model for the cases that need the writer.** At the pin bump the
+16. **The fixtures: four more deployments, `descent` rebuilt, and one
+    model for the cases that need the writer.** Since the pin bump the
     script builds `descent` itself, the plant with a `GroundContact` and
     a `StopRequest`, the core's examples having dropped it, and the tests
-    that read `descent.json` stay as they are. Three deployments join
-    `closed_loop_deployment`:
+    that read `descent.json` stay as they are. Three deployments of
+    models in hand join `closed_loop_deployment`:
 
     | fixture | what it shows |
     |---|---|
-    | `closed_loop_deployment`, kept | ten rows on one `(D, Φ)`: one chart row with ten swatches |
+    | `closed_loop_deployment`, kept | ten rows on one `(D, Φ)`: one chart row with ten swatches; two root inputs pinned by tier |
     | `library_deployment`, `Δt_frame = 1//100` | 13 rows on 4 distinct `(D, Φ)`, `(2, 1)` among them and `(2, 0)` from two triples; a grid report with two pool entries; a base tick finer than the coarsest admissible `1//50`; events |
-    | `rates_deployment`, `Δt_frame = 1//100`, `Δt_base = 1//200` | the one model with rate scopes, 3 rows and a hyperperiod of 40; a frame of two base ticks, so the frame tops are drawn |
-    | `approach_deployment` | the tutorial's model on two clocks, 11 rows, and the examples' one event, `gear`'s `touchdown`, which 10b draws |
+    | `rates_deployment`, `Δt_frame = 1//100`, `Δt_base = 1//200` | rate scopes on anchors alone: 3 rows, 3 scope rows and a hyperperiod of 40; a frame of two base ticks, so the frame tops are drawn |
+    | `approach_deployment`, `Δt_frame = 1//200` | the tutorial's model on two clocks, 11 rows on 11 anchors, and the examples' one event, `gear`'s `touchdown`, which 10b draws |
 
     A case no model shows is served in one of two ways. An inline copy,
-    a committed deployment with one field edited in the test, serves
-    where one independent field decides the case: a frame that is not a
-    whole number of base ticks, and a proposing algorithm with `h_min`.
-    The writer's output serves where sections must agree: an anchor with
-    a nonzero `τₖ`, a pool entry with alternatives, and a root input
-    pinned by declaration. A new synthetic model, `timing`, holds those
-    three, in the pattern of `kinds` and `library`. The timeline past
-    the threshold needs no file: a unit test passes a small threshold.
+    a committed deployment edited in the test, serves where the edit
+    cannot make the file disagree with itself. A frame that is not a
+    whole number of base ticks edits `dt_frame`, and `h_max` with it
+    where the frame falls below it, since the file holds `h_max`
+    resolved. A proposing algorithm edits `algorithm` and adds an
+    `h_min` of at most half of `h_max`. The writer's output serves where sections must
+    agree. A new synthetic model, `timing`, holds those cases, in the
+    pattern of `kinds` and `library`:
+
+    - an anchor with a nonzero `τₖ` and a pool entry with alternatives,
+      which one entry gives: `Absolute(1//10, 1//300)` beside
+      `Absolute(1//50)` has an offset of factor 6 with the alternatives
+      `0` and `1/50`;
+    - a root input pinned by declaration, through a continuous consumer
+      whose entry is `Pinned`, beside one pinned by tier;
+    - the frames table's cases that no other fixture has, all beneath
+      the scope `fast/outer`, itself `Relative(2, 1)` under `fast`: a
+      keyed primitive `hold` at `Relative(3, 1)`, answer 10's example;
+      an explicit `Relative(1)`; and a nested scope `deep` at
+      `Relative(2, 1)`, so that the derivation divides by an `mₛ` above
+      1 and subtracts a `cₛ` above 0.
+
+    `timing` is committed as a build and as a deployment,
+    `timing_deployment`, at `Δt_frame = 1//100` and `Δt_base = :derive`.
+    The deployment adds an anchor with `Φₖ = 1`, a frame of three base
+    ticks, a row that splits frames and the deployment's own warning, a
+    `GridUtilization`. The timeline past the threshold needs no file: a
+    unit test passes a small threshold.
+    *Amended 2026-11-23 (the record at the new pin, the user away): the
+    two checks below came back (the pin bump's notes). `closed_loop`'s
+    `h_ref` is pinned by tier, and `V_ref` too. A pool entry carries
+    alternatives when it is an offset that alone refines the grid, which
+    one `Absolute` entry provokes, so the case stays in `timing`.
+    `approach_deployment` had no frame and takes the examples' own.
+    The inline copy was one field's edit, where the proposing case
+    edits two. `timing` was a build alone and held three cases. A nonzero `τₖ`
+    reaches a schedule row only through a deployment, and the frames
+    table's cases need the node's `timing`, its `rates` and the scopes
+    to agree. The three deployments and a candidate `timing` were built
+    in scratch at the pin, and the figures above are theirs.*
     *Why:* `descent` has three primitives and about twenty test files
     read it, where `approach` has 19 under a child `vehicle`, so the move
     would rewrite every assertion on a path or a count for nothing. Each
@@ -577,7 +782,8 @@ retire, and whether the build refuses a pool that admits no deployment.
 
 17. **The core's homes and the order of the work.** Five log entries
     carry the session's rulings on the framework and the format, each
-    with its spec edit, the next five numbers of the core's log:
+    with its spec edit. They are the core's D-464, D-466, D-467, D-468
+    and D-471, in the table's order:
 
     | entry | position | annotates | spec |
     |---|---|---|---|
@@ -588,14 +794,22 @@ retire, and whether the build refuses a pool that admits no deployment.
     | `show(::Deployment)` in the notation | one row per component with `m`, `c`, `D`, `Φ`, `Δt` and `τ`; the anchors' `Dₖ` and `Φₖ`; the chart with the frame tops | D-257's chart | §9.2 |
 
     When 10b runs and which fixtures are committed earn no entry. The
-    work runs in this order: this record's close, with its parents'
+    work ran in this order: this record's close, with its parents'
     notes, the roadmap and `pending.md`; the core's `pending.md`; the
-    core's parts one to three, each as a spec and log commit followed by
-    its code, the descriptor's part landing two entries; the push, on the
-    user's word and no earlier than part three; increment 10, from the
-    pin bump. Part four and the tutorial's loose change come before the
-    push or run beside increment 10. The user expects to run both first,
-    and increment 10 then beside the tutorial's next increments.
+    core's four parts, each as a spec and log commit followed by its
+    code, the descriptor's part landing two entries; the push, on the
+    user's word; increment 10, from the pin bump (answer 12).
+    *Amended 2026-11-22: the five entries were to be the next five
+    numbers of the core's log. They are not, since D-465, D-469 and
+    D-470 landed among them: the build's refusal of a structure no
+    deployment binds, the retirement of `Period` and `Hz`, and the
+    refusal of a `localization_tol` that is not finite. All four parts
+    are landed and pushed, and the core's `pending.md` has retired their
+    bullet. Amended 2026-11-23 (the record at the new pin, the user
+    away): the text still gave the numbers as the next five and the
+    order as work to come, with part four and the tutorial's loose
+    change free to run beside increment 10. Both ran first. The note of
+    2026-11-22 stood after the Why paragraph.*
     *Why:* the core's `design/rules/log_rules.md` gives an entry to a
     design ruling with rejected alternatives and, by D-314 and D-448, to
     a rename, and none to the order of work. The root input's pin stands
@@ -607,13 +821,6 @@ retire, and whether the build refuses a pool that admits no deployment.
     to three alone. *Rejected:* one entry for the descriptor with the
     root input's pin inside it; the record kept a draft until the spec
     lands.
-    *Amended 2026-11-22: the five entries are the core's D-464, D-466,
-    D-467, D-468 and D-471, in the table's order. They are not the next
-    five numbers, since D-465, D-469 and D-470 landed among them: the
-    build's refusal of a structure no deployment binds, the retirement
-    of `Period` and `Hz`, and the refusal of a `localization_tol` that is
-    not finite. All four parts are landed and pushed, and the core's
-    `pending.md` has retired their bullet.*
 
 ## Design axes
 

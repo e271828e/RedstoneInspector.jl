@@ -85,12 +85,13 @@ Open items live in `pending.md`.
    and the diagram's label and icon key on it ahead of `type`.
 4. **The node entry.** One object per component in walk order, assemblies
    included (answer 17): `path`, `field`, `key`, `class`, `tier`, `type`,
-   `alias`, `signature`, `timing`, `inputs`, `outputs`, `wires` and
-   `parameters`.
+   `alias`, `signature`, `timing`, `rates`, `inputs`, `outputs`, `wires`
+   and `parameters`.
    ```json
    {"path": "aircraft/loops/l1", "field": "loops", "key": "l1",
     "class": "primitive", "tier": "continuous",
     "timing": {"anchor": 0, "m": 4, "c": 1},
+    "rates": [{"scope": "", "key": "aircraft", "K": 4, "phi": 1}],
     "type": "Redstone.Library.PID", "signature": "PID{Float64, …}",
     "inputs":  [{"name": "r", "type": "Float64",
                  "kind": {"kind": "float"}, "pinned": false}, …],
@@ -104,9 +105,10 @@ Open items live in `pending.md`.
    `key` is a component field; a `key` with the segment `field/key` is a
    keyed container; a `key` equal to the segment is a name-transparent one.
    The root has `path` `""` and neither `field` nor `key`. An assembly node
-   has `class` `"assembly"`, no `tier` or `timing`, name-only faces and its
-   `wires` (answer 5); a primitive node has `class` `"primitive"`, typed
-   faces and no `wires`. `alias` is present only when a `const` of the
+   has `class` `"assembly"`, no `tier`, `timing` or `rates`, name-only
+   faces and its `wires` (answer 5); a primitive node has `class`
+   `"primitive"`, typed faces, its rate chain under `rates` (answer 9)
+   and no `wires`. `alias` is present only when a `const` of the
    type's own module binds a parameterization of it, as answer 3 says.
    Two conventions fixed here for the whole format. *Omission:* a field that
    does not apply is left out, never written as `null`, so presence is the
@@ -119,7 +121,10 @@ Open items live in `pending.md`.
    *Amended 2026-10-27 (`visual_grammar.md` answer 7, commit 86ff8cc): the
    node had no `alias`. Amended 2026-11-16 (the pin to the core's `6afd6fb`,
    its `c894949` and D-453): the class value was `"leaf"`, the face
-   `LeafFace` and the library's module `Redstone.Blocks`.*
+   `LeafFace` and the library's module `Redstone.Blocks`. Amended
+   2026-11-23 (`deployment_overlay.md` answers 5 and 10, the record at
+   the new pin, the user away): a primitive node had no `rates`, which
+   the core's D-467 added.*
    *Why:* `segment` and `membership` were in the first sketch and were
    dropped as derivable: the parent is the longest node path that is a
    proper prefix, which skips a container's non-node path such as
@@ -188,8 +193,14 @@ Open items live in `pending.md`.
    style acts on; finer ones would restate the type string.
 7. **Root inputs: a section of primitive faces.** `structure.root_inputs` is
    an array of primitive-face objects, `name`, `type`, `kind` and `pinned`,
-   in the artifact's order, typed from `root_types`. The root node's own
+   in the artifact's order, typed from `root_types`. A row's `pinned` is
+   the fan-out meet's, and the row also holds `pinned_by`, the consumers
+   that cause it, each an endpoint (`deployment_overlay.md` answer 14).
+   The root node's own
    `inputs` stay name-only like any assembly's, joined by name.
+   *Amended 2026-11-23 (`deployment_overlay.md` answer 14, the record at
+   the new pin, the user away): the row had no `pinned_by`, and its
+   `pinned` was false in every file until the core's D-468.*
    *Why:* §11.3 makes root inputs a concept of their own, the primary data
    and the write surface the bridge's liveness table keys on, and a list
    the bridge and the detail pane read without walking to the root. A
@@ -221,11 +232,17 @@ Open items live in `pending.md`.
                 "timing": {"anchor": 1, "m": 1, "c": 0}}]
    ```
    Anchor 0, the base grid, has no row, as in the artifact. Rationals are
-   `{"num", "den"}` objects. The per-component chain of `sample_times` links
-   is not carried. The deployment's side is the `schedule` section
+   `{"num", "den"}` objects. The chain came with the deployment overlay.
+   Each primitive node carries `rates`, its chain of `sample_times`
+   links from the root down. A link holds the declaring `scope` and its
+   `key`, with `K` and `phi` for a `Relative` entry or `dt` and `tau`
+   for an `Absolute` one. The deployment's side is the `schedule` section
    (`deployment_overlay.md` answer 5).
    *Amended 2026-11-20 (`deployment_overlay.md` answers 3 and 5): the
-   anchor's period had the key `T`.*
+   anchor's period had the key `T`. Amended 2026-11-23
+   (`deployment_overlay.md` answers 5 and 10, the record at the new pin,
+   the user away): the chain was not carried. The core's D-467 put it on
+   the node, since a client cannot derive it from the timings.*
    *Why:* this widens the working order, which deferred the timing tables,
    because answer 9's core tier colors blocks by rate and a block's rate is
    its timing row. The rows are in the `Structure` the section mirrors, and
