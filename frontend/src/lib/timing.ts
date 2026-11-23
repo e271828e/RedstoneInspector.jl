@@ -5,6 +5,7 @@
 // fit, the pane's frames table with its chain line, and the legend's line text.
 // The page reads no float from the file and multiplies none. Pure.
 import type { Node, RateLink, Rational, StructureSection, Timing } from "./descriptor";
+import { count } from "./detail";
 import type { Model } from "./model";
 import { stepsOf, tripleKey, type Triple } from "./rates";
 
@@ -169,8 +170,10 @@ function timingRow(s: StructureSection, path: string, t: Timing, bound?: Bound, 
 }
 
 /**
- * Every discrete primitive in walk order, joined to its schedule row on a deployment; with `byPeriod` in the palette's
- * order of their triples (`tripleOrder`: anchor 0 first, then period ascending), equal triples in walk order.
+ * Every discrete primitive in walk order, joined to its schedule row on a deployment. With `byPeriod` a deployment's
+ * rows go by their exact `Δt`, which is `D·Δt_base`, so by `D`; a build's, whose `A₀` rows have a symbolic `Δt`, go
+ * in the palette's order of their triples (`tripleOrder`: anchor 0 first, then period ascending). Ties go in the
+ * palette's order, then in walk order.
  */
 export function componentTable(model: Model, byPeriod = false): TimingRow[] {
   const s = model.structure;
@@ -179,7 +182,9 @@ export function componentTable(model: Model, byPeriod = false): TimingRow[] {
   const out = s.nodes.flatMap((n) => (n.class === "primitive" && n.tier === "discrete" ? [timingRow(s, n.path, n.timing, bound, rows.get(n.path))] : []));
   if (!byPeriod) return out;
   const steps = stepsOf(model);
-  return out.sort((a, b) => steps.get(tripleKey(a.triple))! - steps.get(tripleKey(b.triple))!);
+  const step = (r: TimingRow) => steps.get(tripleKey(r.triple))!;
+  const byD = (a: TimingRow, b: TimingRow) => (bound ? (a.D! < b.D! ? -1 : a.D! > b.D! ? 1 : 0) : 0);
+  return out.sort((a, b) => byD(a, b) || step(a) - step(b));
 }
 
 /** Every rate scope in `structure.scopes`' order, the key after the path, joined by path and key on a deployment. */
@@ -249,7 +254,7 @@ export interface Steps {
   label: string;
   /** `1`, or a proposing method's `2 to 5, as proposed`. */
   value: string;
-  /** The rows that split frames, in walk order. */
+  /** The rows that split frames, in walk order, named as the components table's path cell names them, the root `/`. */
   splitting: string[];
 }
 
@@ -259,7 +264,7 @@ export function stepsPerFrame(model: Model): Steps | undefined {
   const lower = ceilQ(div(bound.frame, bound.hMax));
   const upper = d.deployment.algorithm.proposes && bound.hMin ? floorQ(div(bound.frame, bound.hMin)) : undefined;
   const value = upper === undefined ? `${lower}` : `${lower} to ${upper > lower ? upper : lower}, as proposed`;
-  const splitting = d.deployment.schedule.rows.filter((r) => splitsFrames(r.D, r.phi, bound)).map((r) => r.path);
+  const splitting = d.deployment.schedule.rows.filter((r) => splitsFrames(r.D, r.phi, bound)).map((r) => r.path || "/");
   return { label: splitting.length ? "steps per unsplit frame" : "steps per frame", value, splitting };
 }
 
@@ -375,13 +380,13 @@ export function chartRows(model: Model): ChartRow[] {
 
 /** The hyperperiod as the tab states it (answer 8): `hyperperiod: 10 base ticks, 1/10 s`. */
 export const hyperperiodLine = (joint: JointPeriod): string =>
-  `hyperperiod: ${joint.hyperperiod} base ticks, ${seconds(joint.hyperSeconds)}`;
+  `hyperperiod: ${count(joint.hyperperiod, "base tick", "base ticks")}, ${seconds(joint.hyperSeconds)}`;
 
 /** The span the chart draws where it outlasts the hyperperiod (answer 11); undefined where the two are equal. */
 export const jointLine = (joint: JointPeriod): string | undefined =>
   joint.baseTicks === joint.hyperperiod
     ? undefined
-    : `the chart spans the joint period with Δt_frame: ${seconds(joint.seconds)}, ${joint.baseTicks} base ticks, ${joint.frames} frames`;
+    : `the chart spans the joint period with Δt_frame: ${seconds(joint.seconds)}, ${count(joint.baseTicks, "base tick", "base ticks")}, ${count(joint.frames, "frame", "frames")}`;
 
 /** The chart's constants, the look pass's (answer 11): the threshold in units of the span, the minimum pitch in px. */
 export const CHART_THRESHOLD = 1000;
@@ -392,7 +397,7 @@ export type ChartFit =
   | { kind: "omitted"; line: string }
   | {
       kind: "fit" | "scroll";
-      /** The finer of the base tick and the frame, which the minimum pitch applies to. */
+      /** The unit the minimum pitch applies to: the frame where it is finer than the base tick and its tops are drawn. */
       finer: "base tick" | "frame";
       /** The finer unit's count over the span. */
       units: bigint;
@@ -403,16 +408,17 @@ export type ChartFit =
     };
 
 /**
- * The threshold and pitch decision (answer 11, ruling 9): past `threshold` base ticks or frame tops over the joint
- * period the timeline is omitted with one line of its length; else the finer unit gets `width / units` pixels when
- * that reaches `pitch`, and `pitch` otherwise, the timeline then scrolling sideways.
+ * The threshold and pitch decision (answer 11, rulings 9 and 16): past `threshold` base ticks over the joint period,
+ * or frame tops where `lines` draws them, the timeline is omitted with one line of its length; else the finer unit
+ * gets `width / units` pixels when that reaches `pitch`, and `pitch` otherwise, the timeline then scrolling sideways.
+ * The frame is a unit only where its tops are drawn: where it divides the base tick, every tick is a frame top.
  */
-export function chartFit(joint: JointPeriod, width: number, threshold = CHART_THRESHOLD, pitch = CHART_PITCH): ChartFit {
+export function chartFit(joint: JointPeriod, lines: FrameLines, width: number, threshold = CHART_THRESHOLD, pitch = CHART_PITCH): ChartFit {
   const limit = BigInt(threshold);
-  if (joint.baseTicks > limit || joint.frames > limit) {
+  if (joint.baseTicks > limit || (lines.drawn && joint.frames > limit)) {
     return { kind: "omitted", line: `chart omitted: the joint period is ${joint.baseTicks} base ticks, ${seconds(joint.seconds)}` };
   }
-  const frameFiner = lt(joint.frameInTicks, q(1));
+  const frameFiner = lines.drawn && lt(joint.frameInTicks, q(1));
   const units = frameFiner ? joint.frames : joint.baseTicks;
   const fitted = width / Number(units);
   const unitPx = fitted >= pitch ? fitted : pitch;

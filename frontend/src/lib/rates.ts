@@ -4,6 +4,7 @@ import type { Node } from "./descriptor";
 import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
 import { terminalProducer } from "./resolve";
+import { fromRational, lt, mul, q, type Q } from "./timing";
 
 /** A timing triple: the anchor's index `k` (0 the base grid), `m` and `c` in that anchor's ticks. */
 export type Triple = [anchor: number, m: number, c: number];
@@ -45,11 +46,16 @@ export function blockTriple(model: Model, path: string): Triple | undefined {
 /** Whether an assembly's discrete primitives tick on several triples, the assembly gray's case. */
 export const mixed = (model: Model, path: string): boolean => clocksBeneath(model, path).length > 1;
 
-/** A triple's `Δt` in seconds, `m · Δtₖ`; the base grid before every anchor. */
-function period(model: Model, t: Triple): number {
-  if (t[0] === 0) return -1;
-  const T = model.structure!.anchors[t[0] - 1].dt;
-  return (T.num / T.den) * t[1];
+/** A triple's `Δt` in seconds, `m · Δtₖ`, exact; undefined on the base grid, which comes before every anchor. */
+function period(model: Model, t: Triple): Q | undefined {
+  return t[0] === 0 ? undefined : mul(q(t[1]), fromRational(model.structure!.anchors[t[0] - 1].dt));
+}
+
+/** Two triples by their exact periods, the base grid's first; 0 on a tie. */
+function byPeriod(model: Model, a: Triple, b: Triple): number {
+  const pa = period(model, a), pb = period(model, b);
+  if (!pa || !pb) return (pa ? 1 : 0) - (pb ? 1 : 0);
+  return lt(pa, pb) ? -1 : lt(pb, pa) ? 1 : 0;
 }
 
 /**
@@ -63,7 +69,7 @@ export function tripleOrder(model: Model): Triple[] {
     const t = blockTriple(model, n.path);
     if (t) seen.set(tripleKey(t), t);
   }
-  return [...seen.values()].sort((a, b) => period(model, a) - period(model, b) || a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+  return [...seen.values()].sort((a, b) => byPeriod(model, a, b) || a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
 }
 
 /** Each triple's step by its key. */

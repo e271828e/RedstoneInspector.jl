@@ -27,6 +27,14 @@ function gridReportLines(m: Model): string[] {
 }
 const timingDep = fixtureModel("timing_deployment");
 const libDep = fixtureModel("library_deployment");
+/** A deployment of `primitive` made discrete (an inline structure): one row at the root path, `D = 1`, at the frame given. */
+const primitiveRootDep = (frame: { num: number; den: number }) => edited("library_deployment", (d) => {
+  const build = (fixtureJson("primitive") as any).build;
+  Object.assign(build.structure.nodes[0], { tier: "discrete", timing: { anchor: 0, m: 1, c: 0 } });
+  Object.assign(d.deployment, {
+    build, dt_base: { num: 1, den: 150 }, dt_frame: frame, h_max: frame, schedule: { anchors: [], rows: [{ path: "", D: 1, phi: 0 }], scopes: [] }, warnings: [],
+  });
+});
 
 describe("exact fractions", () => {
   it("reduce over BigInt and print as seconds, as a multiple of Δt_base and as Julia prints them", () => {
@@ -125,7 +133,7 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
       ["fast/outer/deep", "deep", 4, 3, 24, 18, "2/25 s", "3/50 s"],
     ]);
   });
-  it("library: by Δt in the palette's order, A₀'s triples first, then Δt ascending, equal triples in walk order", () => {
+  it("library: by Δt in the palette's order, A₀'s triples first, then Δt ascending, equal triples in walk order; library_deployment's exact Δt the same", () => {
     expect(componentTable(fixtureModel("library")).map((r) => r.path)).toEqual([
       "noise", "unit_delay", "d_integrator", "rate_limiter", "dss", "dtf", "zoh_ss", "zoh_tf", "d_limited", "delay", "d_pid", "d_lqr", "backlash",
     ]);
@@ -135,6 +143,18 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
     expect(componentTable(fixtureModel("library"), true).map((r) => r.path)).toEqual(sorted);
     expect(componentTable(libDep, true).map((r) => r.path)).toEqual(sorted);
     expect(componentTable(fixtureModel("failure_structure"), true)).toEqual([]);
+  });
+  it("sorts a deployment by its exact Δt, ties in the palette's order, and a build in the palette's order (inline copies with d_limited at m 20)", () => {
+    const slow = (d: any) => {
+      const b = d.kind === "deployment" ? d.deployment : d;
+      (b.build ?? b).structure.nodes.find((n: any) => n.path === "d_limited").timing.m = 20;
+      if (d.kind === "deployment") d.deployment.schedule.rows.find((r: any) => r.path === "d_limited").D = 20;
+    };
+    const ones = ["unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "backlash"];
+    const dep = componentTable(edited("library_deployment", slow), true);
+    expect(dep.map((r) => r.path)).toEqual([...ones, "d_pid", "dss", "noise", "d_limited"]);
+    expect(dep.slice(-4).map((r) => r.dt)).toEqual(["1/50 s", "1/50 s", "1/10 s", "1/5 s"]);
+    expect(componentTable(edited("library", slow), true).map((r) => r.path)).toEqual([...ones, "d_pid", "d_limited", "dss", "noise"]);
   });
   it("names an anchor's declaring key and scope in its tooltip, the base grid for A₀", () => {
     const cl = fixtureModel("closed_loop").structure!;
@@ -164,6 +184,12 @@ describe("the head list and the steps per frame (answer 9)", () => {
   it("a build has no head list and no steps", () => {
     expect(headList(fixtureModel("timing"))).toBeUndefined();
     expect(stepsPerFrame(fixtureModel("timing"))).toBeUndefined();
+  });
+  it("names a splitting row at the root path as the components table's path cell does, /", () => {
+    const root = primitiveRootDep({ num: 1, den: 100 });
+    expect(componentTable(root).map((r) => [r.path, r.splits])).toEqual([["", true]]);
+    expect(stepsPerFrame(root)).toEqual({ label: "steps per unsplit frame", value: "1", splitting: ["/"] });
+    expect(headList(root)!.at(-1)).toEqual({ label: "steps per unsplit frame", value: "1; the rows that split frames: /" });
   });
   it("library_deployment: one step per frame, no row splitting", () => {
     expect(stepsPerFrame(libDep)).toEqual({ label: "steps per frame", value: "1", splitting: [] });
@@ -255,25 +281,45 @@ describe("the frame lines and the chart's rows (answer 11)", () => {
   });
 });
 
-describe("the chart's fit (answer 11, ruling 9)", () => {
+describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
+  /** The fit of a model's chart at a width, the frame lines read from the model. */
+  const fitOf = (m: Model, width: number, threshold?: number) => chartFit(jointPeriod(m)!, frameLines(m)!, width, threshold);
   it("fits the width while a base tick gets at least the pitch, else scrolls at the pitch", () => {
-    expect(chartFit(jointPeriod(libDep)!, 1000)).toEqual({ kind: "fit", finer: "base tick", units: 10n, tickPx: 100, width: 1000 });
-    expect(chartFit(jointPeriod(timingDep)!, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
+    expect(fitOf(libDep, 1000)).toEqual({ kind: "fit", finer: "base tick", units: 10n, tickPx: 100, width: 1000 });
+    expect(fitOf(timingDep, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
   });
   it("past the threshold omits the timeline with one line of its length in base ticks and seconds", () => {
-    expect(chartFit(jointPeriod(timingDep)!, 1000, 100)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 360 base ticks, 6/5 s" });
-    expect(chartFit(jointPeriod(timingDep)!, 1000, 360).kind).toBe("scroll");
+    expect(fitOf(timingDep, 1000, 100)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 360 base ticks, 6/5 s" });
+    expect(fitOf(timingDep, 1000, 360).kind).toBe("scroll");
   });
-  it("counts the frame tops too, and gives the pitch to the frame where it is finer than the base tick", () => {
+  it("counts the frame tops too, and gives the pitch to the frame where it is finer than the base tick and does not divide it", () => {
     const fine = edited("library_deployment", (d) => {
-      d.deployment.dt_frame = { num: 1, den: 200 };
-      d.deployment.h_max = { num: 1, den: 200 };
+      d.deployment.dt_frame = { num: 1, den: 250 };
+      d.deployment.h_max = { num: 1, den: 250 };
     });
     const joint = jointPeriod(fine)!;
-    expect([joint.baseTicks, joint.frames]).toEqual([10n, 20n]);
-    expect(chartFit(joint, 100)).toEqual({ kind: "scroll", finer: "frame", units: 20n, tickPx: 12, width: 120 });
-    expect(chartFit(joint, 1000)).toEqual({ kind: "fit", finer: "frame", units: 20n, tickPx: 100, width: 1000 });
-    expect(chartFit(joint, 1000, 15).kind).toBe("omitted");
+    expect([joint.baseTicks, joint.frames, frameLines(fine)!.drawn]).toEqual([10n, 25n, true]);
+    expect(fitOf(fine, 100)).toEqual({ kind: "scroll", finer: "frame", units: 25n, tickPx: 15, width: 150 });
+    expect(fitOf(fine, 1000)).toEqual({ kind: "fit", finer: "frame", units: 25n, tickPx: 100, width: 1000 });
+    expect(fitOf(fine, 1000, 15).kind).toBe("omitted");
+  });
+  it("counts no frame where Δt_frame divides Δt_base, no frame top being drawn: timing at a tenth of its tick keeps its 360 ticks (an inline copy)", () => {
+    const fine = edited("timing_deployment", (d) => {
+      d.deployment.dt_frame = { num: 1, den: 3000 };
+      d.deployment.h_max = { num: 1, den: 3000 };
+    });
+    expect([jointPeriod(fine)!.baseTicks, jointPeriod(fine)!.frames]).toEqual([360n, 3600n]);
+    expect(frameLines(fine)).toEqual({ drawn: false, framesPerTick: 10n, caption: "every base tick is a frame top: 10 frames in one base tick" });
+    expect(fitOf(fine, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
+  });
+  it("gives the pitch to the base tick where Δt_frame divides it: library at a tenth of its tick fits 10 ticks in 300 px (an inline copy)", () => {
+    const fine = edited("library_deployment", (d) => {
+      d.deployment.dt_frame = { num: 1, den: 1000 };
+      d.deployment.h_max = { num: 1, den: 1000 };
+    });
+    expect(jointPeriod(fine)!.frames).toBe(100n);
+    expect(frameLines(fine)!.caption).toBe("every base tick is a frame top: 10 frames in one base tick");
+    expect(fitOf(fine, 300)).toEqual({ kind: "fit", finer: "base tick", units: 10n, tickPx: 30, width: 300 });
   });
 });
 
@@ -287,12 +333,19 @@ describe("the chart's lines and geometry (answers 8 and 11)", () => {
     expect(hyperperiodLine(jointPeriod(m)!)).toBe("hyperperiod: 10 base ticks, 1/10 s");
     expect(jointLine(jointPeriod(m)!)).toBe("the chart spans the joint period with Δt_frame: 3/10 s, 30 base ticks, 20 frames");
   });
+  it("reads a count of one in the singular: a hyperperiod of 1 base tick, a joint period of 1 frame", () => {
+    const root = primitiveRootDep({ num: 1, den: 100 });
+    expect(hyperperiodLine(jointPeriod(root)!)).toBe("hyperperiod: 1 base tick, 1/150 s");
+    expect(jointLine(jointPeriod(root)!)).toBe("the chart spans the joint period with Δt_frame: 1/50 s, 3 base ticks, 2 frames");
+    const one = primitiveRootDep({ num: 1, den: 50 });
+    expect(jointLine(jointPeriod(one)!)).toBe("the chart spans the joint period with Δt_frame: 1/50 s, 3 base ticks, 1 frame");
+  });
   it("puts base tick k at k pitches from the margin, and frame top j at j·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
-    const fit = chartFit(jointPeriod(timingDep)!, 1000) as DrawnFit;
+    const fit = chartFit(jointPeriod(timingDep)!, frameLines(timingDep)!, 1000) as DrawnFit;
     expect([tickX(0n, fit), tickX(5n, fit)]).toEqual([CHART_PAD, CHART_PAD + 30]);
     expect(frameTopX(2n, jointPeriod(timingDep)!, fit)).toBe(tickX(6n, fit));
     const m = edited("library_deployment", (d) => (d.deployment.dt_frame = { num: 3, den: 200 }));
-    const joint = jointPeriod(m)!, half = chartFit(joint, 600) as DrawnFit;
+    const joint = jointPeriod(m)!, half = chartFit(joint, frameLines(m)!, 600) as DrawnFit;
     expect(half.tickPx).toBe(20);
     expect([frameTopX(1n, joint, half), frameTopX(2n, joint, half)]).toEqual([CHART_PAD + 30, tickX(3n, half)]);
   });

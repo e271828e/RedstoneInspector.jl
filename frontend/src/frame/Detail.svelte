@@ -115,6 +115,8 @@
 {/snippet}
 
 {#snippet slashed(s: string)}{#each s.split("/") as part, i (i)}{#if i}/<wbr />{/if}{part}{/each}{/snippet}
+<!-- A frames table's value, `Δt = 1/10 s`: it breaks after the equals sign alone. -->
+{#snippet value(v: string)}{@const at = v.indexOf(" = ")}<span>{v.slice(0, at)} =</span> <span>{v.slice(at + 3)}</span>{/snippet}
 
 {#snippet frames(t: FramesTable)}
   <table class="frames">
@@ -126,7 +128,7 @@
           {#if r.opens}
             <td class="opens" colspan="3">{@render slashed(r.opens)}</td>
           {:else}
-            <td class="period">{r.period}</td><td class="phase">{r.phase}</td><td class="unit">{@render slashed(r.unit)}</td>
+            <td class="period">{@render value(r.period)}</td><td class="phase">{@render value(r.phase)}</td><td class="unit">{@render slashed(r.unit)}</td>
           {/if}
         </tr>
       {/each}
@@ -306,7 +308,7 @@
   .frames :is(th, td) { padding: 1px 4px 1px 0; }
   /* The table takes the pane's whole width under its label, so the narrow pane keeps each cell on a line or two. */
   dl.facts dd[data-fact="rate"] { grid-column: 1 / -1; }
-  .frames .period, .frames .phase { white-space: nowrap; }
+  .frames .period, .frames .phase, .frames :is(.period, .phase) > span { white-space: nowrap; }
   .frames .period { padding-right: 8px; }
   .frames .unit, .frames .opens { color: var(--text-light); }
   .chain { margin: 4px 0 0; color: var(--text-light); }
@@ -341,6 +343,10 @@
     .faces .stage { grid-area: stage; }
     .faces .stage[title]::before { content: "stage "; color: var(--text-light); }
     .faces .links { grid-area: links; }
+  }
+  /* The narrowest panes: a frames table's value breaks after its equals sign, or the table would scroll sideways. */
+  @container (max-width: 300px) {
+    .frames .period, .frames .phase { white-space: normal; }
   }
   a { color: var(--highlight); text-decoration: none; }
   a:hover { text-decoration: underline; }

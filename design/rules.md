@@ -386,8 +386,8 @@ full text stays.
   sticky element in a `width: max-content` flex row, so they stay while the
   tab's body scrolls sideways; the fit measures the labels' `offsetWidth`,
   their gap their own padding so their background covers it.
-- **A Playwright probe outside the tree.** A probe config and spec under the
-  notes folder load the harness only with a `node_modules` symlink beside them
+- **A Playwright probe outside the tree.** A probe config and spec outside the
+  tree load the harness only with a `node_modules` symlink beside them
   and a `package.json` of `{"type": "module"}`. A locator's `textContent()`
   waits its whole timeout for an absent element; a probe reads absent ones
   through `evaluate`.
@@ -401,14 +401,19 @@ full text stays.
   check's second drop opens in rate mode already, and `r` then turns it off.
 - **A table in the narrow pane.** The frames table beside its `dt` overflowed
   the 240 px pane by 6 px; it spans the facts' width, a path takes a `<wbr>`
-  after each slash, and only the values are `nowrap`.
+  after each slash, and only the values are `nowrap`. Even so `staggered`'s
+  table and a build's seconds row overflowed it by up to 25 px. Values free
+  to wrap wrapped at 360 px too, since an auto table squeezes every column
+  that can wrap, so a value is two `nowrap` spans, broken after its equals
+  sign only in a container of at most 300 px. Found 2026-11-23.
 - **A retired word inside another.** The help check's retired words match
   "leaves" as well as "leaf", so a verb trips it.
 - **An inline model in Vitest.** `timing.ts` reads `model.descriptor.kind`, so
   an inline `Model` cast without a descriptor throws in `legendText`; give it
   `descriptor: {kind: "build"}`.
-- **New fixtures on the drift line.** The gate's drift line lists a staged new
-  fixture as an `A ` line; it is empty only after the commit.
+- **New fixtures on the drift line.** The drift check of `AGENTS.md`,
+  `git status --porcelain -- frontend/fixtures frontend/schema`, lists a new
+  fixture, staged or untracked; it prints nothing only after the commit.
 
 ## Amending a record
 

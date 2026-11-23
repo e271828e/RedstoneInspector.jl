@@ -40,6 +40,12 @@ describe("refLink reads the target", () => {
     expect(refLink("`helper`", "MyPkg.helper", "Main.Plant")).toBeUndefined();
     expect(refLink("`helper`", "MyPkg.helper", "Redstone.Library.Integrator")).toBeUndefined();
   });
+  it("shows a link to the module Redstone itself as text in a core type's docstring, the module not being under Redstone.", () => {
+    expect(refLink("`Redstone`", "Redstone", "Redstone.Library.Integrator")).toBeUndefined();
+    const html = renderDocstring("Part of [`Redstone`](@ref Redstone).", "Redstone.Library.Integrator");
+    expect(hrefs(html)).toEqual([]);
+    expect(html).toContain("Part of <code>Redstone</code>.");
+  });
   it("joins a bare link to its type's module only under Redstone.", () => {
     expect(joinBare("`Pinned`", "Redstone.Library.Freeze")).toBe(`${DOCS_URL}api/#Redstone.Library.Pinned`);
     expect(refLink("`Pinned`", undefined, "Main.Plant")).toBeUndefined();

@@ -29,7 +29,7 @@
   const joined = $derived(jointLine(joint));
   let width = $state(0);
   let labels = $state(0);
-  const fit = $derived(chartFit(joint, Math.max(0, width - labels - 2 * CHART_PAD)));
+  const fit = $derived(chartFit(joint, lines, Math.max(0, width - labels - 2 * CHART_PAD)));
   const tops = $derived.by(() => {
     if (fit.kind === "omitted" || !lines.drawn) return [];
     return Array.from({ length: Number(joint.frames) + 1 }, (_, j) => ({ j, x: frameTopX(BigInt(j), joint, fit) }));

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { fixtureModel } from "./fixtures";
+import { fixtureJson, fixtureModel } from "./fixtures";
 import { levelOf } from "./level";
-import type { Model } from "./model";
+import { parseDescriptor } from "./loader";
+import { loadModel, type Model } from "./model";
 import type { PrimitiveFace, StructureSection } from "./descriptor";
 import { buildResolution } from "./resolve";
 import { buildTree } from "./tree";
@@ -37,6 +38,15 @@ describe("tripleOrder", () => {
       [undefined, "continuous"], [0, "A₀ (base) · m 1 · c 0"], [1, "A₀ (base) · m 2 · c 0"], [2, "A₀ (base) · m 2 · c 1"], [3, "A₂ (dss) · m 1 · c 0"],
       [4, "A₁ (noise) · m 1 · c 0"],
     ]);
+  });
+
+  it("compares exact periods: A₁ = 1/10 s at m 3 ties A₂ = 3/10 s at m 1, and the tie goes by anchor index (an inline copy of library)", () => {
+    const d = fixtureJson("library") as any, s = d.build.structure;
+    s.anchors[1].dt = { num: 3, den: 10 };
+    s.nodes.find((n: any) => n.path === "noise").timing.m = 3;
+    const loaded = parseDescriptor(JSON.stringify(d), "library.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(tripleOrder(loadModel(loaded)).slice(-2)).toEqual([[1, 3, 0], [2, 1, 0]]);
   });
 
   it("keeps the build's palette order under a deployment: each deployment's steps are its build's (deployment_overlay.md answer 13)", () => {

@@ -182,7 +182,7 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
 }
 
 /** A count in words, the singular for one: `1 wire`, `2 wires`. */
-export const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
+export const count = (n: number | bigint, one: string, many: string): string => `${n} ${Number(n) === 1 ? one : many}`;
 
 /** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is the root itself. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {

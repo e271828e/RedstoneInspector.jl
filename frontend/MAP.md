@@ -503,7 +503,8 @@ What the records do not fix, or where the page differs:
   output by its position among the stage 2 calls".
 - **The detail pane.** Each `dt` is titled from `FACT_TITLES`; `rate` is the
   frames table across the pane's width, each frame's head titled from
-  `FRAME_TITLES`, a path breaking after each slash, the chain line under it;
+  `FRAME_TITLES`, a path breaking after each slash, a value after its equals sign in a
+  container of at most 300 px, the chain line under it;
   `member` `memberKind` with `memberTitle`. Face rows and links select through `faceSelection`; on the
   level's layout, an assembly's or a primitive root's with "open level" where
   the open button stands, a face row selects the level's own pin. A location's label breaks
@@ -700,8 +701,8 @@ One line per file: its concern; the fixtures.
 - `detail.spec.ts`: each pane layout, the open level's, links, copying, the
   narrow pane, docstrings and code blocks, its keys; `closed_loop`, `rates`,
   `containers`, `aircraft`, `kinds`, `library`, a copy of `primitive`.
-- `frames.spec.ts`: the pane's frames tables and chain line; `timing`,
-  `library` and their deployments.
+- `frames.spec.ts`: the pane's frames tables and chain line, the narrowest
+  pane; `timing`, `library` and their deployments.
 - `legend.spec.ts`: the short line, the fit around it; `library`, the
   deployments, `large`.
 - `frame.spec.ts`: the status bar, the drawer's counts, splitters and

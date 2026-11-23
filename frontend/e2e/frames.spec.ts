@@ -2,8 +2,8 @@
 // answer 6): a discrete primitive's rate fact is one table, a row per frame of answer 3 with the period and phase
 // columns and no sentence, a build's without the base grid row; the scope row derived against the nearest enclosing
 // rate scope, the root's in base ticks, a component opening its own anchor naming where; the chain line under it,
-// none on an empty chain; the open level's rate scopes in the same table with no chain line. Figures from increment
-// 10's oracle (`oracle/<fixture>.txt`, "frames tables").
+// none on an empty chain; the open level's rate scopes in the same table with no chain line; the narrowest pane with
+// no sideways scroll. Figures from increment 10's oracle (`oracle/<fixture>.txt`, "frames tables").
 import { test, type Page } from "@playwright/test";
 import { drop, expect, openPath, shot } from "./fixtures";
 
@@ -103,4 +103,21 @@ test("timing_deployment's open levels: scope deep's table derived against fast/o
   await page.locator('g.block[data-id="fast"]').dblclick();
   await page.locator('svg.canvas[data-level="fast"][data-ready]').waitFor();
   expect((await frames(pane(page).locator('.scopes li[data-key="fast"]')))[0]).toEqual(["scope", "scope | opens A₂ at the root"]);
+});
+
+test("the narrowest pane, 240 px: timing_deployment's staggered with its opens row, and library's d_pid with a build's seconds, fit without a sideways scroll", async ({ page }) => {
+  await drop(page, "timing_deployment");
+  await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
+    JSON.stringify({ version: 1, sizes: { tree: 280, detail: 240, drawer: 200 }, collapsed: { tree: false, detail: false } })));
+  const over = () => page.locator('.pane[data-pane="detail"] .body').evaluate((e) => e.scrollWidth - e.clientWidth);
+  await drop(page, "timing_deployment");
+  await selectBlock(page, "staggered");
+  expect(await pane(page).evaluate((e) => e.getBoundingClientRect().width)).toBe(240);
+  expect((await frames(rate(page)))[0]).toEqual(["scope", "scope | opens A₁ at the root"]);
+  expect(await over()).toBeLessThanOrEqual(0);
+  await shot(page, "timing_deployment", "", "frames-narrow");
+  await drop(page, "library");
+  await selectBlock(page, "d_pid");
+  expect((await frames(rate(page))).at(-1)).toEqual(["seconds", "seconds | Δt = 2·Δt_base | τ = Δt_base"]);
+  expect(await over()).toBeLessThanOrEqual(0);
 });

@@ -132,7 +132,7 @@
 
   <h3>Components</h3>
   {#if components.length}
-    <button class="sort-period" aria-pressed={byPeriod} title="Sort the components by Δt, A₀ first" onclick={() => (byPeriod = !byPeriod)}>by Δt</button>
+    <button class="sort-period" aria-pressed={byPeriod} title={deployed ? "Sort the components by Δt" : "Sort the components by Δt, A₀ first"} onclick={() => (byPeriod = !byPeriod)}>by Δt</button>
     <table class="components">
       <thead><tr><th></th><th>path</th>{@render heads()}</tr></thead>
       <tbody>
