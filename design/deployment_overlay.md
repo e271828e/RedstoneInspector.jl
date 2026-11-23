@@ -415,7 +415,10 @@ the user away): both stood open in the core's `pending.md`.*
    `Δt_frame` divides both `D·Δt_base` and `Φ·Δt_base`, and the row
    splits frames otherwise. Where some row splits, the list calls the
    count the steps per unsplit frame and names the rows that split, in
-   the same item. This
+   the same item, each by its path as the components' table shows it,
+   the root's as `/`. That table sorts on request by `Δt`, by the exact
+   value on a deployment and in the palette's order on a build, where an
+   `A₀` row's `Δt` is a symbol. This
    amends `workspace.md` answer 6.
    *Amended 2026-11-23 (the record at the new pin, the user away): the
    answer gave the pool's alternatives and the prime attribution no
@@ -433,7 +436,10 @@ the user away): both stood open in the core's `pending.md`.*
    table was to be worded as `show(::Structure)` words it, which puts
    the word "offset" on the tab against answer 3. The symbols carry the
    same facts, and `show`'s words are kept as a patch for the user's
-   look (the implementation's notes, reading 3).*
+   look (the implementation's notes, reading 3). The name of a splitting
+   row at the root path and what the sort "by Δt" orders by were
+   unstated, and the sort was the palette's order on a deployment too
+   (the cold review's findings 1 and 5).*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is
@@ -458,7 +464,8 @@ the user away): both stood open in the core's `pending.md`.*
 
     The example is `timing_deployment`'s `fast/outer/hold` (answer 16).
     The table spans the width of the pane's facts, under the fact's
-    label. Its column heads keep the sketch's words, "period" and
+    label, and fits the narrowest pane, where a value may break after
+    its equals sign. Its column heads keep the sketch's words, "period" and
     "phase", and each row's head is titled with answer 3's pair and
     unit.
     A build shows the table without the base grid row, and a component
@@ -500,7 +507,10 @@ the user away): both stood open in the core's `pending.md`.*
     were unstated. The heads keep "period" and "phase" as the sketch
     draws them, where answer 3 takes the word "phase" off the pane: a
     head names a column of four quantities, and each row's symbols name
-    the quantity.*
+    the quantity. Whether the table fits the narrowest pane was unstated,
+    and the tables of `staggered` and of `library`'s `d_pid` overflowed
+    the 240 px pane (the cold review's finding 3 and the fixer's
+    probes).*
     *Why:* the seconds row holds everything the pane's sentence said, and
     the column heads give the words. The scope pair is what the author
     wrote, so it links the pane to the source, and it needs no change to
@@ -544,7 +554,8 @@ the user away): both stood open in the core's `pending.md`.*
     period, the least common multiple of the hyperperiod and `Δt_frame`
     taken in time, and the threshold applies to that span, to its base
     ticks and to its frame tops alike, and the minimum pitch to the
-    finer of the base tick and the frame. The lines
+    finer of the base tick and the frame. Both read the frame only
+    where frame tops are drawn, and the base ticks alone otherwise. The lines
     are drawn only when some base tick is not a frame top. Where
     `Δt_frame` divides `Δt_base`, every base tick is one: no lines are
     drawn, and the caption says so and gives the frames in one base
@@ -561,7 +572,12 @@ the user away): both stood open in the core's `pending.md`.*
     2026-11-23 (the implementation, the user away): a swatch's press in
     tier mode, what scrolls under a long timeline, where a mark sits,
     the closing frame top and the two lines on the periods were
-    unstated.*
+    unstated. The frame counted toward the threshold and the pitch even
+    where `Δt_frame` divides `Δt_base` and no line is drawn, so a frame
+    of a tenth of a tick spread each tick over 60 px and a finer one
+    omitted a chart whose ticks fit (the cold review's finding 7). The
+    amendment of the record at the new pin gave its reason for a frame
+    that does not divide the tick, and its words reached further.*
     *Why:* §9.2 has the schedule answer "what coincides with what", and
     `visual_grammar.md` answer 6 keys color on the triple because where
     an anchored clock lands is the deployment's fact, which a row per
@@ -616,8 +632,8 @@ the user away): both stood open in the core's `pending.md`.*
     ```
 
     A deployment changes only the `Δt` of the `A₀` lines, from symbolic
-    to concrete. `D`, `Φ` and `τ` go to the line's tooltip, after the
-    declaring scope. The fit
+    to concrete. `D`, `Φ` and `τ` go to the line's tooltip, before the
+    declaring scope it held already. The fit
     avoids the legend's box: it computes two candidates, one leaving the
     legend's height free at the bottom and one leaving its width free at
     the left, and takes the larger scale, the bottom one on a tie and
@@ -633,7 +649,9 @@ the user away): both stood open in the core's `pending.md`.*
     *Amended 2026-11-23 (the implementation, the user away): the
     tooltip's scope, the tie, the fallback and when the fit applies
     were unstated. Of the 16 fixtures' roots the fit costs `large`
-    alone, whose 43 lines take its scale from 0.083 to 0.062.*
+    alone, whose 43 lines take its scale from 0.083 to 0.062. The text
+    then put `D`, `Φ` and `τ` after the declaring scope, the reverse of
+    the page as built (the cold review's finding 6).*
     *Why:* the full line, `A₁ (fast) · m 2 · c 0 · D 8 · Φ 0 · Δt 1/25 s
     · τ 0`, is too long for a canvas corner, and `closed_loop` has ten
     lines. The timing tab and the chart show `D`, `Φ` and `τ` in full,

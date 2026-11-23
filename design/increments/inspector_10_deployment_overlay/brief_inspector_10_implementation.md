@@ -73,7 +73,8 @@ Per stage, with the prototype's commit that is its reference.
 - `frontend/src/lib/timing.ts`, new and pure: exact fractions over
   `BigInt` and their printing; the joins by path and by path and key;
   the anchors table with the pool's factors and `coarsestLine`; the
-  components' and the scopes' tables; `gridReport`; `headList` and
+  components' and the scopes' tables; `gridReport` and
+  `gridReportLines`; `headList` and
   `stepsPerFrame`; `hyperperiod`, `jointPeriod`, `frameLines` and
   `chartRows`; `chartFit` with `CHART_THRESHOLD = 1000` and
   `CHART_PITCH = 6`; `framesTable`, `scopeFramesTable`, `chainLine` and
@@ -115,6 +116,8 @@ Per stage, with the prototype's commit that is its reference.
   scroll or the omission.
 - `frontend/src/frame/Drawer.svelte` and `frontend/src/App.svelte` pass
   the legend's focus and `chartSwatch`.
+- `frontend/src/lib/timing.test.ts` and `analysis.test.ts`, beside
+  their modules.
 - `frontend/e2e/timing.spec.ts`, new, 14 checks, and
   `frontend/e2e/analysis.spec.ts` amended where the tab's shape changed.
 
@@ -142,6 +145,8 @@ Per stage, with the prototype's commit that is its reference.
   form.
 - `frontend/MAP.md`, for all four stages, 728 lines to 758.
   `design/rules.md`, ten traps. `README.md`, the help line.
+- `frontend/src/lib/detail.test.ts`, `rates.test.ts` and
+  `view.test.ts`, beside their modules.
 - `frontend/e2e/frames.spec.ts` and `legend.spec.ts`, new, and
   `detail.spec.ts`, `colors.spec.ts` and `help.spec.ts` amended where
   the pane's, the legend's and the help page's text moved.

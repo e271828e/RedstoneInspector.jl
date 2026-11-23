@@ -144,8 +144,8 @@ From prototyper A, the data:
    one. *Rejected:* a link to `#Redstone`. *Hunk:* the first line of
    `docstring.ts`'s `refLink`.
 10. **The legend's tooltip** (answer 13). A deployment's line reads
-    `D 2 · Φ 1 · τ 1/100 s`, a build's `τ Δt_base`, each after the
-    declaring scope the title holds today. *Rejected:* `D`, `Φ` and `τ`
+    `D 2 · Φ 1 · τ 1/100 s`, a build's `τ Δt_base`, each before the
+    declaring scope, which the title held already. *Rejected:* `D`, `Φ` and `τ`
     alone, which drops the scope answer 3 puts in the tooltip. *Hunk:*
     `timing.ts`'s `legendText`.
 
@@ -380,6 +380,55 @@ The coordinator's rulings on its findings, the user away:
     chart (finding 8), and the frames table's row heads wrapping at the
     default 360 px pane (finding 9).
 
+## The close
+
+The fixes landed as `52524d1`, with the gate `fix_1` green at the counts
+below. The fix took the map to 759 lines, one past ruling 8's.
+
+The reviewer then ran the delta check on `52524d1` in
+`W/increment_10_review`. Its gate, `delta_1`, is green, every step
+exiting 0 and the drift empty (`delta_1_summary.log`):
+
+- Julia, 128 tests passed of 128 (`delta_1_julia.log`).
+- Unit, 607 tests in 30 files, all passed (`delta_1_npm_test.log`).
+- The checker, 0 errors and 0 warnings in 405 files
+  (`delta_1_npm_check.log`).
+- Browser, 604 checks passed and 4 skipped (`delta_1_e2e.log`).
+
+The reviewer found every fix as ruled and nothing else changed. Its
+third reading, brought to rulings 10 and 16, agrees with the modules on
+709 facts over the fixtures and on 402 over the core's 11 files. Two
+reverts went red. Ruling 16's fix taken out turned two unit tests red,
+and ruling 13's float product put back turned the tie in
+`rates.test.ts` red. Findings 6, 8 and 9 survive as adjudicated, in
+rulings 15 and 18. The reviewer named one harmless import cycle the fix
+opened, under "Noticed, not touched". Its record is the section "Delta
+check of 52524d1" in `W/increment_10_notes/notes_review.md`.
+
+The account's usage limits stopped the coordinator twice. The five-hour
+limit stopped it at 05:42, and it resumed at 09:14. The week's limit on
+its model stopped it for good at about 09:20, after the delta check and
+while it wrote the closing docs. The launching session gave the rest to
+fresh agents. One made the four alternative patches again at the tip and
+filled the look folder, by ruling 5. Its index, with what to look at
+first, is `W/increment_10_look/README.md`, and the patches are
+`W/increment_10_look/alternatives/bare_link_as_text.patch`,
+`chain_line_left_out.patch`, `grid_report_left_out.patch` and
+`grid_report_show_words.patch`. Another wrote this closing docs commit
+from the coordinator's uncommitted start.
+
+The user's items owed:
+
+- The look-and-adjust pass, from `W/increment_10_look/README.md`, with
+  findings 8 and 9 among its items.
+- The diff check of the arc, `git diff 7b66e6b increment-10`.
+- The choice on each of the four pairs, the form built or its patch.
+- The merge of `increment-10` into `master`, then the push.
+- The removal, once done with them, of `W/increment_10_proto` and its
+  branch `increment-10-proto`, `W/pin_bump` and its branch `pin-bump`,
+  and the detached worktrees `W/increment_10_review`,
+  `W/pin_bump_review` and `W/increment_10_alt`.
+
 ## Noticed, not touched
 
 - At 1100 by 700 `large`'s legend, 714 px tall, is taller than the
@@ -392,6 +441,11 @@ The coordinator's rulings on its findings, the user away:
   to the keyboard sweep.
 - The oracle's draw counter takes a path's prefix for its parent, wrong
   for a keyed container. Only `containers` has one.
+- `timing.ts` imports `count` from `detail.ts`, which imports
+  `timing.ts`, since the fix of finding 2 (the delta check). The fix of
+  finding 4 has `rates.ts` import `timing.ts`, which imports `rates.ts`,
+  a second cycle. Both are harmless, since neither module of a pair uses
+  the other at load time (the fixer's notes).
 - Nothing is owed to the core, and no core change was needed.
 
 ## Paths
@@ -405,7 +459,13 @@ The coordinator's rulings on its findings, the user away:
 - `W/increment_10_notes/probes_a/`, `probes_b/` and `probes_c/`: the
   mutant runners and their outputs, the gesture, fit and narrow-pane
   probes and their captures.
-- `W/increment_10_notes/alternatives/`: the prototypers' four patches
-  and the captures of each form.
+- `W/increment_10_notes/notes_build_1.md`, `notes_build_2.md`,
+  `notes_fix.md` and `notes_review.md`: the builders', the fixer's and
+  the reviewer's notes.
+- `W/increment_10_notes/alternatives/`: the prototypers' four patches,
+  the models, which apply to `3357fd3` only, and the captures of each
+  form.
+- `W/increment_10_look/alternatives/`: the four patches made again at
+  the tip.
 - `W/run_20261123_logs/increment_10/`: `gate.sh` and every gate's logs.
-- `W/increment_10_look/`: what the user looks at.
+- `W/increment_10_look/`: what the user looks at, its index `README.md`.

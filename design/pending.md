@@ -44,14 +44,18 @@ The bullets stand in working order, the first one next.
   from the node's `rates` (answers 5 and 10). The step's notes,
   `increments/inspector_10_deployment_overlay/notes_record_at_pin.md`,
   hold each ruling with its reason and the alternative it rejected, and
-  the user's review of them is owed. One step remains:
-  - **The implementation**, briefed and launched from the amended
-    record. Its prototype shows the user both alternatives of the
-    readings the notes list as a matter of taste: a bare docstring link
-    joined to its type's module or shown as text (answer 15), the rate
-    chain on a line under the frames table or left out (answer 10), and
-    the pool's alternatives and the prime attribution under the anchors
-    table or left out (answer 9).
+  the user's review of them is owed. The third, the implementation, was
+  built and cold-reviewed on 2026-11-23 on the branch `increment-10`,
+  with the user away, and is not merged. Its brief,
+  `increments/inspector_10_deployment_overlay/brief_inspector_10_implementation.md`,
+  and `notes_implementation.md` beside it hold the rulings, the 32
+  readings, the review and its adjudication. The three readings the
+  record's notes list as a matter of taste are built as the second step
+  ruled them, with the joining of a bare docstring link kept (answer
+  15), the chain line shown (answer 10) and the grid report whole
+  (answer 9). A fourth pair joins them, the grid report in symbols
+  against `show`'s words. Each alternative is a patch at the tip, in
+  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/alternatives/`.
 
   Then 10b, the events, after a short
   design session of its own that also decides where the three event
@@ -59,14 +63,13 @@ The bullets stand in working order, the first one next.
   release, with a check that runs the real server. Stage reached on 10:
   the pin bump and the record at the new pin landed and not pushed, the
   bump cold-reviewed, the user's look at the bump and review of the
-  record's rulings owed. The implementation is under way on the branch
-  `increment-10`, unmerged. Its prototype is complete on the branch
-  `increment-10-proto`, four stages, each gated. Its brief,
-  `increments/inspector_10_deployment_overlay/brief_inspector_10_implementation.md`,
-  and the readings' dated notes on the record have landed on the
-  branch. The four builds, the cold review and its fixes come next. The
-  step's notes are `notes_implementation.md` beside the brief, and the
-  design session's handover is `notes_inspector_10.md`.
+  record's rulings owed. The implementation is built and cold-reviewed
+  on the branch `increment-10`, unmerged, its fixes at `52524d1` with
+  the delta check green. The user's look-and-adjust pass from
+  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/`, the
+  diff check of the arc, the choice on the four pairs and the merge are
+  owed, as the notes' section "The close" lists them. Next, 10b's design
+  session. The design session's handover is `notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is
@@ -163,9 +166,17 @@ the increment it came from.
   and the consumers that pin it. Its tag on the canvas and its pin's
   pane show no mark, where a primitive's pinned face has one in both.
   Whether they take one is the user's to rule.
-- **`frontend/MAP.md` past its size** (the polish batch). The map is about
-  730 lines against `design/rules.md`'s "about 700", 714 before the batch.
-  A trim outside any increment's text brings it back.
+- **The legend taller than the canvas** (increment 10's review). At 1100
+  by 700, `large`'s legend, 714 px tall, is cut at the canvas's top and
+  does not scroll. Its height predates increment 10.
+- **The scopes' empty note on a model with no `sample_times`**
+  (increment 10's review). The timing tab's "No assembly is keyed in
+  `sample_times`; every key names a primitive." shows on a model that
+  has no `sample_times` at all.
+- **`frontend/MAP.md` past its size** (the polish batch). The map is 759
+  lines at increment 10's tip against `design/rules.md`'s "about 700",
+  714 before the batch and about 730 after it. A trim outside any
+  increment's text brings it back (increment 10's notes, ruling 8).
 - **A rational part past `2^53`** (the core's exact-arithmetic audit,
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
   section 2.8). The descriptor writes an anchor's `dt` and `tau` as the JSON
