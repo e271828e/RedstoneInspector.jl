@@ -318,11 +318,74 @@ prototype.
    gate script, and must name `AGENTS.md`'s drift check. "A Playwright
    probe outside the tree" names "the notes folder", a place of this run.
 
+## The builds
+
+Two fresh builders applied the prototype's four commits on
+`increment-10`, each stage gated: `4e67e1b`, `16ea596`, `d3d2cb1` and
+`049f104`, with the gates `build1` to `build4` at the brief's counts.
+The five new fixtures came out of the script byte for byte as the
+prototype's, and the tree equals the prototype's `3357fd3` outside
+`design/`. The builders' findings on the brief are in its last section.
+
+## The cold review and its adjudication
+
+One independent high-tier agent reviewed `049f104` in a worktree of its
+own, `W/increment_10_review`. Its gate, `review_1`, is green at the
+brief's counts. Its own reading from the record agrees with the modules
+on 711 facts over the 21 fixtures and on 402 over 11 files it had the
+core write, and with the oracle. Its verdict: sound to land once a few
+small fixes are in. Its notes and probes are
+`W/increment_10_notes/notes_review.md` and `W/increment_10_notes/review/`.
+
+The coordinator's rulings on its findings, the user away:
+
+10. **A splitting row at the root path is named as the components table
+    names it** (the review's finding 1, fixed). The steps item named
+    nothing there. *Why:* the item names rows of the table under it.
+    *Rejected:* `show`'s word "root", a second name on one tab.
+11. **A count of one reads "1 base tick" and "1 frame"** (finding 2,
+    fixed), as `show` prints it.
+12. **The frames table fits the 240 px pane on an "opens" row too**
+    (finding 3, fixed, with a check at 240 px).
+13. **The palette's order compares exact periods** (finding 4, fixed).
+    Two triples of one period, `A₁ = 1/10` at `m = 3` and `A₂ = 3/10` at
+    `m = 1`, came out against the module's own tie rule. *Why:* answer 5
+    rules out a product of floats, the brief says the page multiplies
+    none, and the order now feeds the chart's swatches. This was the
+    first item of "Noticed, not touched" and leaves that list.
+14. **The sort "by Δt" sorts by the exact `Δt` on a deployment**, and
+    keeps the palette's order on a build, where an `A₀` row's `Δt` is a
+    symbol (finding 5, fixed), *look*. The button's title says which.
+    *Why:* reading 16 changed the words alone, and on a deployment the
+    palette's order is no order of `Δt`. *Rejected:* the old words, "by
+    period", which answer 3 takes off the tab; the palette's order kept
+    under the new words.
+15. **The legend's tooltip stands as built**, `D`, `Φ` and `τ` first and
+    the declaring scope after them (finding 6). The record's note on
+    answer 13 and reading 10 above said the reverse, the coordinator's
+    slip, and the closing docs commit corrects both. *Rejected:* the
+    order swapped in the code, a change with no reader's gain.
+16. **The frame counts toward the chart's threshold and pitch only
+    where frame tops are drawn** (finding 7, fixed, with a dated note on
+    answer 11), *look*. *Why:* where `Δt_frame` divides `Δt_base` no
+    line is drawn, yet a frame of a tenth of a tick spread each tick
+    over 60 px, and one of a ten-thousandth omitted a chart of 360
+    ticks. Step 2's amendment gave its reason for the frame that does
+    not divide the tick, and its words reached further. *Rejected:* the
+    record's rule as worded.
+17. **A link to the module `Redstone` gets a unit test of its own**
+    (the review's surviving mutant, fixed). Reading 9 had a browser
+    check alone.
+18. **Left for the look pass:** the frame caption under an omitted
+    chart (finding 8), and the frames table's row heads wrapping at the
+    default 360 px pane (finding 9).
+
 ## Noticed, not touched
 
-- `rates.ts` orders the palette's triples by a float period, a float
-  product on the page that answer 5 rules out for the tables. The order
-  changes only if two periods collide as floats.
+- At 1100 by 700 `large`'s legend, 714 px tall, is taller than the
+  canvas and is cut at the top with no scroll (the review).
+- "No assembly is keyed in sample_times; every key names a primitive."
+  shows on a model with no `sample_times` at all (the review).
 - With a closed assembly selected, the shell's Enter opens it even when
   a drawer button holds the focus, so Enter does not press a swatch or a
   sort button there. Space does. It predates the increment and belongs
