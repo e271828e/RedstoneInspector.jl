@@ -350,9 +350,12 @@ captures against the look's index. An empty review is acceptable.
 
 One high-tier agent reviewed `3dd015e`, `5a37bce` and `9e2603b` on
 2026-11-23, in a worktree of its own. Its gate was green at the same
-counts. It found no reader the bump missed, traced every fixture
-difference to a core commit or to the script, and confirmed the notes'
-figures. All seven mutants turned a check red, with no survivor. Its
+counts. It found no reader the bump broke, and one new field with no
+reader yet, a deployment's own warnings. It traced every fixture
+difference to a core commit or to the script. It confirmed the notes'
+figures but two it did not check: the measurements' column at
+`47f8ed9`, and the 6 failures with the readers changed. All seven
+mutants turned a check red, with no survivor. Its
 own probe of answer 16's two checks agrees, and adds two cases: one
 anchor `Absolute(1//10, 1//30)` alone has an offset of factor 3 with
 the alternative `0`, and `Absolute(1//10, 1//20)` beside
@@ -362,7 +365,9 @@ Nothing was a must-fix. The findings, as adjudicated:
 
 - **A deployment's own warnings never reach the diagnostics tab.** Not
   fixed here, by ruling 11. It goes to the second step.
-- **Open items stood in the notes alone.** Fixed by ruling 12.
+- **Open items stood in the notes alone.** Fixed by ruling 12, but for
+  `signature` in a live session, which stays in these notes: the step's
+  scope on `pending.md` was the coordinator's to set.
 - **The notes' look said the browser checks' screenshots agree**, where
   80 of 105 differ. Fixed above, with what the captures leave out.
 - **The closure's name changes in six signatures too.** Fixed above.
@@ -376,3 +381,4 @@ Nothing was a must-fix. The findings, as adjudicated:
 The reviewer agreed with rulings 1 to 3, 6 and 8 to 10, and with 4, 5
 and 7 on these terms: the new sentence comes first in the user's look,
 the check's name states its case, and the old file's gap is handed on.
+It checked the fixes' delta at `974b255` and closed every finding.
