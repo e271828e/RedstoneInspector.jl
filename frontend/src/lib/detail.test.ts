@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import type { KindMarker, PrimitiveFace, StructureSection } from "./descriptor";
 import {
   classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
-  ratePhrase, timingPhrase, wireFacts,
+  wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
 import { fixtureModel } from "./fixtures";
 import type { Model } from "./model";
+import type { FramesTable } from "./timing";
 import { buildResolution, type Face } from "./resolve";
 import { buildTree } from "./tree";
 
@@ -41,41 +42,44 @@ describe("kindPhrase", () => {
   });
 });
 
-describe("timingPhrase", () => {
-  it("anchor 0 is the base grid", () => {
-    expect(timingPhrase({ anchor: 0, m: 1, c: 0 }, [])).toBe("the base grid, m 1, c 0");
-  });
-  it("rates' fast/outer/hold hangs from anchor fast at m 2, T 1/50", () => {
-    const r = fixtureModel("rates");
-    expect(nodeFacts(r, "fast/outer/hold").rate?.title).toBe("anchor fast (T 1/50 s, tau 0/1 s), m 2, c 0");
-  });
-});
+/** A frames table's rows as the pane prints them: the frame, then the name and the pair with its unit, or the opening. */
+const cells = (t: FramesTable) => t.rows.map((r) => (r.opens ? [r.frame, r.opens] : [r.frame, r.name, r.period, r.phase, r.unit]));
 
-describe("ratePhrase", () => {
-  const q = { key: "q_ctl", dt: { num: 1, den: 50 }, tau: { num: 0, den: 1 }, scope: "pid_controller" };
-  it.each([
-    [{ anchor: 0, m: 1, c: 0 }, "every base tick"],
-    [{ anchor: 0, m: 4, c: 0 }, "every 4th base tick"],
-    [{ anchor: 0, m: 4, c: 1 }, "every 4th base tick, offset 1"],
-    [{ anchor: 0, m: 2, c: 3 }, "every 2nd base tick, offset 3"],
-    [{ anchor: 0, m: 3, c: 0 }, "every 3rd base tick"],
-    [{ anchor: 0, m: 11, c: 0 }, "every 11th base tick"],
-    [{ anchor: 0, m: 22, c: 0 }, "every 22nd base tick"],
-    [{ anchor: 1, m: 1, c: 0 }, "every tick of q_ctl, 1/50 s"],
-    [{ anchor: 1, m: 5, c: 2 }, "every 5th tick of q_ctl, 1/50 s, offset 2"],
-  ])("inline %o reads %s", (t, phrase) => {
-    expect(ratePhrase(t, [q])).toBe(phrase);
+describe("the rate fact (deployment_overlay.md answer 10)", () => {
+  it("timing_deployment's fast/outer/hold: the four frames of the record's example, and the chain under them, outermost first", () => {
+    const r = nodeFacts(fixtureModel("timing_deployment"), "fast/outer/hold").rate!;
+    expect(cells(r.table)).toEqual([
+      ["scope", "fast/outer", "K = 3", "φ = 1", "ticks of fast/outer"],
+      ["anchor", "A₂ (fast)", "m = 6", "c = 3", "ticks of A₂"],
+      ["base grid", "", "D = 36", "Φ = 18", "base ticks"],
+      ["seconds", "", "Δt = 3/25 s", "τ = 3/50 s", ""],
+    ]);
+    expect(r.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)");
   });
-  it("a non-zero tau joins the anchor's T", () => {
-    expect(ratePhrase({ anchor: 1, m: 1, c: 0 }, [{ ...q, tau: { num: 1, den: 100 } }])).toBe("every tick of q_ctl, 1/50 s, tau 1/100 s");
+  it("a build has no base grid row: timing's fast/outer/hold", () => {
+    expect(cells(nodeFacts(fixtureModel("timing"), "fast/outer/hold").rate!.table).map((c) => c[0])).toEqual(["scope", "anchor", "seconds"]);
   });
-  it("the fixtures: rates' hold every 2nd tick of fast, closed_loop's q_ctl, a discrete primitive at anchor 0", () => {
-    expect(nodeFacts(fixtureModel("rates"), "fast/outer/hold").rate?.phrase).toBe("every 2nd tick of fast, 1/50 s");
-    const ctl = nodeFacts(cl, "pid_controller/q_ctl");
-    expect(ctl.rate).toEqual({ phrase: "every tick of q_ctl, 1/50 s", title: "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0" });
+  it("a component opening its own anchor has no K and φ: timing's staggered opens A₁ at the root", () => {
+    expect(cells(nodeFacts(fixtureModel("timing"), "staggered").rate!.table)[0]).toEqual(["scope", "opens A₁ at the root"]);
+  });
+  it("the explicit Relative(1) stays in the chain: timing's fast/outer/same", () => {
+    expect(nodeFacts(fixtureModel("timing"), "fast/outer/same").rate!.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
+  });
+  it("on A₀ under no keyed assembly: the root's base ticks, m·Δt_base and c·Δt_base in a build's seconds row, library's d_pid", () => {
+    const r = nodeFacts(fixtureModel("library"), "d_pid").rate!;
+    expect(cells(r.table)).toEqual([
+      ["scope", "the root", "K = 2", "φ = 1", "base ticks"],
+      ["anchor", "A₀ (base)", "m = 2", "c = 1", "base ticks"],
+      ["seconds", "", "Δt = 2·Δt_base", "τ = Δt_base", ""],
+    ]);
+    expect(r.chain).toBe("d_pid = Relative(2, 1)");
+  });
+  it("an empty chain has no line: library's d_lqr, kinds' discrete primitive", () => {
+    expect(nodeFacts(fixtureModel("library"), "d_lqr").rate!.chain).toBeUndefined();
     const kinds = fixtureModel("kinds");
     const discrete = [...kinds.tree!.byPath.values()].find((n) => n.class === "primitive" && n.tier === "discrete")!;
-    expect(nodeFacts(kinds, discrete.path).rate?.phrase).toBe("every base tick");
+    expect(cells(nodeFacts(kinds, discrete.path).rate!.table)[2]).toEqual(["seconds", "", "Δt = Δt_base", "τ = 0", ""]);
+    expect(nodeFacts(kinds, discrete.path).rate!.chain).toBeUndefined();
   });
   it("a continuous primitive has no rate; the class phrase names the tier", () => {
     const p = nodeFacts(cl, "plant");
@@ -234,7 +238,19 @@ describe("other fixtures", () => {
   it("rates' level fast declares one scope", () => {
     const l = levelFacts(fixtureModel("rates"), "fast") as LevelFacts;
     expect([l.children, l.wires, l.inputs.map((f) => f.name), l.outputs.map((f) => f.name)]).toEqual([2, 4, ["in"], ["inner", "outer"]]);
-    expect(l.scopes).toEqual([{ key: "fast", timing: "anchor fast (T 1/50 s, tau 0/1 s), m 1, c 0" }]);
+    expect(l.scopes.map((x) => x.key)).toEqual(["fast"]);
+  });
+
+  it("the open level shows each rate scope by the frames table's derivation: timing_deployment's fast/outer/deep against fast/outer, fast opening A₂", () => {
+    const m = fixtureModel("timing_deployment");
+    const deep = levelFacts(m, "fast/outer/deep") as LevelFacts;
+    expect(deep.scopes.map((x) => [x.key, cells(x.table)])).toEqual([["deep", [
+      ["scope", "fast/outer", "K = 2", "φ = 1", "ticks of fast/outer"],
+      ["anchor", "A₂ (fast)", "m = 4", "c = 3", "ticks of A₂"],
+      ["base grid", "", "D = 24", "Φ = 18", "base ticks"],
+      ["seconds", "", "Δt = 2/25 s", "τ = 3/50 s", ""],
+    ]]]);
+    expect(cells((levelFacts(m, "fast") as LevelFacts).scopes[0].table)[0]).toEqual(["scope", "opens A₂ at the root"]);
   });
 
   it("an assembly's facts count its own level's wires, open or closed", () => {

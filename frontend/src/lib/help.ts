@@ -50,7 +50,7 @@ export const TERMS: Term[] = [
   { key: "hue", term: "reserved hue", sample: "hue", line: "Red for errors, amber for warnings, blue for highlight, all absent from the rate palette." },
   {
     key: "legend", term: "legend", sample: "legend",
-    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line reads out a triple `(anchor, m, c)`: the anchor a primitive hangs from, its multiple and its phase in that anchor's ticks.",
+    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock, `Aₖ (key) · m · c`, and its `Δt`; its tooltip adds `D`, `Φ` and `τ`. A click on a line dims what does not run on it.",
   },
   {
     key: "pin", term: "pin", sample: "pin",
@@ -70,6 +70,24 @@ export const TERMS: Term[] = [
   },
 ];
 
+/** The timing notation (deployment_overlay.md answer 3): each symbol once, `[symbols, meaning]`, in the frames' order. */
+export const NOTATION: [string, string][] = [
+  ["`Δt_base`", "the base tick, the finest step of the discrete schedule. A deployment fixes it; a build writes it as a symbol."],
+  ["`Δt_frame`", "a deployment's frame period, the spacing of the frame tops where the run meets the outside."],
+  ["`Aₖ (key)`", "anchor `k`, a clock an `Absolute` entry of `sample_times` declares under that key; its tooltip names the declaring scope. `A₀ (base)` is the base grid."],
+  ["`Δtₖ`, `τₖ`", "anchor `k`'s period and the time of its first tick after `t₀`, in seconds; `Δt₀ = Δt_base` and `τ₀ = 0`."],
+  ["`Dₖ`, `Φₖ`", "the same in base ticks, a deployment's; `D₀ = 1` and `Φ₀ = 0`."],
+  ["`K`, `φ`", "a component's period and phase in ticks of its enclosing rate scope, as its `Relative(K, φ)` entry declares them."],
+  ["`m`, `c`", "its period and phase in ticks of its anchor."],
+  ["`D`, `Φ`", "its period and phase in base ticks, a deployment's, with `0 ≤ Φ < D`."],
+  ["`Δt`, `τ`", "its period and phase in seconds; `τ` is the time of its first tick after `t₀`."],
+];
+
+/** The paragraphs of the timing and root inputs section. */
+export const NOTATION_LEAD = "A discrete component runs on a period and a phase, stated in four frames: its rate scope, its anchor, the base grid and seconds. The detail pane shows them as a table, a row per frame. The pane, the legend, the timing tab and their tooltips name each quantity by its symbol alone.";
+export const LAW_LEAD = "One law composes the frames, in seconds and in base ticks:";
+export const TYPE_RULE = "The root inputs tab marks with ◆ an input that some consumer pins, and names each pinning consumer with its cause: by tier for a discrete consumer, by declaration for a continuous one. A pinned input is frozen at every activation, so `linearize` cannot seed it. `linearize` seeds a root input only at a `Float64` reached by at most one index step: the input itself when it is a `Float64`, or one element of an array of `Float64`, never a field. The tab's type and kind columns show which.";
+
 /** The Simulink vocabulary (look_inspector_08.md 7.2), `[simulink, redstone, note]`, an empty note where it has none. */
 export const VOCABULARY: [string, string, string][] = [
   ["block", "primitive", "a component with behavior and no children"],
@@ -81,7 +99,7 @@ export const VOCABULARY: [string, string, string][] = [
   ["data type", "the face's type", "in the detail pane"],
   ["line styles for dimensions and buses", "kind marker", "the wire's weight and pattern"],
   ["continuous and discrete sample times", "tier", ""],
-  ["sample time", "triple", "a discrete primitive's period and phase, compiled as `(anchor, m, c)`. Declared in an assembly's `sample_times`, not on the component"],
+  ["sample time", "triple", "a discrete primitive's period and phase, compiled as `(Aₖ, m, c)`. Declared in an assembly's `sample_times`, not on the component"],
   ["Sample Time Colors and Legend", "rate mode and the legend", ""],
   ["direct feedthrough", "a stage 2 output", "Simulink marks the input port; Redstone marks the output. A stage 1 output is published before the component reads its inputs"],
   ["sorted execution order", "execution order", "the order tab and the order badges"],

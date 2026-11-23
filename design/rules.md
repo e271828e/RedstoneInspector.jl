@@ -378,6 +378,37 @@ full text stays.
 - **A mutant runner in place.** A runner that swaps source files in place
   shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
   until it has restored the last one.
+- **Enter on a drawer button.** The shell's Enter opens a selected closed
+  assembly before the browser presses the focused button, so Enter on a chart
+  swatch or a row's button then opens the assembly; Space presses it. Found
+  2026-11-23.
+- **A sticky column beside a wide timeline.** The chart's labels are one
+  sticky element in a `width: max-content` flex row, so they stay while the
+  tab's body scrolls sideways; the fit measures the labels' `offsetWidth`,
+  their gap their own padding so their background covers it.
+- **A Playwright probe outside the tree.** A probe config and spec under the
+  notes folder load the harness only with a `node_modules` symlink beside them
+  and a `package.json` of `{"type": "module"}`. A locator's `textContent()`
+  waits its whole timeout for an absent element; a probe reads absent ones
+  through `evaluate`.
+- **A column head as a term of the law.** The check that every timing head is
+  a term of the caption admits `k`, which the law writes only as the
+  subscript of `Δtₖ` and its kin.
+- **A fit before its legend.** The legend is drawn from the level's state, so
+  a fit run in the same turn as the new level measures no legend; a first fit
+  waits a `tick()`, and `data-ready` waits for it.
+- **The mode across two drops.** The color mode is kept per browser, so a
+  check's second drop opens in rate mode already, and `r` then turns it off.
+- **A table in the narrow pane.** The frames table beside its `dt` overflowed
+  the 240 px pane by 6 px; it spans the facts' width, a path takes a `<wbr>`
+  after each slash, and only the values are `nowrap`.
+- **A retired word inside another.** The help check's retired words match
+  "leaves" as well as "leaf", so a verb trips it.
+- **An inline model in Vitest.** `timing.ts` reads `model.descriptor.kind`, so
+  an inline `Model` cast without a descriptor throws in `legendText`; give it
+  `descriptor: {kind: "build"}`.
+- **New fixtures on the drift line.** The gate's drift line lists a staged new
+  fixture as an `A ` line; it is empty only after the commit.
 
 ## Amending a record
 

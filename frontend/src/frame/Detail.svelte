@@ -11,6 +11,7 @@
   import type { Model } from "../lib/model";
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
+  import { FRAME_TITLES, type FramesTable } from "../lib/timing";
 
   let { model, level, selection, focused = false, editor = false, origin, tracing = false, onselect, onopen, onlocation, ontrace }: {
     model: Model;
@@ -113,6 +114,26 @@
   {/if}
 {/snippet}
 
+{#snippet slashed(s: string)}{#each s.split("/") as part, i (i)}{#if i}/<wbr />{/if}{part}{/each}{/snippet}
+
+{#snippet frames(t: FramesTable)}
+  <table class="frames">
+    <thead><tr><th></th><th>period</th><th>phase</th><th></th></tr></thead>
+    <tbody>
+      {#each t.rows as r (r.frame)}
+        <tr data-frame={r.frame}>
+          <th class="frame" scope="row" title={FRAME_TITLES[r.frame]}><span class="word">{r.frame}</span>{#if r.name}{" "}<span class="name">{@render slashed(r.name)}</span>{/if}</th>
+          {#if r.opens}
+            <td class="opens" colspan="3">{@render slashed(r.opens)}</td>
+          {:else}
+            <td class="period">{r.period}</td><td class="phase">{r.phase}</td><td class="unit">{@render slashed(r.unit)}</td>
+          {/if}
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+{/snippet}
+
 {#snippet node(f: NodeFacts | LevelFacts, scopes: LevelFacts["scopes"] = [])}
   <dl class="facts">
     <dt title={FACT_TITLES.type}>type</dt>
@@ -123,7 +144,10 @@
     <dd data-fact="class">{classPhrase(f.kind === "primitive" ? "primitive" : "assembly", f.tier)}</dd>
     {#if f.rate}
       <dt title={FACT_TITLES.rate}>rate</dt>
-      <dd data-fact="rate" title={f.rate.title}>{f.rate.phrase}</dd>
+      <dd data-fact="rate">
+        {@render frames(f.rate.table)}
+        {#if f.rate.chain}<p class="chain"><code>{f.rate.chain}</code></p>{/if}
+      </dd>
     {/if}
     {#if f.children !== undefined}
       <dt title={FACT_TITLES.children}>children</dt>
@@ -168,7 +192,7 @@
   {/if}
   {#if scopes.length}
     <h3>Rate scopes</h3>
-    <ul class="scopes">{#each scopes as s (s.key)}<li><code>{s.key}</code>: {s.timing}</li>{/each}</ul>
+    <ul class="scopes">{#each scopes as s (s.key)}<li data-key={s.key}><code>{s.key}</code>{@render frames(s.table)}</li>{/each}</ul>
   {/if}
   {#if f.parameters.length}
     <h3>Parameters</h3>
@@ -276,6 +300,18 @@
   td, th { padding: 2px 6px 2px 0; vertical-align: top; text-align: left; }
   th { font-weight: 400; color: var(--text-light); font-size: 11px; }
   .parameters td { overflow-wrap: anywhere; }
+  /* The frames table (deployment_overlay.md answer 10): a row per frame, the frame's word light, the pair in two columns. */
+  .frames th.frame { color: var(--text); font-size: 13px; cursor: help; }
+  .frames .word { color: var(--text-light); font-size: 11px; }
+  .frames :is(th, td) { padding: 1px 4px 1px 0; }
+  /* The table takes the pane's whole width under its label, so the narrow pane keeps each cell on a line or two. */
+  dl.facts dd[data-fact="rate"] { grid-column: 1 / -1; }
+  .frames .period, .frames .phase { white-space: nowrap; }
+  .frames .period { padding-right: 8px; }
+  .frames .unit, .frames .opens { color: var(--text-light); }
+  .chain { margin: 4px 0 0; color: var(--text-light); }
+  .scopes { list-style: none; padding: 0; }
+  .scopes li { margin: 4px 0 8px; }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }
   .faces .side, .faces .pinned, .faces .stage { white-space: nowrap; }

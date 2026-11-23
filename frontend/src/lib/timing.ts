@@ -463,6 +463,14 @@ export interface FramesTable {
   rows: FramesRow[];
 }
 
+/** Each frame's tooltip: its pair and unit, answer 3's table. */
+export const FRAME_TITLES: Record<FramesRow["frame"], string> = {
+  scope: "Its rate scope: K and φ in ticks of the enclosing scope, as declared",
+  anchor: "Its anchor: m and c in ticks of anchor k",
+  "base grid": "The base grid: D and Φ in base ticks, the deployment's",
+  seconds: "Seconds: Δt and τ",
+};
+
 /** The nearest strict ancestor with a scope row, by the tree's parent rule, with its timing; the root at `(1, 0)` on `A₀`. */
 function enclosingScope(model: Model, path: string): { path: string; timing: Timing } {
   const s = model.structure!, tree = model.tree!;

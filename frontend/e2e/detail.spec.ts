@@ -22,6 +22,8 @@ const faceRow = (page: Page, port: string) => pane(page).locator(`table.faces tr
 const link = (page: Page, cls: "producer" | "consumer", path: string, port: string) =>
   pane(page).locator(`a.${cls}[data-path="${path}"][data-port="${port}"]`);
 const fact = (page: Page, name: string) => pane(page).locator(`dl.facts dd[data-fact="${name}"]`);
+/** The rate fact's frames table, a row per frame. */
+const framesRows = (page: Page) => fact(page, "rate").locator("table.frames tbody tr");
 /** The facts list's labels in order, and that each carries a one-sentence hover title. */
 async function expectLabels(page: Page, labels: string[]) {
   const dts = pane(page).locator("dl.facts dt");
@@ -196,13 +198,13 @@ test.describe("closed_loop", () => {
     await expect(pane(page)).toHaveAttribute("data-kind", "level");
   });
 
-  test("pid_controller/q_ctl: a discrete primitive's rate row, its timing in the title", async ({ page }) => {
+  test("pid_controller/q_ctl: a discrete primitive's rate row is its frames table, opening A₄ at pid_controller, a build's three frames, and its chain line", async ({ page }) => {
     await openPath(page, "pid_controller");
     await page.locator('g.block[data-id="pid_controller/q_ctl"]').click();
     await expectLabels(page, ["type", "class", "rate", "member"]);
     await expect(fact(page, "class")).toHaveText("primitive, discrete");
-    await expect(fact(page, "rate")).toHaveText("every tick of q_ctl, 1/50 s");
-    await expect(fact(page, "rate")).toHaveAttribute("title", "anchor q_ctl (T 1/50 s, tau 0/1 s), m 1, c 0");
+    await expect(framesRows(page)).toHaveText([/^scope\s*opens A₄ at pid_controller$/, /^anchor\s*A₄ \(q_ctl\)\s*m = 1\s*c = 0\s*ticks of A₄$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
+    await expect(fact(page, "rate").locator("p.chain")).toHaveText("q_ctl = Absolute(1//50, 0//1)");
   });
 
   test("the root wire into sensing|in|h: the wire layout", async ({ page }) => {
@@ -304,7 +306,7 @@ test.describe("closed_loop", () => {
   });
 });
 
-test("rates: level fast's scope line, its heading after the locations and before the parameters", async ({ page }) => {
+test("rates: level fast's scope as a frames table opening A₁ at the root, its heading after the locations and before the parameters; hold's rate a frames table", async ({ page }) => {
   await drop(page, "rates");
   await openPath(page, "fast");
   await expect(pane(page)).toHaveAttribute("data-kind", "level");
@@ -319,11 +321,14 @@ test("rates: level fast's scope line, its heading after the locations and before
   expect(heads.scopes).toBeGreaterThan(heads.locations);
   expect(heads.list).toBeGreaterThan(heads.scopes);
   expect(heads.parameters).toBeGreaterThan(heads.list);
-  for (const t of ["fast", "anchor fast", "T 1/50", "m 1"]) await expect(scopes).toContainText(t);
+  await expect(scopes).toHaveAttribute("data-key", "fast");
+  await expect(scopes.locator("table.frames tbody tr")).toHaveText([/^scope\s*opens A₁ at the root$/, /^anchor\s*A₁ \(fast\)\s*m = 1\s*c = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
+  await expect(scopes.locator("p.chain")).toHaveCount(0);
   await page.locator('g.block[data-id="fast/outer"]').dblclick();
   await page.locator(readyLevel("fast/outer")).waitFor();
   await page.locator('g.block[data-id="fast/outer/hold"]').click();
-  await expect(fact(page, "rate")).toHaveText("every 2nd tick of fast, 1/50 s");
+  await expect(framesRows(page)).toHaveText([/^scope\s*fast\/outer\s*K = 1\s*φ = 0\s*ticks of fast\/outer$/, /^anchor\s*A₁ \(fast\)\s*m = 2\s*c = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/25 s\s*τ = 0$/]);
+  await expect(fact(page, "rate").locator("p.chain")).toHaveText("fast = Absolute(1//50, 0//1) → outer = Relative(2, 0)");
 });
 
 test("containers: the folder's keys select their nodes", async ({ page }) => {
