@@ -4,7 +4,7 @@ module Synthetic
 using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
-    transparent_container, input_passthrough, Absolute, Relative, Group
+    transparent_container, input_passthrough, Absolute, Relative, Group, Pinned
 import Redstone.Library: Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
@@ -365,5 +365,36 @@ end
 local_wires(::Scale) = ()
 input_wires(::Scale) = ("e" => "taps/c/e",)
 output_wires(::Scale) = ("taps/c/out" => "out",)
+
+# --- timing: the cases that need the writer (deployment_overlay.md answer 16) -------
+
+"A gain whose input entry is `Pinned`: continuous, its output direct."
+struct PinnedGain <: AbstractComponent end
+
+x_init(::PinnedGain) = nothing
+u_types(::PinnedGain) = (in = Pinned{Float64},)
+y_types(::PinnedGain) = (out = Float64,)
+y_direct(::PinnedGain, (; u)) = (out = 2u.in,)
+
+timing_deep() = Group((; hold = ZOH()); input_wires = ("in" => "hold/in",), output_wires = ("hold/out" => "out",))
+
+timing_outer() = Group((; hold = ZOH(), same = ZOH(), deep = timing_deep());
+                       input_wires = ("in" => ("hold/in", "same/in", "deep/in"),),
+                       output_wires = ("hold/out" => "hold", "same/out" => "same", "deep/out" => "deep"),
+                       sample_times = (hold = Relative(3, 1), same = Relative(1), deep = Relative(2, 1)))
+
+# An offset anchor beside a plain one, `ref` pinned by declaration beside `u` pinned by tier, and beneath
+# `fast/outer` a keyed primitive, an explicit Relative(1) and a nested scope.
+timing() = Group((; staggered = ZOH(),
+                    fast = Group((; inner = ZOH(), outer = timing_outer());
+                                 input_wires = ("in" => ("inner/in", "outer/in"),),
+                                 output_wires = ("inner/out" => "inner", "outer/hold" => "hold", "outer/same" => "same",
+                                                 "outer/deep" => "deep"),
+                                 sample_times = (outer = Relative(2, 1),)),
+                    frozen = PinnedGain());
+                 input_wires = ("u" => ("staggered/in", "fast/in"), "ref" => "frozen/in"),
+                 output_wires = ("staggered/out" => "staggered", "fast/inner" => "inner", "fast/hold" => "hold",
+                                 "fast/same" => "same", "fast/deep" => "deep", "frozen/out" => "frozen"),
+                 sample_times = (staggered = Absolute(1//10, 1//300), fast = Absolute(1//50)))
 
 end # module Synthetic

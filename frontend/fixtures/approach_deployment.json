@@ -1,0 +1,3424 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "deployment",
+  "name": "approach_deployment",
+  "deployment": {
+    "build": {
+      "structure": {
+        "nodes": [
+          {
+            "path": "",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{vehicle::Redstone.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, sensing::Redstone.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::RedstoneExamples.Altimeter}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute, altimeter::Redstone.Absolute}}, cascade::Redstone.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}, Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}, selection::Redstone.Group{@NamedTuple{latch::Redstone.Library.UnitDelay{Bool}, select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, NTuple{4, Pair{String, String}}, NTuple{5, Pair{String, String}}, NTuple{5, Pair{String, String}}, @NamedTuple{latch::Redstone.Absolute, command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}, actuators::Redstone.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}}, NTuple{14, Pair{String, String}}, NTuple{5, Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}, gear::RedstoneExamples.GroundContact, stop::Redstone.Library.StopRequest}, Tuple{Pair{String, String}, Pair{String, String}}, RedstoneExamples.var\"#20#21\", Tuple{}, @NamedTuple{}}",
+            "inputs": [
+              {
+                "name": "h_ref"
+              },
+              {
+                "name": "V_ref"
+              },
+              {
+                "name": "δe_pilot"
+              },
+              {
+                "name": "δt_pilot"
+              },
+              {
+                "name": "engage"
+              }
+            ],
+            "outputs": [],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "gear",
+                  "port": "h"
+                }
+              },
+              {
+                "from": {
+                  "path": "gear",
+                  "port": "contact"
+                },
+                "to": {
+                  "path": "stop",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "h_ref"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "h_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "V_ref"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "V_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "δe_pilot"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "δe_pilot"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "δt_pilot"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "δt_pilot"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "engage"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "engage"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"vehicle/h\"=>\"gear/h\", \"gear/contact\"=>\"stop/u\")"
+              },
+              {
+                "name": "input_wires",
+                "value": "#20"
+              },
+              {
+                "name": "output_wires",
+                "value": "()"
+              },
+              {
+                "name": "sample_times",
+                "value": "NamedTuple()"
+              }
+            ]
+          },
+          {
+            "path": "vehicle",
+            "field": "children",
+            "key": "vehicle",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{plant::RedstoneExamples.Longitudinal, sensing::Redstone.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::RedstoneExamples.Altimeter}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute, altimeter::Redstone.Absolute}}, cascade::Redstone.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}, Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}, selection::Redstone.Group{@NamedTuple{latch::Redstone.Library.UnitDelay{Bool}, select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, NTuple{4, Pair{String, String}}, NTuple{5, Pair{String, String}}, NTuple{5, Pair{String, String}}, @NamedTuple{latch::Redstone.Absolute, command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}, actuators::Redstone.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}}, NTuple{14, Pair{String, String}}, NTuple{5, Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}",
+            "inputs": [
+              {
+                "name": "h_ref"
+              },
+              {
+                "name": "V_ref"
+              },
+              {
+                "name": "δe_pilot"
+              },
+              {
+                "name": "δt_pilot"
+              },
+              {
+                "name": "engage"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "h"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle/plant",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "vehicle/sensing",
+                  "port": "h"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/sensing",
+                  "port": "h_meas"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "h_meas"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/plant",
+                  "port": "θ"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "θ"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/plant",
+                  "port": "q"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "q"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/plant",
+                  "port": "V"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "V"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators",
+                  "port": "δe"
+                },
+                "to": {
+                  "path": "vehicle/plant",
+                  "port": "δe"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators",
+                  "port": "δt"
+                },
+                "to": {
+                  "path": "vehicle/plant",
+                  "port": "δt"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "δe"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δe_auto"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "δt"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δt_auto"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δe"
+                },
+                "to": {
+                  "path": "vehicle/actuators",
+                  "port": "δe_cmd"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δt"
+                },
+                "to": {
+                  "path": "vehicle/actuators",
+                  "port": "δt_cmd"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δe_prev"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "δe_track"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δt_prev"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "δt_track"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "engaged"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "engaged"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "h_ref"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "h_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "V_ref"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "V_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "δe_pilot"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δe_pilot"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "δt_pilot"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δt_pilot"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle",
+                  "port": "engage"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "engage"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/plant",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "vehicle",
+                  "port": "h"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"plant/h\"=>\"sensing/h\", \"sensing/h_meas\"=>\"cascade/h_meas\", \"plant/θ\"=>\"cascade…"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"h_ref\"=>\"cascade/h_ref\", \"V_ref\"=>\"cascade/V_ref\", \"δe_pilot\"=>\"selection/δe_p…"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"plant/h\"=>\"h\",)"
+              },
+              {
+                "name": "sample_times",
+                "value": "NamedTuple()"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/plant",
+            "field": "children",
+            "key": "plant",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "RedstoneExamples.Longitudinal",
+            "signature": "RedstoneExamples.Longitudinal",
+            "inputs": [
+              {
+                "name": "δe",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "δt",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "V",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "γ",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "θ",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "q",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "α",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "m",
+                "value": "1000.0"
+              },
+              {
+                "name": "S",
+                "value": "16.0"
+              },
+              {
+                "name": "c̄",
+                "value": "1.5"
+              },
+              {
+                "name": "Iyy",
+                "value": "1800.0"
+              },
+              {
+                "name": "T_max",
+                "value": "2500.0"
+              },
+              {
+                "name": "ρ",
+                "value": "1.225"
+              },
+              {
+                "name": "CL0",
+                "value": "0.3"
+              },
+              {
+                "name": "CLα",
+                "value": "5.0"
+              },
+              {
+                "name": "CD0",
+                "value": "0.03"
+              },
+              {
+                "name": "k",
+                "value": "0.05"
+              },
+              {
+                "name": "Cm0",
+                "value": "0.05"
+              },
+              {
+                "name": "Cmα",
+                "value": "-1.0"
+              },
+              {
+                "name": "Cmq",
+                "value": "-12.0"
+              },
+              {
+                "name": "Cmδe",
+                "value": "-1.2"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/sensing",
+            "field": "children",
+            "key": "sensing",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{noise::Redstone.Library.GaussianWhiteNoise{Float64}, altimeter::RedstoneExamples.Altimeter}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{noise::Redstone.Absolute, altimeter::Redstone.Absolute}}",
+            "inputs": [
+              {
+                "name": "h"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "h_meas"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle/sensing/noise",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/sensing/altimeter",
+                  "port": "noise"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/sensing",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "vehicle/sensing/altimeter",
+                  "port": "h"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/sensing/altimeter",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/sensing",
+                  "port": "h_meas"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"noise/y\"=>\"altimeter/noise\",)"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"h\"=>\"altimeter/h\",)"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"altimeter/y\"=>\"h_meas\",)"
+              },
+              {
+                "name": "sample_times.noise",
+                "value": "Absolute(1//10, 0//1)"
+              },
+              {
+                "name": "sample_times.altimeter",
+                "value": "Absolute(1//10, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/sensing/noise",
+            "field": "children",
+            "key": "noise",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 1,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/sensing",
+                "key": "noise",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.GaussianWhiteNoise",
+            "signature": "Redstone.Library.GaussianWhiteNoise{Float64}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "seed",
+                "value": "0x0000000000000007"
+              },
+              {
+                "name": "μ",
+                "value": "0.0"
+              },
+              {
+                "name": "σ",
+                "value": "0.0424264"
+              },
+              {
+                "name": "density",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/sensing/altimeter",
+            "field": "children",
+            "key": "altimeter",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/sensing",
+                "key": "altimeter",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "RedstoneExamples.Altimeter",
+            "signature": "RedstoneExamples.Altimeter",
+            "inputs": [
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "noise",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "vehicle/cascade",
+            "field": "children",
+            "key": "cascade",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{h_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, θ_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, q_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, V_ctl::Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, free::Redstone.Library.Constant{Int8}}, NTuple{6, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, Tuple{String, String}}, Pair{String, Tuple{String, String}}, Pair{String, String}, Pair{String, String}, Pair{String, NTuple{4, String}}, Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{h_ctl::Redstone.Absolute, θ_ctl::Redstone.Absolute, q_ctl::Redstone.Absolute, V_ctl::Redstone.Absolute}}",
+            "inputs": [
+              {
+                "name": "h_ref"
+              },
+              {
+                "name": "h_meas"
+              },
+              {
+                "name": "θ"
+              },
+              {
+                "name": "q"
+              },
+              {
+                "name": "V_ref"
+              },
+              {
+                "name": "V"
+              },
+              {
+                "name": "engaged"
+              },
+              {
+                "name": "δe_track"
+              },
+              {
+                "name": "δt_track"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "δe"
+              },
+              {
+                "name": "δt"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "saturated"
+                },
+                "to": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "saturation"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "saturated"
+                },
+                "to": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "saturation"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/free",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "saturation"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/free",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "saturation"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "h_ref"
+                },
+                "to": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "h_meas"
+                },
+                "to": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "θ"
+                },
+                "to": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "θ"
+                },
+                "to": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "v"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "q"
+                },
+                "to": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "q"
+                },
+                "to": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "v"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "V_ref"
+                },
+                "to": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "V"
+                },
+                "to": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "engaged"
+                },
+                "to": {
+                  "path": "vehicle/cascade/h_ctl",
+                  "port": "engaged"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "engaged"
+                },
+                "to": {
+                  "path": "vehicle/cascade/θ_ctl",
+                  "port": "engaged"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "engaged"
+                },
+                "to": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "engaged"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "engaged"
+                },
+                "to": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "engaged"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "δe_track"
+                },
+                "to": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "v"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade",
+                  "port": "δt_track"
+                },
+                "to": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "v"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/q_ctl",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "δe"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/cascade/V_ctl",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "vehicle/cascade",
+                  "port": "δt"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"h_ctl/u\"=>\"θ_ctl/r\", \"θ_ctl/u\"=>\"q_ctl/r\", \"θ_ctl/saturated\"=>\"h_ctl/saturatio…"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"h_ref\"=>\"h_ctl/r\", \"h_meas\"=>\"h_ctl/y\", \"θ\"=>(\"θ_ctl/y\", \"h_ctl/v\"), \"q\"=>(\"q_…"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"q_ctl/u\"=>\"δe\", \"V_ctl/u\"=>\"δt\")"
+              },
+              {
+                "name": "sample_times.h_ctl",
+                "value": "Absolute(1//10, 0//1)"
+              },
+              {
+                "name": "sample_times.θ_ctl",
+                "value": "Absolute(1//50, 0//1)"
+              },
+              {
+                "name": "sample_times.q_ctl",
+                "value": "Absolute(1//50, 0//1)"
+              },
+              {
+                "name": "sample_times.V_ctl",
+                "value": "Absolute(1//10, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/cascade/h_ctl",
+            "field": "children",
+            "key": "h_ctl",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 3,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/cascade",
+                "key": "h_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.DiscretePID",
+            "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              },
+              {
+                "name": "engaged",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "v",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "0.01"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "0.001"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "0.02"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "-0.26"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "0.26"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/cascade/θ_ctl",
+            "field": "children",
+            "key": "θ_ctl",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 4,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/cascade",
+                "key": "θ_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.DiscretePID",
+            "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              },
+              {
+                "name": "engaged",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "v",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "2.0"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "0.5"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "0.02"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "-0.5"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "0.5"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/cascade/q_ctl",
+            "field": "children",
+            "key": "q_ctl",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 5,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/cascade",
+                "key": "q_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.DiscretePID",
+            "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              },
+              {
+                "name": "engaged",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "v",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "-0.2"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "-0.4"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "0.02"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "-0.5"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "0.5"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/cascade/V_ctl",
+            "field": "children",
+            "key": "V_ctl",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 6,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/cascade",
+                "key": "V_ctl",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.DiscretePID",
+            "signature": "Redstone.Library.DiscretePID{Float64, true, true, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              },
+              {
+                "name": "engaged",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "v",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "0.2"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "0.05"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "0.02"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/cascade/free",
+            "field": "children",
+            "key": "free",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Constant",
+            "signature": "Redstone.Library.Constant{Int8}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "value",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/selection",
+            "field": "children",
+            "key": "selection",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{latch::Redstone.Library.UnitDelay{Bool}, select_δe::Redstone.Library.Switch{Float64}, select_δt::Redstone.Library.Switch{Float64}, command_δe::Redstone.Library.UnitDelay{Float64}, command_δt::Redstone.Library.UnitDelay{Float64}}, NTuple{4, Pair{String, String}}, NTuple{5, Pair{String, String}}, NTuple{5, Pair{String, String}}, @NamedTuple{latch::Redstone.Absolute, command_δe::Redstone.Absolute, command_δt::Redstone.Absolute}}",
+            "inputs": [
+              {
+                "name": "δe_auto"
+              },
+              {
+                "name": "δe_pilot"
+              },
+              {
+                "name": "δt_auto"
+              },
+              {
+                "name": "δt_pilot"
+              },
+              {
+                "name": "engage"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "δe"
+              },
+              {
+                "name": "δt"
+              },
+              {
+                "name": "δe_prev"
+              },
+              {
+                "name": "δt_prev"
+              },
+              {
+                "name": "engaged"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle/selection/latch",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δe",
+                  "port": "select"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/latch",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δt",
+                  "port": "select"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/select_δe",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection/command_δe",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/select_δt",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection/command_δt",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δe_auto"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δe",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δe_pilot"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δe",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δt_auto"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δt",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "δt_pilot"
+                },
+                "to": {
+                  "path": "vehicle/selection/select_δt",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection",
+                  "port": "engage"
+                },
+                "to": {
+                  "path": "vehicle/selection/latch",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/select_δe",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δe"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/select_δt",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δt"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/command_δe",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δe_prev"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/command_δt",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "δt_prev"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/selection/latch",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/selection",
+                  "port": "engaged"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"latch/y\"=>\"select_δe/select\", \"latch/y\"=>\"select_δt/select\", \"select_δe/y\"=>\"c…"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"δe_auto\"=>\"select_δe/in1\", \"δe_pilot\"=>\"select_δe/in2\", \"δt_auto\"=>\"select_δt/…"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"select_δe/y\"=>\"δe\", \"select_δt/y\"=>\"δt\", \"command_δe/y\"=>\"δe_prev\", \"command_δ…"
+              },
+              {
+                "name": "sample_times.latch",
+                "value": "Absolute(1//10, 0//1)"
+              },
+              {
+                "name": "sample_times.command_δe",
+                "value": "Absolute(1//50, 0//1)"
+              },
+              {
+                "name": "sample_times.command_δt",
+                "value": "Absolute(1//50, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/selection/latch",
+            "field": "children",
+            "key": "latch",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 7,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/selection",
+                "key": "latch",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.UnitDelay",
+            "signature": "Redstone.Library.UnitDelay{Bool}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "false"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/selection/select_δe",
+            "field": "children",
+            "key": "select_δe",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Switch",
+            "signature": "Redstone.Library.Switch{Float64}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "select",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "vehicle/selection/select_δt",
+            "field": "children",
+            "key": "select_δt",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Switch",
+            "signature": "Redstone.Library.Switch{Float64}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "select",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "vehicle/selection/command_δe",
+            "field": "children",
+            "key": "command_δe",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 8,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/selection",
+                "key": "command_δe",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.UnitDelay",
+            "signature": "Redstone.Library.UnitDelay{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "0.0250582"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/selection/command_δt",
+            "field": "children",
+            "key": "command_δt",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 9,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/selection",
+                "key": "command_δt",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.UnitDelay",
+            "signature": "Redstone.Library.UnitDelay{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "0.372337"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/actuators",
+            "field": "children",
+            "key": "actuators",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{δe_limiter::Redstone.Library.RateLimiter{Float64}, δe_lag::Redstone.Library.FirstOrderLag{Float64}, δt_limiter::Redstone.Library.RateLimiter{Float64}, δt_lag::Redstone.Library.FirstOrderLag{Float64}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{δe_limiter::Redstone.Absolute, δt_limiter::Redstone.Absolute}}",
+            "inputs": [
+              {
+                "name": "δe_cmd"
+              },
+              {
+                "name": "δt_cmd"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "δe"
+              },
+              {
+                "name": "δt"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "vehicle/actuators/δe_limiter",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/actuators/δe_lag",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators/δt_limiter",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/actuators/δt_lag",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators",
+                  "port": "δe_cmd"
+                },
+                "to": {
+                  "path": "vehicle/actuators/δe_limiter",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators",
+                  "port": "δt_cmd"
+                },
+                "to": {
+                  "path": "vehicle/actuators/δt_limiter",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators/δe_lag",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/actuators",
+                  "port": "δe"
+                }
+              },
+              {
+                "from": {
+                  "path": "vehicle/actuators/δt_lag",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "vehicle/actuators",
+                  "port": "δt"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"δe_limiter/y\"=>\"δe_lag/u\", \"δt_limiter/y\"=>\"δt_lag/u\")"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"δe_cmd\"=>\"δe_limiter/u\", \"δt_cmd\"=>\"δt_limiter/u\")"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"δe_lag/y\"=>\"δe\", \"δt_lag/y\"=>\"δt\")"
+              },
+              {
+                "name": "sample_times.δe_limiter",
+                "value": "Absolute(1//50, 0//1)"
+              },
+              {
+                "name": "sample_times.δt_limiter",
+                "value": "Absolute(1//50, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δe_limiter",
+            "field": "children",
+            "key": "δe_limiter",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 10,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/actuators",
+                "key": "δe_limiter",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.RateLimiter",
+            "signature": "Redstone.Library.RateLimiter{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "rising",
+                "value": "1.0"
+              },
+              {
+                "name": "falling",
+                "value": "1.0"
+              },
+              {
+                "name": "s0",
+                "value": "0.0250582"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δe_lag",
+            "field": "children",
+            "key": "δe_lag",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.FirstOrderLag",
+            "signature": "Redstone.Library.FirstOrderLag{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "x0",
+                "value": "0.0250582"
+              },
+              {
+                "name": "τ",
+                "value": "0.05"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δt_limiter",
+            "field": "children",
+            "key": "δt_limiter",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 11,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "vehicle/actuators",
+                "key": "δt_limiter",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.RateLimiter",
+            "signature": "Redstone.Library.RateLimiter{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "rising",
+                "value": "0.5"
+              },
+              {
+                "name": "falling",
+                "value": "0.5"
+              },
+              {
+                "name": "s0",
+                "value": "0.372337"
+              }
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δt_lag",
+            "field": "children",
+            "key": "δt_lag",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.FirstOrderLag",
+            "signature": "Redstone.Library.FirstOrderLag{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "x0",
+                "value": "0.372337"
+              },
+              {
+                "name": "τ",
+                "value": "0.5"
+              }
+            ]
+          },
+          {
+            "path": "gear",
+            "field": "children",
+            "key": "gear",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "RedstoneExamples.GroundContact",
+            "signature": "RedstoneExamples.GroundContact",
+            "inputs": [
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "contact",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "h_ground",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "stop",
+            "field": "children",
+            "key": "stop",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.StopRequest",
+            "signature": "Redstone.Library.StopRequest",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Redstone.StopFlag",
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "NO_STOP",
+                    "STOP_REQUESTED"
+                  ]
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "reason",
+                "value": "\"touchdown\""
+              }
+            ]
+          }
+        ],
+        "root_inputs": [
+          {
+            "name": "h_ref",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "vehicle/cascade/h_ctl",
+                "port": "r"
+              }
+            ]
+          },
+          {
+            "name": "V_ref",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "vehicle/cascade/V_ctl",
+                "port": "r"
+              }
+            ]
+          },
+          {
+            "name": "δe_pilot",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": false,
+            "pinned_by": []
+          },
+          {
+            "name": "δt_pilot",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": false,
+            "pinned_by": []
+          },
+          {
+            "name": "engage",
+            "type": "Bool",
+            "kind": {
+              "kind": "boolean"
+            },
+            "pinned": false,
+            "pinned_by": []
+          }
+        ],
+        "anchors": [
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/sensing",
+            "key": "noise"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/sensing",
+            "key": "altimeter"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/cascade",
+            "key": "h_ctl"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/cascade",
+            "key": "θ_ctl"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/cascade",
+            "key": "q_ctl"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/cascade",
+            "key": "V_ctl"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/selection",
+            "key": "latch"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/selection",
+            "key": "command_δe"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/selection",
+            "key": "command_δt"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/actuators",
+            "key": "δe_limiter"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "vehicle/actuators",
+            "key": "δt_limiter"
+          }
+        ],
+        "scopes": [],
+        "grid": {
+          "admissible": {
+            "num": 1,
+            "den": 50
+          },
+          "pool": [
+            {
+              "anchor": 1,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 2,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 3,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 4,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 5,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 6,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 7,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 8,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 9,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 10,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 11,
+              "kind": "period",
+              "factor": 1
+            }
+          ],
+          "primes": [
+            {
+              "prime": 2,
+              "power": 1,
+              "suppliers": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+              ]
+            },
+            {
+              "prime": 5,
+              "power": 2,
+              "suppliers": [
+                4,
+                5,
+                8,
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        "types": [
+          {
+            "name": "Redstone.Group",
+            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+            "locations": [
+              {
+                "function": "sample_times",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 981
+              },
+              {
+                "function": "local_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 978
+              },
+              {
+                "function": "input_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 979
+              },
+              {
+                "function": "output_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 980
+              },
+              {
+                "function": "transparent_container",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 982
+              }
+            ]
+          },
+          {
+            "name": "RedstoneExamples.Longitudinal",
+            "docstring": "    Longitudinal(; m = 1000.0, S = 16.0, c̄ = 1.5, Iyy = 1800.0, T_max = 2500.0, ρ = 1.225,\n                   CL0 = 0.3, CLα = 5.0, CD0 = 0.03, k = 0.05,\n                   Cm0 = 0.05, Cmα = -1.0, Cmq = -12.0, Cmδe = -1.2)\n\nA rigid aircraft in its plane of symmetry, with three degrees of freedom:\nairspeed `V`, flight path angle `γ`, pitch angle `θ`, pitch rate `q` and\naltitude `h` as its states, elevator `δe` and throttle `δt` as its inputs, and\nthe states with the angle of attack `α = θ - γ` as its outputs, all from the\nstate, so the plant has no feedthrough. A continuous leaf. Lift and drag follow\na linear lift curve and a parabolic polar, the pitching moment a static, a\ndamping and an elevator term, and the thrust is `δt T_max` along the body\naxis, with constant density and still air:\n\n    V̇ = (T cos α - D) / m - g sin γ\n    γ̇ = (L + T sin α) / (m V) - g cos γ / V\n    θ̇ = q\n    q̇ = M / Iyy\n    ḣ = V sin γ\n\nThe defaults are a light single-engine aircraft. The parameters, the trim and\nthe modes are `longitudinal_aircraft.md`, sections 1 to 3.\n\nThe example is didactic, and it may change in a minor version.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 52
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 53
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 51
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.GaussianWhiteNoise",
+            "docstring": "    GaussianWhiteNoise(; seed, μ = nothing, σ = nothing, psd = nothing) -> GaussianWhiteNoise\n\nA discrete [primitive](@ref g-primitive) that publishes a seeded Gaussian white\nnoise sample at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is a discrete Gaussian white\nnoise process. At each tick, its one output, `y`, publishes an independent\nsample of mean `μ` and standard deviation `σ`. It publishes from\n[stage 1](@ref g-stage-function).\n\nThe sample is a pure function of `seed` and the tick count. The tick count is\nthe one [store](@ref g-store) value, the field `s`, written `k` below.\n[Replay](@ref g-replay) therefore reproduces the stream. After a tick the store\nholds the next sample's index, so `k` reads `N + 1` once the component has\nticked `N` times past `t₀`.\n\nTwo components with one seed publish one stream, so independent sources take\ndistinct seeds.\n\n`μ` and the scale are broadcast to one type, the parameter `V` and the\noutput's, `Float64` or an `SArray` of `Float64`, so a scalar pairs with an\narray. Over an `SArray` the components are independent.\n\nExactly one of `σ` and `psd` is given. Neither or both is refused as an\n`ArgumentError`. Halve a one-sided density before passing it as `psd`.\n\n# Keywords\n\n- `seed`: the non-negative integer the stream is drawn from.\n- `μ`: the mean, zero in the scale's shape when left at `nothing`.\n- `σ`: the standard deviation per sample, at any period.\n- `psd`: the two-sided intensity `Q` of the white noise the samples stand for,\n  with `σ² = Q/Δt` at the [component](@ref g-component)'s own period `Δt`.\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 858
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 857
+              }
+            ]
+          },
+          {
+            "name": "RedstoneExamples.Altimeter",
+            "docstring": "    Altimeter()\n\nThe altimeter's measurement: the altitude `h` plus the sensor's error `noise`,\npublished as the bare output `y`. A stateless discrete leaf, so it computes its\noutput only at its ticks and holds it in between (§3.2): placed at the loop's\nrate, the whole measurement is sampled and held there, as a sensor configured\nto the loop's rate delivers it.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 174
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 175
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 173
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscretePID",
+            "docstring": "    DiscretePID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n                  b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> DiscretePID\n\nA discrete [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe [library component](@ref g-library-component) takes the parameters,\ndefaults, [ports](@ref g-port) and law of [`PID`](@ref) to the discrete\n[tier](@ref g-tier). Two [store](@ref g-store) fields stand in for its\ncontinuous states. `q` is the integral term, and `yf` is the weighted\nmeasurement `w = y - c r` through a lag. A third, `saturated`, holds its code.\n`Δt` is the [component](@ref g-component)'s own period.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]`:\n\n    u_raw = Kp (b r - y) + q - Kd (w - yf) / (τd + Δt)\n\nEach [tick](@ref g-tick) moves the lag by backward Euler,\n`yf⁺ = yf + Δt (w - yf) / (τd + Δt)`. It moves the integral term by forward\nEuler and the correction's exact step:\n\n    q⁺ = q + Δt Ki ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nThe two anti-windup axes fill the slots `ε` and `ref` by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`. A component not engaged\nwithout tracking freezes. `tracking` adds the input `v`. With the hold, the\nreference falls back to `u` while the component is free. All of this is as in\n`PID`. The setpoint weights `b` and `c` multiply `r` alone, as in `PID`, and the\nintegral's error stays `e`.\n\n`tracking = true` with a `Tt` given infinite in any channel is refused as an\n`ArgumentError`, as in `PID`. So is a `u_min` above `u_max`, both given as\nvalues, and so is a `τd` or a `Tt` given as a value and negative in any channel.\nEither may be zero.\n\nThe parameters, the inputs `r`, `y` and `v`, the outputs `u` and `u_raw` and the\nstore fields `q` and `yf` share one type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`. Over an `SArray` the law is componentwise, as in `PID`.\nThe nine keywords given as values broadcast to one `V` by the rule of `PID`. A\nscalar therefore pairs with a vector, and a uniform vector gain spells one\nkeyword as a vector, `Kp = @SVector fill(2.0, 3)`.\n\nAny parameter may be an input port, spelled `Kp = AsPort()` with\n[`AsPort`](@ref), typed `V` and outside the shape. Under a `Dual`\n[activation](@ref g-activation) the discrete tier does not run and holds its\n`Float64` values, so a linearization sees no coupling through the port and a\n[`Freeze`](@ref) on it changes nothing.\n\nThe backward Euler lag is stable at every period, and `τd = 0` is legal. `yf` is\nthen the previous weighted measurement, and the D term the backward difference\n`(w - yf) / Δt`.\n\n`β` is the exact step of the correction's relaxation over one period, so every\n`Tt` is stable. `Tt = Inf` switches the correction off. `Tt = 0` is legal and\nbrings `u_raw` to the reference plus the tick's integral step `Δt Ki ε` by the\nnext tick, the clamping scheme as the limit of tracking. Not engaged with\ntracking, `Tt = 0` lands `u_raw` on the tick's `v` one tick later, exact for a\nconstant `v` while `r` and `y` hold.\n\nA third output, `saturated`, publishes the `Int8` code of the component's own\nclamp, an `SArray` of `Int8` of `V`'s shape over an array. The code is `1` with\n`u_raw` at or above `u_max`, `-1` at or below `u_min` and `0` between. The\ncomponent stores the code from `u_raw` at the tick and publishes it from stage 1\nat the next. It is therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary).\n\nThe code serves the hold of an outer controller in a cascade, wired to its input\n`saturation`. The outer controller's integrator takes one extra step before the\nhold engages. As a stage-1 port the code closes no cycle through the outer\ncontroller's `u`.\n\nA tracking input wired from a memoryless clamp of the component's own `u` is\nrefused as an `AlgebraicCycle`, as for `PID`, but classified real. A parameter\nport computed memorylessly from `u` closes a cycle likewise.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, `0` for the backward\n  difference.\n- `Tt`: the time constant of the correction, `Inf` to switch it off and `0` to\n  correct within one tick.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`AbstractPID`](@ref), [`DiscreteLQRTracker`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2381
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2694
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2693
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Constant",
+            "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, `y`, publishes `value` from [stage 1](@ref g-stage-function).\nThe [library component](@ref g-library-component) is stateless, so discrete\nconsumers read it as well.\n\nThe output is [pinned](@ref g-walked) at the parameter `V`, the type of `value`.\nIt carries zero partials under every `Dual` [activation](@ref g-activation). A\nconsumer input declared plain `Float64`, which admits a value with or without\npartials, accepts it as a value that never carries partials.\n\nThe value is a field, not an overridable default. A source set from outside is a\n[root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 350
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 349
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.UnitDelay",
+            "docstring": "    UnitDelay(s0) -> UnitDelay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from the\nprevious [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is the native `z⁻¹` of the\ndiscrete [tier](@ref g-tier). A wire names its input `u` and its output `y` by\n[face](@ref g-face), `\"delay/u\"` and `\"delay/y\"`.\n\nThe output publishes the stored value `s` from [stage 1](@ref g-stage-function),\n`y = s`, and `s0` at the first publication. Each tick stores the input for the\nnext one, `s⁺ = u`. The [store](@ref g-store) and both [ports](@ref g-port)\nshare one type, the parameter `V`, the type of `s0`, an isbits type or a\n`Symbol`, as the store requires.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop), and that is a modelling\ndecision. Placed in a continuous loop, it moves the signal onto the discrete\ntier and inserts a zero-order hold over the [component](@ref g-component)'s own\nperiod, a multiple of [`Δt_base`](@ref g-dt_base).\n\nSee also [`Delay`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 381
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 382
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 380
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Switch",
+            "docstring": "    Switch{V}() -> Switch{V}\n\nA continuous [primitive](@ref g-primitive) that publishes one of its two inputs,\npicked by a `Bool` input.\n\nThe inputs `in1` and `in2` are typed `V` and `select` is a `Bool`. The one\noutput, `y`, is typed `V`. It is `in1` while `select` holds and `in2` otherwise.\nThe [library component](@ref g-library-component) is stateless.\n\nThe output reads all three inputs. A `select` wired from a memoryless function\nof the output therefore closes an [algebraic loop](@ref g-algebraic-loop), which\nthe build refuses as `AlgebraicCycle`.\n\nThe component declares no [event](@ref g-state-event), so the jump in the output\nlands where `select` flips. A `select` published from a mode, or held between\n[ticks](@ref g-tick), flips on a [boundary](@ref g-boundary) and the jump is\nclean. One computed from a continuous quantity inside a\n[stage body](@ref g-stage-function) flips inside a step and smears that step.\nThat is a mode made silently. A [`Comparator`](@ref) on the quantity is the\ndeclared way to produce `select`. A [`Relay`](@ref) publishes a value rather\nthan a `Bool`, so it reaches `select` through a [`Junction`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 261
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 262
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 260
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.RateLimiter",
+            "docstring": "    RateLimiter(; rising, falling = rising, s0 = 0.0) -> RateLimiter\n\nA discrete [primitive](@ref g-primitive) that publishes its input with its rate\nof change bounded per [tick](@ref g-tick).\n\nThe output `y` follows the input `u`, moving at most `rising Δt` up and\n`falling Δt` down per tick. `Δt` is the [component](@ref g-component)'s own\nperiod. One [store](@ref g-store) value, the field `s`, holds the previous\noutput, and each tick stores `y`:\n\n    y = s + clamp(u - s, -falling Δt, rising Δt)\n\nOver an `SArray` the slew is componentwise.\n\n`y` reads `u`, so the [library component](@ref g-library-component) has\n[feedthrough](@ref g-feedthrough). A loop closed on it through a memoryless path\nis refused as `AlgebraicCycle`. A [`UnitDelay`](@ref) after the component breaks\nthat loop, and lags the input by one tick at every rate.\n\nThe rates, the state and both [ports](@ref g-port) share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `rising`, `falling`\nand `s0` to one shape, so a scalar rate pairs with a vector `s0` and integer\nvalues qualify. Over an `SArray` each component slews at its own rates. A\n`rising` or a `falling` that is not positive in every component is refused as an\n`ArgumentError`. The rates stay at `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `rising`: the largest rise per second, positive.\n- `falling`: the largest fall per second, positive.\n- `s0`: the previous output at the first tick, so the output at `t₀` is already\n  one slew step from it.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 725
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 726
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 724
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.FirstOrderLag",
+            "docstring": "    FirstOrderLag(; τ, x0 = 0.0) -> FirstOrderLag\n\nA continuous [primitive](@ref g-primitive) that publishes its input through a\nfirst-order lag of time constant `τ`.\n\nThe [library component](@ref g-library-component) holds one continuous state `x`\nfrom `x0`. Its input is `u` and its output `y`, with `ẋ = (u - x) / τ` and\n`y = x`, published from [stage 1](@ref g-stage-function). The state follows the\nscalar of a `Dual` [activation](@ref g-activation), so the lag linearizes to\n`A = -1/τ` and `B = 1/τ`.\n\nFor a scalar signal the component is\n[`TransferFunction`](@ref)`(num = (1,), den = (τ, 1), u0 = x0)`. The component\nstays for `SArray` signals, for `x0` in the signal's own coordinates and for\nthe spelling.\n\nThe state, the input `u`, the output `y` and `τ` share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `τ` and `x0` to one\nshape, so a scalar `τ` pairs with a vector `x0` and integer values qualify. Over\nan `SArray` the lag is componentwise, each component at its own `τ`. A `τ` that\nis not positive in every component is refused as an `ArgumentError`. `τ` stays\nat `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `τ`: the time constant, positive.\n- `x0`: the initial value of `x`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1011
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1012
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1010
+              }
+            ]
+          },
+          {
+            "name": "RedstoneExamples.GroundContact",
+            "docstring": "    GroundContact(; h_ground = 0.0)\n\nThe ground under the aircraft: one input `h`, the altitude, and one mode,\n`contact`, false until the aircraft reaches `h_ground`. A stateless continuous\nleaf with one event, `touchdown`, a localized state event (§2.3, §10.4): the\nguard returns the sign-form value `h_ground - h`, so the step in which the\ncrossing falls ends at the crossing itself, and the handler sets `contact`. The\n`Bool` output `contact` publishes the mode from stage 1, so a `StopRequest` fed\nfrom it ends the run at the touchdown's boundary (§13.5).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 90
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 91
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 88
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 89
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+                "line": 95
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.StopRequest",
+            "docstring": "    StopRequest(; reason = \"\") -> StopRequest\n\nA continuous [primitive](@ref g-primitive) that publishes a\n[stop request](@ref g-stop-request) while its `Bool` input holds.\n\nIts one output, `y`, is a [`StopFlag`](@ref). It publishes `STOP_REQUESTED`\nwhile its one input, the `Bool` `u`, holds and `NO_STOP` otherwise. The\n[library component](@ref g-library-component) is stateless, so it refreshes at\nevery [boundary](@ref g-boundary) and sits anywhere in the tree.\n\nAny [component](@ref g-component) may publish a request, since the request is\nthe [port](@ref g-port)'s type.\n\n# Keywords\n\n- `reason`: the reason the component's requests report, read by\n  [`stop_reason`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 439
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 440
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 438
+              },
+              {
+                "function": "stop_reason",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 442
+              }
+            ]
+          }
+        ]
+      },
+      "outputs": {
+        "order": [
+          "vehicle/plant",
+          "vehicle/sensing/noise",
+          "vehicle/sensing/altimeter",
+          "vehicle/cascade/V_ctl",
+          "vehicle/cascade/free",
+          "vehicle/selection/latch",
+          "vehicle/selection/command_δe",
+          "vehicle/selection/command_δt",
+          "vehicle/actuators/δe_lag",
+          "vehicle/actuators/δt_lag",
+          "gear",
+          "stop",
+          "vehicle/cascade/h_ctl",
+          "vehicle/selection/select_δt",
+          "vehicle/cascade/θ_ctl",
+          "vehicle/actuators/δt_limiter",
+          "vehicle/cascade/q_ctl",
+          "vehicle/selection/select_δe",
+          "vehicle/actuators/δe_limiter"
+        ],
+        "components": [
+          {
+            "path": "vehicle/plant",
+            "stage1": [
+              "V",
+              "γ",
+              "θ",
+              "q",
+              "h",
+              "α"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/sensing/noise",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/sensing/altimeter",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "vehicle/cascade/h_ctl",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "vehicle/cascade/θ_ctl",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "vehicle/cascade/q_ctl",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "vehicle/cascade/V_ctl",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "vehicle/cascade/free",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/selection/latch",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/selection/select_δe",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "vehicle/selection/select_δt",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "vehicle/selection/command_δe",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/selection/command_δt",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/actuators/δe_limiter",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δe_lag",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "vehicle/actuators/δt_limiter",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "vehicle/actuators/δt_lag",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "gear",
+            "stage1": [
+              "contact"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "stop",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          }
+        ]
+      },
+      "events": {
+        "components": [
+          {
+            "path": "vehicle/plant",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/sensing/noise",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/sensing/altimeter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/cascade/h_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/cascade/θ_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/cascade/q_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/cascade/V_ctl",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/cascade/free",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/selection/latch",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/selection/select_δe",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/selection/select_δt",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/selection/command_δe",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/selection/command_δt",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/actuators/δe_limiter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/actuators/δe_lag",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/actuators/δt_limiter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "vehicle/actuators/δt_lag",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "gear",
+            "events": [
+              {
+                "name": "touchdown",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "stop",
+            "events": [],
+            "bundle": []
+          }
+        ]
+      },
+      "warnings": []
+    },
+    "dt_frame": {
+      "num": 1,
+      "den": 200
+    },
+    "dt_base": {
+      "num": 1,
+      "den": 200
+    },
+    "h_max": {
+      "num": 1,
+      "den": 200
+    },
+    "algorithm": {
+      "text": "RK4()",
+      "proposes": false
+    },
+    "firing_budget": 4,
+    "localization_tol": 1.0e-6,
+    "localization_budget": 8,
+    "attempt_budget": 7,
+    "schedule": {
+      "anchors": [
+        {
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "D": 4,
+          "phi": 0
+        }
+      ],
+      "rows": [
+        {
+          "path": "vehicle/sensing/noise",
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/sensing/altimeter",
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/cascade/h_ctl",
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/cascade/θ_ctl",
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/cascade/q_ctl",
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/cascade/V_ctl",
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/selection/latch",
+          "D": 20,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/selection/command_δe",
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/selection/command_δt",
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/actuators/δe_limiter",
+          "D": 4,
+          "phi": 0
+        },
+        {
+          "path": "vehicle/actuators/δt_limiter",
+          "D": 4,
+          "phi": 0
+        }
+      ],
+      "scopes": []
+    },
+    "warnings": []
+  }
+}

@@ -22,7 +22,7 @@ end
 
 using Redstone, RedstoneExamples, RedstoneInspector
 import Redstone: Simulation, Deployment, DiagnosticError, build, trim!, linearize, set
-import RedstoneExamples: aircraft, level_flight, longitudinal_taps, lqr_gains, closed_loop
+import RedstoneExamples: aircraft, level_flight, longitudinal_taps, lqr_gains, closed_loop, approach
 import RedstoneInspector: write_descriptor
 include("synthetic.jl")
 
@@ -73,9 +73,14 @@ write_fixture("descent", descent())
 write_fixture("closed_loop", closed)
 write_fixture("closed_loop_deployment", Deployment(build(closed); Δt_frame = 1//100))
 
-for base_name in ("large", "containers", "primitive", "kinds", "rates", "library", "warning")
+for base_name in ("large", "containers", "primitive", "kinds", "rates", "library", "warning", "timing")
     write_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end
+# deployment_overlay.md answer 16: each deployment shows what no other does.
+write_fixture("timing_deployment", Deployment(build(Synthetic.timing()); Δt_frame = 1//100, Δt_base = :derive))
+write_fixture("library_deployment", Deployment(build(Synthetic.library()); Δt_frame = 1//100))
+write_fixture("rates_deployment", Deployment(build(Synthetic.rates()); Δt_frame = 1//100, Δt_base = 1//200))
+write_fixture("approach_deployment", Deployment(build(approach(report.solution)); Δt_frame = 1//200))
 for base_name in ("failure_cycle", "failure_structure", "failure_nested", "failure_dead", "failure_probe")
     write_failure_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end

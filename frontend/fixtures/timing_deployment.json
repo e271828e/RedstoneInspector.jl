@@ -1,0 +1,1168 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "deployment",
+  "name": "timing_deployment",
+  "deployment": {
+    "build": {
+      "structure": {
+        "nodes": [
+          {
+            "path": "",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{staggered::Main.Synthetic.ZOH, fast::Redstone.Group{@NamedTuple{inner::Main.Synthetic.ZOH, outer::Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH, same::Main.Synthetic.ZOH, deep::Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH}, Tuple{}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}}, Tuple{}, Tuple{Pair{String, Tuple{String, String, String}}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}}, @NamedTuple{hold::Redstone.Relative, same::Redstone.Relative, deep::Redstone.Relative}}}, Tuple{}, Tuple{Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{outer::Redstone.Relative}}, frozen::Main.Synthetic.PinnedGain}, Tuple{}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, NTuple{6, Pair{String, String}}, @NamedTuple{staggered::Redstone.Absolute, fast::Redstone.Absolute}}",
+            "inputs": [
+              {
+                "name": "u"
+              },
+              {
+                "name": "ref"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "staggered"
+              },
+              {
+                "name": "inner"
+              },
+              {
+                "name": "hold"
+              },
+              {
+                "name": "same"
+              },
+              {
+                "name": "deep"
+              },
+              {
+                "name": "frozen"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "staggered",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "fast",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "ref"
+                },
+                "to": {
+                  "path": "frozen",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "staggered",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "",
+                  "port": "staggered"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "inner"
+                },
+                "to": {
+                  "path": "",
+                  "port": "inner"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "hold"
+                },
+                "to": {
+                  "path": "",
+                  "port": "hold"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "same"
+                },
+                "to": {
+                  "path": "",
+                  "port": "same"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "deep"
+                },
+                "to": {
+                  "path": "",
+                  "port": "deep"
+                }
+              },
+              {
+                "from": {
+                  "path": "frozen",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "",
+                  "port": "frozen"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"u\"=>(\"staggered/in\", \"fast/in\"), \"ref\"=>\"frozen/in\")"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"staggered/out\"=>\"staggered\", \"fast/inner\"=>\"inner\", \"fast/hold\"=>\"hold\", \"fast…"
+              },
+              {
+                "name": "sample_times.staggered",
+                "value": "Absolute(1//10, 1//300)"
+              },
+              {
+                "name": "sample_times.fast",
+                "value": "Absolute(1//50, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "staggered",
+            "field": "children",
+            "key": "staggered",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 1,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "staggered",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 1,
+                  "den": 300
+                }
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "fast",
+            "field": "children",
+            "key": "fast",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{inner::Main.Synthetic.ZOH, outer::Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH, same::Main.Synthetic.ZOH, deep::Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH}, Tuple{}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}}, Tuple{}, Tuple{Pair{String, Tuple{String, String, String}}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}}, @NamedTuple{hold::Redstone.Relative, same::Redstone.Relative, deep::Redstone.Relative}}}, Tuple{}, Tuple{Pair{String, Tuple{String, String}}}, NTuple{4, Pair{String, String}}, @NamedTuple{outer::Redstone.Relative}}",
+            "inputs": [
+              {
+                "name": "in"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "inner"
+              },
+              {
+                "name": "hold"
+              },
+              {
+                "name": "same"
+              },
+              {
+                "name": "deep"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/inner",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/outer",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/inner",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "fast",
+                  "port": "inner"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "hold"
+                },
+                "to": {
+                  "path": "fast",
+                  "port": "hold"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "same"
+                },
+                "to": {
+                  "path": "fast",
+                  "port": "same"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "deep"
+                },
+                "to": {
+                  "path": "fast",
+                  "port": "deep"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"in\"=>(\"inner/in\", \"outer/in\"),)"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"inner/out\"=>\"inner\", \"outer/hold\"=>\"hold\", \"outer/same\"=>\"same\", \"outer/deep\"=…"
+              },
+              {
+                "name": "sample_times.outer",
+                "value": "Relative(2, 1)"
+              }
+            ]
+          },
+          {
+            "path": "fast/inner",
+            "field": "children",
+            "key": "inner",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "fast",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "fast/outer",
+            "field": "children",
+            "key": "outer",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH, same::Main.Synthetic.ZOH, deep::Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH}, Tuple{}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}}, Tuple{}, Tuple{Pair{String, Tuple{String, String, String}}}, Tuple{Pair{String, String}, Pair{String, String}, Pair{String, String}}, @NamedTuple{hold::Redstone.Relative, same::Redstone.Relative, deep::Redstone.Relative}}",
+            "inputs": [
+              {
+                "name": "in"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "hold"
+              },
+              {
+                "name": "same"
+              },
+              {
+                "name": "deep"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/outer/hold",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/outer/same",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/outer/deep",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer/hold",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "fast/outer",
+                  "port": "hold"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer/same",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "fast/outer",
+                  "port": "same"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer/deep",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "fast/outer",
+                  "port": "deep"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"in\"=>(\"hold/in\", \"same/in\", \"deep/in\"),)"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"hold/out\"=>\"hold\", \"same/out\"=>\"same\", \"deep/out\"=>\"deep\")"
+              },
+              {
+                "name": "sample_times.hold",
+                "value": "Relative(3, 1)"
+              },
+              {
+                "name": "sample_times.same",
+                "value": "Relative(1, 0)"
+              },
+              {
+                "name": "sample_times.deep",
+                "value": "Relative(2, 1)"
+              }
+            ]
+          },
+          {
+            "path": "fast/outer/hold",
+            "field": "children",
+            "key": "hold",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 6,
+              "c": 3
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "fast",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              },
+              {
+                "scope": "fast",
+                "key": "outer",
+                "K": 2,
+                "phi": 1
+              },
+              {
+                "scope": "fast/outer",
+                "key": "hold",
+                "K": 3,
+                "phi": 1
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "fast/outer/same",
+            "field": "children",
+            "key": "same",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 2,
+              "c": 1
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "fast",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              },
+              {
+                "scope": "fast",
+                "key": "outer",
+                "K": 2,
+                "phi": 1
+              },
+              {
+                "scope": "fast/outer",
+                "key": "same",
+                "K": 1,
+                "phi": 0
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "fast/outer/deep",
+            "field": "children",
+            "key": "deep",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{hold::Main.Synthetic.ZOH}, Tuple{}, Tuple{Pair{String, String}}, Tuple{Pair{String, String}}, @NamedTuple{}}",
+            "inputs": [
+              {
+                "name": "in"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "fast/outer/deep",
+                  "port": "in"
+                },
+                "to": {
+                  "path": "fast/outer/deep/hold",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "fast/outer/deep/hold",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "fast/outer/deep",
+                  "port": "out"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"in\"=>\"hold/in\",)"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"hold/out\"=>\"out\",)"
+              },
+              {
+                "name": "sample_times",
+                "value": "NamedTuple()"
+              }
+            ]
+          },
+          {
+            "path": "fast/outer/deep/hold",
+            "field": "children",
+            "key": "hold",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 4,
+              "c": 3
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "fast",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              },
+              {
+                "scope": "fast",
+                "key": "outer",
+                "K": 2,
+                "phi": 1
+              },
+              {
+                "scope": "fast/outer",
+                "key": "deep",
+                "K": 2,
+                "phi": 1
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "frozen",
+            "field": "children",
+            "key": "frozen",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Main.Synthetic.PinnedGain",
+            "signature": "Main.Synthetic.PinnedGain",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          }
+        ],
+        "root_inputs": [
+          {
+            "name": "u",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "staggered",
+                "port": "in"
+              },
+              {
+                "path": "fast/inner",
+                "port": "in"
+              },
+              {
+                "path": "fast/outer/hold",
+                "port": "in"
+              },
+              {
+                "path": "fast/outer/same",
+                "port": "in"
+              },
+              {
+                "path": "fast/outer/deep/hold",
+                "port": "in"
+              }
+            ]
+          },
+          {
+            "name": "ref",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": true,
+            "pinned_by": [
+              {
+                "path": "frozen",
+                "port": "in"
+              }
+            ]
+          }
+        ],
+        "anchors": [
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 1,
+              "den": 300
+            },
+            "scope": "",
+            "key": "staggered"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "",
+            "key": "fast"
+          }
+        ],
+        "scopes": [
+          {
+            "path": "fast",
+            "key": "fast",
+            "timing": {
+              "anchor": 2,
+              "m": 1,
+              "c": 0
+            }
+          },
+          {
+            "path": "fast/outer",
+            "key": "outer",
+            "timing": {
+              "anchor": 2,
+              "m": 2,
+              "c": 1
+            }
+          },
+          {
+            "path": "fast/outer/deep",
+            "key": "deep",
+            "timing": {
+              "anchor": 2,
+              "m": 4,
+              "c": 3
+            }
+          }
+        ],
+        "grid": {
+          "admissible": {
+            "num": 1,
+            "den": 300
+          },
+          "pool": [
+            {
+              "anchor": 1,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 2,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 1,
+              "kind": "offset",
+              "factor": 6,
+              "alternatives": [
+                {
+                  "num": 0,
+                  "den": 1
+                },
+                {
+                  "num": 1,
+                  "den": 50
+                }
+              ]
+            }
+          ],
+          "primes": [
+            {
+              "prime": 2,
+              "power": 2,
+              "suppliers": [
+                3
+              ]
+            },
+            {
+              "prime": 3,
+              "power": 1,
+              "suppliers": [
+                3
+              ]
+            },
+            {
+              "prime": 5,
+              "power": 2,
+              "suppliers": [
+                2,
+                3
+              ]
+            }
+          ]
+        },
+        "types": [
+          {
+            "name": "Redstone.Group",
+            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+            "locations": [
+              {
+                "function": "sample_times",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 981
+              },
+              {
+                "function": "local_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 978
+              },
+              {
+                "function": "input_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 979
+              },
+              {
+                "function": "output_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 980
+              },
+              {
+                "function": "transparent_container",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 982
+              }
+            ]
+          },
+          {
+            "name": "Main.Synthetic.ZOH",
+            "docstring": "A sample-and-hold, discrete and stateless.",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 199
+              },
+              {
+                "function": "y_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 200
+              },
+              {
+                "function": "s_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 198
+              }
+            ]
+          },
+          {
+            "name": "Main.Synthetic.PinnedGain",
+            "docstring": "A gain whose input entry is `Pinned`: continuous, its output direct.",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 375
+              },
+              {
+                "function": "y_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 376
+              },
+              {
+                "function": "x_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 374
+              }
+            ]
+          }
+        ]
+      },
+      "outputs": {
+        "order": [
+          "staggered",
+          "fast/inner",
+          "fast/outer/hold",
+          "fast/outer/same",
+          "fast/outer/deep/hold",
+          "frozen"
+        ],
+        "components": [
+          {
+            "path": "staggered",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "fast/inner",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "fast/outer/hold",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "fast/outer/same",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "fast/outer/deep/hold",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "frozen",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          }
+        ]
+      },
+      "events": {
+        "components": [
+          {
+            "path": "staggered",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fast/inner",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fast/outer/hold",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fast/outer/same",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fast/outer/deep/hold",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "frozen",
+            "events": [],
+            "bundle": []
+          }
+        ]
+      },
+      "warnings": []
+    },
+    "dt_frame": {
+      "num": 1,
+      "den": 100
+    },
+    "dt_base": {
+      "num": 1,
+      "den": 300
+    },
+    "h_max": {
+      "num": 1,
+      "den": 100
+    },
+    "algorithm": {
+      "text": "RK4()",
+      "proposes": false
+    },
+    "firing_budget": 4,
+    "localization_tol": 1.0e-6,
+    "localization_budget": 8,
+    "attempt_budget": 7,
+    "schedule": {
+      "anchors": [
+        {
+          "D": 30,
+          "phi": 1
+        },
+        {
+          "D": 6,
+          "phi": 0
+        }
+      ],
+      "rows": [
+        {
+          "path": "staggered",
+          "D": 30,
+          "phi": 1
+        },
+        {
+          "path": "fast/inner",
+          "D": 6,
+          "phi": 0
+        },
+        {
+          "path": "fast/outer/hold",
+          "D": 36,
+          "phi": 18
+        },
+        {
+          "path": "fast/outer/same",
+          "D": 12,
+          "phi": 6
+        },
+        {
+          "path": "fast/outer/deep/hold",
+          "D": 24,
+          "phi": 18
+        }
+      ],
+      "scopes": [
+        {
+          "path": "fast",
+          "key": "fast",
+          "D": 6,
+          "phi": 0
+        },
+        {
+          "path": "fast/outer",
+          "key": "outer",
+          "D": 12,
+          "phi": 6
+        },
+        {
+          "path": "fast/outer/deep",
+          "key": "deep",
+          "D": 24,
+          "phi": 18
+        }
+      ]
+    },
+    "warnings": [
+      {
+        "kind": "GridUtilization",
+        "severity": "warning",
+        "path": "",
+        "message": "Δt_base derived as 1//300 s: the grid is 6× finer than the fastest declared work (`fast/inner` at D = 6) (§9.2)\n  admissible: gcd(pool)/k, coarsest 1//300\n  pool:\n    `sample_times` at the root component, key `staggered`  period 1//10   ×1\n    `sample_times` at the root component, key `fast`       period 1//50   ×1\n    `sample_times` at the root component, key `staggered`  offset 1//300  ×6  declaring 0//1 or 1//50 keeps 1//50\n  primes: 300 = 2²·3·5²\n    2²  staggered offset\n    3   staggered offset\n    5²  fast period, staggered offset"
+      }
+    ]
+  }
+}
