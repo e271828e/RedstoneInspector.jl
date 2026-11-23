@@ -6,9 +6,9 @@ import { parseDescriptor } from "./loader";
 import { fixtureJson, fixtureModel } from "./fixtures";
 import { loadModel, type Model } from "./model";
 import {
-  anchorTable, baseMultiple, chainLine, chartFit, chartRows, coarsestLine, componentTable, frameLines, framesTable, gridReport,
-  gridReportLines, headList, hyperperiod, jointPeriod, julia, lcmQ, legendText, q, scopeFramesTable, scopeTable, seconds,
-  stepsPerFrame,
+  anchorTable, anchorTitle, baseMultiple, CHART_PAD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks, EQUATIONS,
+  frameLines, frameTopX, framesTable, gridReport, headList, hyperperiod, hyperperiodLine, jointLine, jointPeriod, julia,
+  lcmQ, legendText, q, scopeFramesTable, scopeTable, seconds, stepsPerFrame, tickX, type DrawnFit,
 } from "./timing";
 
 /** A fixture's JSON edited, then loaded: an inline copy. */
@@ -18,6 +18,12 @@ function edited(name: string, edit: (d: any) => void): Model {
   const loaded = parseDescriptor(JSON.stringify(d), `${name}.json`);
   if (!loaded.ok) throw new Error(loaded.reason);
   return loadModel(loaded);
+}
+/** The grid report as the tab prints it under the anchors table, line by line. */
+function gridReportLines(m: Model): string[] {
+  const r = gridReport(m);
+  if (!r) return [];
+  return [...r.alternatives, ...(r.primes ? [r.primes] : []), ...r.attribution.map((a) => `${a.power}: ${a.suppliers.map((x) => x.text).join(", ")}`)];
 }
 const timingDep = fixtureModel("timing_deployment");
 const libDep = fixtureModel("library_deployment");
@@ -84,6 +90,8 @@ describe("the grid report (answers 6 and 9)", () => {
       d.build.structure.grid.admissible = { num: 1, den: 1099511627791 };
     });
     expect(gridReportLines(big)).toEqual(["primes: 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt₂ (dss)"]);
+    expect(gridReport(big)!.attribution.map((a) => a.unfactored)).toEqual([true]);
+    expect(gridReport(libDep)!.attribution.map((a) => a.unfactored)).toEqual([false, false]);
     expect(gridReportLines(fixtureModel("kinds"))).toEqual([]);
   });
 });
@@ -115,6 +123,23 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
       ["fast", "fast", 1, 0, 6, 0, "1/50 s", "0"],
       ["fast/outer", "outer", 2, 1, 12, 6, "1/25 s", "1/50 s"],
       ["fast/outer/deep", "deep", 4, 3, 24, 18, "2/25 s", "3/50 s"],
+    ]);
+  });
+  it("library: by Δt in the palette's order, A₀'s triples first, then Δt ascending, equal triples in walk order", () => {
+    expect(componentTable(fixtureModel("library")).map((r) => r.path)).toEqual([
+      "noise", "unit_delay", "d_integrator", "rate_limiter", "dss", "dtf", "zoh_ss", "zoh_tf", "d_limited", "delay", "d_pid", "d_lqr", "backlash",
+    ]);
+    const sorted = [
+      "unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "backlash", "d_limited", "d_pid", "dss", "noise",
+    ];
+    expect(componentTable(fixtureModel("library"), true).map((r) => r.path)).toEqual(sorted);
+    expect(componentTable(libDep, true).map((r) => r.path)).toEqual(sorted);
+    expect(componentTable(fixtureModel("failure_structure"), true)).toEqual([]);
+  });
+  it("names an anchor's declaring key and scope in its tooltip, the base grid for A₀", () => {
+    const cl = fixtureModel("closed_loop").structure!;
+    expect([anchorTitle(cl, 0), anchorTitle(cl, 1), anchorTitle(timingDep.structure!, 2)]).toEqual([
+      "the base grid", "noise at sensing", "fast at the root",
     ]);
   });
   it("joins the rows and the scope rows by path and key, relying on neither order", () => {
@@ -249,6 +274,44 @@ describe("the chart's fit (answer 11, ruling 9)", () => {
     expect(chartFit(joint, 100)).toEqual({ kind: "scroll", finer: "frame", units: 20n, tickPx: 12, width: 120 });
     expect(chartFit(joint, 1000)).toEqual({ kind: "fit", finer: "frame", units: 20n, tickPx: 100, width: 1000 });
     expect(chartFit(joint, 1000, 15).kind).toBe("omitted");
+  });
+});
+
+describe("the chart's lines and geometry (answers 8 and 11)", () => {
+  it("states the hyperperiod in base ticks and seconds, and the joint period only where it outlasts the hyperperiod", () => {
+    expect(hyperperiodLine(jointPeriod(libDep)!)).toBe("hyperperiod: 10 base ticks, 1/10 s");
+    expect(hyperperiodLine(jointPeriod(timingDep)!)).toBe("hyperperiod: 360 base ticks, 6/5 s");
+    expect(jointLine(jointPeriod(timingDep)!)).toBeUndefined();
+    expect(jointLine(jointPeriod(fixtureModel("rates_deployment"))!)).toBeUndefined();
+    const m = edited("library_deployment", (d) => (d.deployment.dt_frame = { num: 3, den: 200 }));
+    expect(hyperperiodLine(jointPeriod(m)!)).toBe("hyperperiod: 10 base ticks, 1/10 s");
+    expect(jointLine(jointPeriod(m)!)).toBe("the chart spans the joint period with Δt_frame: 3/10 s, 30 base ticks, 20 frames");
+  });
+  it("puts base tick k at k pitches from the margin, and frame top j at j·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
+    const fit = chartFit(jointPeriod(timingDep)!, 1000) as DrawnFit;
+    expect([tickX(0n, fit), tickX(5n, fit)]).toEqual([CHART_PAD, CHART_PAD + 30]);
+    expect(frameTopX(2n, jointPeriod(timingDep)!, fit)).toBe(tickX(6n, fit));
+    const m = edited("library_deployment", (d) => (d.deployment.dt_frame = { num: 3, den: 200 }));
+    const joint = jointPeriod(m)!, half = chartFit(joint, 600) as DrawnFit;
+    expect(half.tickPx).toBe(20);
+    expect([frameTopX(1n, joint, half), frameTopX(2n, joint, half)]).toEqual([CHART_PAD + 30, tickX(3n, half)]);
+  });
+  it("marks a row due from Φ every D base ticks over the joint period", () => {
+    const joint = jointPeriod(libDep)!, rows = chartRows(libDep);
+    expect(rows.map((r) => dueTicks(r, joint))).toEqual([
+      [0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n], [0n, 2n, 4n, 6n, 8n], [1n, 3n, 5n, 7n, 9n], [0n],
+    ]);
+    const tj = jointPeriod(timingDep)!, staggered = chartRows(timingDep).find((r) => r.D === 30)!;
+    expect(dueTicks(staggered, tj)).toEqual(Array.from({ length: 12 }, (_, i) => BigInt(1 + 30 * i)));
+    for (const r of chartRows(timingDep)) for (const k of dueTicks(r, tj)) expect(r.due(k)).toBe(true);
+  });
+  it("captions the tables with the law in seconds and in base ticks, linked by Δt_base", () => {
+    expect(EQUATIONS.map((e) => `${e.frame}: ${e.period}, ${e.phase}`)).toEqual([
+      "in seconds: Δt = m · Δtₖ, τ = τₖ + c · Δtₖ",
+      "in base ticks: D = m · Dₖ, Φ = Φₖ + c · Dₖ",
+      "linked by: Δtₖ = Dₖ · Δt_base, τₖ = Φₖ · Δt_base",
+      "hence: Δt = D · Δt_base, τ = Φ · Δt_base",
+    ]);
   });
 });
 

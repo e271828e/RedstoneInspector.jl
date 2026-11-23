@@ -58,6 +58,9 @@ export const anchorName = (k: number): string => `A${subscript(k)}`;
 export const anchorLabel = (s: StructureSection, k: number): string => `${anchorName(k)} (${k === 0 ? "base" : s.anchors[k - 1].key})`;
 /** A scope's path as the tables read it, `the root` for "". */
 export const scopeName = (path: string): string => (path === "" ? "the root" : path);
+/** The tooltip of `Aₖ (key)`: the declaring key and scope, `fast at the root`; `the base grid` for `A₀`. */
+export const anchorTitle = (s: StructureSection, k: number): string =>
+  k === 0 ? "the base grid" : `${s.anchors[k - 1].key} at ${scopeName(s.anchors[k - 1].scope)}`;
 
 // --- the deployment ------------------------------------------------------------
 
@@ -165,12 +168,18 @@ function timingRow(s: StructureSection, path: string, t: Timing, bound?: Bound, 
   };
 }
 
-/** Every discrete primitive in walk order, joined to its schedule row on a deployment. */
-export function componentTable(model: Model): TimingRow[] {
+/**
+ * Every discrete primitive in walk order, joined to its schedule row on a deployment; with `byPeriod` in the palette's
+ * order of their triples (`tripleOrder`: anchor 0 first, then period ascending), equal triples in walk order.
+ */
+export function componentTable(model: Model, byPeriod = false): TimingRow[] {
   const s = model.structure;
   if (!s) return [];
   const bound = boundOf(model), rows = scheduleRows(model);
-  return s.nodes.flatMap((n) => (n.class === "primitive" && n.tier === "discrete" ? [timingRow(s, n.path, n.timing, bound, rows.get(n.path))] : []));
+  const out = s.nodes.flatMap((n) => (n.class === "primitive" && n.tier === "discrete" ? [timingRow(s, n.path, n.timing, bound, rows.get(n.path))] : []));
+  if (!byPeriod) return out;
+  const steps = stepsOf(model);
+  return out.sort((a, b) => steps.get(tripleKey(a.triple))! - steps.get(tripleKey(b.triple))!);
 }
 
 /** Every rate scope in `structure.scopes`' order, the key after the path, joined by path and key on a deployment. */
@@ -202,6 +211,8 @@ export interface Supplier {
 export interface PrimeAttribution {
   /** `2²`, `3`, `1000003 unfactored`. */
   power: string;
+  /** A cofactor the writer left unfactored. */
+  unfactored: boolean;
   suppliers: Supplier[];
 }
 /** The report under the anchors table: the alternatives' lines, then the denominator's factors and one row per prime power. */
@@ -222,19 +233,13 @@ export function gridReport(model: Model): GridReport | undefined {
   const powers = g.primes.map((p) => (p.unfactored ? `${p.prime} unfactored` : `${p.prime}${superscript(p.power)}`));
   const attribution = g.primes.map((p, i): PrimeAttribution => ({
     power: powers[i],
+    unfactored: !!p.unfactored,
     suppliers: p.suppliers.map((j) => {
       const e = g.pool[j - 1];
       return { anchor: e.anchor, kind: e.kind, text: `${e.kind === "period" ? "Δt" : "τ"}${subscript(e.anchor)} (${s.anchors[e.anchor - 1].key})` };
     }),
   }));
   return { alternatives, ...(powers.length && { primes: `primes: ${admissible.d} = ${powers.join("·")}` }), attribution };
-}
-
-/** The report as lines, as the tab prints them under the table: one call the drawing can drop (ruling 3). */
-export function gridReportLines(model: Model): string[] {
-  const r = gridReport(model);
-  if (!r) return [];
-  return [...r.alternatives, ...(r.primes ? [r.primes] : []), ...r.attribution.map((a) => `${a.power}: ${a.suppliers.map((x) => x.text).join(", ")}`)];
 }
 
 // --- the head list and the steps per frame (answer 9) ----------------------------
@@ -368,6 +373,16 @@ export function chartRows(model: Model): ChartRow[] {
     .sort((a, b) => a.D - b.D || a.phi - b.phi);
 }
 
+/** The hyperperiod as the tab states it (answer 8): `hyperperiod: 10 base ticks, 1/10 s`. */
+export const hyperperiodLine = (joint: JointPeriod): string =>
+  `hyperperiod: ${joint.hyperperiod} base ticks, ${seconds(joint.hyperSeconds)}`;
+
+/** The span the chart draws where it outlasts the hyperperiod (answer 11); undefined where the two are equal. */
+export const jointLine = (joint: JointPeriod): string | undefined =>
+  joint.baseTicks === joint.hyperperiod
+    ? undefined
+    : `the chart spans the joint period with Δt_frame: ${seconds(joint.seconds)}, ${joint.baseTicks} base ticks, ${joint.frames} frames`;
+
 /** The chart's constants, the look pass's (answer 11): the threshold in units of the span, the minimum pitch in px. */
 export const CHART_THRESHOLD = 1000;
 export const CHART_PITCH = 6;
@@ -405,6 +420,30 @@ export function chartFit(joint: JointPeriod, width: number, threshold = CHART_TH
   const tickPx = frameFiner ? unitPx / toNumber(joint.frameInTicks) : unitPx;
   return { kind: fitted >= pitch ? "fit" : "scroll", finer: frameFiner ? "frame" : "base tick", units, tickPx, width: tickPx * Number(joint.baseTicks) };
 }
+
+/** A timeline the chart draws, fitted or scrolled. */
+export type DrawnFit = Exclude<ChartFit, { kind: "omitted" }>;
+/** The timeline's margin at each end in px, so a mark at the span's ends is whole. */
+export const CHART_PAD = 4;
+/** Base tick `k`'s x on a drawn timeline: `k` pitches in from the margin. */
+export const tickX = (k: bigint, fit: DrawnFit): number => CHART_PAD + Number(k) * fit.tickPx;
+/** Frame top `j`'s x: `j·Δt_frame / Δt_base` base ticks in, which can fall between two ticks. */
+export const frameTopX = (j: bigint, joint: JointPeriod, fit: DrawnFit): number =>
+  CHART_PAD + toNumber(mul(q(j), joint.frameInTicks)) * fit.tickPx;
+/** The base ticks of the span where a chart row is due: `Φ`, `Φ + D`, and on. */
+export function dueTicks(row: ChartRow, joint: JointPeriod): bigint[] {
+  const out: bigint[] = [];
+  for (let k = BigInt(row.phi); k < joint.baseTicks; k += BigInt(row.D)) out.push(k);
+  return out;
+}
+
+/** The notation's law (answer 3), the timing tab's caption: each line's frame and its two equations. */
+export const EQUATIONS: { frame: string; period: string; phase: string }[] = [
+  { frame: "in seconds", period: "Δt = m · Δtₖ", phase: "τ = τₖ + c · Δtₖ" },
+  { frame: "in base ticks", period: "D = m · Dₖ", phase: "Φ = Φₖ + c · Dₖ" },
+  { frame: "linked by", period: "Δtₖ = Dₖ · Δt_base", phase: "τₖ = Φₖ · Δt_base" },
+  { frame: "hence", period: "Δt = D · Δt_base", phase: "τ = Φ · Δt_base" },
+];
 
 // --- the pane's frames table (answer 10) -----------------------------------------
 
@@ -489,7 +528,7 @@ export interface LegendText {
 export function legendText(model: Model, t: Triple): LegendText {
   const s = model.structure!, bound = boundOf(model);
   const [k, m, c] = t;
-  const where = k === 0 ? "the base grid" : `${s.anchors[k - 1].key} at ${scopeName(s.anchors[k - 1].scope)}`;
+  const where = anchorTitle(s, k);
   const timing = { anchor: k, m, c };
   if (bound) {
     const A = bound.anchors[k], counts = { D: m * A.D, phi: A.phi + c * A.D };

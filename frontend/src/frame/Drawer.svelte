@@ -17,7 +17,7 @@
   import RootInputs from "./tabs/RootInputs.svelte";
   import Timing from "./tabs/Timing.svelte";
 
-  let { model, open, tab, focused = false, diagnostics, current, editor = false, ontab, ondiagnostic, onlocation, onrow }: {
+  let { model, open, tab, focused = false, diagnostics, current, editor = false, legendFocus, ontab, ondiagnostic, onlocation, onrow, onlegend }: {
     model: Model;
     open: boolean;
     tab: Tab;
@@ -29,6 +29,8 @@
     current?: number;
     /** A location click opens the editor; otherwise it copies the file label. */
     editor?: boolean;
+    /** The legend's focused line, rate mode's alone: the timing chart's pressed swatch. */
+    legendFocus?: string;
     ontab: (tab: Tab) => void;
     /** A click on a row's body, with its index. */
     ondiagnostic: (index: number) => void;
@@ -36,6 +38,8 @@
     onlocation: (file: string, line: number) => boolean;
     /** A row of the root inputs, timing or order tab clicked, with the selection it makes. */
     onrow: (s: Selection) => void;
+    /** A timing chart's swatch pressed, with its legend line's key. */
+    onlegend: (key: string) => void;
   } = $props();
 
   const TABS: { tab: Tab; label: string }[] = [
@@ -168,7 +172,7 @@
       {:else if tab === "root-inputs"}
         <RootInputs {model} {onrow} />
       {:else if tab === "timing"}
-        <Timing {model} {onrow} bind:byPeriod />
+        <Timing {model} {onrow} bind:byPeriod {legendFocus} {onlegend} />
       {:else}
         <Order {model} {onrow} />
       {/if}

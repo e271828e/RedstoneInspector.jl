@@ -163,6 +163,12 @@
     if (s) select(s);
   }
 
+  /** A timing chart's swatch: the legend's focus, rate mode's alone, so a press in tier mode turns rate mode on first. */
+  function chartSwatch(key: string) {
+    if (prefs.mode === "tier") setMode("rate");
+    toggleLegendFocus(key);
+  }
+
   /**
    * The trace action from the pane, the menu or `t`: a face with a route traced, or its standing route cleared; a
    * face with no producer, which the pane offers no button for, says so in the status bar.
@@ -489,7 +495,7 @@
         <Drawer
           {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} {diagnostics}
           current={session.diagnosticFocus} editor={live.state === "connected"} ontab={toggleDrawer} ondiagnostic={diagnostic} {onlocation}
-          onrow={select}
+          onrow={select} {legendFocus} onlegend={chartSwatch}
         />
       {/snippet}
       {#snippet status()}
