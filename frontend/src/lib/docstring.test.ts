@@ -46,7 +46,7 @@ describe("rewriteRefs", () => {
     const r = row(lib, "Redstone.Library.LQRTracker");
     expect(rewriteRefs(r.docstring!, r.name)).toContain(`[\`trim!\`](${DOCS_URL}api/#Redstone.trim!)`);
   });
-  it("joins the Freeze row's bare Pinned with the row's module, the pending note's case", () => {
+  it("joins the Freeze row's bare Pinned, a name of Redstone, with the row's module", () => {
     const r = row(lib, "Redstone.Library.Freeze");
     expect(rewriteRefs(r.docstring!, r.name)).toContain(`[\`Pinned\`](${DOCS_URL}api/#Redstone.Library.Pinned)`);
   });

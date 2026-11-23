@@ -198,7 +198,7 @@ export function componentRows(model: Model, byPeriod = false): ComponentRow[] {
   return byPeriod ? rows.sort((a, b) => a.step - b.step) : rows;
 }
 
-/** The timing tab's last sentence (reading 1): what the schedule rows and the hyperperiod chart wait on. */
+/** The timing tab's last sentence (reading 1): that the schedule rows and the hyperperiod chart need a deployment, or are not drawn yet. */
 export function scheduleNote(model: Model): string | undefined {
   if (!model.structure) return undefined;
   return model.kind === "deployment"
