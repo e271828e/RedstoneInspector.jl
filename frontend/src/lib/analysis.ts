@@ -41,13 +41,19 @@ export interface OrderGroups {
   stage1: Stage1Row[];
   stage2: Stage2Row[];
 }
+/** Why a consumer's entry pins a root input (deployment_overlay.md answer 14): a discrete consumer by its tier, a continuous one by its declaration. */
+export type PinCause = "tier" | "declaration";
 export interface RootInputRow {
   kind: "root-input";
   name: string;
   type: string;
   phrase: string;
+  /** The meet's: some consumer's entry refuses the type walked to a `Dual`. */
+  pinned: boolean;
   /** The terminal consumers: primitive inputs and root outputs; none on a primitive root, whose inputs are its primitive's. */
   consumers: Face[];
+  /** The consumers whose entries pin it, `pinned_by` with each one's cause; a primitive root's own input among them. */
+  pins: { path: string; port: string; cause: PinCause }[];
 }
 /** The base grid's row, anchor 0, which declares nowhere and whose `T` is the deployment's `Δt`. */
 export interface BaseRow {
@@ -144,15 +150,21 @@ export function orderBadge(model: Model, path: string): string | undefined {
   return found.length ? ranges(found) : undefined;
 }
 
-/** One row per root input, with its kind phrase and terminal consumers. */
+/** One row per root input, with its kind phrase, its pinned mark, its terminal consumers and those that pin it. */
 export function rootInputRows(model: Model): RootInputRow[] {
   const s = model.structure;
   if (!s) return [];
+  const tier = (path: string) => (model.tree!.byPath.get(path) as { tier?: string } | undefined)?.tier;
   return s.root_inputs.map((f) => ({
-    kind: "root-input", name: f.name, type: f.type, phrase: kindPhrase(f.kind),
+    kind: "root-input", name: f.name, type: f.type, phrase: kindPhrase(f.kind), pinned: f.pinned,
     consumers: faceFacts(model, { path: "", side: "in", port: f.name }).consumers ?? [],
+    pins: f.pinned_by.map((e) => ({ path: e.path, port: e.port, cause: tier(e.path) === "discrete" ? "tier" : "declaration" })),
   }));
 }
+
+/** A consumer's cause when its entry pins the row's root input; undefined when it does not. */
+export const pinCause = (row: RootInputRow, face: Face): PinCause | undefined =>
+  row.pins.find((p) => p.path === face.path && p.port === face.port)?.cause;
 
 /** The base grid's row first, then one per anchor numbered from 1; none without a structure. */
 export function anchorRows(model: Model): (BaseRow | AnchorRow)[] {

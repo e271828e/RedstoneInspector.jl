@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DOCS_URL, refLink, renderDocstring, rewriteRefs } from "./docstring";
+import { DOCS_URL, joinBare, refLink, renderDocstring, rewriteRefs } from "./docstring";
 import { fixtureModel } from "./fixtures";
 import type { Model } from "./model";
 
@@ -14,9 +14,9 @@ describe("refLink", () => {
   it("sends a glossary id to the glossary page", () => {
     expect(refLink("component", "g-component", T)).toBe(`${DOCS_URL}glossary/#g-component`);
   });
-  it("sends an explicit binding to the API page, qualified as written or joined with the type's module", () => {
+  it("sends a target under Redstone. to the API page as written, and shows any other target as text", () => {
     expect(refLink("`trim!`", "Redstone.trim!", T)).toBe(`${DOCS_URL}api/#Redstone.trim!`);
-    expect(refLink("the junction", "Junction", T)).toBe(`${DOCS_URL}api/#Redstone.Library.Junction`);
+    expect(refLink("the junction", "Junction", T)).toBeUndefined();
   });
   it("reads a bare link's binding from its text, backticks stripped", () => {
     expect(refLink("`init!`", undefined, T)).toBe(`${DOCS_URL}api/#Redstone.Library.init!`);
@@ -26,6 +26,35 @@ describe("refLink", () => {
   it("gives no URL for a type outside Redstone", () => {
     expect(refLink("component", "g-component", "RedstoneExamples.Longitudinal")).toBeUndefined();
     expect(refLink("`init!`", undefined, "Main.Plant")).toBeUndefined();
+  });
+});
+
+// deployment_overlay.md answer 15, as amended 2026-11-23: the target read, the joining kept for a bare link
+describe("refLink reads the target", () => {
+  it("links a target under Redstone. whatever the type's module, never joined", () => {
+    expect(refLink("`Pinned`", "Redstone.Pinned", "Main.Plant")).toBe(`${DOCS_URL}api/#Redstone.Pinned`);
+    expect(refLink("`Pinned`", "Redstone.Pinned", "RedstoneExamples.Longitudinal")).toBe(`${DOCS_URL}api/#Redstone.Pinned`);
+    expect(refLink("`Pinned`", "Redstone.Pinned", "Redstone.Library.Freeze")).toBe(`${DOCS_URL}api/#Redstone.Pinned`);
+  });
+  it("shows a target outside Redstone as text, in a core type's docstring too", () => {
+    expect(refLink("`helper`", "MyPkg.helper", "Main.Plant")).toBeUndefined();
+    expect(refLink("`helper`", "MyPkg.helper", "Redstone.Library.Integrator")).toBeUndefined();
+  });
+  it("joins a bare link to its type's module only under Redstone.", () => {
+    expect(joinBare("`Pinned`", "Redstone.Library.Freeze")).toBe(`${DOCS_URL}api/#Redstone.Library.Pinned`);
+    expect(refLink("`Pinned`", undefined, "Main.Plant")).toBeUndefined();
+  });
+  it("a user's docstring with a rewritten link: that one link, the glossary id, the bare link and the foreign target as text", () => {
+    const html = renderDocstring("Wraps [`Pinned`](@ref Redstone.Pinned) and [`helper`](@ref MyPkg.helper); see [entry](@ref g-entry) and [`init!`](@ref).", "Main.Plant");
+    expect(hrefs(html)).toEqual([`${DOCS_URL}api/#Redstone.Pinned`]);
+    expect(html).toContain("<code>helper</code>; see entry and <code>init!</code>.");
+  });
+  it("library: 260 glossary links, 101 joined and 2 targets read, as the oracle classes them", () => {
+    const all = lib.structure!.types.flatMap((t) => hrefs(renderDocstring(t.docstring ?? "", t.name)));
+    expect(all.filter((h) => h.startsWith(`${DOCS_URL}glossary/`))).toHaveLength(260);
+    expect(all.filter((h) => h.startsWith(`${DOCS_URL}api/`))).toHaveLength(103);
+    expect(all.filter((h) => h === `${DOCS_URL}api/#Redstone.trim!` || h === `${DOCS_URL}api/#Redstone.linearize`)).toHaveLength(2);
+    expect(all).toHaveLength(363);
   });
 });
 

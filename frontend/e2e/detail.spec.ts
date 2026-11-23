@@ -517,3 +517,19 @@ test("primitive: with nothing selected the pane takes the open level's mark wher
   await expect(pane(page)).toHaveAttribute("data-kind", "pin");
   await expect(pane(page).locator("span.level-mark")).toHaveCount(0);
 });
+
+// deployment_overlay.md answer 15: the page reads a link's target; no fixture has a rewritten link, so a copy
+test("a copy of closed_loop with a rewritten link in Longitudinal's docstring: the target under Redstone. linked, a foreign one and a bare one text", async ({ page }) => {
+  const d = JSON.parse(fixtureText("closed_loop"));
+  const row = d.build.structure.types.find((t: { name: string }) => t.name === "RedstoneExamples.Longitudinal");
+  row.docstring += "\n\nWraps [`Pinned`](@ref Redstone.Pinned), not [`helper`](@ref RedstoneExamples.helper) nor [`init!`](@ref).";
+  await drop(page, "closed_loop", JSON.stringify(d));
+  await page.locator('g.block[data-id="plant"]').click();
+  const docstring = pane(page).locator("details.docstring");
+  await docstring.locator("summary").click();
+  const links = docstring.locator("div.docstring a");
+  await expect(links).toHaveCount(1);
+  await expect(links).toHaveAttribute("href", `${DOCS_URL}api/#Redstone.Pinned`);
+  await expect(links).toHaveAttribute("target", "_blank");
+  await expect(docstring.locator("div.docstring")).toContainText("not helper nor init!.");
+});

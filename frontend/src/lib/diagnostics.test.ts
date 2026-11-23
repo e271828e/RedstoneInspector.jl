@@ -33,7 +33,29 @@ describe("diagnosticsOf", () => {
     expect(diagnosticsOf(fixtureModel("failure_structure"))).toHaveLength(2);
     expect(diagnosticsOf(fixtureModel("closed_loop"))).toEqual([]);
   });
+
+  // deployment_overlay.md answer 4: a deployment's own warnings after its build's
+  it("timing_deployment: its own GridUtilization at the root, ten lines, as the one row", () => {
+    const rows = diagnosticsOf(fixtureModel("timing_deployment"));
+    expect(rows.map((d) => [d.index, d.severity, d.kind, d.path])).toEqual([[0, "warning", "GridUtilization", ""]]);
+    expect(rows[0].message.split("\n")).toHaveLength(10);
+  });
+
+  it("lists a deployment's own warnings after its build's (an inline copy)", () => {
+    const m = withBuildWarning("fast");
+    expect(diagnosticsOf(m).map((d) => [d.index, d.kind, d.path])).toEqual([[0, "EmptyFaceSelection", ""], [1, "GridUtilization", "fast"]]);
+  });
 });
+
+/** `timing_deployment` with a warning on its build at the root and its own warning moved to `path`. */
+function withBuildWarning(path: string): Model {
+  const d = fixtureJson("timing_deployment") as any;
+  d.deployment.build.warnings = [{ kind: "EmptyFaceSelection", severity: "warning", path: "", message: "nothing passes through" }];
+  d.deployment.warnings[0].path = path;
+  const loaded = parseDescriptor(JSON.stringify(d), "timing_deployment.json");
+  if (!loaded.ok) throw new Error(loaded.reason);
+  return loadModel(loaded);
+}
 
 describe("chainOf", () => {
   it("maps failure_cycle's two terminal pairs onto the two root wires", () => {
@@ -181,6 +203,14 @@ describe("treeMarks", () => {
     expect(marks(synthetic())).toEqual({
       "": { errors: 1, warnings: 1, own: false }, ctl: { errors: 1, warnings: 0, own: true }, plant: { errors: 0, warnings: 1, own: true },
     });
+  });
+
+  it("a deployment's own warning marks its path: timing_deployment's root row, and fast amber on the canvas when moved there", () => {
+    expect(marks(fixtureModel("timing_deployment"))).toEqual({ "": { errors: 0, warnings: 1, own: true } });
+    expect(overlayOf(fixtureModel("timing_deployment"), "").blocks.size).toBe(0);
+    const m = withBuildWarning("fast");
+    expect(marks(m)).toEqual({ "": { errors: 0, warnings: 2, own: true }, fast: { errors: 0, warnings: 1, own: true } });
+    expect(overlayOf(m, "").blocks.get("fast")?.severity).toBe("warning");
   });
 
   it("nothing on a structureless failure or a clean build", () => {

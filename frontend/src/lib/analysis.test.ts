@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  anchorRows, componentRows, orderBadge, orderGroups, ranges, rootInputRows, rowTarget, scheduleNote, scopeRows,
+  anchorRows, componentRows, orderBadge, orderGroups, pinCause, ranges, rootInputRows, rowTarget, scheduleNote, scopeRows,
 } from "./analysis";
-import { fixtureModel } from "./fixtures";
-import type { Model } from "./model";
+import { fixtureJson, fixtureModel } from "./fixtures";
+import { parseDescriptor } from "./loader";
+import { loadModel, type Model } from "./model";
 import type { Face } from "./resolve";
 
 // Counts from the oracles over the committed fixtures: `scratchpad/oracle/analysis.py`, and `stage2.py` for the two
@@ -155,6 +156,33 @@ describe("rootInputRows", () => {
   it("gives kinds none and primitive two on its primitive, which consume nothing beyond it", () => {
     expect(rootInputRows(fixtureModel("kinds"))).toEqual([]);
     expect(rootInputRows(prim).map((r) => [r.name, r.consumers])).toEqual([["u", []], ["d", []]]);
+  });
+  // deployment_overlay.md answer 14, from the oracle's root inputs
+  it("closed_loop: h_ref and V_ref pinned by tier through their PID consumers, the LQR's not pinning; mode not pinned", () => {
+    const rows = rootInputRows(cl);
+    expect(rows.map((r) => [r.name, r.pinned])).toEqual([["h_ref", true], ["V_ref", true], ["mode", false]]);
+    expect(rows[0].consumers.map((c) => [text(c), pinCause(rows[0], c)])).toEqual([
+      ["pid_controller/h_ctl/r", "tier"], ["lqr_controller/z_ref_pack/in1", undefined],
+    ]);
+    expect(rows[2].pins).toEqual([]);
+  });
+
+  it("timing: u pinned by tier through five consumers, ref by declaration through its Pinned entry", () => {
+    const [u, ref] = rootInputRows(fixtureModel("timing"));
+    expect(u.consumers.map((c) => pinCause(u, c))).toEqual(["tier", "tier", "tier", "tier", "tier"]);
+    expect(ref.consumers.map((c) => [text(c), pinCause(ref, c)])).toEqual([["frozen/in", "declaration"]]);
+  });
+
+  it("a primitive root's own input pins with its tier's cause though it lists no consumer (an inline structure)", () => {
+    const d = fixtureJson("primitive") as any;
+    const s = d.build.structure;
+    s.nodes[0].tier = "discrete";
+    s.root_inputs[0].pinned = true;
+    s.root_inputs[0].pinned_by = [{ path: "", port: "u" }];
+    const loaded = parseDescriptor(JSON.stringify(d), "primitive.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    const [u] = rootInputRows(loadModel(loaded));
+    expect([u.pinned, u.consumers, u.pins]).toEqual([true, [], [{ path: "", port: "u", cause: "tier" }]]);
   });
 });
 

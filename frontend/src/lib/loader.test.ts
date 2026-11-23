@@ -107,4 +107,32 @@ describe("the header check", () => {
   it("accepts a failure with or without structure", () => {
     expect(loaded(edit("failure_cycle", (d) => delete d.failure.structure)).descriptor.kind).toBe("failure");
   });
+
+  // deployment_overlay.md answer 2: a file an older core wrote, told by its structure
+  const OLDER = ": an older Redstone wrote it. Write the file again with the current Redstone.";
+  it("refuses a structure without grid, whatever the kind, naming the key and the older Redstone", () => {
+    expect(refusal(edit("descent", (d) => delete d.build.structure.grid))).toBe(`This build descriptor has no build.structure.grid${OLDER}`);
+    expect(refusal(edit("closed_loop_deployment", (d) => delete d.deployment.build.structure.grid)))
+      .toBe(`This deployment descriptor has no deployment.build.structure.grid${OLDER}`);
+    expect(refusal(edit("failure_cycle", (d) => delete d.failure.structure.grid))).toBe(`This failure descriptor has no failure.structure.grid${OLDER}`);
+  });
+
+  it("refuses a deployment without schedule, after the grid", () => {
+    expect(refusal(edit("timing_deployment", (d) => delete d.deployment.schedule))).toBe(`This deployment descriptor has no deployment.schedule${OLDER}`);
+    expect(refusal(edit("timing_deployment", (d) => {
+      delete d.deployment.schedule;
+      delete d.deployment.build.structure.grid;
+    }))).toMatch(/no deployment\.build\.structure\.grid:/);
+  });
+
+  it("keeps the nodes refusal's words ahead of the grid's", () => {
+    expect(refusal(edit("descent", (d) => {
+      delete d.build.structure.nodes;
+      delete d.build.structure.grid;
+    }))).toBe("This build descriptor has no build.structure.nodes.");
+  });
+
+  it("loads a failure with no structure, which has nothing to check", () => {
+    expect(loaded(fixtureText("failure_structure")).descriptor.kind).toBe("failure");
+  });
 });

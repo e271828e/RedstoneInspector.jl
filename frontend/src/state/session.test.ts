@@ -20,6 +20,13 @@ describe("the drawer's open rule on load", () => {
     expect(diagnosticCount(m)).toBe(1);
   });
 
+  it("timing_deployment: its own warning alone leaves the drawer closed and counts on the tab (deployment_overlay.md answer 4)", () => {
+    const m = fixtureModel("timing_deployment");
+    load(m);
+    expect(session.drawer).toEqual({ open: false, tab: "diagnostics" });
+    expect(diagnosticCount(m)).toBe(1);
+  });
+
   it("a failure carrying one diagnostic loads with the drawer open on diagnostics", () => {
     load(fixtureModel("failure_cycle"));
     expect(session.drawer).toEqual({ open: true, tab: "diagnostics" });

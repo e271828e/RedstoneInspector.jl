@@ -102,8 +102,8 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await openTab(page, "root-inputs");
   const inputs = body(page).locator("table.root-inputs tr.root-input");
   await expect(inputs).toHaveCount(3);
-  await expect(body(page).locator("table.root-inputs th")).toHaveText(["name", "type", "kind", "terminal consumers"]);
-  await expect(body(page).locator("table.root-inputs td.pinned")).toHaveCount(0);
+  await expect(body(page).locator("table.root-inputs th")).toHaveText(["name", "type", "kind", "pinned", "terminal consumers"]);
+  await expect(body(page).locator("table.root-inputs td.pinned")).toHaveText(["◆", "◆", ""]);
   const mode = body(page).locator('tr.root-input[data-name="mode"]');
   await expect(mode.locator("td.consumers code")).toHaveCount(7);
   const tops = await mode.locator("td.consumers code").evaluateAll((cs) => cs.map((c) => c.getBoundingClientRect().top));
@@ -331,4 +331,36 @@ test("a push keeps the open tab and redraws it from the new model", async ({ pag
   await dropOver(page, "closed_loop_deployment");
   await expect(body(page).locator("p.schedule-note")).toContainText("does not draw");
   await expect(drawer(page)).toHaveAttribute("data-tab", "timing");
+});
+
+// deployment_overlay.md answer 14: the pinned mark again, and the pinning consumers marked with the cause
+test("closed_loop: h_ref's PID consumer marked pinned by tier, its LQR consumer and mode unmarked, the mark titled by its cause", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await openTab(page, "root-inputs");
+  const h = body(page).locator('tr.root-input[data-name="h_ref"]');
+  await expect(h.locator("td.pinned")).toHaveAttribute("title", "pinned: by tier");
+  await expect(h.locator("td.consumers .consumer")).toHaveText(["pid_controller/h_ctl/rpinned by tier", "lqr_controller/z_ref_pack/in1"]);
+  await expect(h.locator('td.consumers .consumer[data-cause="tier"] code')).toHaveText("pid_controller/h_ctl/r");
+  await expect(body(page).locator('tr.root-input[data-name="mode"] td.pinned')).not.toHaveAttribute("title");
+  await expect(body(page).locator('tr.root-input[data-name="mode"] .cause')).toHaveCount(0);
+});
+
+test("timing: u pinned by tier through five consumers, ref by declaration through frozen's Pinned entry", async ({ page }) => {
+  await drop(page, "timing");
+  await openTab(page, "root-inputs");
+  const u = body(page).locator('tr.root-input[data-name="u"]');
+  await expect(u.locator(".cause")).toHaveText(Array(5).fill("pinned by tier"));
+  const ref = body(page).locator('tr.root-input[data-name="ref"]');
+  await expect(ref.locator("td.pinned")).toHaveAttribute("title", "pinned: by declaration");
+  await expect(ref.locator('.consumer[data-cause="declaration"] code')).toHaveText("frozen/in");
+  await expect(ref.locator(".cause")).toHaveText("pinned by declaration");
+  await shot(page, "timing", "", "analysis-root-inputs");
+});
+
+test("timing: the mark is the tab's alone, the root tags and the pin's pane showing none", async ({ page }) => {
+  await drop(page, "timing");
+  await page.locator('g.block[data-id="⟨in⟩ref"]').click();
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "pin");
+  await expect(page.locator("aside.detail")).not.toContainText("pinned by");
+  await expect(page.locator('g.block[data-id="⟨in⟩ref"] .pinned')).toHaveCount(0);
 });

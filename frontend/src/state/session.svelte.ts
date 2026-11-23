@@ -8,6 +8,7 @@
 // page `#help` pushed over it.
 import type { Geometry, LevelLayout } from "../canvas/layout";
 import type { Selection } from "../lib/detail";
+import { diagnosticsOf } from "../lib/diagnostics";
 import type { Model } from "../lib/model";
 import { rekeyFocus } from "../lib/focus";
 import { ancestors, defaultExpansion, folderOf, foldersOf } from "../lib/outline";
@@ -126,11 +127,8 @@ const bodyOf = (m: Model) => {
   return d.kind === "build" ? d.build : d.kind === "deployment" ? d.deployment.build : d.failure;
 };
 
-/** The diagnostics and warnings the body carries: the diagnostics tab's count. */
-export function diagnosticCount(m: Model): number {
-  const body = bodyOf(m);
-  return ("diagnostics" in body ? body.diagnostics.length : 0) + body.warnings.length;
-}
+/** The diagnostics and warnings the body carries, a deployment's own included: the diagnostics tab's count. */
+export const diagnosticCount = (m: Model): number => diagnosticsOf(m).length;
 
 /** Whether the drawer opens on load: a diagnostic exists, a warning alone does not. */
 function opensDrawer(m: Model): boolean {
