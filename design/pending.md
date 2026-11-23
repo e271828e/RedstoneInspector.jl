@@ -26,19 +26,14 @@ The bullets stand in working order, the first one next.
   eighth record, `deployment_overlay.md`, answers 1 to 17. The core's
   work came first, in four parts, and is landed and pushed (the core's
   D-464, D-466, D-467, D-468 and D-471). Increment 10 runs in three
-  steps, in this order, by the user's ruling of 2026-11-22:
-  - **The pin bump**, a commit of its own ahead of the increment. It
-    moves the pin from `6afd6fb` to a core commit whose CI is green, and
-    makes every change the implemented parts need: the three bullets
-    below on `descent()`, on `Period` and `Hz` and on `Group`, and the
-    regenerated fixtures. It stops where every existing feature works on
-    the new fixtures and nothing new is drawn. The core's descriptor
-    changed shape with D-467, so the bump may need items the roadmap
-    lists under increment 10, such as the schema copy and the loader's
-    reading of the deployment body. It takes those it needs and no more.
-    It answers the two checks that `deployment_overlay.md` answer 16
-    leaves for the pin bump, and it closes with a look at the existing
-    tabs on the new fixtures.
+  steps, in this order, by the user's ruling of 2026-11-22. The first,
+  the pin bump, landed on 2026-11-23 and is not pushed: the pin stands
+  at the core's `7ea3600`, with the fixtures regenerated, `descent`
+  built in the script and nothing new drawn. Its notes,
+  `increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`, hold its
+  rulings, the answers to the two checks of `deployment_overlay.md`
+  answer 16, what the regenerated fixtures show and the look by
+  captures. Two steps remain:
   - **The record at the new pin**, a commit that brings
     `deployment_overlay.md` up to date before the increment is briefed.
     The record closed on 2026-11-20 and was amended on 2026-11-21 for
@@ -49,8 +44,9 @@ The bullets stand in working order, the first one next.
     new diagnostic kind. One open item of the core's `pending.md`
     touches it, a schedule row's `Δt` that is not the float nearest its
     exact period. The roadmap's list for increment 10 loses what the
-    bump took. A finding that the core must change moves the pin again,
-    before the launch and not during the increment.
+    bump took, which the bump's notes name. A finding that the core
+    must change moves the pin again, before the launch and not during
+    the increment.
   - **The implementation**, briefed and launched from the amended
     record.
 
@@ -58,8 +54,8 @@ The bullets stand in working order, the first one next.
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  designed and not briefed, with the core's work pushed and the pin bump
-  next. The session's handover
+  designed and not briefed, with the pin bump landed and not pushed,
+  its cold review and the user's look at it owed, and the record at the new pin next. The session's handover
   is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
@@ -164,33 +160,6 @@ the increment it came from.
   name, which the audit may rename; the core's `pending.md` bullet "The
   exported-name audit" owns both. A rename reaches the schema, the
   fixtures and the page.
-- **`descent()` left the core's examples** (the core's tutorial arc,
-  `e70da63`). `scripts/fixtures.jl` imports it and writes `descent.json`,
-  which 20 frontend test files read. The core's `approach(solution)`
-  replaces it, the piloted loop as the child `vehicle` with the gear and
-  the stop request. The pin at `6afd6fb` still has `descent()`, so nothing
-  breaks until the next bump. That bump builds the small model in the
-  script, the plant with a `GroundContact` and a `StopRequest`, and the
-  tests stay (`deployment_overlay.md` answer 16).
-- **`Period` and `Hz` retired in the core** (the core's D-469, landed at
-  `79a07ca` on 2026-11-20). `Absolute` takes its period as a
-  bare integer or `Rational` in seconds, so `Absolute(Hz(50))` becomes
-  `Absolute(1//50)`. `scripts/synthetic.jl` calls `Hz` seven times and
-  `test/runtests.jl` once, and each imports the name. The pin at `6afd6fb`
-  still has both names, so nothing breaks until a bump passes that
-  commit. That bump rewrites the eight calls and drops the two imports.
-  The values are the same, so no fixture changes.
-- **`Group` moved to the core** (the core's D-472, landed at `336a79e` on
-  2026-11-21). Its name is `Redstone.Group`, no longer
-  `Redstone.Library.Group`. `test/runtests.jl` and `scripts/synthetic.jl`
-  import it from the library. Four frontend tests spell the old name:
-  `detail.test.ts`, `diagnostics.test.ts`, `docstring.test.ts` and the
-  e2e `detail.spec.ts`. Twelve fixtures carry it in their `type` and
-  `signature` fields. The pin at `6afd6fb` still has the old name, so
-  nothing breaks until a bump passes that commit. That bump moves the two
-  imports to `Redstone`, regenerates the fixtures and rewrites the four
-  tests. `isCoreType` takes any name under `Redstone.`, so no code
-  changes.
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8).
   The faster development loop needs a preference listing extra allowed
   origins and a forwarding entry in the Vite configuration. Taken up when
