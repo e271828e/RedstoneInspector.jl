@@ -154,9 +154,7 @@ with an explicit unqualified target, `` [`x`](@ref Junction) ``, joined
 to the type's module. It now shows as text, since the answer links only
 a target under `Redstone.` and joins only a bare link.
 
-From prototyper B, the timing tab and the chart. Its stage is built and
-not gated, so each reading stands on the runs the handover below names.
-The probes are in `…-worktrees/increment_10_notes/probes_b/`, and the
+From prototyper B, the timing tab and the chart. The probes are in `…-worktrees/increment_10_notes/probes_b/`, and the
 five-part form of each is in `notes_proto_b.md` there.
 
 11. **A swatch pressed in tier mode** (answer 11), *look*. It turns
@@ -208,117 +206,119 @@ five-part form of each is in `notes_proto_b.md` there.
     `gridReport` as elements of its own, so the user's alternative drops
     one block.
 
-## The handover, 2026-11-23
+From prototyper C, the pane, the legend, the fit and the help page. Its
+probes are in `…-worktrees/increment_10_notes/probes_c/`.
 
-The coordinator was told to hand back before the pipeline had finished.
-It was at about 170k tokens of its 500k ceiling, so this is no context
-stop, and no design conflict or finding on the core caused it. It
-stopped prototyper B in mid-stage, by order, and B wound down cleanly.
-A successor reads this file, the pending bullet and the rules, never a
-transcript. Below, `W` is `~/.julia/dev/RedstoneInspector.jl-worktrees`.
+24. **Where the frames table sits** (answer 10). In the rate fact's
+    `dd`, across the full width of the facts list, under its label, the
+    chain line after it. *Rejected:* beside the label, which overflowed
+    the 240 px pane by 6 px and wrapped every value at 360 px; a section
+    of its own, which parts the rate from the type and the class.
+    *Probe:* `narrow.out`, 240 of 240 px on two fixtures. *Hunk:*
+    `Detail.svelte`'s rule on `dd[data-fact="rate"]`.
+25. **The frames table's heads** (answers 3 and 10), *look*. The column
+    heads are the words `period` and `phase`, as answer 10's sketch
+    draws them. Each row's head gives the frame's word and its name, and
+    is titled with answer 3's pair and unit. *Why:* answer 10 says "the
+    column heads give the words", and a head names a column of four
+    quantities, which no one symbol does. *Rejected:* no heads; symbols
+    as heads. *Hunk:* `Detail.svelte`'s `thead` and `timing.ts`'s
+    `FRAME_TITLES`.
+26. **The legend's columns** (answer 13). Marks, text and `Δt` align
+    across the lines in one grid. *Rejected:* one row per line, the `Δt`
+    ragged. *Hunk:* `Canvas.svelte`'s `.legend` rules.
+27. **The fit's rule** (answer 13), *look*. `fitBeside` takes the larger
+    of the two candidates, the bottom one on a tie, and the whole
+    viewport where neither leaves room for the padding. It applies while
+    a legend shows. A change of mode does not fit again, and `0` does.
+    *Rejected:* a fit on `r`, which would move a view the user set.
+    *Probe:* `fit.out`, 16 roots at 1600 by 1000. Every root keeps its
+    scale but `large`, which goes from 0.083 to 0.062 under its 43
+    lines. No block meets the legend. *Hunk:* `view.ts`'s `fitBeside`
+    and `Canvas.svelte`'s `fit`.
+28. **The first fit waits a tick** (answer 13), so that the new level's
+    legend is measured, and `data-ready` waits with it. *Rejected:* the
+    legend's box computed from text widths, a second copy of its rules.
+    *Hunk:* `Canvas.svelte`'s `draw`.
+29. **The notation's place on the help page** (answers 3 and 14). A
+    fifth section, "Timing and root inputs", between "Reading the
+    diagram" and "Coming from Simulink": a lead, a table with each
+    symbol once, the law's four lines and the type rule. *Rejected:* a
+    part of "Reading the diagram", which is about the canvas. *Hunk:*
+    `Help.svelte`'s section and `help.ts`'s `SECTIONS`.
+30. **The help page's text** (answers 3 and 14), *look*. It is
+    `help.ts`'s `NOTATION_LEAD`, `NOTATION`, `LAW_LEAD` and `TYPE_RULE`.
+    The type rule reads: "`linearize` seeds a root input only at a
+    `Float64` reached by at most one index step: the input itself when
+    it is a `Float64`, or one element of an array of `Float64`, never a
+    field." The core's §14.10 has "one index step at most and never a
+    `.name`". The text also says that `linearize` cannot seed a pinned
+    input, a rule and no verdict on any one input, which answer 14 keeps
+    off the tab.
+31. **The legend's sample on the help page** shows two short lines
+    without their `Δt`, which would not read at the sample's scale.
+32. **The rate fact's tooltip** reads "When the discrete primitive runs,
+    in each frame from its rate scope to seconds."
 
-### The state
+The sweep for answer 3's three words over `frontend/src` changed the
+rate fact's tooltip, the help page's legend term and vocabulary row, and
+retired the pane's and the legend's old phrases. It left the frames
+table's `phase` head by reading 25, and every use that names no timing
+quantity to a reader: a geometric offset, `outline-offset`, "least
+common multiple", the pool's `kind: "offset"` and field names.
 
-- **`master`** stands at `7b66e6b`, untouched.
-- **`increment-10`**, in `W/increment_10`: this file and the pending
-  bullet's stage, two docs commits on `7b66e6b`. No brief, no record
-  amendment and no code is there yet. `npm ci` is run and the root
-  `Manifest.toml` is copied in.
-- **`increment-10-proto`**, in `W/increment_10_proto`: the prototype.
-  - `b5b0c18`, stage 1, the fixtures. Gate `protoA_1` green: Julia 128,
-    unit tests 546, browser checks 538 passed and 4 skipped.
-  - `ae55de9`, stage 2, the page's data, the loader, the diagnostics
-    and root-inputs tabs and the link rule. Gate `protoA_2` green: Julia
-    128, unit tests 601, the checker 0 errors on 401 files, browser
-    checks 554 passed and 4 skipped, the drift check clean. 21 fixtures
-    hold 1,378,469 bytes.
-  - Stage 3, the timing tab and the chart, **uncommitted and not
-    gated** on `ae55de9`: eight files modified, `tabs/Chart.svelte` and
-    `e2e/timing.spec.ts` new. A copy is
-    `W/increment_10_notes/handover/stage3_uncommitted_on_ae55de9.patch`.
-    Verified so far: the unit tests, 601 passed; the checker, 0 errors;
-    `timing.spec` and `analysis.spec`, 27 of 27 in Chromium and in
-    Firefox on an earlier build, with `timing.spec` alone run in
-    Chromium after the last two style edits; 10 unit mutants and 12
-    browser mutants red. Not run: the whole browser suite, the gate, ten
-    browser mutants.
-  - **`frontend/dist/` there holds a mutant's build.** Build before any
-    browser check. The sources are restored, by md5.
-  - Stage 4 is not started.
-- **No agent, server or gate is alive.** Agents A and B answered the
-  coordinator's session alone and cannot be resumed by a successor.
+## The pause, 2026-11-23
 
-### What is open, in order
+After the prototype's second stage the coordinator took a guard of the
+harness for an order to hand back, stopped prototyper B in mid-stage and
+committed these notes as a handover. The launching session withdrew
+that. The same coordinator went on with its context intact, and B
+finished its stage, so no successor ran. Nothing was lost. An earlier
+commit of this file calls itself a handover for that reason.
 
-1. **Finish stage 3** in `W/increment_10_proto`, a fresh high-tier
-   agent from `W/increment_10_notes/notes_proto_b.md`, whose section
-   "Stopped by the coordinator's order" is its start: the build, the
-   whole gate, the ten browser mutants left, the commit, the alternative
-   `grid_report_left_out.patch` with its screenshots, the screenshot
-   list, and the map entries and traps for stage 4.
-2. **Stage 4**, a fresh high-tier agent in the same worktree: the
-   pane's frames table and chain line (answer 10), the legend's lines
-   and tooltip from `legendText`, the fit's room for the legend and the
-   palette's comment (answer 13), the help page's one definition of each
-   symbol and of §14.10's type rule (answers 3 and 14), the notation's
-   words in the pane, the legend, the tooltips and the status bar,
-   `frontend/MAP.md`, the traps for `design/rules.md`, the alternatives
-   `chain_line_left_out.patch` and `bare_link_as_text.patch` with their
-   screenshots, and a capture script that fills the look folder from a
-   built worktree. The fit changes every level's scale, so expect
-   existing geometric checks to move.
-3. **The readings round** over stages 3 and 4, then **the record, once**:
-   the dated notes below, this file completed, and the brief, as one
-   docs commit on `increment-10` before any code.
-4. **The builds** on `increment-10`: two fresh builders, four stage
-   commits, each applying its stage's reference patch, checking it
-   against the brief and the oracle, and gating.
-5. **One cold review**, the fixes as one commit, the reviewer's delta
-   check with the gate.
-6. **At the tip:** the three alternative patches made again and
-   checked, the look folder with its index, the roadmap's landed entry
-   with the facts 10b's brief takes, and the pending bullet.
+## The prototype's close
 
-### Rulings recorded nowhere else
+Below, `W` is `~/.julia/dev/RedstoneInspector.jl-worktrees`.
+
+| stage | commit on `increment-10-proto` | gate | Julia | unit | browser |
+|---|---|---|---|---|---|
+| 1, the fixtures | `b5b0c18` | `protoA_1` | 128 | 546 | 538, 4 skipped |
+| 2, the data and two tabs | `ae55de9` | `protoA_2` | 128 | 601 | 554, 4 skipped |
+| 3, the timing tab and the chart | `7d27432` | `protoB_2` | 128 | 601 | 582, 4 skipped |
+| 4, the pane, the legend, the fit, the help page | `3357fd3` | `protoC_2` | 128 | 600 | 602, 4 skipped |
+
+Stages 3 and 4 were each committed, gated, amended by a line or a test,
+and gated again, so the gate named is the one on the commit that stands.
+The mutants: 24 of A's, 32 of B's and 15 of C's, all red on the
+prototype.
+
+## More of the coordinator's rulings
 
 4. **The prototype's patches are not committed.** The brief names the
    prototype's commits as each stage's reference, and the branch
    `increment-10-proto` stays until the user merges. *Why:* with the
-   fixtures the patch holds about 1.4 MB, and the stage commits hold the
-   same hunks. *Rejected:* the patches beside the brief, as the core's
-   increments have them.
+   fixtures the patches hold about 1.4 MB, and the stage commits hold
+   the same hunks. *Rejected:* the patches beside the brief, as the
+   core's increments have them.
 5. **The alternative patches and the look folder are made at the
-   branch's tip**, after the delta check, by the capture script and not
-   from the prototype. *Why:* the user's ruling 3 wants patches
-   that apply to the tip, and the fixes move it.
-6. **All 23 readings above are ratified.** Stage 3's rest on a partial
-   run, so a red gate there reopens the reading it touches.
+   branch's tip**, after the delta check. *Why:* the user's ruling 3
+   wants patches that apply to the tip, and the fixes move it. The
+   prototypers' patches in `W/increment_10_notes/alternatives/` apply to
+   `3357fd3` and are the models.
+6. **A fourth pair goes to the look**, by the launching session's word:
+   the grid report in the symbols, as built, against `show`'s words
+   (reading 3).
+7. **All 32 readings are ratified.**
+8. **The map stays at 758 lines**, past the 700 that `design/rules.md`
+   asks for. *Why:* the increment added what it owes and cut what it
+   made stale. A trim is a sweep of the whole map and no part of this
+   increment. *Rejected:* a trim by the last stage's builder.
+9. **Two of the traps stage 4 adds to `design/rules.md` are reworded in
+   the fix commit.** "New fixtures on the drift line" names the run's
+   gate script, and must name `AGENTS.md`'s drift check. "A Playwright
+   probe outside the tree" names "the notes folder", a place of this run.
 
-### The record's notes still owed
-
-One docs commit, each note dated 2026-11-23 and sourced "the
-implementation, the user away", by `design/rules.md`'s "Amending a
-record":
-
-- answer 4: a message shows whole (reading 1);
-- answers 5 and 14: each says it amends `descriptor_design.md` answers
-  4 and 7 (ruling 3);
-- answer 9: the coarsest line's form, the report worded in the symbols
-  and not as `show` words it, the steps as one item, the chart's place,
-  the caption on a build, the anchor's column (readings 2, 3, 6, 13, 14
-  and 15);
-- answer 10: the root named as the scope and the chain's numbers as
-  `show` prints them (ruling 2, reading 4);
-- answer 11: the omitted chart's line, the swatch in tier mode, the
-  scroll, the marks and the closing frame top (readings 7, 11, 12, 17);
-- answer 13: the tooltip keeps the declaring scope (reading 10);
-- answer 14: the cause's form (reading 5);
-- answer 15: a target that is the module `Redstone`, or an explicit
-  unqualified one, shows as text (reading 9);
-- answer 16: the new fixtures hold 390,350 bytes, where the answer
-  estimated about 300 kB, beside 988,119.
-
-### Noticed, not touched
+## Noticed, not touched
 
 - `rates.ts` orders the palette's triples by a float period, a float
   product on the page that answer 5 rules out for the tables. The order
@@ -327,23 +327,22 @@ record":
   a drawer button holds the focus, so Enter does not press a swatch or a
   sort button there. Space does. It predates the increment and belongs
   to the keyboard sweep.
-- `timing.ts`'s `gridReportLines` is read by the tests alone since the
-  tab renders from `gridReport`. Keep it or drop it at stage 3's close.
 - The oracle's draw counter takes a path's prefix for its parent, wrong
   for a keyed container. Only `containers` has one.
-- Nothing is owed to the core, and no core change is needed so far.
+- Nothing is owed to the core, and no core change was needed.
 
-### Paths
+## Paths
 
 - `W/increment_10_notes/standing_rules.md`: the rules every agent of
   the run reads first.
-- `W/increment_10_notes/notes_proto_a.md` and `notes_proto_b.md`: the
-  prototypers' notes, with the API of `timing.ts` and the three hunks of
-  the user's alternatives.
+- `W/increment_10_notes/notes_proto_a.md`, `notes_proto_b.md` and
+  `notes_proto_c.md`: the prototypers' notes.
 - `W/increment_10_notes/oracle/`: `oracle.py`, `crosscheck.jl` and
   their outputs, 567 checks and none failed.
-- `W/increment_10_notes/probes_a/` and `probes_b/`: the mutant runners
-  and their outputs, the gesture probe and the captures.
-- `W/run_20261123_logs/increment_10/`: `gate.sh` and the logs of
-  `protoA_1` and `protoA_2`.
-- `W/increment_10_look/`: empty.
+- `W/increment_10_notes/probes_a/`, `probes_b/` and `probes_c/`: the
+  mutant runners and their outputs, the gesture, fit and narrow-pane
+  probes and their captures.
+- `W/increment_10_notes/alternatives/`: the prototypers' four patches
+  and the captures of each form.
+- `W/run_20261123_logs/increment_10/`: `gate.sh` and every gate's logs.
+- `W/increment_10_look/`: what the user looks at.
