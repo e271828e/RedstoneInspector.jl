@@ -153,3 +153,197 @@ One existing unit test changed its claim under answer 15. A link written
 with an explicit unqualified target, `` [`x`](@ref Junction) ``, joined
 to the type's module. It now shows as text, since the answer links only
 a target under `Redstone.` and joins only a bare link.
+
+From prototyper B, the timing tab and the chart. Its stage is built and
+not gated, so each reading stands on the runs the handover below names.
+The probes are in `…-worktrees/increment_10_notes/probes_b/`, and the
+five-part form of each is in `notes_proto_b.md` there.
+
+11. **A swatch pressed in tier mode** (answer 11), *look*. It turns
+    rate mode on, then toggles the focus. In rate mode it toggles alone.
+    *Why:* the shell clears the legend's focus in tier mode. *Rejected:*
+    a swatch disabled in tier mode; a press that sets a focus the shell
+    clears at once. *Probe:* `gesture.out`, Chromium event by event, the
+    gesture made twice. *Hunk:* `App.svelte`'s `chartSwatch`.
+12. **The sideways scroll** (answer 11). The tab's own body scrolls
+    under a long timeline, the chart's labels a sticky column, so the
+    drawer's `h`, `l` and arrows reach it. *Rejected:* a scroller of the
+    timeline's own, which the drawer's keys never reach. *Probe:*
+    `gesture.out` at a 496 px tab. *Hunk:* `Chart.svelte`'s `.labels`
+    and `.inner`.
+13. **The chart's place** (answers 9 and 11), *look*. After the head
+    list, before the caption and the tables. *Why:* answer 9 keeps the
+    list beside what depends on it. *Rejected:* at the tab's end, below
+    tables of 11 and 10 rows on `closed_loop`. *Hunk:* the `{#if joint}`
+    block in `Timing.svelte`.
+14. **The caption on a build** (answer 9). All four lines of the law,
+    as on a deployment. *Rejected:* the seconds line alone. *Hunk:*
+    `Timing.svelte`'s `{#each EQUATIONS}`.
+15. **The anchor's column** (answers 3 and 9), *look*. The head is `k`
+    and each cell reads `Aₖ (key)`, titled with the declaring scope, in
+    all three tables. The anchors table's own key column goes. *Why:*
+    answer 3 has an anchor read `Aₖ (key)`. *Rejected:* the bare index
+    of answer 9's sketch. *Hunk:* the `anchor` snippet and `td.k`.
+16. **The sort's words** (answer 3). `by Δt`. *Rejected:* `by period`
+    kept. *Hunk:* the button and `analysis.spec.ts`'s library check.
+17. **The marks and the frame tops** (answer 11). A mark sits at its
+    tick's instant. A line stands at each frame top from 0 to the span's
+    end, the closing one included. *Rejected:* a mark centered in its
+    tick's cell, which parts a tick from the frame top it lands on.
+    *Hunk:* `timing.ts`'s `tickX` and `Chart.svelte`'s `tops`.
+18. **The hyperperiod's lines** (answers 8 and 11). `hyperperiod: 10
+    base ticks, 1/10 s` always, and the joint period's line only where
+    the span outlasts the hyperperiod. *Rejected:* the joint line
+    always. *Hunk:* `hyperperiodLine` and `jointLine`.
+19. **A pool entry's factor** (answer 9). `×6` after its value, as
+    `show` prints it, titled with its meaning. *Rejected:* a column of
+    its own. *Hunk:* `Timing.svelte`'s `span.factor`.
+20. **A chart row's words** (answer 11). `D 2 · Φ 1`, the swatches,
+    `2 primitives`, then `on frame tops` or `splits frames`.
+21. **The swatch's tooltip** (answer 11). The legend's text, its `Δt`,
+    then "focus this rate on the canvas".
+22. **The build's closing sentence** (answer 9). "The base grid's
+    columns and the hyperperiod chart need a deployment."
+23. **The grid report's elements** (answer 9). It renders from
+    `gridReport` as elements of its own, so the user's alternative drops
+    one block.
+
+## The handover, 2026-11-23
+
+The coordinator was told to hand back before the pipeline had finished.
+It was at about 170k tokens of its 500k ceiling, so this is no context
+stop, and no design conflict or finding on the core caused it. It
+stopped prototyper B in mid-stage, by order, and B wound down cleanly.
+A successor reads this file, the pending bullet and the rules, never a
+transcript. Below, `W` is `~/.julia/dev/RedstoneInspector.jl-worktrees`.
+
+### The state
+
+- **`master`** stands at `7b66e6b`, untouched.
+- **`increment-10`**, in `W/increment_10`: this file and the pending
+  bullet's stage, two docs commits on `7b66e6b`. No brief, no record
+  amendment and no code is there yet. `npm ci` is run and the root
+  `Manifest.toml` is copied in.
+- **`increment-10-proto`**, in `W/increment_10_proto`: the prototype.
+  - `b5b0c18`, stage 1, the fixtures. Gate `protoA_1` green: Julia 128,
+    unit tests 546, browser checks 538 passed and 4 skipped.
+  - `ae55de9`, stage 2, the page's data, the loader, the diagnostics
+    and root-inputs tabs and the link rule. Gate `protoA_2` green: Julia
+    128, unit tests 601, the checker 0 errors on 401 files, browser
+    checks 554 passed and 4 skipped, the drift check clean. 21 fixtures
+    hold 1,378,469 bytes.
+  - Stage 3, the timing tab and the chart, **uncommitted and not
+    gated** on `ae55de9`: eight files modified, `tabs/Chart.svelte` and
+    `e2e/timing.spec.ts` new. A copy is
+    `W/increment_10_notes/handover/stage3_uncommitted_on_ae55de9.patch`.
+    Verified so far: the unit tests, 601 passed; the checker, 0 errors;
+    `timing.spec` and `analysis.spec`, 27 of 27 in Chromium and in
+    Firefox on an earlier build, with `timing.spec` alone run in
+    Chromium after the last two style edits; 10 unit mutants and 12
+    browser mutants red. Not run: the whole browser suite, the gate, ten
+    browser mutants.
+  - **`frontend/dist/` there holds a mutant's build.** Build before any
+    browser check. The sources are restored, by md5.
+  - Stage 4 is not started.
+- **No agent, server or gate is alive.** Agents A and B answered the
+  coordinator's session alone and cannot be resumed by a successor.
+
+### What is open, in order
+
+1. **Finish stage 3** in `W/increment_10_proto`, a fresh high-tier
+   agent from `W/increment_10_notes/notes_proto_b.md`, whose section
+   "Stopped by the coordinator's order" is its start: the build, the
+   whole gate, the ten browser mutants left, the commit, the alternative
+   `grid_report_left_out.patch` with its screenshots, the screenshot
+   list, and the map entries and traps for stage 4.
+2. **Stage 4**, a fresh high-tier agent in the same worktree: the
+   pane's frames table and chain line (answer 10), the legend's lines
+   and tooltip from `legendText`, the fit's room for the legend and the
+   palette's comment (answer 13), the help page's one definition of each
+   symbol and of §14.10's type rule (answers 3 and 14), the notation's
+   words in the pane, the legend, the tooltips and the status bar,
+   `frontend/MAP.md`, the traps for `design/rules.md`, the alternatives
+   `chain_line_left_out.patch` and `bare_link_as_text.patch` with their
+   screenshots, and a capture script that fills the look folder from a
+   built worktree. The fit changes every level's scale, so expect
+   existing geometric checks to move.
+3. **The readings round** over stages 3 and 4, then **the record, once**:
+   the dated notes below, this file completed, and the brief, as one
+   docs commit on `increment-10` before any code.
+4. **The builds** on `increment-10`: two fresh builders, four stage
+   commits, each applying its stage's reference patch, checking it
+   against the brief and the oracle, and gating.
+5. **One cold review**, the fixes as one commit, the reviewer's delta
+   check with the gate.
+6. **At the tip:** the three alternative patches made again and
+   checked, the look folder with its index, the roadmap's landed entry
+   with the facts 10b's brief takes, and the pending bullet.
+
+### Rulings recorded nowhere else
+
+4. **The prototype's patches are not committed.** The brief names the
+   prototype's commits as each stage's reference, and the branch
+   `increment-10-proto` stays until the user merges. *Why:* with the
+   fixtures the patch holds about 1.4 MB, and the stage commits hold the
+   same hunks. *Rejected:* the patches beside the brief, as the core's
+   increments have them.
+5. **The alternative patches and the look folder are made at the
+   branch's tip**, after the delta check, by the capture script and not
+   from the prototype. *Why:* the user's ruling 3 wants patches
+   that apply to the tip, and the fixes move it.
+6. **All 23 readings above are ratified.** Stage 3's rest on a partial
+   run, so a red gate there reopens the reading it touches.
+
+### The record's notes still owed
+
+One docs commit, each note dated 2026-11-23 and sourced "the
+implementation, the user away", by `design/rules.md`'s "Amending a
+record":
+
+- answer 4: a message shows whole (reading 1);
+- answers 5 and 14: each says it amends `descriptor_design.md` answers
+  4 and 7 (ruling 3);
+- answer 9: the coarsest line's form, the report worded in the symbols
+  and not as `show` words it, the steps as one item, the chart's place,
+  the caption on a build, the anchor's column (readings 2, 3, 6, 13, 14
+  and 15);
+- answer 10: the root named as the scope and the chain's numbers as
+  `show` prints them (ruling 2, reading 4);
+- answer 11: the omitted chart's line, the swatch in tier mode, the
+  scroll, the marks and the closing frame top (readings 7, 11, 12, 17);
+- answer 13: the tooltip keeps the declaring scope (reading 10);
+- answer 14: the cause's form (reading 5);
+- answer 15: a target that is the module `Redstone`, or an explicit
+  unqualified one, shows as text (reading 9);
+- answer 16: the new fixtures hold 390,350 bytes, where the answer
+  estimated about 300 kB, beside 988,119.
+
+### Noticed, not touched
+
+- `rates.ts` orders the palette's triples by a float period, a float
+  product on the page that answer 5 rules out for the tables. The order
+  changes only if two periods collide as floats.
+- With a closed assembly selected, the shell's Enter opens it even when
+  a drawer button holds the focus, so Enter does not press a swatch or a
+  sort button there. Space does. It predates the increment and belongs
+  to the keyboard sweep.
+- `timing.ts`'s `gridReportLines` is read by the tests alone since the
+  tab renders from `gridReport`. Keep it or drop it at stage 3's close.
+- The oracle's draw counter takes a path's prefix for its parent, wrong
+  for a keyed container. Only `containers` has one.
+- Nothing is owed to the core, and no core change is needed so far.
+
+### Paths
+
+- `W/increment_10_notes/standing_rules.md`: the rules every agent of
+  the run reads first.
+- `W/increment_10_notes/notes_proto_a.md` and `notes_proto_b.md`: the
+  prototypers' notes, with the API of `timing.ts` and the three hunks of
+  the user's alternatives.
+- `W/increment_10_notes/oracle/`: `oracle.py`, `crosscheck.jl` and
+  their outputs, 567 checks and none failed.
+- `W/increment_10_notes/probes_a/` and `probes_b/`: the mutant runners
+  and their outputs, the gesture probe and the captures.
+- `W/run_20261123_logs/increment_10/`: `gate.sh` and the logs of
+  `protoA_1` and `protoA_2`.
+- `W/increment_10_look/`: empty.

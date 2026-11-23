@@ -57,11 +57,17 @@ The bullets stand in working order, the first one next.
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  designed and not briefed, with the pin bump and the record at the new
-  pin landed and not pushed, the bump cold-reviewed, the user's look at
-  the bump and review of the record's rulings owed, and the brief
-  next. The session's handover
-  is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
+  the pin bump and the record at the new pin landed and not pushed, the
+  bump cold-reviewed, the user's look at the bump and review of the
+  record's rulings owed. The implementation is under way on the branch
+  `increment-10`, unmerged, and nothing of it is built there yet. Its
+  prototype stands on the branch `increment-10-proto` with two of four
+  stages committed and gated, the fixtures and the page's data, and the
+  third, the timing tab and the chart, uncommitted and not gated. The
+  fourth stage, the brief, the builds and the review come next. The
+  handover is
+  `increments/inspector_10_deployment_overlay/notes_implementation.md`,
+  and the design session's is `notes_inspector_10.md` beside it.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is
