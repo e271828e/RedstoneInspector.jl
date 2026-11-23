@@ -487,30 +487,64 @@ descriptor at parity with `show`, and `show(::Deployment)` in the notation,
 which the inspector did not wait on (the record's answers 1 to 8, 12, 14,
 15 and 17). All four are landed and pushed, as the core's D-464, D-466,
 D-467, D-468 and D-471, and the core's `pending.md` has retired their
-bullet. The inspector half starts at the pin bump:
+bullet. The inspector half runs in three steps, by the user's ruling of
+2026-11-22: the pin bump, the record brought to the new pin, and the
+implementation. The first two have landed, below. The implementation
+takes:
 
-- the fixtures of answer 16, three more deployments, `descent` rebuilt in
-  the script and the synthetic `timing`;
-- the schema copy, whose description names
-  `RedstoneInspector.jl/design/descriptor_design.md`, and the loader's
-  refusal of a deployment body without `schedule` (answer 2);
+- the fixtures of answer 16, three more deployments of models in hand
+  and the synthetic `timing` as a build and as a deployment;
+- the loader's refusal of a file from an older core, told by a structure
+  without `grid` or a deployment body without `schedule` (answer 2);
+- a deployment's own warnings on the diagnostics tab (answer 4);
 - the timing tab in the notation, a deployment filling the tables in,
-  with its head list and the steps per frame (answers 3 and 9);
-- the pane's frames table (answer 10), with its check that at most one
-  link lies between a primitive and its nearest scope row;
+  with its head list, the steps per frame and the grid report whole
+  (answers 3, 6 and 9);
+- the pane's frames table, with the chain line read from the node's
+  `rates` (answer 10);
 - the hyperperiod chart, a row per distinct `(D, Φ)`, whole or omitted,
   with the frame tops over the joint period (answers 8 and 11);
 - the legend's short lines, the fit's room for the legend and the
   palette's comment on the peach (answer 13);
 - the root-inputs tab's pinned mark and its pinning consumers (answer
   14);
-- the link rule that reads a link's target (answer 15).
+- the link rule that reads a link's target, and keeps the joining of a
+  bare link to its type's module until the core's export audit (answer
+  15).
 
 The three event parameters and the `events` section are read and not
 shown. Visible: `library_deployment`'s chart of four rows on the timing
-tab. Draws on the record, and on `workspace.md` answers 4, 6 and 7,
-`visual_grammar.md` answer 6, `descriptor_design.md` answers 2, 9 and 10
-and `build_release.md` answer 7 as the record amends them.
+tab. Draws on the record, and on `workspace.md` answers 4, 6, 7 and 10,
+`visual_grammar.md` answer 6, `descriptor_design.md` answers 2, 4, 7, 9
+and 10 and `build_release.md` answer 7 as the record amends them.
+*The pin bump landed on 2026-11-23 at `fb8da65` of
+`RedstoneInspector.jl`, six commits, without a brief: its notes,
+`increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`, hold its
+rulings, its cold review and its look by captures. The pin moved from
+the core's `6afd6fb` to `7ea3600`. From the list as it stood the bump
+took the schema copy and `descent` built in the script, and beyond the
+list the anchor's key `dt` at the page's six readers and a true sentence
+on the timing tab of a deployment. The record was brought to the pin the
+same day, with the user away: fifteen answers amended, the rulings and
+the readings to show the user in
+`increments/inspector_10_deployment_overlay/notes_record_at_pin.md`.
+Facts the brief takes: the gate stands where the polish batch left it,
+at 128 Julia tests, 526 unit tests, and 500 browser checks passed and 4
+skipped; the 16 fixtures hold 988,119 bytes, and every body carries the
+sections the format gained; `descent` is built with qualified type
+names, since a name imported into the script prints bare in every
+`signature`; `closed_loop` and its deployment have two root inputs
+pinned by tier, `h_ref` and `V_ref`, `large` four, `failure_cycle` and
+`failure_nested` one each, and no fixture has one pinned by declaration;
+no fixture has an offset in its pool, an entry with alternatives, a
+primitive with a `sample_times` entry of its own beneath a rate scope, a
+row that splits frames or a deployment's own warning, which is what
+`timing` and its deployment are for; the writer's `@ref` pass rewrote no
+link, and of `library`'s 101 bare links the joining sends 97 to a name
+on the API page and four to a dead anchor; `closed_loop_deployment` has
+`dt_frame`, `dt_base` and `h_max` at 1/100, no `h_min`, `RK4()`, and ten
+rows on ten anchors at `(2, 0)`; the three deployments and a candidate
+`timing` built in scratch are named in the notes.*
 
 **Increment 10b: the events.** After a short design session of its own,
 and before the look pass (the record's answers 7 and 12, the user's

@@ -33,36 +33,34 @@ The bullets stand in working order, the first one next.
   `increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`, hold its
   rulings, the answers to the two checks of `deployment_overlay.md`
   answer 16, what the regenerated fixtures show and the look by
-  captures. Two steps remain:
-  - **The record at the new pin**, a commit that brings
-    `deployment_overlay.md` up to date before the increment is briefed.
-    The record closed on 2026-11-20 and was amended on 2026-11-21 for
-    D-467. It is read against the core's §13.9 as pinned, against the
-    regenerated fixtures, and against what the core landed since: D-469,
-    D-471 and the commits after it on the schedule rows' order and on
-    what a descriptor client derives (`7388e28`, `121da1a`), and D-477's
-    new diagnostic kind. One open item of the core's `pending.md`
-    touches it, a schedule row's `Δt` that is not the float nearest its
-    exact period. The roadmap's list for increment 10 loses what the
-    bump took, which the bump's notes name. The bump's review hands
-    this step three items to place: a deployment's own `warnings`,
-    which the diagnostics tab does not read; a build or a failure
-    written by the old core, which the loader accepts and whose anchors
-    the readers fail on, answer 2's refusal covering a deployment
-    alone; and the rate chain, which the core now carries on the node
-    as `rates` while "Format changes still open" below still lists it.
-    A finding that the core must change moves the pin again, before
-    the launch and not during the increment.
+  captures. The second, the record at the new pin, landed the same day
+  and is not pushed. `deployment_overlay.md` was read against the core's
+  §13.9 as pinned, the schema copy, the fixtures and the deployments of
+  answer 16 built in scratch, with the user away, and fifteen of its
+  answers are amended. Nothing was found that the core must change. The
+  bump's three items are placed: a deployment's own warnings join the
+  diagnostics tab (answer 4), the loader refuses a file from an older
+  core by its structure (answer 2), and the pane reads the rate chain
+  from the node's `rates` (answers 5 and 10). The step's notes,
+  `increments/inspector_10_deployment_overlay/notes_record_at_pin.md`,
+  hold each ruling with its reason and the alternative it rejected, and
+  the user's review of them is owed. One step remains:
   - **The implementation**, briefed and launched from the amended
-    record.
+    record. Its prototype shows the user both alternatives of the
+    readings the notes list as a matter of taste: a bare docstring link
+    joined to its type's module or shown as text (answer 15), the rate
+    chain on a line under the frames table or left out (answer 10), and
+    the pool's alternatives and the prime attribution under the anchors
+    table or left out (answer 9).
 
   Then 10b, the events, after a short
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  designed and not briefed, with the pin bump landed and not pushed,
-  cold-reviewed, the user's look at it owed, and the record at the new
-  pin next. The session's handover
+  designed and not briefed, with the pin bump and the record at the new
+  pin landed and not pushed, the bump cold-reviewed, the user's look at
+  the bump and review of the record's rulings owed, and the brief
+  next. The session's handover
   is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
@@ -134,10 +132,7 @@ Items with no order among them: the format's open bumps, the records'
 open questions, and the open items the landed increments left, each with
 the increment it came from.
 
-- **Format changes still open.** The per-component chain of `sample_times`
-  links that `descriptor_design.md` answer 9 left out, wanted only if the
-  check of `deployment_overlay.md` answer 10 fails at increment 10's
-  prototype. A `string` kind when
+- **Format changes still open.** A `string` kind when
   a `String` port appears, and `min`/`max` on an integer marker if stage
   4's widgets want bounds. Locations beyond the declarations: the stage
   functions `y_state`, `y_direct`, `x_deriv`, `s_update` and the event
@@ -149,13 +144,28 @@ the increment it came from.
   ruling 3). Each is ruled
   in the core's spec and log first, a free change until the first release
   and a minor bump after it (`deployment_overlay.md` answer 2).
+- **A bare docstring link's joining, until the core's export audit**
+  (`deployment_overlay.md` answer 15). The writer adds a target only to
+  a link whose name its owner exports, and the core exports nothing
+  until its audit (D-226), so no link of the core's own has one. Until
+  then the page joins a bare link to its type's module, which sends four
+  of `library`'s 101 to a dead anchor: `Pinned` twice, `StopFlag` and
+  `stop_reason`, each from `Redstone.Library` into `Redstone`. The pin
+  bump that follows the audit drops the joining and the docstring check
+  that pins it.
+- **A root input's pin beyond the root-inputs tab**
+  (`deployment_overlay.md` answer 14). The tab marks a pinned root input
+  and the consumers that pin it. Its tag on the canvas and its pin's
+  pane show no mark, where a primitive's pinned face has one in both.
+  Whether they take one is the user's to rule.
 - **`frontend/MAP.md` past its size** (the polish batch). The map is about
   730 lines against `design/rules.md`'s "about 700", 714 before the batch.
   A trim outside any increment's text brings it back.
 - **A rational part past `2^53`** (the core's exact-arithmetic audit,
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
   section 2.8). The descriptor writes an anchor's `dt` and `tau` as the JSON
-  integers `num` and `den`, exact in the file. `rational` in
+  integers `num` and `den`, exact in the file, and a deployment's three
+  times, its counts `D` and `phi` and a pool entry's `factor` likewise. `rational` in
   `frontend/src/lib/analysis.ts` reads them into JavaScript numbers,
   which are exact only below `2^53`, so a period of `1//(2^61 - 1)` prints
   rounded. Display only. The cure is a reader that keeps the integers
