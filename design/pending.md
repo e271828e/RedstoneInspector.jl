@@ -64,7 +64,8 @@ The bullets stand in working order, the first one next.
   `focus.ts` and `detail.ts`, and `detail.ts` prints `m` and `c`, so the
   bump adapts the reads, prints the timing under the core's symbols
   (`Dₐ`, `Φₐ`, `D₀`, `Φ₀`), regenerates the fixtures and copies the
-  schema. The core's commits are not pushed yet, and the pin names a
+  schema. `deployment_overlay.md`, whose answers still write the core's
+  D-464 letters, follows at the bump with a dated note. The core's commits are not pushed yet, and the pin names a
   revision on GitHub, so the core's push comes first.
 
   Then 10b, the events, after a short
