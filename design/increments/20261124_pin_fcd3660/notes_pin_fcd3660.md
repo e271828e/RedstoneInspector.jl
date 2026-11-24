@@ -11,9 +11,9 @@ without them, with the findings and the decisions recorded for a later
 review. One session owned the step and built it in the worktree
 `~/.julia/dev/RedstoneInspector.jl-worktrees/pin_fcd3660`, branch
 `pin-fcd3660`, from `9e75f39`. The prototype is the implementation, so this
-file is the record and there is no brief. The
-look's captures are in `../RedstoneInspector.jl-worktrees/pin_fcd3660_look/`,
-local to one machine.
+file is the record and there is no brief. The worktrees and the folders of
+the captures and the probes were local to one machine and are gone, deleted
+on 2026-11-25 after the push.
 
 ## Rulings
 
@@ -219,11 +219,3 @@ findings, as adjudicated by the session, all landed in one commit:
 It disagreed with ruling 10 alone. It checked the fixes' delta at `2d317b5`,
 where nine mutants, its own survivors among them, die, and left two nits of
 wording and wrapping, landed with this record's close.
-
-## To clear
-
-After the merge and the push: the worktrees `pin_fcd3660` (branch
-`pin-fcd3660`) and `pin_fcd3660_review` (detached), and the folders
-`pin_fcd3660_look` and `pin_fcd3660_review_probes`, all under
-`~/.julia/dev/RedstoneInspector.jl-worktrees/`. The record rests on nothing
-in them that is not committed.
