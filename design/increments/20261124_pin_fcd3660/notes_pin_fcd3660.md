@@ -11,13 +11,14 @@ without them, with the findings and the decisions recorded for a later
 review. One session owned the step and built it in the worktree
 `~/.julia/dev/RedstoneInspector.jl-worktrees/pin_fcd3660`, branch
 `pin-fcd3660`, from `9e75f39`. The prototype is the implementation, so this
-file is the record and there is no brief. Nothing is merged or pushed. The
+file is the record and there is no brief. The
 look's captures are in `../RedstoneInspector.jl-worktrees/pin_fcd3660_look/`,
 local to one machine.
 
 ## Rulings
 
-The session's, each open to the user.
+The session's. The user reviewed them on 2026-11-25 and kept them all, with
+ruling 11 turned: the page refuses a file with the old timing keys.
 
 1. **The target is the tip of the core's GitHub master**, with its four
    workflows green. The core's local `master` is 22 commits ahead,
@@ -59,7 +60,8 @@ The session's, each open to the user.
     D-479's**, in its code, its comments and the attributes `data-n` and
     `data-k`. A local `k` elsewhere stays. The review's finding 6 moved the
     frame tops, which kept `j` at first.
-11. **The loader's refusal is not extended.** See the first finding.
+11. **The loader's refusal is not extended.** See the first finding. The
+    user ruled on 2026-11-25 that it is.
 
 ## The shape built
 
@@ -93,7 +95,7 @@ The session's, each open to the user.
 | | at `9e75f39` | at the pin |
 |---|---|---|
 | the Julia gate | 128 passed | 128 passed |
-| `npm test` | 611 passed in 30 files | 612 passed in 30 files |
+| `npm test` | 611 passed in 30 files | 612 passed in 30 files, 613 with the refusal |
 | `npm run check` | 0 errors, 405 files | 0 errors, 405 files |
 | `npm run e2e`, both browsers | 620 passed, 4 skipped | 620 passed, 4 skipped |
 
@@ -117,7 +119,7 @@ text. The fourth is older than the bump, the legend's `Φ₀` on an anchor with
 
 ## The look
 
-By captures, the user's own look owed. `capture.mjs` ran on the build before
+By captures, and the user's own on 2026-11-25, which found nothing to change. `capture.mjs` ran on the build before
 and the build after, with the pane's sections open. 292 of 471 files are the
 same byte for byte, and 179 differ. Captures of the after build differ from
 each other in 4 or 5 screenshots, all of the labels and the order badges, by
@@ -125,7 +127,7 @@ each other in 4 or 5 screenshots, all of the labels and the order badges, by
 text but the help page's is a symbol, a head, a package path or the one
 message. No page error in either run.
 
-To look at, each judged acceptable here:
+What the captures raised, each judged acceptable here and then by the user:
 
 - The subscripts are small at the legend's 11 px. `ₛ`, `ₐ` and `₀` differ
   in shape, and the row or the line says which is meant.
@@ -154,8 +156,10 @@ To look at, each judged acceptable here:
    if (timing && !("D" in timing)) return older(`${at}.nodes[].timing.D`);
    ```
 
-   It is a ruling on what the page refuses, so it is proposed and not made.
-   `pending.md` has its bullet.
+   It is a ruling on what the page refuses, so it was proposed and not made.
+   The user ruled for the refusal on 2026-11-25. It landed over every
+   primitive, `some` in place of `find`, with a unit test on the three kinds
+   that turns red without it.
 2. **`frontend/MAP.md` is still 759 lines**, past its 700, and the bump
    did not lengthen it.
 3. **A mutant runner must read a missing count as no run.** The first run of
@@ -168,14 +172,13 @@ To look at, each judged acceptable here:
 
 ## Bookkeeping
 
-- `pending.md`: the first bullet carries the stage, and retires when the
-  user merges. A new bullet under "Unordered" holds finding 1.
-- `roadmap.md`: not touched, nothing having landed. The landing's facts go
-  to increment 10's entry at the merge.
+- `pending.md`: the first bullet retires at the merge. The bullet on the old
+  keys came and went with the user's ruling.
+- `roadmap.md`: increment 10's entry takes the landing and its facts.
 
 ## Out of scope
 
-The core, read only. The loader's refusal. Increment 10b. The generic law on
+The core, read only. Increment 10b. The generic law on
 the help page.
 
 ## The cold review
@@ -206,8 +209,8 @@ findings, as adjudicated by the session, all landed in one commit:
 - **7, ruling 1's sentence on the unpushed commits.** Fixed.
 - **8, a count in a tool's README.** Fixed. A replacement of the session's
   had failed without a word.
-- **9, wording.** Taken, but for the roadmap's letters, which wait for the
-  merge.
+- **9, wording.** Taken, but for the roadmap's letters, whose entry states
+  increment 10 as it landed.
 - **Missing tests.** Taken for a focus and a rekeyed key with a phase and
   for the cells' classes on a component's row. Left for the chart's base
   tick strokes, `path.grid`, older than the bump: no check reads them, and

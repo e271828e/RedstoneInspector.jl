@@ -52,6 +52,8 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
   const at = d.kind === "deployment" ? "deployment.build.structure" : `${d.kind}.structure`;
   if (structure !== undefined && (typeof structure.grid !== "object" || structure.grid === null)) return older(`${at}.grid`);
   if (d.kind === "deployment" && (typeof d.deployment.schedule !== "object" || d.deployment.schedule === null)) return older("deployment.schedule");
+  // The core renamed a timing's `m` and `c` after it added `grid` and `schedule` (its D-478).
+  if (structure?.nodes.some((n: any) => n.class === "primitive" && n.timing?.D === undefined)) return older(`${at}.nodes[].timing.D`);
   const descriptor = d as RedstoneDescriptor;
   const loaded: Loaded = { ok: true, descriptor, label: labelOf(descriptor, fileName) };
   if (minor > 0) loaded.note = `format ${MAJOR}.${minor}, newer than this page's ${MAJOR}.0; unknown fields ignored`;

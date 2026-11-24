@@ -125,6 +125,20 @@ describe("the header check", () => {
     }))).toMatch(/no deployment\.build\.structure\.grid:/);
   });
 
+  it("refuses a timing under the keys m and c, whatever the kind, after the grid and the schedule", () => {
+    const rekeyed = (s: any) => {
+      for (const n of s.nodes) if (n.timing) n.timing = { anchor: n.timing.anchor, m: n.timing.D, c: n.timing.phi };
+    };
+    expect(refusal(edit("rates", (d) => rekeyed(d.build.structure)))).toBe(`This build descriptor has no build.structure.nodes[].timing.D${OLDER}`);
+    expect(refusal(edit("rates_deployment", (d) => rekeyed(d.deployment.build.structure))))
+      .toBe(`This deployment descriptor has no deployment.build.structure.nodes[].timing.D${OLDER}`);
+    expect(refusal(edit("failure_cycle", (d) => rekeyed(d.failure.structure)))).toBe(`This failure descriptor has no failure.structure.nodes[].timing.D${OLDER}`);
+    expect(refusal(edit("rates_deployment", (d) => {
+      rekeyed(d.deployment.build.structure);
+      delete d.deployment.schedule;
+    }))).toMatch(/no deployment\.schedule:/);
+  });
+
   it("keeps the nodes refusal's words ahead of the grid's", () => {
     expect(refusal(edit("descent", (d) => {
       delete d.build.structure.nodes;

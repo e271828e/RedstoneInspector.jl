@@ -60,7 +60,8 @@ the user away): both stood open in the core's `pending.md`.*
    schema requires the new sections. The header cannot tell a file that
    an older core wrote, since both say 1.0, so the page's loader tells it
    by structure. It refuses a body whose structure has no `grid`,
-   whatever the kind, and then a deployment body without `schedule`.
+   whatever the kind, then a deployment body without `schedule`, and then
+   a structure with a primitive whose `timing` has no `D`.
    Each refusal names the missing key, as the refusal of a body without
    nodes does, and adds that an older Redstone wrote the file and that
    the reader should write it again with the current one. The refusal
@@ -84,8 +85,9 @@ the user away): both stood open in the core's `pending.md`.*
    `fcd3660`, the user away): that held until the core renamed the keys
    of a timing and of a `Relative` link (its D-478, commit `7c24c48`). A
    file written between `44d52cc` and that commit has `grid` and the old
-   keys. It loads, and the readers then throw or print `NaN` and
-   `undefined`. `pending.md` holds the question.*
+   keys. It loaded, and the readers then threw or printed `NaN` and
+   `undefined`. Amended 2026-11-25 (the user's review of that bump): the
+   check on `timing` joined.*
    *Why:* D-433's annotation, D-434 and D-437 each added to version one
    unbumped, "no reader to protect while unreleased", and a rule replaces
    the repeated exception. A minor bump only adds fields, so a 1.1 schema

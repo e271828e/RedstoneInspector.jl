@@ -10,14 +10,6 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 In working order, the first one next. Increments 1 to 10 and 8b have
 landed (`roadmap.md`).
 
-- **The pin bump to the core's timing notation** (the core's D-478 and
-  D-479, on GitHub), before 10b by the user's ruling of 2026-11-24. Built
-  with the user away on the branch `pin-fcd3660`, from the core's `7ea3600`
-  to `fcd3660`: the keys, the symbols, the fixtures, the schema, the records
-  and the tools. Its record is
-  `increments/20261124_pin_fcd3660/notes_pin_fcd3660.md`. The user's review
-  of its rulings, their look and the merge are owed. At the merge this
-  bullet retires, and the roadmap's entry for increment 10 takes its facts.
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
@@ -114,13 +106,6 @@ landed (`roadmap.md`).
 - **`frontend/MAP.md` past its size.** It is 759 lines against
   `design/rules.md`'s "about 700". A trim outside any increment's text
   brings it back.
-- **A file with the old timing keys** (the pin bump to `fcd3660`). A
-  descriptor the core wrote between its `44d52cc` and `7c24c48` has
-  `grid` and timings under `m` and `c`. The loader accepts it. Rate mode
-  and the timing tab then throw, and a deployment's pane prints `NaN`
-  and `undefined`. Answer 2 of `deployment_overlay.md` wants it refused.
-  The change is in the bump's notes, finding 1, and is the user's to
-  rule.
 - **An integer past `2^53`** (the core's
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
   2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into

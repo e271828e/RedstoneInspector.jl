@@ -531,7 +531,16 @@ first fit waiting a tick, at a cost to `large` alone; the readings a mark
 or a legend line of 10b meets are the legend's 10, 26, 27 and 28, the
 swatch's 11 and the pane's 25 and 36; `frontend/MAP.md` stands at 759
 lines, past its 700 by ruling 8; the `events` section and the three event
-parameters are read and not shown.*
+parameters are read and not shown. The pin then moved to the core's
+`fcd3660` for its timing notation (D-478 and D-479), built on 2026-11-24
+with the user away and merged on 2026-11-25 after their review; its notes
+are `increments/20261124_pin_fcd3660/notes_pin_fcd3660.md`. A timing is
+`{anchor, D, phi}` and a `Relative` link `{D, phi}`, the page prints `Dₛ`,
+`Dₐ`, `D₀` and their phases, a chart row is a `(D₀, Φ₀)`, its base ticks
+are indexed by `n` and its frame tops by `k`, and the loader also refuses a
+timing under the old keys. The gate stands at 128 Julia tests, 613 unit
+tests, and 620 browser checks passed and 4 skipped, and the 21 fixtures
+hold 1,379,218 bytes.*
 
 **Increment 10b: the events.** After a short design session of its own,
 and before the look pass (the record's answers 7 and 12, the user's
