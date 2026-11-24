@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  anchorRows, componentRows, orderBadge, orderGroups, ranges, rootInputRows, rowTarget, scheduleNote, scopeRows,
-} from "./analysis";
-import { fixtureModel } from "./fixtures";
-import type { Model } from "./model";
+import { orderBadge, orderGroups, pinCause, ranges, rootInputRows, rowTarget } from "./analysis";
+import { fixtureJson, fixtureModel } from "./fixtures";
+import { parseDescriptor } from "./loader";
+import { loadModel, type Model } from "./model";
 import type { Face } from "./resolve";
 
 // Counts from the oracles over the committed fixtures: `scratchpad/oracle/analysis.py`, and `stage2.py` for the two
@@ -156,67 +155,32 @@ describe("rootInputRows", () => {
     expect(rootInputRows(fixtureModel("kinds"))).toEqual([]);
     expect(rootInputRows(prim).map((r) => [r.name, r.consumers])).toEqual([["u", []], ["d", []]]);
   });
-});
-
-describe("anchorRows and scopeRows", () => {
-  it("puts the base grid first, then closed_loop's 10 anchors at 1/50 s", () => {
-    const rows = anchorRows(cl);
-    expect(rows).toHaveLength(11);
-    expect(rows[0]).toEqual({ kind: "anchor", index: 0, base: true });
-    expect(rows[1]).toEqual({ kind: "anchor", index: 1, T: "1/50 s", tau: "0/1 s", scope: "sensing", key: "noise" });
-    for (const r of rows.slice(1)) expect(!r.base && [r.T, r.tau]).toEqual(["1/50 s", "0/1 s"]);
-    expect(rows.map((r) => r.index)).toEqual(Array.from({ length: 11 }, (_, i) => i));
-  });
-
-  it("gives rates two anchors at the root and three scopes with their triples", () => {
-    expect(anchorRows(rates).slice(1)).toEqual([
-      { kind: "anchor", index: 1, T: "1/50 s", tau: "0/1 s", scope: "", key: "fast" },
-      { kind: "anchor", index: 2, T: "1/10 s", tau: "0/1 s", scope: "", key: "slow" },
+  // deployment_overlay.md answer 14, from the oracle's root inputs
+  it("closed_loop: h_ref and V_ref pinned by tier through their PID consumers, the LQR's not pinning; mode not pinned", () => {
+    const rows = rootInputRows(cl);
+    expect(rows.map((r) => [r.name, r.pinned])).toEqual([["h_ref", true], ["V_ref", true], ["mode", false]]);
+    expect(rows[0].consumers.map((c) => [text(c), pinCause(rows[0], c)])).toEqual([
+      ["pid_controller/h_ctl/r", "tier"], ["lqr_controller/z_ref_pack/in1", undefined],
     ]);
-    expect(scopeRows(rates).map((r) => [r.path, r.key, r.triple, r.text])).toEqual([
-      ["fast", "fast", [1, 1, 0], "anchor 1 (1/50 s)"],
-      ["fast/outer", "outer", [1, 2, 0], "anchor 1 (1/50 s) × 2"],
-      ["slow", "slow", [2, 1, 0], "anchor 2 (1/10 s)"],
-    ]);
-    expect(scopeRows(cl)).toEqual([]);
-    expect(anchorRows(prim)).toEqual([{ kind: "anchor", index: 0, base: true }]);
-  });
-});
-
-describe("componentRows", () => {
-  it("lists rates' three discrete primitives with their periods", () => {
-    expect(componentRows(rates).map((r) => [r.path, r.text, r.period, r.step])).toEqual([
-      ["fast/inner", "anchor 1 (1/50 s)", "1/50 s", 0],
-      ["fast/outer/hold", "anchor 1 (1/50 s) × 2", "1/25 s", 1],
-      ["slow/hold", "anchor 2 (1/10 s)", "1/10 s", 2],
-    ]);
+    expect(rows[2].pins).toEqual([]);
   });
 
-  it("lists library's 13 in walk order and, by period, anchor 0's triples first then period ascending, ties in walk order", () => {
-    const walk = componentRows(lib).map((r) => r.path);
-    expect(walk).toEqual(["noise", "unit_delay", "d_integrator", "rate_limiter", "dss", "dtf", "zoh_ss", "zoh_tf", "d_limited", "delay", "d_pid", "d_lqr", "backlash"]);
-    expect(componentRows(lib, true).map((r) => r.path)).toEqual([
-      "unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "backlash", "d_limited", "d_pid", "dss", "noise",
-    ]);
-    const by = Object.fromEntries(componentRows(lib).map((r) => [r.path, r.period]));
-    expect([by.unit_delay, by.d_limited, by.d_pid, by.dss, by.noise]).toEqual(["1 base tick", "2 base ticks", "2 base ticks", "1/50 s", "1/10 s"]);
-    expect(componentRows(lib)).toHaveLength(13);
+  it("timing: u pinned by tier through five consumers, ref by declaration through its Pinned entry", () => {
+    const [u, ref] = rootInputRows(fixtureModel("timing"));
+    expect(u.consumers.map((c) => pinCause(u, c))).toEqual(["tier", "tier", "tier", "tier", "tier"]);
+    expect(ref.consumers.map((c) => [text(c), pinCause(ref, c)])).toEqual([["frozen/in", "declaration"]]);
   });
 
-  it("gives closed_loop 10, kinds 1 on the base grid, primitive none", () => {
-    expect(componentRows(cl)).toHaveLength(10);
-    expect(componentRows(fixtureModel("kinds")).map((r) => [r.path, r.text, r.period, r.step])).toEqual([["s", "base grid", "1 base tick", 0]]);
-    expect(componentRows(prim)).toEqual([]);
-  });
-});
-
-describe("scheduleNote", () => {
-  it("tells a build it needs a deployment and a deployment that the page does not draw its schedule yet", () => {
-    expect(scheduleNote(cl)).toBe("The schedule rows and the hyperperiod chart need a deployment.");
-    expect(scheduleNote(fixtureModel("failure_cycle"))).toBe(scheduleNote(cl));
-    expect(scheduleNote(fixtureModel("closed_loop_deployment"))).toBe(
-      "This page does not draw a deployment's schedule rows and hyperperiod chart yet.",
-    );
+  it("a primitive root's own input pins with its tier's cause though it lists no consumer (an inline structure)", () => {
+    const d = fixtureJson("primitive") as any;
+    const s = d.build.structure;
+    s.nodes[0].tier = "discrete";
+    s.root_inputs[0].pinned = true;
+    s.root_inputs[0].pinned_by = [{ path: "", port: "u" }];
+    const loaded = parseDescriptor(JSON.stringify(d), "primitive.json");
+    if (!loaded.ok) throw new Error(loaded.reason);
+    const [u] = rootInputRows(loadModel(loaded));
+    expect([u.pinned, u.consumers, u.pins]).toEqual([true, [], [{ path: "", port: "u", cause: "tier" }]]);
   });
 });
 
@@ -227,12 +191,12 @@ describe("rowTarget", () => {
     expect(rowTarget(cl, g.stage1[0])).toEqual({ level: "", target: { kind: "block", id: "plant" } });
     expect(rowTarget(cl, g.stage2[8].edges[0])).toEqual({ level: "pid_controller", target: { kind: "port", id: "pid_controller/θ_ctl|in|r" } });
     expect(rowTarget(cl, rootInputRows(cl)[0])).toEqual({ level: "", target: { kind: "block", id: "⟨in⟩h_ref" } });
-    const anchors = anchorRows(cl);
-    expect(rowTarget(cl, anchors[0])).toBeUndefined();
-    expect(rowTarget(cl, anchors[1])).toEqual({ level: "", target: { kind: "block", id: "sensing" } });
-    expect(rowTarget(rates, anchorRows(rates)[1])).toBeUndefined();
-    expect(rowTarget(rates, scopeRows(rates)[1])).toEqual({ level: "fast", target: { kind: "block", id: "fast/outer" } });
-    expect(rowTarget(cl, componentRows(cl)[0])).toEqual({ level: "sensing", target: { kind: "block", id: "sensing/noise" } });
+    expect(rowTarget(cl, { kind: "anchor" })).toBeUndefined();
+    expect(rowTarget(cl, { kind: "anchor", scope: "sensing" })).toEqual({ level: "", target: { kind: "block", id: "sensing" } });
+    expect(rowTarget(rates, { kind: "anchor", scope: "" })).toBeUndefined();
+    expect(rowTarget(rates, { kind: "scope", path: "fast/outer" })).toEqual({ level: "fast", target: { kind: "block", id: "fast/outer" } });
+    expect(rowTarget(rates, { kind: "scope", path: "" })).toBeUndefined();
+    expect(rowTarget(cl, { kind: "component", path: "sensing/noise" })).toEqual({ level: "sensing", target: { kind: "block", id: "sensing/noise" } });
   });
 
   it("selects a primitive root on the root level, and its root input's tag there", () => {
@@ -246,9 +210,8 @@ describe("a structureless model", () => {
   it("gives every function its empty result", () => {
     const m = fixtureModel("failure_structure");
     expect(orderGroups(m)).toBeUndefined();
-    expect([rootInputRows(m), anchorRows(m), scopeRows(m), componentRows(m), componentRows(m, true)]).toEqual([[], [], [], [], []]);
+    expect(rootInputRows(m)).toEqual([]);
     expect(orderBadge(m, "")).toBeUndefined();
-    expect(scheduleNote(m)).toBeUndefined();
     expect(rowTarget(m, { kind: "order", stage: 2, position: 1, path: "", ports: [], edges: [] })).toBeUndefined();
   });
 });

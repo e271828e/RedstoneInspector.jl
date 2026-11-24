@@ -44,14 +44,15 @@ The bullets stand in working order, the first one next.
   from the node's `rates` (answers 5 and 10). The step's notes,
   `increments/inspector_10_deployment_overlay/notes_record_at_pin.md`,
   hold each ruling with its reason and the alternative it rejected, and
-  the user's review of them is owed. One step remains:
-  - **The implementation**, briefed and launched from the amended
-    record. Its prototype shows the user both alternatives of the
-    readings the notes list as a matter of taste: a bare docstring link
-    joined to its type's module or shown as text (answer 15), the rate
-    chain on a line under the frames table or left out (answer 10), and
-    the pool's alternatives and the prime attribution under the anchors
-    table or left out (answer 9).
+  the user's review of them is owed. The third, the implementation, was
+  built and cold-reviewed on 2026-11-23 on the branch `increment-10`,
+  with the user away, and is not merged. Its brief,
+  `increments/inspector_10_deployment_overlay/brief_inspector_10_implementation.md`,
+  and `notes_implementation.md` beside it hold the rulings, the 39
+  readings, the reviews and their adjudication. The user's look of
+  2026-11-24 ruled the four pairs as built, with the grid report
+  reworded, and its other rulings are in `look_inspector_10.md` beside
+  them.
 
   Then a pin bump to the core's timing notation (the core's D-478 and
   D-479), after the user's visual review pass closes 10 and before 10b,
@@ -72,11 +73,15 @@ The bullets stand in working order, the first one next.
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  designed and not briefed, with the pin bump and the record at the new
-  pin landed and not pushed, the bump cold-reviewed, the user's look at
-  the bump and review of the record's rulings owed, and the brief
-  next. The session's handover
-  is `increments/inspector_10_deployment_overlay/notes_inspector_10.md`.
+  the pin bump and the record at the new pin landed and not pushed, the
+  bump cold-reviewed, the user's look at the bump and review of the
+  record's rulings owed. The implementation is built and cold-reviewed
+  on the branch `increment-10`, unmerged, the review's fixes at
+  `52524d1` and the look's at `c4ddea3`, each with the delta check green.
+  A second look followed the same day. The diff check of the arc and the
+  merge are owed, as the notes' section
+  "The look and its fixes" lists them. Next, 10b's design
+  session. The design session's handover is `notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is
@@ -87,6 +92,10 @@ The bullets stand in working order, the first one next.
   legend and 10b has drawn the events, and before 11 captures the
   README's images. The hyperperiod chart's threshold and pitch are
   its too (`deployment_overlay.md` answer 11).
+  - **The pane's header at 240 px** (increment 10). In Chromium the Copy
+    button beside a long path scrolls the narrowest pane sideways by 14 to
+    21 px on six nodes, `closed_loop`'s `lqr_controller/command_pack`
+    among them.
   - **The text levels' floors** (increment 6). A root whose fit falls
     below a floor loads without its names: `library` fits at about 0.36,
     at `segments`, and `large` below the first floor. At 0.52 the display
@@ -173,9 +182,17 @@ the increment it came from.
   and the consumers that pin it. Its tag on the canvas and its pin's
   pane show no mark, where a primitive's pinned face has one in both.
   Whether they take one is the user's to rule.
-- **`frontend/MAP.md` past its size** (the polish batch). The map is about
-  730 lines against `design/rules.md`'s "about 700", 714 before the batch.
-  A trim outside any increment's text brings it back.
+- **The legend taller than the canvas** (increment 10's review). At 1100
+  by 700, `large`'s legend, 714 px tall, is cut at the canvas's top and
+  does not scroll. Its height predates increment 10.
+- **The scopes' empty note on a model with no `sample_times`**
+  (increment 10's review). The timing tab's "No assembly is keyed in
+  `sample_times`; every key names a primitive." shows on a model that
+  has no `sample_times` at all.
+- **`frontend/MAP.md` past its size** (the polish batch). The map is 759
+  lines at increment 10's tip against `design/rules.md`'s "about 700",
+  714 before the batch and about 730 after it. A trim outside any
+  increment's text brings it back (increment 10's notes, ruling 8).
 - **A rational part past `2^53`** (the core's exact-arithmetic audit,
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md`
   section 2.8). The descriptor writes an anchor's `dt` and `tau` as the JSON

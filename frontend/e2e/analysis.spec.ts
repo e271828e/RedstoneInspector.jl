@@ -1,7 +1,7 @@
 // The drawer's analysis tabs (workspace.md answer 6, the pending bullet): the
 // execution order's two groups with their stage ports and the presumed
 // feedthrough edges, the root inputs with their consumers one to a line, the
-// timing tables with the rate swatches, the period sort and the schedule note;
+// timing tables with the rate swatches and the sort by Δt (timing.spec.ts holds the rest of the timing tab);
 // every row's click selecting on its level, the whole row taking it (look pass
 // 1.1, 1.2, 1.4, 1.7, 1.8), a drag leaving a text selection in the row selecting
 // nothing (the second look's 1.8); the empty states. Counts from the oracles
@@ -102,8 +102,8 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await openTab(page, "root-inputs");
   const inputs = body(page).locator("table.root-inputs tr.root-input");
   await expect(inputs).toHaveCount(3);
-  await expect(body(page).locator("table.root-inputs th")).toHaveText(["name", "type", "kind", "terminal consumers"]);
-  await expect(body(page).locator("table.root-inputs td.pinned")).toHaveCount(0);
+  await expect(body(page).locator("table.root-inputs th")).toHaveText(["name", "type", "kind", "pinned", "terminal consumers"]);
+  await expect(body(page).locator("table.root-inputs td.pinned")).toHaveText(["◆", "◆", ""]);
   const mode = body(page).locator('tr.root-input[data-name="mode"]');
   await expect(mode.locator("td.consumers code")).toHaveCount(7);
   const tops = await mode.locator("td.consumers code").evaluateAll((cs) => cs.map((c) => c.getBoundingClientRect().top));
@@ -124,35 +124,35 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   const anchors = body(page).locator("table.anchors tr.anchor");
   await expect(anchors).toHaveCount(11);
   await expect(anchors.first()).toHaveAttribute("data-index", "0");
-  await expect(anchors.first()).toContainText("base grid");
+  await expect(anchors.first()).toContainText("A₀ (base)");
   await expect(anchors.first().locator("button.row")).toHaveCount(0);
-  await expect(body(page).locator("table.anchors th")).toHaveText(["index", "T", "tau", "declared in", "key"]);
+  await expect(body(page).locator("table.anchors th")).toHaveText(["k", "Δtₖ", "τₖ", "declared in"]);
   const a1 = body(page).locator('tr.anchor[data-index="1"]');
   await expect(a1.locator("td.scope")).toHaveText("sensing");
-  await expect(a1.locator("td.key")).toHaveText("noise");
-  await expect(a1.locator("td.T")).toHaveText("1/50 s");
+  await expect(a1.locator("td.k")).toHaveText("A₁ (noise)");
+  await expect(a1.locator("td.dt")).toHaveText("1/50 s");
   await expect(body(page).locator("table.scopes")).toHaveCount(0);
   await expect(body(page).locator("p.empty")).toHaveText(["No assembly is keyed in sample_times; every key names a primitive."]);
   await expect(body(page).locator("p.empty code")).toHaveText("sample_times");
   await expect(body(page).locator("table.components tr.component")).toHaveCount(10);
   await expect(body(page).locator("table.components tr.component span.swatch[data-step]")).toHaveCount(10);
-  await expect(body(page).locator("p.schedule-note")).toContainText("need a deployment");
+  await expect(body(page).locator("p.deployment-note")).toContainText("need a deployment");
   await shot(page, "closed_loop", "", "analysis-timing");
   await a1.locator("button.row").click();
   await expect(page.locator('g.block.selected[data-id="sensing"]')).toHaveCount(1);
-  // the base grid's row takes no click and shows no pointer; an anchor row's key cell selects its scope's node
+  // the base grid's row takes no click and shows no pointer; an anchor row's name cell selects its scope's node
   expect(await cursor(anchors.first())).not.toBe("pointer");
   expect(await cursor(a1)).toBe("pointer");
-  await body(page).locator('tr.anchor[data-index="2"] td.key').click();
+  await body(page).locator('tr.anchor[data-index="2"] td.k').click();
   await expect(selected(page)).toHaveAttribute("data-id", "pid_controller");
-  await anchors.first().locator("td.key").click();
+  await anchors.first().locator("td.k").click();
   await expect(selected(page)).toHaveAttribute("data-id", "pid_controller");
 
   // the swatch is the primitive's rate fill in either mode
   const swatch = () => component(page, "sensing/noise").locator("span.swatch").evaluate((e) => getComputedStyle(e).backgroundColor);
   const tier = await swatch();
   expect(await cursor(component(page, "sensing/noise"))).toBe("pointer");
-  await component(page, "sensing/noise").locator("td.period").click();
+  await component(page, "sensing/noise").locator("td.dt").click();
   await page.locator(readyLevel("sensing")).waitFor();
   await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
   await page.locator('nav.breadcrumb .controls .mode button[data-mode="rate"]').click();
@@ -218,9 +218,9 @@ test("closed_loop: a drag that makes or changes a text selection in a row select
   await page.locator(readyLevel("pid_controller")).waitFor();
   await expect(page.locator('g.block.selected[data-id="pid_controller/h_ctl"]')).toHaveCount(1);
 
-  // a component's period: the drag selects nothing, a click selects the primitive on its level
+  // a component's Δt: the drag selects nothing, a click selects the primitive on its level
   await openTab(page, "timing");
-  const period = component(page, "sensing/noise").locator("td.period");
+  const period = component(page, "sensing/noise").locator("td.dt");
   expect(await dragAcross(page, period)).toBe(await period.textContent());
   await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "pid_controller");
   await expect(page.locator('g.block.selected[data-id="pid_controller/h_ctl"]')).toHaveCount(1);
@@ -229,14 +229,16 @@ test("closed_loop: a drag that makes or changes a text selection in a row select
   await expect(page.locator('g.block.selected[data-id="sensing/noise"]')).toHaveCount(1);
 });
 
-test("closed_loop_deployment: the schedule note says the page does not draw the schedule yet", async ({ page }) => {
+test("closed_loop_deployment: no closing sentence, the chart in its place, the anchors with their base ticks", async ({ page }) => {
   await drop(page, "closed_loop_deployment");
   await openTab(page, "timing");
-  await expect(body(page).locator("p.schedule-note")).toContainText("does not draw");
+  await expect(body(page).locator("p.deployment-note")).toHaveCount(0);
+  await expect(body(page).locator(".chart")).toHaveCount(1);
   await expect(body(page).locator("table.anchors tr.anchor")).toHaveCount(11);
+  await expect(body(page).locator('tr.anchor[data-index="1"] td.D')).toHaveText("2");
 });
 
-test("rates: three scopes with their triples, a scope row selecting its assembly, the periods", async ({ page }) => {
+test("rates: three scopes in the notation's columns, a scope row selecting its assembly, the components' Δt", async ({ page }) => {
   await drop(page, "rates");
   await openTab(page, "timing");
   await expect(body(page).locator("table.anchors tr.anchor")).toHaveCount(3);
@@ -246,20 +248,20 @@ test("rates: three scopes with their triples, a scope row selecting its assembly
   await expect(body(page).locator("table.scopes tr.scope")).toHaveCount(3);
   const outer = body(page).locator('tr.scope[data-path="fast/outer"]');
   await expect(outer).toHaveAttribute("data-key", "outer");
-  await expect(outer.locator("td.triple")).toHaveText("anchor 1 (1/50 s) × 2");
-  await expect(body(page).locator("td.period")).toHaveText(["1/50 s", "1/25 s", "1/10 s"]);
-  await outer.locator("td.triple").click();
+  await expect(outer.locator("td.k, td.m, td.c, td.dt")).toHaveText(["A₁ (fast)", "2", "0", "1/25 s"]);
+  await expect(body(page).locator("table.components td.dt")).toHaveText(["1/50 s", "1/25 s", "1/10 s"]);
+  await outer.locator("td.k").click();
   await page.locator(readyLevel("fast")).waitFor();
   await expect(page.locator('g.block.selected[data-id="fast/outer"]')).toHaveCount(1);
 });
 
-test("library: 13 components in walk order, the period sort and back, the sort kept across a tab switch", async ({ page }) => {
+test("library: 13 components in walk order, the sort by Δt and back, the sort kept across a tab switch", async ({ page }) => {
   await drop(page, "library");
   await openTab(page, "timing");
   await expect(body(page).locator("table.components tr.component")).toHaveCount(13);
   expect((await componentPaths(page))[0]).toBe("noise");
   const sort = body(page).locator("button.sort-period");
-  await expect(sort).toHaveText("by period");
+  await expect(sort).toHaveText("by Δt");
   await expect(sort).toHaveAttribute("aria-pressed", "false");
   await sort.click();
   await expect(sort).toHaveAttribute("aria-pressed", "true");
@@ -327,8 +329,42 @@ test("failure_structure: every tab shows its empty state", async ({ page }) => {
 test("a push keeps the open tab and redraws it from the new model", async ({ page }) => {
   await drop(page, "closed_loop");
   await openTab(page, "timing");
-  await expect(body(page).locator("p.schedule-note")).toContainText("need a deployment");
+  await expect(body(page).locator("p.deployment-note")).toContainText("need a deployment");
+  await expect(body(page).locator(".chart")).toHaveCount(0);
   await dropOver(page, "closed_loop_deployment");
-  await expect(body(page).locator("p.schedule-note")).toContainText("does not draw");
+  await expect(body(page).locator(".chart")).toHaveCount(1);
+  await expect(body(page).locator("p.deployment-note")).toHaveCount(0);
   await expect(drawer(page)).toHaveAttribute("data-tab", "timing");
+});
+
+// deployment_overlay.md answer 14: the pinned mark again, and the pinning consumers marked with the cause
+test("closed_loop: h_ref's PID consumer marked pinned by tier, its LQR consumer and mode unmarked, the mark titled by its cause", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await openTab(page, "root-inputs");
+  const h = body(page).locator('tr.root-input[data-name="h_ref"]');
+  await expect(h.locator("td.pinned")).toHaveAttribute("title", "pinned: by tier");
+  await expect(h.locator("td.consumers .consumer")).toHaveText(["pid_controller/h_ctl/rpinned by tier", "lqr_controller/z_ref_pack/in1"]);
+  await expect(h.locator('td.consumers .consumer[data-cause="tier"] code')).toHaveText("pid_controller/h_ctl/r");
+  await expect(body(page).locator('tr.root-input[data-name="mode"] td.pinned')).not.toHaveAttribute("title");
+  await expect(body(page).locator('tr.root-input[data-name="mode"] .cause')).toHaveCount(0);
+});
+
+test("timing: u pinned by tier through five consumers, ref by declaration through frozen's Pinned entry", async ({ page }) => {
+  await drop(page, "timing");
+  await openTab(page, "root-inputs");
+  const u = body(page).locator('tr.root-input[data-name="u"]');
+  await expect(u.locator(".cause")).toHaveText(Array(5).fill("pinned by tier"));
+  const ref = body(page).locator('tr.root-input[data-name="ref"]');
+  await expect(ref.locator("td.pinned")).toHaveAttribute("title", "pinned: by declaration");
+  await expect(ref.locator('.consumer[data-cause="declaration"] code')).toHaveText("frozen/in");
+  await expect(ref.locator(".cause")).toHaveText("pinned by declaration");
+  await shot(page, "timing", "", "analysis-root-inputs");
+});
+
+test("timing: the mark is the tab's alone, the root tags and the pin's pane showing none", async ({ page }) => {
+  await drop(page, "timing");
+  await page.locator('g.block[data-id="⟨in⟩ref"]').click();
+  await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "pin");
+  await expect(page.locator("aside.detail")).not.toContainText("pinned by");
+  await expect(page.locator('g.block[data-id="⟨in⟩ref"] .pinned')).toHaveCount(0);
 });

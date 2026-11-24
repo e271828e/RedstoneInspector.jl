@@ -103,8 +103,7 @@ Open items live in `pending.md`.
    Selection is single: a block, a region's folder, a wire, a pin or a
    port square, Escape clearing it. With nothing selected the pane shows
    the open level as it shows a closed assembly, with the words "open
-   level" where the open button stands, its rate scopes after the
-   locations, each as a frames table, and a face row selecting the
+   level" where the open button stands, and a face row selecting the
    level's pin; the root so gains its
    docstring, locations and parameters. A primitive root's level is the
    primitive itself, so its pane shows the primitive's layout with the same
@@ -113,21 +112,23 @@ Open items live in `pending.md`.
      assembly, the open button beside it;
    - a short list of labelled facts, each label carrying a hover title
      that says what it means: the qualified type with the alias beside it;
-     the class and tier; the rate as a frames table, a row per frame with
-     its period and its phase and the chain of `sample_times` links on a
-     line under it (`deployment_overlay.md` answer 10), and no
-     table for a continuous primitive, which no rate gates; and, when
-     `key` is present, the membership with
+     the class and tier; and, when `key` is present, the membership with
      its container's kind written out, "transparent container `children`,
      key `plant`" or "keyed container `gains`, key `a`";
-   - the signature in monospace, wrapped and collapsed under the title
-     "signature";
-   - the docstring, collapsed under the bare title "docstring" and
-     rendered from Markdown by a bundled renderer, a Documenter `@ref` link
-     rendered as its code text, linking being axis 7's;
+   - six collapsible sections under capitalized headings, each shown only
+     when it has content: SIGNATURE, DOCSTRING, LOCATIONS and TIMING,
+     which start collapsed, then PARAMETERS and FACES, which start open.
+     A section keeps its state across selections and levels (answer 9);
+   - the signature in monospace, wrapped;
+   - the docstring, rendered from Markdown by a bundled renderer, a
+     Documenter `@ref` link rendered as its code text, linking being axis
+     7's;
    - the locations, one per declaration, a click opening the file in the
      editor through the server in the live session (axis 6) and copying
      the path in the hosted copy;
+   - the timing as a frames table, a row per frame with its period and
+     its phase, and the chain of `sample_times` links on a line under it
+     (`deployment_overlay.md` answer 10), and no section for a continuous primitive, which no rate gates;
    - the parameters as a name and summary table, each summary under its
      name when the pane is narrow;
    - the faces, inputs then outputs, each with name, type, the kind marker
@@ -136,7 +137,8 @@ Open items live in `pending.md`.
      an output its consumers as clickable paths, a row click selects the
      port, and each face's facts stack when the pane is narrow.
 
-   A closed assembly shows the same without tier and timing, with its
+   A closed assembly shows the same without tier, with timing only when
+   it is a rate scope and then no chain, with its
    child and wire counts, its faces typed through the resolution with no
    pinned mark, and an open button.
    A folder shows its field, count and keys as links. A wire shows its
@@ -169,7 +171,12 @@ Open items live in `pending.md`.
    its hover title, and a rate scope had no table. Amended 2026-11-23
    (`deployment_overlay.md` answer 10, the record at the new pin, the
    user away): the pane showed no chain, which the core now carries on
-   the node as `rates`.*
+   the node as `rates`. Amended 2026-11-24 (increment 10's look, 8.1):
+   the rate was a fact of the list, and the open level's rate scopes a
+   section after the locations, where a keyed assembly selected as a
+   block showed no timing. The signature and the docstring alone
+   collapsed, under lowercase titles, and collapsed again at each
+   selection. The faces table's stage column was headed "st.".*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -216,11 +223,11 @@ Open items live in `pending.md`.
    one to a line, those that pin marked with the cause
    (`deployment_overlay.md` answer 14), and, from stage 2, the claiming
    writer, a row selecting the root pin; the home of stage 3's input
-   widgets. Timing, in the notation of `deployment_overlay.md` answer 3
-   with its equations as the tables' caption: anchors as `Aₖ (key)` with
-   `Δtₖ`, `τₖ`, the declaring scope and each pool entry's factor, anchor
-   0 as the base grid, and under them the pool's alternatives and the
-   prime attribution; scopes and components in the same columns, every
+   widgets. Timing, in the notation of `deployment_overlay.md` answer 3:
+   anchors as `Aₖ (key)` with `Δtₖ`, `τₖ` and the declaring scope, anchor
+   0 as the base grid; a section on the base grid with the coarsest
+   admissible tick, the pool entries that refine it, their alternatives
+   and the prime attribution; scopes and components in the same columns, every
    discrete primitive in walk order with `k`, `m`, `c`, `Δt` and `τ`,
    sortable by period, with its rate-mode swatch. A deployment heads the
    tab with its parameters and the steps per frame, adds `Dₖ` and `Φₖ` to
@@ -261,7 +268,10 @@ Open items live in `pending.md`.
    (`deployment_overlay.md` answers 4 and 9, the record at the new pin,
    the user away): the diagnostics tab listed the warnings of a
    deployment's build and not the deployment's own, and the timing tab
-   gave the pool's alternatives and the prime attribution no place.*
+   gave the pool's alternatives and the prime attribution no place.
+   Amended 2026-11-24 (`deployment_overlay.md` answer 9, increment 10's
+   look): the equations were the tables' caption, and each pool entry's
+   factor stood in the anchors table.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -331,7 +341,8 @@ Open items live in `pending.md`.
    panes, the color mode, the two toggles, the drawer's height. Per tab for
    the session, in memory: the open level in the URL hash, each visited
    level's zoom and pan, the tree's expansion, the selection, the standing
-   route, the search query, the drawer's open state and tab, and each
+   route, the search query, the drawer's open state and tab, which of the
+   detail pane's sections are open, one state for every node, and each
    level's block positions, the layout's output plus drags. Per push,
    everything in the second group is rekeyed against the new descriptor
    and what has no key is dropped, the open level's fallback noted in the
@@ -361,7 +372,8 @@ Open items live in `pending.md`.
    and the rule keeping a level's view only for an unchanged set of blocks
    joined. Amended 2026-11-12 (increment 8b, the user's ruling, with the
    rejected undo per gesture in `roadmap.md`'s entry): only a reload undid
-   a drag.*
+   a drag. Amended 2026-11-24 (increment 10's look, 8.1): the pane's two
+   sections that collapsed kept no state.*
    *Why:* a renamed block is a different node to the format, so losing its
    selection is the honest outcome. *Rejected:* persisting session state
    across reloads, which resurrects a selection into a descriptor that may
@@ -405,15 +417,18 @@ Open items live in `pending.md`.
     recent-files list, which stores contents in the browser; a URL naming a
     local file.
 
-11. **The help page and the keyboard: four sections, Vim's cursor on the
+11. **The help page and the keyboard: five sections, Vim's cursor on the
     diagram.** A page in the bundle at `#help`, reached from the landing
     panel, `?` and a status-bar link, shown over the frame, which stays
     mounted and inert beneath it so the close returns focus where it was.
-    Its four sections:
+    Its five sections:
     - reading the diagram, a lead paragraph on the level, the order in
       which text drops when zooming out and the computed layout, then a
       legend of `visual_grammar.md`'s terms that name a drawn thing, each
       with its drawing and one line;
+    - timing and root inputs, the notation of `deployment_overlay.md`
+      answer 3 with its equations, and answer 14's type rule;
+    - the keyboard;
     - coming from Simulink, the vocabulary map as a table, Simulink's term
       first: block and primitive, subsystem and assembly, block port and
       face, signal and port, signal line and wire, the Inport and Outport
@@ -426,7 +441,6 @@ Open items live in `pending.md`.
       logical operators and `Junction`, Mux and Demux against `Pack` and
       `Unpack`, Bus Selector and `Fields`, the highlight to source and
       destination and a face route, the model browser and the tree;
-    - the keyboard;
     - about, with the privacy statement, the bundle and format versions
       and the links.
 
@@ -493,7 +507,10 @@ Open items live in `pending.md`.
     8b's look, 1.8 and 2.2): Shift with an arrow was unruled, and the
     canvas's ring after a click and a key was unstated. Amended 2026-11-17
     (the user's ruling on `pending.md`'s open items): Shift with `l` had no
-    bound, where the page stops it at the deepest level the load opened.*
+    bound, where the page stops it at the deepest level the load opened.
+    Amended 2026-11-24 (increment 10's look, 7.1): the page had no section
+    on timing and root inputs, and the Simulink one stood before the
+    keyboard's.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

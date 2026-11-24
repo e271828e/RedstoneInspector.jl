@@ -19,10 +19,14 @@ const bodyOf = (m: Model): BuildBody | FailureBody => {
   return d.kind === "build" ? d.build : d.kind === "deployment" ? d.deployment.build : d.failure;
 };
 
-/** The body's diagnostics then its warnings, one list, each with its index in it. */
+/**
+ * The body's diagnostics then its warnings, one list, each with its index in it; a deployment's own warnings after
+ * its build's (deployment_overlay.md answer 4).
+ */
 export function diagnosticsOf(model: Model): Indexed[] {
-  const b = bodyOf(model);
-  return [...("diagnostics" in b ? b.diagnostics : []), ...b.warnings].map((d, index) => ({ ...d, index }));
+  const b = bodyOf(model), d = model.descriptor;
+  const own = d.kind === "deployment" ? d.deployment.warnings : [];
+  return [...("diagnostics" in b ? b.diagnostics : []), ...b.warnings, ...own].map((x, index) => ({ ...x, index }));
 }
 
 /** One declared wire of a loop's chain: its level and its id there, the consumer's port id, with its two faces. */

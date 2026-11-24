@@ -36,6 +36,27 @@ test("a major 2 copy of descent is refused on the landing, with no frame", async
   await shot(page, "descent", "", "landing");
 });
 
+// deployment_overlay.md answer 2: a file an older core wrote, told by its structure
+const OLDER = "an older Redstone wrote it. Write the file again with the current Redstone.";
+test("a copy of descent without grid is refused on the landing, naming the key and the older Redstone", async ({ page }) => {
+  const d = JSON.parse(fixtureText("descent"));
+  delete d.build.structure.grid;
+  await drop(page, "descent", JSON.stringify(d));
+  await expect(page.locator(".landing pre.outcome")).toHaveText(`This build descriptor has no build.structure.grid: ${OLDER}`);
+  await expect(page.locator(".frame")).toHaveCount(0);
+});
+
+test("a copy of timing_deployment without schedule is refused on the landing; one of failure_cycle without grid too", async ({ page }) => {
+  const d = JSON.parse(fixtureText("timing_deployment"));
+  delete d.deployment.schedule;
+  await drop(page, "timing_deployment", JSON.stringify(d));
+  await expect(page.locator(".landing pre.outcome")).toHaveText(`This deployment descriptor has no deployment.schedule: ${OLDER}`);
+  const f = JSON.parse(fixtureText("failure_cycle"));
+  delete f.failure.structure.grid;
+  await drop(page, "failure_cycle", JSON.stringify(f));
+  await expect(page.locator(".landing pre.outcome")).toHaveText(`This failure descriptor has no failure.structure.grid: ${OLDER}`);
+});
+
 test("closed_loop: the landing gives way to the frame and the title names the label", async ({ page }) => {
   await drop(page, "closed_loop");
   await expect(page.locator(".landing")).toHaveCount(0);

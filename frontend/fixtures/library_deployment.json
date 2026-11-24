@@ -1,0 +1,4383 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "deployment",
+  "name": "library_deployment",
+  "deployment": {
+    "build": {
+      "structure": {
+        "nodes": [
+          {
+            "path": "",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{sum::Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}, or::Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}, and::Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}, pack::Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}, unpack::Redstone.Library.Unpack{Float64, 2}, switch::Redstone.Library.Switch{Float64}, stop::Redstone.Library.StopRequest, constant::Redstone.Library.Constant{Float64}, step::Redstone.Library.Step{Float64, true}, source::Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}, noise::Redstone.Library.GaussianWhiteNoise{Float64}, integrator::Redstone.Library.Integrator{Float64, false}, limited::Redstone.Library.LimitedIntegrator{Float64, true, false}, lag::Redstone.Library.FirstOrderLag{Float64}, ss::Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}, tf::Redstone.Library.TransferFunction{1, false, 1, 2, 1}, relay::Redstone.Library.Relay{Float64}, unit_delay::Redstone.Library.UnitDelay{Float64}, d_integrator::Redstone.Library.DiscreteIntegrator{Float64, false}, rate_limiter::Redstone.Library.RateLimiter{Float64}, dss::Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}, dtf::Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}, zoh_ss::Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}, zoh_tf::Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}, d_limited::Redstone.Library.DiscreteLimitedIntegrator{Float64, false}, delay::Redstone.Library.Delay{Float64, 3, false}, freeze::Redstone.Library.Freeze{Float64}, pid::Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, d_pid::Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}, lqr::Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, d_lqr::Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}, fn::Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}, apply::Redstone.Library.Fn{Float64, Float64, typeof(Main.Synthetic.half)}, pair::Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}, fields::Redstone.Library.Fields{@NamedTuple{a::Float64, b::Float64}}, gear::Redstone.Library.Constant{Main.Synthetic.Gear}, select::Redstone.Library.Select{Float64, Main.Synthetic.Gear}, sequence::Redstone.Library.Sequence{Float64, true}, backlash::Redstone.Library.Backlash{Float64}, ld_integrator::Redstone.Library.LimitedDoubleIntegrator{Float64, true}, comparator::Redstone.Library.Comparator{Float64, true}}, NTuple{45, Pair{String, String}}, Tuple{Pair{String, Tuple{String, String}}, Pair{String, String}}, Tuple{}, @NamedTuple{noise::Redstone.Absolute, dss::Redstone.Absolute, d_limited::Redstone.Relative, d_pid::Redstone.Relative}}",
+            "inputs": [
+              {
+                "name": "a"
+              },
+              {
+                "name": "b"
+              }
+            ],
+            "outputs": [],
+            "wires": [
+              {
+                "from": {
+                  "path": "source",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "sum",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "noise",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "sum",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "constant",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "pack",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "step",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "pack",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "unpack",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "lqr",
+                  "port": "x"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "lqr",
+                  "port": "z"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "lqr",
+                  "port": "z_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_lqr",
+                  "port": "x"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_lqr",
+                  "port": "z"
+                }
+              },
+              {
+                "from": {
+                  "path": "pack",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_lqr",
+                  "port": "z_ref"
+                }
+              },
+              {
+                "from": {
+                  "path": "unpack",
+                  "port": "out1"
+                },
+                "to": {
+                  "path": "switch",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "unpack",
+                  "port": "out2"
+                },
+                "to": {
+                  "path": "switch",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "and",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "switch",
+                  "port": "select"
+                }
+              },
+              {
+                "from": {
+                  "path": "or",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "and",
+                  "port": "in2"
+                }
+              },
+              {
+                "from": {
+                  "path": "or",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "stop",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "sum",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "integrator",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "switch",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "limited",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "integrator",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "lag",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "lag",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "ss",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "ss",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "tf",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "tf",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "relay",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "relay",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "freeze",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "freeze",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "unit_delay",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "unit_delay",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_integrator",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "d_integrator",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "rate_limiter",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "rate_limiter",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "dss",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "dss",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "dtf",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "dtf",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "zoh_ss",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "zoh_ss",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "zoh_tf",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "zoh_tf",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_limited",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "d_limited",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "delay",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "delay",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "fn",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "constant",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "pid",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "constant",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "d_pid",
+                  "port": "r"
+                }
+              },
+              {
+                "from": {
+                  "path": "fn",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "pid",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "pid",
+                  "port": "u"
+                },
+                "to": {
+                  "path": "d_pid",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "pair",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "fields",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "sequence",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "select",
+                  "port": "up"
+                }
+              },
+              {
+                "from": {
+                  "path": "fields",
+                  "port": "a"
+                },
+                "to": {
+                  "path": "select",
+                  "port": "down"
+                }
+              },
+              {
+                "from": {
+                  "path": "gear",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "select",
+                  "port": "select"
+                }
+              },
+              {
+                "from": {
+                  "path": "select",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "backlash",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "backlash",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "ld_integrator",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "ld_integrator",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "comparator",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "ld_integrator",
+                  "port": "velocity"
+                },
+                "to": {
+                  "path": "apply",
+                  "port": "u"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "a"
+                },
+                "to": {
+                  "path": "or",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "a"
+                },
+                "to": {
+                  "path": "and",
+                  "port": "in1"
+                }
+              },
+              {
+                "from": {
+                  "path": "",
+                  "port": "b"
+                },
+                "to": {
+                  "path": "or",
+                  "port": "in2"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"source/y\"=>\"sum/in1\", \"noise/y\"=>\"sum/in2\", \"constant/y\"=>\"pack/in1\", \"step/y\"…"
+              },
+              {
+                "name": "input_wires",
+                "value": "(\"a\"=>(\"or/in1\", \"and/in1\"), \"b\"=>\"or/in2\")"
+              },
+              {
+                "name": "output_wires",
+                "value": "()"
+              },
+              {
+                "name": "sample_times.noise",
+                "value": "Absolute(1//10, 0//1)"
+              },
+              {
+                "name": "sample_times.dss",
+                "value": "Absolute(1//50, 0//1)"
+              },
+              {
+                "name": "sample_times.d_limited",
+                "value": "Relative(2, 0)"
+              },
+              {
+                "name": "sample_times.d_pid",
+                "value": "Relative(2, 1)"
+              }
+            ]
+          },
+          {
+            "path": "sum",
+            "field": "children",
+            "key": "sum",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Junction",
+            "alias": "Redstone.Library.SumJunction",
+            "signature": "Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "+"
+              }
+            ]
+          },
+          {
+            "path": "or",
+            "field": "children",
+            "key": "or",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Junction",
+            "alias": "Redstone.Library.Or",
+            "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(|)}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "|"
+              }
+            ]
+          },
+          {
+            "path": "and",
+            "field": "children",
+            "key": "and",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Junction",
+            "alias": "Redstone.Library.And",
+            "signature": "Redstone.Library.Junction{Bool, Bool, 2, typeof(&)}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "&"
+              }
+            ]
+          },
+          {
+            "path": "pack",
+            "field": "children",
+            "key": "pack",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Junction",
+            "alias": "Redstone.Library.Pack",
+            "signature": "Redstone.Library.Junction{Float64, StaticArraysCore.SVector{2, Float64}, 2, typeof(Redstone.Library.pack)}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "pack"
+              }
+            ]
+          },
+          {
+            "path": "unpack",
+            "field": "children",
+            "key": "unpack",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Unpack",
+            "signature": "Redstone.Library.Unpack{Float64, 2}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "out2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "switch",
+            "field": "children",
+            "key": "switch",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Switch",
+            "signature": "Redstone.Library.Switch{Float64}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "in2",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "select",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "stop",
+            "field": "children",
+            "key": "stop",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.StopRequest",
+            "signature": "Redstone.Library.StopRequest",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Redstone.StopFlag",
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "NO_STOP",
+                    "STOP_REQUESTED"
+                  ]
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "reason",
+                "value": "\"flags\""
+              }
+            ]
+          },
+          {
+            "path": "constant",
+            "field": "children",
+            "key": "constant",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Constant",
+            "signature": "Redstone.Library.Constant{Float64}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "value",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "step",
+            "field": "children",
+            "key": "step",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Step",
+            "signature": "Redstone.Library.Step{Float64, true}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "before",
+                "value": "0.0"
+              },
+              {
+                "name": "after",
+                "value": "1.0"
+              },
+              {
+                "name": "t_step",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "source",
+            "field": "children",
+            "key": "source",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Source",
+            "signature": "Redstone.Library.Source{Float64, typeof(Main.Synthetic.wave)}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "wave"
+              }
+            ]
+          },
+          {
+            "path": "noise",
+            "field": "children",
+            "key": "noise",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 1,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "noise",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.GaussianWhiteNoise",
+            "signature": "Redstone.Library.GaussianWhiteNoise{Float64}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "seed",
+                "value": "0x0000000000000001"
+              },
+              {
+                "name": "μ",
+                "value": "0.0"
+              },
+              {
+                "name": "σ",
+                "value": "0.1"
+              },
+              {
+                "name": "density",
+                "value": "false"
+              }
+            ]
+          },
+          {
+            "path": "integrator",
+            "field": "children",
+            "key": "integrator",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Integrator",
+            "signature": "Redstone.Library.Integrator{Float64, false}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "x0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "limited",
+            "field": "children",
+            "key": "limited",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.LimitedIntegrator",
+            "signature": "Redstone.Library.LimitedIntegrator{Float64, true, false}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "x0",
+                "value": "0.0"
+              },
+              {
+                "name": "lower",
+                "value": "-1.0"
+              },
+              {
+                "name": "upper",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "lag",
+            "field": "children",
+            "key": "lag",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.FirstOrderLag",
+            "signature": "Redstone.Library.FirstOrderLag{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "x0",
+                "value": "0.0"
+              },
+              {
+                "name": "τ",
+                "value": "0.5"
+              }
+            ]
+          },
+          {
+            "path": "ss",
+            "field": "children",
+            "key": "ss",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.StateSpace",
+            "signature": "Redstone.Library.StateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "A",
+                "value": "[-1.0;;]"
+              },
+              {
+                "name": "B",
+                "value": "[1.0;;]"
+              },
+              {
+                "name": "C",
+                "value": "[1.0;;]"
+              },
+              {
+                "name": "D",
+                "value": "[0.0;;]"
+              },
+              {
+                "name": "x0",
+                "value": "[0.0]"
+              }
+            ]
+          },
+          {
+            "path": "tf",
+            "field": "children",
+            "key": "tf",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.TransferFunction",
+            "signature": "Redstone.Library.TransferFunction{1, false, 1, 2, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "num",
+                "value": "(1.0,)"
+              },
+              {
+                "name": "den",
+                "value": "(1.0, 1.0)"
+              }
+            ]
+          },
+          {
+            "path": "relay",
+            "field": "children",
+            "key": "relay",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Relay",
+            "signature": "Redstone.Library.Relay{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "lower",
+                "value": "-0.5"
+              },
+              {
+                "name": "upper",
+                "value": "0.5"
+              },
+              {
+                "name": "off",
+                "value": "0.0"
+              },
+              {
+                "name": "on",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "unit_delay",
+            "field": "children",
+            "key": "unit_delay",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.UnitDelay",
+            "signature": "Redstone.Library.UnitDelay{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "d_integrator",
+            "field": "children",
+            "key": "d_integrator",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.DiscreteIntegrator",
+            "signature": "Redstone.Library.DiscreteIntegrator{Float64, false}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "rate_limiter",
+            "field": "children",
+            "key": "rate_limiter",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.RateLimiter",
+            "signature": "Redstone.Library.RateLimiter{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "rising",
+                "value": "1.0"
+              },
+              {
+                "name": "falling",
+                "value": "1.0"
+              },
+              {
+                "name": "s0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "dss",
+            "field": "children",
+            "key": "dss",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "dss",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Redstone.Library.DiscreteStateSpace",
+            "signature": "Redstone.Library.DiscreteStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "A",
+                "value": "[0.5;;]"
+              },
+              {
+                "name": "B",
+                "value": "[1.0;;]"
+              },
+              {
+                "name": "C",
+                "value": "[1.0;;]"
+              },
+              {
+                "name": "D",
+                "value": "[0.0;;]"
+              },
+              {
+                "name": "s0",
+                "value": "[0.0]"
+              }
+            ]
+          },
+          {
+            "path": "dtf",
+            "field": "children",
+            "key": "dtf",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.DiscreteTransferFunction",
+            "signature": "Redstone.Library.DiscreteTransferFunction{1, false, 1, 2, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "num",
+                "value": "(1.0,)"
+              },
+              {
+                "name": "den",
+                "value": "(1.0, -0.5)"
+              }
+            ]
+          },
+          {
+            "path": "zoh_ss",
+            "field": "children",
+            "key": "zoh_ss",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.DiscretizedStateSpace",
+            "signature": "Redstone.Library.DiscretizedStateSpace{1, 1, 1, false, 1, 1, 1, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "zoh_tf",
+            "field": "children",
+            "key": "zoh_tf",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.DiscretizedTransferFunction",
+            "signature": "Redstone.Library.DiscretizedTransferFunction{1, false, 1, 2, 1}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "num",
+                "value": "(1.0,)"
+              },
+              {
+                "name": "den",
+                "value": "(1.0, 1.0)"
+              }
+            ]
+          },
+          {
+            "path": "d_limited",
+            "field": "children",
+            "key": "d_limited",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 2,
+              "c": 0
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "d_limited",
+                "K": 2,
+                "phi": 0
+              }
+            ],
+            "type": "Redstone.Library.DiscreteLimitedIntegrator",
+            "signature": "Redstone.Library.DiscreteLimitedIntegrator{Float64, false}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "s0",
+                "value": "0.0"
+              },
+              {
+                "name": "lower",
+                "value": "-1.0"
+              },
+              {
+                "name": "upper",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "delay",
+            "field": "children",
+            "key": "delay",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Delay",
+            "signature": "Redstone.Library.Delay{Float64, 3, false}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "v0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "freeze",
+            "field": "children",
+            "key": "freeze",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Freeze",
+            "signature": "Redstone.Library.Freeze{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "pid",
+            "field": "children",
+            "key": "pid",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.PID",
+            "signature": "Redstone.Library.PID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "0.5"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "Inf"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "-Inf"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "Inf"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "d_pid",
+            "field": "children",
+            "key": "d_pid",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 2,
+              "c": 1
+            },
+            "rates": [
+              {
+                "scope": "",
+                "key": "d_pid",
+                "K": 2,
+                "phi": 1
+              }
+            ],
+            "type": "Redstone.Library.DiscretePID",
+            "signature": "Redstone.Library.DiscretePID{Float64, false, false, @NamedTuple{Kp::Float64, Ki::Float64, Kd::Float64, τd::Float64, Tt::Float64, u_min::Float64, u_max::Float64, b::Float64, c::Float64}}",
+            "inputs": [
+              {
+                "name": "r",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.Kp",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.Ki",
+                "value": "0.5"
+              },
+              {
+                "name": "fixed.Kd",
+                "value": "0.0"
+              },
+              {
+                "name": "fixed.τd",
+                "value": "0.1"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "Inf"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "-Inf"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "Inf"
+              },
+              {
+                "name": "fixed.b",
+                "value": "1.0"
+              },
+              {
+                "name": "fixed.c",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "lqr",
+            "field": "children",
+            "key": "lqr",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.LQRTracker",
+            "signature": "Redstone.Library.LQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
+            "inputs": [
+              {
+                "name": "x",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "z",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "z_ref",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "StaticArraysCore.SVector{1, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    1
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "StaticArraysCore.SVector{1, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    1
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.K_fbk",
+                "value": "[1.0 0.5]"
+              },
+              {
+                "name": "fixed.K_fwd",
+                "value": "[1.0 0.0]"
+              },
+              {
+                "name": "fixed.K_int",
+                "value": "[0.0 0.0]"
+              },
+              {
+                "name": "fixed.x_trim",
+                "value": "[0.0, 0.0]"
+              },
+              {
+                "name": "fixed.u_trim",
+                "value": "[0.0]"
+              },
+              {
+                "name": "fixed.z_trim",
+                "value": "[0.0, 0.0]"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "[Inf]"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "[-Inf]"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "[Inf]"
+              }
+            ]
+          },
+          {
+            "path": "d_lqr",
+            "field": "children",
+            "key": "d_lqr",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.DiscreteLQRTracker",
+            "signature": "Redstone.Library.DiscreteLQRTracker{2, 1, 2, false, false, @NamedTuple{K_fbk::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_fwd::StaticArraysCore.SMatrix{1, 2, Float64, 2}, K_int::StaticArraysCore.SMatrix{1, 2, Float64, 2}, x_trim::StaticArraysCore.SVector{2, Float64}, u_trim::StaticArraysCore.SVector{1, Float64}, z_trim::StaticArraysCore.SVector{2, Float64}, Tt::StaticArraysCore.SVector{1, Float64}, u_min::StaticArraysCore.SVector{1, Float64}, u_max::StaticArraysCore.SVector{1, Float64}}}",
+            "inputs": [
+              {
+                "name": "x",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "z",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "z_ref",
+                "type": "StaticArraysCore.SVector{2, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    2
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "u",
+                "type": "StaticArraysCore.SVector{1, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    1
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "u_raw",
+                "type": "StaticArraysCore.SVector{1, Float64}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    1
+                  ],
+                  "element": {
+                    "kind": "float"
+                  }
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturated",
+                "type": "StaticArraysCore.SVector{1, Int8}",
+                "kind": {
+                  "kind": "vector",
+                  "shape": [
+                    1
+                  ],
+                  "element": {
+                    "kind": "integer"
+                  }
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "fixed.K_fbk",
+                "value": "[1.0 0.5]"
+              },
+              {
+                "name": "fixed.K_fwd",
+                "value": "[1.0 0.0]"
+              },
+              {
+                "name": "fixed.K_int",
+                "value": "[0.0 0.0]"
+              },
+              {
+                "name": "fixed.x_trim",
+                "value": "[0.0, 0.0]"
+              },
+              {
+                "name": "fixed.u_trim",
+                "value": "[0.0]"
+              },
+              {
+                "name": "fixed.z_trim",
+                "value": "[0.0, 0.0]"
+              },
+              {
+                "name": "fixed.Tt",
+                "value": "[Inf]"
+              },
+              {
+                "name": "fixed.u_min",
+                "value": "[-Inf]"
+              },
+              {
+                "name": "fixed.u_max",
+                "value": "[Inf]"
+              }
+            ]
+          },
+          {
+            "path": "fn",
+            "field": "children",
+            "key": "fn",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Junction",
+            "signature": "Redstone.Library.Junction{Float64, Float64, 1, typeof(Main.Synthetic.half)}",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "half"
+              }
+            ]
+          },
+          {
+            "path": "apply",
+            "field": "children",
+            "key": "apply",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Fn",
+            "signature": "Redstone.Library.Fn{Float64, Float64, typeof(Main.Synthetic.half)}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "f",
+                "value": "half"
+              }
+            ]
+          },
+          {
+            "path": "pair",
+            "field": "children",
+            "key": "pair",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Constant",
+            "signature": "Redstone.Library.Constant{@NamedTuple{a::Float64, b::Float64}}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "@NamedTuple{a::Float64, b::Float64}",
+                "kind": {
+                  "kind": "struct",
+                  "fields": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "value.a",
+                "value": "1.0"
+              },
+              {
+                "name": "value.b",
+                "value": "2.0"
+              }
+            ]
+          },
+          {
+            "path": "fields",
+            "field": "children",
+            "key": "fields",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Fields",
+            "signature": "Redstone.Library.Fields{@NamedTuple{a::Float64, b::Float64}}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "@NamedTuple{a::Float64, b::Float64}",
+                "kind": {
+                  "kind": "struct",
+                  "fields": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "a",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "b",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "gear",
+            "field": "children",
+            "key": "gear",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Constant",
+            "signature": "Redstone.Library.Constant{Main.Synthetic.Gear}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Main.Synthetic.Gear",
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "up",
+                    "down"
+                  ]
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "value",
+                "value": "up"
+              }
+            ]
+          },
+          {
+            "path": "select",
+            "field": "children",
+            "key": "select",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Select",
+            "signature": "Redstone.Library.Select{Float64, Main.Synthetic.Gear}",
+            "inputs": [
+              {
+                "name": "up",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "down",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "select",
+                "type": "Main.Synthetic.Gear",
+                "kind": {
+                  "kind": "enum",
+                  "values": [
+                    "up",
+                    "down"
+                  ]
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "sequence",
+            "field": "children",
+            "key": "sequence",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Sequence",
+            "signature": "Redstone.Library.Sequence{Float64, true}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "times",
+                "value": "[1.0, 2.0]"
+              },
+              {
+                "name": "values",
+                "value": "[0.0, 1.0, -1.0]"
+              }
+            ]
+          },
+          {
+            "path": "backlash",
+            "field": "children",
+            "key": "backlash",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Backlash",
+            "signature": "Redstone.Library.Backlash{Float64}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "width",
+                "value": "0.2"
+              },
+              {
+                "name": "s0",
+                "value": "0.0"
+              }
+            ]
+          },
+          {
+            "path": "ld_integrator",
+            "field": "children",
+            "key": "ld_integrator",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.LimitedDoubleIntegrator",
+            "signature": "Redstone.Library.LimitedDoubleIntegrator{Float64, true}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "velocity",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "saturation",
+                "type": "Int8",
+                "kind": {
+                  "kind": "integer"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "q0",
+                "value": "0.0"
+              },
+              {
+                "name": "v0",
+                "value": "0.0"
+              },
+              {
+                "name": "lower",
+                "value": "-1.0"
+              },
+              {
+                "name": "upper",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "comparator",
+            "field": "children",
+            "key": "comparator",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "m": 1,
+              "c": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Comparator",
+            "signature": "Redstone.Library.Comparator{Float64, true}",
+            "inputs": [
+              {
+                "name": "u",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "lower",
+                "value": "0.5"
+              },
+              {
+                "name": "upper",
+                "value": "0.5"
+              }
+            ]
+          }
+        ],
+        "root_inputs": [
+          {
+            "name": "a",
+            "type": "Bool",
+            "kind": {
+              "kind": "boolean"
+            },
+            "pinned": false,
+            "pinned_by": []
+          },
+          {
+            "name": "b",
+            "type": "Bool",
+            "kind": {
+              "kind": "boolean"
+            },
+            "pinned": false,
+            "pinned_by": []
+          }
+        ],
+        "anchors": [
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "",
+            "key": "noise"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "",
+            "key": "dss"
+          }
+        ],
+        "scopes": [],
+        "grid": {
+          "admissible": {
+            "num": 1,
+            "den": 50
+          },
+          "pool": [
+            {
+              "anchor": 1,
+              "kind": "period",
+              "factor": 1
+            },
+            {
+              "anchor": 2,
+              "kind": "period",
+              "factor": 5
+            }
+          ],
+          "primes": [
+            {
+              "prime": 2,
+              "power": 1,
+              "suppliers": [
+                1,
+                2
+              ]
+            },
+            {
+              "prime": 5,
+              "power": 2,
+              "suppliers": [
+                2
+              ]
+            }
+          ]
+        },
+        "types": [
+          {
+            "name": "Redstone.Group",
+            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+            "locations": [
+              {
+                "function": "sample_times",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 981
+              },
+              {
+                "function": "local_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 978
+              },
+              {
+                "function": "input_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 979
+              },
+              {
+                "function": "output_wires",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 980
+              },
+              {
+                "function": "transparent_container",
+                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "line": 982
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Junction",
+            "docstring": "    Junction{In, Out, N}(f) -> Junction{In, Out, N}\n\nA continuous [primitive](@ref g-primitive) that publishes a fold of its `N`\ninputs as its one output.\n\nThe inputs `in1` to `inN` are typed `In`. The one output, `y`, is typed `Out`,\nand a wire names it as in `\"sum/y\"`. It publishes `y = f(in1, …, inN)`, the\nfold applied in positional order.\n\nThe [library component](@ref g-library-component) is stateless. A user writes a\ncustom fold, such as a weighted blend or a mass-properties composition, at the\nsite.\n\nThe fold holds no state and declares no [events](@ref g-state-event). A\ndiscontinuity written into it therefore lands wherever it falls inside a step. A\nclamp is fine, since its kink is second-order downstream. So is a branch on a\n`Bool` that flips at a [boundary](@ref g-boundary), as a saturation code does. A\nbranch on a continuous quantity makes a mode silently. The components with\nmodes, such as [`Relay`](@ref), declare one.\n\nSee also [`SumJunction`](@ref), [`Or`](@ref), [`And`](@ref), [`Pack`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 116
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 118
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 115
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Unpack",
+            "docstring": "    Unpack{V, N}() -> Unpack{V, N}\n\nA continuous [primitive](@ref g-primitive) that publishes the `N` elements of\nits `SVector` input as `N` outputs.\n\nThe one input, `u`, is an `SVector{N, V}`, and the outputs `out1` to `outN`\nare typed `V`, with `outi = u[i]`. A wire names the input as in\n`\"unpack/u\"`. The [library component](@ref g-library-component) is stateless,\nand the inverse of [`Pack`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 192
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 193
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 191
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Switch",
+            "docstring": "    Switch{V}() -> Switch{V}\n\nA continuous [primitive](@ref g-primitive) that publishes one of its two inputs,\npicked by a `Bool` input.\n\nThe inputs `in1` and `in2` are typed `V` and `select` is a `Bool`. The one\noutput, `y`, is typed `V`. It is `in1` while `select` holds and `in2` otherwise.\nThe [library component](@ref g-library-component) is stateless.\n\nThe output reads all three inputs. A `select` wired from a memoryless function\nof the output therefore closes an [algebraic loop](@ref g-algebraic-loop), which\nthe build refuses as `AlgebraicCycle`.\n\nThe component declares no [event](@ref g-state-event), so the jump in the output\nlands where `select` flips. A `select` published from a mode, or held between\n[ticks](@ref g-tick), flips on a [boundary](@ref g-boundary) and the jump is\nclean. One computed from a continuous quantity inside a\n[stage body](@ref g-stage-function) flips inside a step and smears that step.\nThat is a mode made silently. A [`Comparator`](@ref) on the quantity is the\ndeclared way to produce `select`. A [`Relay`](@ref) publishes a value rather\nthan a `Bool`, so it reaches `select` through a [`Junction`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 261
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 262
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 260
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.StopRequest",
+            "docstring": "    StopRequest(; reason = \"\") -> StopRequest\n\nA continuous [primitive](@ref g-primitive) that publishes a\n[stop request](@ref g-stop-request) while its `Bool` input holds.\n\nIts one output, `y`, is a [`StopFlag`](@ref). It publishes `STOP_REQUESTED`\nwhile its one input, the `Bool` `u`, holds and `NO_STOP` otherwise. The\n[library component](@ref g-library-component) is stateless, so it refreshes at\nevery [boundary](@ref g-boundary) and sits anywhere in the tree.\n\nAny [component](@ref g-component) may publish a request, since the request is\nthe [port](@ref g-port)'s type.\n\n# Keywords\n\n- `reason`: the reason the component's requests report, read by\n  [`stop_reason`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 439
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 440
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 438
+              },
+              {
+                "function": "stop_reason",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 442
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Constant",
+            "docstring": "    Constant(value) -> Constant\n\nA continuous [primitive](@ref g-primitive) that publishes a fixed value, with no\ninputs and no state.\n\nIts one output, `y`, publishes `value` from [stage 1](@ref g-stage-function).\nThe [library component](@ref g-library-component) is stateless, so discrete\nconsumers read it as well.\n\nThe output is [pinned](@ref g-walked) at the parameter `V`, the type of `value`.\nIt carries zero partials under every `Dual` [activation](@ref g-activation). A\nconsumer input declared plain `Float64`, which admits a value with or without\npartials, accepts it as a value that never carries partials.\n\nThe value is a field, not an overridable default. A source set from outside is a\n[root input](@ref g-root-input).\n\nSee also [`Source`](@ref), [`Step`](@ref).\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 350
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 349
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Step",
+            "docstring": "    Step(; t_step, before = 0.0, after = 1.0, localized::Bool = true) -> Step\n\nA continuous [primitive](@ref g-primitive) that publishes one value before a\ngiven time and another from then on.\n\nIts one output, `y`, publishes `before` until `t_step` and `after` from then on.\nThe [library component](@ref g-library-component) has no inputs and no\ncontinuous state. Its one mode, the field `m`, picks the value. One\n[state event](@ref g-state-event), `fire`, sets it once `t` reaches `t_step`.\n\n`before` and `after` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar pairs with a vector and\ninteger values qualify. The output is [pinned](@ref g-walked) at `V`. It carries\nzero partials under every [activation](@ref g-activation), as a\n[`Constant`](@ref)'s does.\n\n`localized` picks the detection policy.\n[Localized](@ref g-localized), the step ends at the crossing and the jump lands\nthere. [Non-localized](@ref g-non-localized), the event fires at the end of the\nstep in which it was first observed. The jump then lands on the first\n[boundary](@ref g-boundary) at or after `t_step`, never inside a step.\n\nA `t_step` at or before `t₀` fires at [boundary zero](@ref g-boundary-zero), and\nthe output publishes `after` from the start.\n\n# Keywords\n\n- `t_step`: the time of the step, any time.\n- `before`: the value before `t_step`.\n- `after`: the value from `t_step` on.\n- `localized`: `true` for a localized step, `false` for a non-localized one.\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1641
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1639
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1640
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1646
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Source",
+            "docstring": "    Source{V}(f) -> Source{V}\n    Source(f) -> Source{Float64}\n\nA continuous [primitive](@ref g-primitive) that publishes a function of time,\nwith no inputs and no state.\n\nIts one output, `y`, publishes `f(t)` from [stage 1](@ref g-stage-function).\n`Source(f)` is `Source{Float64}(f)`. `f` receives the plain `Float64` time under\n`Float64` and a one-layer `Dual` [activation](@ref g-activation), so it need not\nbe generic there. It returns a `V`. Nothing converts, so a value of another type\nis refused as `ConformanceFailure`, at build for the value the build reads and\nas a `StepError` carrying it on a later [frame](@ref g-frame).\n\nThe output is [pinned](@ref g-walked) at `V` and carries zero partials under\nevery activation. The time loses one `Dual` layer before `f` sees it. At a\nnested `Dual`, an `f` that returns the inner `Dual` is refused at build as\n`ConformanceFailure`.\n\nA source set from outside is a [root input](@ref g-root-input).\n\nSee also [`Constant`](@ref), [`Step`](@ref).\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 899
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 898
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.GaussianWhiteNoise",
+            "docstring": "    GaussianWhiteNoise(; seed, μ = nothing, σ = nothing, psd = nothing) -> GaussianWhiteNoise\n\nA discrete [primitive](@ref g-primitive) that publishes a seeded Gaussian white\nnoise sample at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is a discrete Gaussian white\nnoise process. At each tick, its one output, `y`, publishes an independent\nsample of mean `μ` and standard deviation `σ`. It publishes from\n[stage 1](@ref g-stage-function).\n\nThe sample is a pure function of `seed` and the tick count. The tick count is\nthe one [store](@ref g-store) value, the field `s`, written `k` below.\n[Replay](@ref g-replay) therefore reproduces the stream. After a tick the store\nholds the next sample's index, so `k` reads `N + 1` once the component has\nticked `N` times past `t₀`.\n\nTwo components with one seed publish one stream, so independent sources take\ndistinct seeds.\n\n`μ` and the scale are broadcast to one type, the parameter `V` and the\noutput's, `Float64` or an `SArray` of `Float64`, so a scalar pairs with an\narray. Over an `SArray` the components are independent.\n\nExactly one of `σ` and `psd` is given. Neither or both is refused as an\n`ArgumentError`. Halve a one-sided density before passing it as `psd`.\n\n# Keywords\n\n- `seed`: the non-negative integer the stream is drawn from.\n- `μ`: the mean, zero in the scale's shape when left at `nothing`.\n- `σ`: the standard deviation per sample, at any period.\n- `psd`: the two-sided intensity `Q` of the white noise the samples stand for,\n  with `σ² = Q/Δt` at the [component](@ref g-component)'s own period `Δt`.\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 858
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 857
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Integrator",
+            "docstring": "    Integrator(; x0 = 0.0, reset::Bool = false) -> Integrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input.\n\nThe [library component](@ref g-library-component) holds one continuous state\n`x`, starting at `x0`, with `ẋ = u` and `y = x`, published from\n[stage 1](@ref g-stage-function). The component therefore has no\n[feedthrough](@ref g-feedthrough). A `Float64` state follows the scalar of a\n`Dual` [activation](@ref g-activation), so the component linearizes as it\nintegrates.\n\nA wire names its input `u` and its output `y` by [face](@ref g-face), as in\n`\"integrator/u\"`.\n\nWith `reset`, the component gains a second input, the `Bool` `reset`, and its\ndata input keeps the face `u`, as in `\"integrator/u\"` and `\"integrator/reset\"`.\nA rising edge of `reset` writes `x0` into `x`, through one\n[state event](@ref g-state-event), `reset`. The event is\n[non-localized](@ref g-non-localized), so the reset lands on the\n[boundary](@ref g-boundary) where `reset` rises. Under\n[edge semantics](@ref g-edge-semantics), holding `reset` resets once, and a\nsecond rising edge resets again.\n\nA `reset` published from a mode rises only on a boundary, so no reset is late. A\nreset driven by a continuous quantity takes it through a [`Comparator`](@ref),\nwhich localizes the crossing. A `reset` already holding at `t₀` fires at\n[boundary zero](@ref g-boundary-zero).\n\nThe state, the input `u` and the output `y` share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, taken from `Float64.(x0)`, an array\nconverted to an `SArray`, so an integer, a `Float32` or a plain array `x0`\nqualifies.\n\n# Keywords\n\n- `x0`: the initial value of `x`, and the value a reset writes.\n- `reset`: `true` for the form with the `reset` input.\n\nSee also [`LimitedIntegrator`](@ref), [`DiscreteIntegrator`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 960
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 961
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 959
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.LimitedIntegrator",
+            "docstring": "    LimitedIntegrator(; lower, upper, x0 = zero(lower), localized::Bool = true, reset::Bool = false) -> LimitedIntegrator\n\nA continuous [primitive](@ref g-primitive) that publishes the time integral of\nits input, held between two limits.\n\nThe [library component](@ref g-library-component) integrates its input `u` into\none continuous state `x`, with `ẋ = u` while free and `ẋ = 0` while saturated.\nIt stops integrating at a limit rather than clamping its output. The output\n`out` publishes `x` from [stage 1](@ref g-stage-function).\n\nFour [state events](@ref g-state-event) move the mode, the field `m`, a signed\n`Int8` code with the sign of the limit in force. The code is `-1` at `lower`,\n`0` free and `+1` at `upper`.\n\n- `hit_upper` and `hit_lower` fire when `x` reaches a limit. They are\n  [localized](@ref g-localized). They write `x` to the limit exactly and\n  saturate.\n- `leave_upper` and `leave_lower` fire when `u` turns strictly back into the\n  range, and they free the component. An input of exactly zero at a limit keeps\n  it saturated.\n\nAn input that turns outward again after a leave, even within the same step,\nstops the component on the limit.\n\nThe output `saturation` publishes the code from stage 1, so it has no\n[feedthrough](@ref g-feedthrough). It serves an anti-windup consumer, such as a\ncontroller that gates its integrator on the code. The code changes only when an\nevent fires, and so only on a declared [boundary](@ref g-boundary).\n\n`localized` picks how the leave events fire. With `true`, a departure ends the\nstep at the input's zero crossing, at the cost of root-finding and a split step.\nWith `false`, the leave events are\n[non-localized](@ref g-non-localized), and a departure costs neither. It fires\nat the first boundary after `u` points back into the range, at the latest the\nend of that step. `x` stays on the limit until then. It then carries an\noffset of about `a h² / 2` at most, to leading order in `h`, with `a` the\ninput's slope at its zero crossing and `h` the step.\n\nOver an `SArray`, the limits and the codes are componentwise, and `saturation`\npublishes an `SArray` of `Int8` of the same shape. The integrator declares one\ncopy of each event per component, named `hit_upper_1` to `hit_upper_N`, then\n`hit_lower_i`, `leave_upper_i` and `leave_lower_i`. Each copy acts on its own\ncomponent.\n\nAn `x0` outside the limits is clamped at [boundary zero](@ref g-boundary-zero),\nand the initial mode agrees with the initial input.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs `u` and `reset` are\nnamed. It also adds one `reset` event, however wide the component is. As on the\n[`Integrator`](@ref), the event is non-localized on the flag, so it fires\nonce per rising edge. Its handler writes `x0`, clamped to the limits, and the\ncode that value earns. A reset onto a limit therefore lands saturated, and frees\nat that boundary if `u` points back into the range. A reset inside lands free,\nwhatever the mode was.\n\n`x0`, `lower` and `upper` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar limit pairs with a vector and\ninteger values qualify. A `lower` not below `upper`, componentwise over an\n`SArray`, is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`.\n- `upper`: the upper limit.\n- `x0`: the initial value of `x`, and the value a reset writes.\n- `localized`: `true` for localized leave events, `false` for non-localized\n  ones.\n- `reset`: `true` to add the input `reset` and its event.\n\nSee also [`LimitedDoubleIntegrator`](@ref), [`DiscreteLimitedIntegrator`](@ref),\n[`Integrator`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1842
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1843
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1840
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1841
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1877
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.FirstOrderLag",
+            "docstring": "    FirstOrderLag(; τ, x0 = 0.0) -> FirstOrderLag\n\nA continuous [primitive](@ref g-primitive) that publishes its input through a\nfirst-order lag of time constant `τ`.\n\nThe [library component](@ref g-library-component) holds one continuous state `x`\nfrom `x0`. Its input is `u` and its output `y`, with `ẋ = (u - x) / τ` and\n`y = x`, published from [stage 1](@ref g-stage-function). The state follows the\nscalar of a `Dual` [activation](@ref g-activation), so the lag linearizes to\n`A = -1/τ` and `B = 1/τ`.\n\nFor a scalar signal the component is\n[`TransferFunction`](@ref)`(num = (1,), den = (τ, 1), u0 = x0)`. The component\nstays for `SArray` signals, for `x0` in the signal's own coordinates and for\nthe spelling.\n\nThe state, the input `u`, the output `y` and `τ` share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `τ` and `x0` to one\nshape, so a scalar `τ` pairs with a vector `x0` and integer values qualify. Over\nan `SArray` the lag is componentwise, each component at its own `τ`. A `τ` that\nis not positive in every component is refused as an `ArgumentError`. `τ` stays\nat `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `τ`: the time constant, positive.\n- `x0`: the initial value of `x`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1011
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1012
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1010
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.StateSpace",
+            "docstring": "    StateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n               D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n               x0 = zeros(size(A, 1))) -> StateSpace\n\nA continuous [primitive](@ref g-primitive) that runs a linear system given in\nstate-space form.\n\nThe [library component](@ref g-library-component) holds one continuous state `x`\nfrom `x0`, and its input is `u` and its output `y`:\n\n    ẋ = A x + B u\n    y = C x + D u\n\nThe state is an `SVector` at every size. `u` is a `Float64` when `n_u` is one\nand an `SVector{n_u, Float64}` otherwise, and `y` likewise by `n_y`.\n\n`D` picks the component's [feedthrough](@ref g-feedthrough) class, which\n[`AbstractLinearSystem`](@ref) explains. A zero `D` publishes `y` from\n[stage 1](@ref g-stage-function). The component then breaks an\n[algebraic loop](@ref g-algebraic-loop) as [`FirstOrderLag`](@ref) does. A\nnonzero `D` publishes it from stage 2, so a loop closed on the component through\na memoryless path is refused as `AlgebraicCycle`.\n\nThe matrices are kept at `Float64`. The state and the [ports](@ref g-port)\nfollow the scalar of a `Dual` [activation](@ref g-activation), so the component\nlinearizes to its own matrices.\n\nEach matrix is any `AbstractMatrix` of reals, stored at full shape as an\n`SMatrix` of `Float64`, so integer entries qualify. A matrix that does not fit\nthe others is refused as an `ArgumentError`, and so is an `x0` of the wrong\nlength. An `A` of size zero is refused likewise, since a component with no state\nis a gain.\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `x0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n\nSee also [`TransferFunction`](@ref), [`DiscretizedStateSpace`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1048
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1049
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1047
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.TransferFunction",
+            "docstring": "    TransferFunction(; num, den, u0 = 0.0) -> TransferFunction\n    TransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> TransferFunction\n\nA continuous [primitive](@ref g-primitive) that runs a single-input,\nsingle-output linear system given by its transfer function in `s`.\n\nThe transfer function is\n\n    G(s) = (num[1] sᵐ + … + num[end]) / (den[1] sⁿ + … + den[end])\n\nfrom the input `u` to the output `y`, both `Float64`. The\n[library component](@ref g-library-component) keeps the coefficients and holds\ntheir realization in controllable canonical form, a [`StateSpace`](@ref).\n\nThe second spelling gives the roots in place of the coefficients,\n\n    G(s) = gain (s - zeros[1]) … (s - zeros[end]) / ((s - poles[1]) … (s - poles[end]))\n\nwith `zeros` empty by default. A root is real or complex, and the complex ones\ncome in conjugate pairs, so that the coefficients are real. The component keeps\nthe coefficients the roots expand to. Mixing the two spellings is refused as an\n`ArgumentError`, as is a set of roots that is not closed under conjugation, and\nmore zeros than poles.\n\nThere is no `x0`. The component starts at rest, or, with `u0` given, at the\nsteady state for the constant input `u0`, where `y` is `G(0) u0`.\n\nThe degrees pick the component's [feedthrough](@ref g-feedthrough) class, which\n[`AbstractLinearSystem`](@ref) explains. A numerator of lower degree than\nthe denominator publishes `y` from [stage 1](@ref g-stage-function). The\ncomponent then breaks an [algebraic loop](@ref g-algebraic-loop). One of equal\ndegree publishes it from stage 2.\n\nFour spellings are refused as an `ArgumentError`. A denominator of fewer than\ntwo coefficients has order zero, which makes a gain. A numerator longer than the\ndenominator is improper. The third is a leading denominator coefficient of zero.\nThe fourth is a nonzero `u0` over a denominator whose constant coefficient is\nzero, a pole at the origin, which has no steady state.\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power first, as a tuple or a\n  vector of reals.\n- `den`: the denominator's coefficients, highest power first, likewise.\n- `zeros`: the zeros, real or complex, as a tuple or a vector; none by default.\n- `poles`: the poles, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n\nSee also [`DiscreteTransferFunction`](@ref),\n[`DiscretizedTransferFunction`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1048
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1049
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1047
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Relay",
+            "docstring": "    Relay(; lower, upper, off = zero(lower), on = one.(lower)) -> Relay\n\nA continuous [primitive](@ref g-primitive) that publishes one of two values,\nswitched by its input with hysteresis.\n\nIts input is `u` and its output `y`. The output publishes `off` or `on` by the\nmode, the field `m`, from [stage 1](@ref g-stage-function). The mode is an\n`Int8` code, `0` off and `1` on.\n\nTwo [state events](@ref g-state-event) move the mode. `switch_on` fires when `u`\nrises to `upper` while off, and `switch_off` when `u` falls strictly below\n`lower` while on. At `lower == upper` an input exactly on the threshold therefore\nreads on. Both are [localized](@ref g-localized).\n\n`y` reads no input, so the [library component](@ref g-library-component) has no\n[feedthrough](@ref g-feedthrough). A relay closing a feedback loop therefore\nmakes no [algebraic loop](@ref g-algebraic-loop).\n\nThe four values and both [ports](@ref g-port) share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, the four keywords' broadcast to one\nshape, so a scalar pairs with a vector and integer values qualify. `y` is\n[pinned](@ref g-walked) at `V`. It carries zero partials under every\n[activation](@ref g-activation).\n\nOver an `SArray`, the thresholds, the values and the codes are componentwise.\nThe relay declares `N` copies of the two events, one per component, named\n`switch_on_1` to `switch_on_N`, then `switch_off_i`. Each copy acts on its own\ncomponent.\n\nThe relay starts off. An input already at or above `upper` at `t₀` turns the\nrelay on at [boundary zero](@ref g-boundary-zero), and an input between the\nthresholds leaves it off, which is the hysteresis itself.\n\nA `lower` above `upper` is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the threshold `u` falls below for the relay to switch off, at most\n  `upper`.\n- `upper`: the threshold `u` rises to for the relay to switch on.\n- `off`: the value `y` publishes while off.\n- `on`: the value `y` publishes while on.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2141
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2142
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2139
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2140
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2148
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.UnitDelay",
+            "docstring": "    UnitDelay(s0) -> UnitDelay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from the\nprevious [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) is the native `z⁻¹` of the\ndiscrete [tier](@ref g-tier). A wire names its input `u` and its output `y` by\n[face](@ref g-face), `\"delay/u\"` and `\"delay/y\"`.\n\nThe output publishes the stored value `s` from [stage 1](@ref g-stage-function),\n`y = s`, and `s0` at the first publication. Each tick stores the input for the\nnext one, `s⁺ = u`. The [store](@ref g-store) and both [ports](@ref g-port)\nshare one type, the parameter `V`, the type of `s0`, an isbits type or a\n`Symbol`, as the store requires.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop), and that is a modelling\ndecision. Placed in a continuous loop, it moves the signal onto the discrete\ntier and inserts a zero-order hold over the [component](@ref g-component)'s own\nperiod, a multiple of [`Δt_base`](@ref g-dt_base).\n\nSee also [`Delay`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 381
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 382
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 380
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscreteIntegrator",
+            "docstring": "    DiscreteIntegrator(; s0 = 0.0, reset::Bool = false) -> DiscreteIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input.\n\nThe [library component](@ref g-library-component) holds one\n[store](@ref g-store) value from `s0`, the field `s`. Its input is `u` and its\noutput `y`.\n\nEach [tick](@ref g-tick) advances the store by forward Euler,\n`s⁺ = s + Δt u`, and the output publishes `y = s` from\n[stage 1](@ref g-stage-function). The component therefore breaks an\n[algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref) does. `Δt` is the\n[component](@ref g-component)'s own period, so the integral is per second at any\nrate.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs `u` and `reset` are\nnamed. The reset is a level. At every tick where `reset` reads true, the update\nwrites `s0` in place of the sum. The output at the reset tick still publishes\nthe integral before it, and the next tick's output publishes `s0`. The\ncontinuous [`Integrator`](@ref) resets on the flag's rising edge instead, as an\n[event](@ref g-state-event).\n\nThe discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\nThe state, the input `u` and the output `y` share one type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, taken from `Float64.(s0)`, an array\nconverted to an `SArray`, so an integer, a `Float32` or a plain array `s0`\nqualifies.\n\n# Keywords\n\n- `s0`: the initial value of `s`, and the value a reset writes.\n- `reset`: `true` to add the input `reset`.\n\nSee also [`DiscreteLimitedIntegrator`](@ref), [`Integrator`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 606
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 607
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 605
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.RateLimiter",
+            "docstring": "    RateLimiter(; rising, falling = rising, s0 = 0.0) -> RateLimiter\n\nA discrete [primitive](@ref g-primitive) that publishes its input with its rate\nof change bounded per [tick](@ref g-tick).\n\nThe output `y` follows the input `u`, moving at most `rising Δt` up and\n`falling Δt` down per tick. `Δt` is the [component](@ref g-component)'s own\nperiod. One [store](@ref g-store) value, the field `s`, holds the previous\noutput, and each tick stores `y`:\n\n    y = s + clamp(u - s, -falling Δt, rising Δt)\n\nOver an `SArray` the slew is componentwise.\n\n`y` reads `u`, so the [library component](@ref g-library-component) has\n[feedthrough](@ref g-feedthrough). A loop closed on it through a memoryless path\nis refused as `AlgebraicCycle`. A [`UnitDelay`](@ref) after the component breaks\nthat loop, and lags the input by one tick at every rate.\n\nThe rates, the state and both [ports](@ref g-port) share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `rising`, `falling`\nand `s0` to one shape, so a scalar rate pairs with a vector `s0` and integer\nvalues qualify. Over an `SArray` each component slews at its own rates. A\n`rising` or a `falling` that is not positive in every component is refused as an\n`ArgumentError`. The rates stay at `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `rising`: the largest rise per second, positive.\n- `falling`: the largest fall per second, positive.\n- `s0`: the previous output at the first tick, so the output at `t₀` is already\n  one slew step from it.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 725
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 726
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 724
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscreteStateSpace",
+            "docstring": "    DiscreteStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                       D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                       s0 = zeros(size(A, 1))) -> DiscreteStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a linear system given in\ndiscrete state-space form.\n\nThe [library component](@ref g-library-component) holds one\n[store](@ref g-store) value from `s0`, the field `s`, advanced once per\n[tick](@ref g-tick), and its input is `u` and its output `y`:\n\n    s⁺ = A s + B u\n    y  = C s + D u\n\nThe keywords, the shapes, the storage, the [ports](@ref g-port) and the refusals\nare those of [`StateSpace`](@ref), with `s0` in place of its `x0`.\n\nThe [feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) is also that of `StateSpace`. A zero `D`\npublishes `y` from [stage 1](@ref g-stage-function). The component then breaks\nan [algebraic loop](@ref g-algebraic-loop). A nonzero `D` publishes it from\nstage 2.\n\nThe discrete [tier](@ref g-tier) never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\nThe matrices presuppose the period they were designed at. That period is the\none the component's [rate scope](@ref g-rate-scope) gives it, bound at\ndeployment after the component is built, so the component cannot check it. A\nsystem that should follow its period is a [`DiscretizedStateSpace`](@ref).\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `s0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1329
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1330
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1328
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscreteTransferFunction",
+            "docstring": "    DiscreteTransferFunction(; num, den, u0 = 0.0) -> DiscreteTransferFunction\n    DiscreteTransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> DiscreteTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a single-input, single-output\nlinear system given by its transfer function in `z`.\n\nThe transfer function is\n\n    G(z) = (num[1] zᵐ + … + num[end]) / (den[1] zⁿ + … + den[end])\n\nwith the coefficients highest power of `z` first, as [`TransferFunction`](@ref)\ntakes them in `s`. This is not the `z⁻¹` convention of `filter(b, a)`, which\nagrees with it only when the degrees are equal.\n\nThe [library component](@ref g-library-component) keeps the coefficients and\nholds their realization in controllable canonical form, a\n[`DiscreteStateSpace`](@ref). The degrees pick the\n[feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) as for `TransferFunction`.\n\nThe component starts at rest, or, with `u0` given, at the steady state for the\nconstant input `u0`, where `y` is `G(1) u0`.\n\nThe keywords, the two spellings and the refusals are those of\n`TransferFunction`, the roots in `z`, save that the pole with no steady state is\nat `z = 1`. A nonzero `u0` is refused as an\n`ArgumentError` over a denominator whose coefficients sum to zero within `1e-12`\nof the sum of their magnitudes. A designed denominator such as `(1, -0.7, -0.3)`\nmisses an exact zero by rounding.\n\nThe coefficients presuppose the period they were designed at, which the\ncomponent cannot check, as for `DiscreteStateSpace`.\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power of `z` first, as a tuple or\n  a vector of reals.\n- `den`: the denominator's coefficients, highest power of `z` first, likewise.\n- `zeros`: the zeros in `z`, real or complex, as a tuple or a vector; none by\n  default.\n- `poles`: the poles in `z`, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n\nSee also [`DiscretizedTransferFunction`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1329
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1330
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1328
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscretizedStateSpace",
+            "docstring": "    DiscretizedStateSpace(continuous::StateSpace) -> DiscretizedStateSpace\n    DiscretizedStateSpace(; A::AbstractMatrix, B::AbstractMatrix, C::AbstractMatrix,\n                          D::AbstractMatrix = zeros(size(C, 1), size(B, 2)),\n                          x0 = zeros(size(A, 1))) -> DiscretizedStateSpace\n\nA discrete [primitive](@ref g-primitive) that runs a continuous state-space\nsystem through a zero-order hold at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) runs the [`StateSpace`](@ref)\n`continuous`, or the one its keywords build, on the discrete\n[tier](@ref g-tier). At each tick it takes the zero-order hold\n\n    A_d = e^{A Δt}        B_d = (∫₀^Δt e^{Aτ} dτ) B\n\nwith `C` and `D` unchanged. The hold is exact for an input held constant over\neach period, so the samples are the continuous system's own.\n\n`Δt` is the [component](@ref g-component)'s own period, so the component follows\nthe rate its [rate scope](@ref g-rate-scope) gives it. It carries no period of\nits own, where a [`DiscreteStateSpace`](@ref) presupposes one.\n\nThe keywords and their refusals are those of `StateSpace`. The\n[feedthrough](@ref g-feedthrough) class, the [ports](@ref g-port) and `x0` are\nthe continuous component's, `x0` in its coordinates.\n\nThe discrete tier never follows the scalar of an\n[activation](@ref g-activation), so under a `Dual` activation the component\nholds its last value.\n\n# Keywords\n\n- `A`: the `n_x × n_x` state matrix.\n- `B`: the `n_x × n_u` input matrix.\n- `C`: the `n_y × n_x` output matrix.\n- `D`: the `n_y × n_u` direct matrix, zero by default.\n- `x0`: the initial state, in the coordinates of `A`, a vector of length `n_x`,\n  or a real when `n_x` is one.\n\nSee also [`DiscretizedTransferFunction`](@ref),\n[`AbstractDiscreteLinearSystem`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1329
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1330
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1328
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscretizedTransferFunction",
+            "docstring": "    DiscretizedTransferFunction(; num, den, u0 = 0.0) -> DiscretizedTransferFunction\n    DiscretizedTransferFunction(; zeros = (), poles, gain = 1.0, u0 = 0.0) -> DiscretizedTransferFunction\n\nA discrete [primitive](@ref g-primitive) that runs a continuous transfer\nfunction through a zero-order hold at each [tick](@ref g-tick).\n\nThe [library component](@ref g-library-component) takes the transfer function in\n`s` of [`TransferFunction`](@ref), with its keywords in either spelling, its\nrefusals and its start at rest or at `G(0) u0`. It runs it on the discrete\n[tier](@ref g-tier) through the zero-order hold of\n[`DiscretizedStateSpace`](@ref). The hold is taken at each\ntick. It spans `Δt`, the [component](@ref g-component)'s own period. The degrees\npick the [feedthrough](@ref g-feedthrough) class of\n[`AbstractDiscreteLinearSystem`](@ref) as for `TransferFunction`.\n\nThe hold keeps the feedthrough class and matches the step response at the\nsamples. A design that wants Tustin's frequency response discretizes externally\nand uses [`DiscreteTransferFunction`](@ref).\n\n# Keywords\n\n- `num`: the numerator's coefficients, highest power of `s` first, as a tuple or\n  a vector of reals.\n- `den`: the denominator's coefficients, highest power of `s` first, likewise.\n- `zeros`: the zeros in `s`, real or complex, as a tuple or a vector; none by\n  default.\n- `poles`: the poles in `s`, likewise.\n- `gain`: the factor on the numerator, `1.0` by default.\n- `u0`: the constant input whose steady state the component starts at, `0.0` for\n  rest.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1329
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1330
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1328
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscreteLimitedIntegrator",
+            "docstring": "    DiscreteLimitedIntegrator(; lower, upper, s0 = zero(lower), reset::Bool = false) -> DiscreteLimitedIntegrator\n\nA discrete [primitive](@ref g-primitive) that publishes the forward-Euler\nintegral of its input, held between two limits.\n\nIts input is `u`. Each [tick](@ref g-tick) advances the one\n[store](@ref g-store) value, the field `s`, from `s0` as\n`s⁺ = clamp(s + Δt u, lower, upper)`. The output `out` publishes `s` from\n[stage 1](@ref g-stage-function).\n\nA second output, `saturation`, publishes the `Int8` code of\n`LimitedIntegrator`, read off the state, also from stage 1. The code is `1` at\n`upper`, `-1` at `lower` and `0` between. At a limit with the input already\npointing inward, the code reads saturated until the next tick moves the state\noff.\n\nOver an `SArray`, the limits and the codes are componentwise, and `saturation`\npublishes an `SArray` of `Int8` of the same shape.\n\n`reset = true` adds the `Bool` input `reset`, so the inputs\n`u` and `reset` are named. It is the level reset of\n[`DiscreteIntegrator`](@ref). The update writes `s0`, clamped, at every tick\nwhere the flag reads true.\n\n`s0`, `lower` and `upper` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar limit pairs with a vector and\ninteger values qualify. A `lower` not below `upper`, componentwise over an\n`SArray`, is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the lower limit, below `upper`.\n- `upper`: the upper limit.\n- `s0`: the initial value of `s`, and the value a reset writes, clamped.\n- `reset`: `true` to add the input `reset`.\n\nSee also [`DiscreteIntegrator`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 667
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 668
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 666
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Delay",
+            "docstring": "    Delay(; K::Int, v0 = 0.0, taps::Bool = false) -> Delay\n\nA discrete [primitive](@ref g-primitive) that publishes its input from `K`\n[ticks](@ref g-tick) before.\n\nThe [library component](@ref g-library-component) is the delay line, the `z⁻ᴷ`\nof the discrete [tier](@ref g-tier). The output `y` publishes the input `u` from\n`K` ticks ago, and `v0` at the first `K` publications.\nIt publishes from [stage 1](@ref g-stage-function). The [store](@ref g-store) is\na ring of `K` values and a cursor.\n\nIt breaks an [algebraic loop](@ref g-algebraic-loop) as [`UnitDelay`](@ref)\ndoes in either form, and that is a modelling decision. Placed in a continuous\nloop, it moves the signal onto the discrete tier and inserts a zero-order hold\nover the [component](@ref g-component)'s own period, a multiple of\n[`Δt_base`](@ref g-dt_base).\n\n`K` counts ticks of the component's own period, so the user picks it from the\nrate the component declares. `K = 1` is `UnitDelay` in keyword spelling. A\nsmaller `K` is refused as an `ArgumentError`.\n\n`v0` is a value of the signal, copied into every slot of the ring. It is not the\ninitial store, so it is not `UnitDelay`'s `s0`. The ring's values, the input\n`u` and the output `y` share one type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`, taken from `Float64.(v0)`, an array converted to an\n`SArray`, so an integer, a `Float32` or a plain array `v0` qualifies.\n\n`taps = true` adds a second output, `taps`, so the outputs `y` and `taps` are\nnamed. It publishes the last `K` inputs as an `SVector{K, V}`, newest first,\nwith `v0` in the slots no tick has filled yet. `taps[1]` is the input from one\ntick ago and `taps[K]` the one from `K` ticks ago, which is `y`. It serves a\nlaw over the window written in a stage body, a moving median or a minimum over\nthe last `K` samples. A FIR filter is a [`DiscreteTransferFunction`](@ref)\ninstead. The taps publish from stage 1 as `y` does.\n\n# Keywords\n\n- `K`: the delay in ticks, at least 1.\n- `v0`: the value published before `K` ticks have passed.\n- `taps`: `true` to add the output `taps`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 545
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 546
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 544
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Freeze",
+            "docstring": "    Freeze{V}() -> Freeze{V}\n\nA continuous [primitive](@ref g-primitive) that publishes its input with its\npartials dropped, so no derivative passes through it.\n\nThe [library component](@ref g-library-component) is the declared stop-gradient.\nIts output `y` is its input `u` with its partials dropped,\n[pinned](@ref g-walked) at the parameter `V`, a `Float64` or an `SArray` of\n`Float64`. A producer that walks may therefore feed a [`Pinned`](@ref) input\n[entry](@ref g-entry) through it. At [nominal](@ref g-nominal) it is the\nidentity. Every Jacobian along the path then reads a zero coupling, which is the\nmodelling decision the component states.\n\nAny other `V` is refused as a `TypeError` where `Freeze{V}` is written. The\ncomponent drops one `Dual` layer, so at a nested `Dual` an input that carries\npartials is refused at build as `ConformanceFailure`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 407
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 408
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 406
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.PID",
+            "docstring": "    PID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n          b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> PID\n\nA continuous [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]`:\n\n    u_raw = Kp (b r - y) + q - Kd (w - yf) / τd\n\nThe [library component](@ref g-library-component) holds two continuous states.\n`q` is the integral term. `yf` is the weighted measurement `w = y - c r` through\na lag, `ẏf = (w - yf) / τd`. One law moves the integral term:\n\n    q̇ = Ki ε + (ref - u_raw) / Tt\n\nTwo independent keywords, `hold` and `tracking`, each adding inputs, fill the\nslots `ε` and `ref` over the error `e` by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold = true` adds two inputs. `saturation` is an `Int8` code such as a\n[`LimitedIntegrator`](@ref) publishes for the path downstream. It gates the\nerror by sign. `engaged` is a `Bool` that reads true while the component is in\ncommand. Not engaged, the error is gated to zero whatever the code. Without\ntracking, a component not engaged freezes. `q` then holds while the own clamp is\nfree and back-calculates against it otherwise.\n\n`tracking = true` adds the input `v`, a value the path delivered or the selected\ncommand. It takes the place of the own `u` as the correction's reference. With\nthe hold, `v` is the reference only while the component is limited or not\nengaged, and `u` while it is free. A component not in command therefore follows\nthe selected command at rate `1/Tt` and engages without a bump. It chases a\nmoving `v` with lag `Tt`, so a component out of command wants a short `Tt`.\n\nThe default `Tt = Inf` follows nothing. `tracking = true` with a `Tt` given as a\nvalue and infinite in any channel is therefore refused as an `ArgumentError`.\nTracking needs `Tt` spelled, or given as `AsPort()`, which leaves it to the\ncomponent tree to keep finite.\n\nA `u_min` above `u_max`, both given as values, is refused as an `ArgumentError`.\nSo is a `τd` or a `Tt` given as a value and not positive in every channel. The\ndefault `Tt = Inf` passes.\n\n`q` holds the integral term in output units, with `Ki` inside the integral, so\na change in `Ki` alters only future accumulation.\n\nThe setpoint weights `b` and `c` multiply `r` alone, and the integral's error\nstays `e`. `b` acts in the proportional term and `c` in the derivative's\nweighted measurement. Their defaults, `b = 1` and `c = 0`, put the derivative on\nthe measurement, so a step in `r` makes no kick. `c = 1` puts it on the error.\n\nThe defaults make the plain spelling a P controller, with `Ki = Kd = 0` and\ninfinite limits. They also set `Tt = Inf`, which switches the correction off.\n\nThe parameters, the inputs `r`, `y` and `v`, the outputs `u` and `u_raw` and\nthe states share one type, the parameter `V`, `Float64` or an `SArray` of\n`Float64`, the broadcast of the nine keywords given as values. Over an `SArray`\nthe law is componentwise, and `saturation` is an `SArray` of `Int8` of `V`'s\nshape and `engaged` one of `Bool`.\n\nThe nine keywords given as values broadcast to one `V`, so a scalar pairs with a\nvector and integer values qualify. A vector PID with uniform gains spells at\nleast one keyword as a vector, `Kp = @SVector fill(2.0, 3)`.\n\nAny of the nine parameters may be an input [port](@ref g-port) in place of a\nfield, spelled `Kp = AsPort()` with [`AsPort`](@ref). The port is named for the\nparameter and typed `V`. It takes no part in the shape, so when every\nvalue-carrying keyword is a port, `V` is `Float64`. Under a `Dual`\n[activation](@ref g-activation), a parameter given as a port carries partials,\nso a linearization sees the coupling through the port. A component tree that\nwants it frozen at its plain `Float64` value routes the port through\n[`Freeze`](@ref).\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. A\ntracking input wired from a memoryless clamp of the component's own `u` is\nrefused as an `AlgebraicCycle` classified [artificial](@ref g-algebraic-loop).\n`v` serves a value published from state, such as a stateful actuator's position.\nA parameter port computed memorylessly from `u` closes a cycle too, artificial\nfor `Ki` and `Tt`, which only the derivative reads, and real for the others. One\nread from a state is fine.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, positive.\n- `Tt`: the time constant of the correction, `Inf` to switch it off.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`DiscretePID`](@ref), [`AbstractPID`](@ref), [`LQRTracker`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2381
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2385
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2557
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscretePID",
+            "docstring": "    DiscretePID(; Kp, Ki = 0.0, Kd = 0.0, τd = 0.1, Tt = Inf, u_min = -Inf, u_max = Inf,\n                  b = 1.0, c = 0.0, hold::Bool = false, tracking::Bool = false) -> DiscretePID\n\nA discrete [primitive](@ref g-primitive) that runs a PID controller with\nanti-windup.\n\nThe [library component](@ref g-library-component) takes the parameters,\ndefaults, [ports](@ref g-port) and law of [`PID`](@ref) to the discrete\n[tier](@ref g-tier). Two [store](@ref g-store) fields stand in for its\ncontinuous states. `q` is the integral term, and `yf` is the weighted\nmeasurement `w = y - c r` through a lag. A third, `saturated`, holds its code.\n`Δt` is the [component](@ref g-component)'s own period.\n\nThe inputs are `r` and `y`, with the error `e = r - y`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]`:\n\n    u_raw = Kp (b r - y) + q - Kd (w - yf) / (τd + Δt)\n\nEach [tick](@ref g-tick) moves the lag by backward Euler,\n`yf⁺ = yf + Δt (w - yf) / (τd + Δt)`. It moves the integral term by forward\nEuler and the correction's exact step:\n\n    q⁺ = q + Δt Ki ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nThe two anti-windup axes fill the slots `ε` and `ref` by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`. A component not engaged\nwithout tracking freezes. `tracking` adds the input `v`. With the hold, the\nreference falls back to `u` while the component is free. All of this is as in\n`PID`. The setpoint weights `b` and `c` multiply `r` alone, as in `PID`, and the\nintegral's error stays `e`.\n\n`tracking = true` with a `Tt` given infinite in any channel is refused as an\n`ArgumentError`, as in `PID`. So is a `u_min` above `u_max`, both given as\nvalues, and so is a `τd` or a `Tt` given as a value and negative in any channel.\nEither may be zero.\n\nThe parameters, the inputs `r`, `y` and `v`, the outputs `u` and `u_raw` and the\nstore fields `q` and `yf` share one type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`. Over an `SArray` the law is componentwise, as in `PID`.\nThe nine keywords given as values broadcast to one `V` by the rule of `PID`. A\nscalar therefore pairs with a vector, and a uniform vector gain spells one\nkeyword as a vector, `Kp = @SVector fill(2.0, 3)`.\n\nAny parameter may be an input port, spelled `Kp = AsPort()` with\n[`AsPort`](@ref), typed `V` and outside the shape. Under a `Dual`\n[activation](@ref g-activation) the discrete tier does not run and holds its\n`Float64` values, so a linearization sees no coupling through the port and a\n[`Freeze`](@ref) on it changes nothing.\n\nThe backward Euler lag is stable at every period, and `τd = 0` is legal. `yf` is\nthen the previous weighted measurement, and the D term the backward difference\n`(w - yf) / Δt`.\n\n`β` is the exact step of the correction's relaxation over one period, so every\n`Tt` is stable. `Tt = Inf` switches the correction off. `Tt = 0` is legal and\nbrings `u_raw` to the reference plus the tick's integral step `Δt Ki ε` by the\nnext tick, the clamping scheme as the limit of tracking. Not engaged with\ntracking, `Tt = 0` lands `u_raw` on the tick's `v` one tick later, exact for a\nconstant `v` while `r` and `y` hold.\n\nA third output, `saturated`, publishes the `Int8` code of the component's own\nclamp, an `SArray` of `Int8` of `V`'s shape over an array. The code is `1` with\n`u_raw` at or above `u_max`, `-1` at or below `u_min` and `0` between. The\ncomponent stores the code from `u_raw` at the tick and publishes it from stage 1\nat the next. It is therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary).\n\nThe code serves the hold of an outer controller in a cascade, wired to its input\n`saturation`. The outer controller's integrator takes one extra step before the\nhold engages. As a stage-1 port the code closes no cycle through the outer\ncontroller's `u`.\n\nA tracking input wired from a memoryless clamp of the component's own `u` is\nrefused as an `AlgebraicCycle`, as for `PID`, but classified real. A parameter\nport computed memorylessly from `u` closes a cycle likewise.\n\n# Keywords\n\n- `Kp`: the proportional gain.\n- `Ki`: the integral gain, inside the integral.\n- `Kd`: the derivative gain.\n- `τd`: the time constant of the derivative's lag, `0` for the backward\n  difference.\n- `Tt`: the time constant of the correction, `Inf` to switch it off and `0` to\n  correct within one tick.\n- `u_min`: the lower limit of `u`.\n- `u_max`: the upper limit of `u`.\n- `b`: the setpoint weight in the proportional term.\n- `c`: the setpoint weight in the derivative's weighted measurement.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`AbstractPID`](@ref), [`DiscreteLQRTracker`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2381
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2694
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2693
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.LQRTracker",
+            "docstring": "    LQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n               x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n               z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n               hold::Bool = false, tracking::Bool = false) -> LQRTracker\n    LQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                           x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                           z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                           hold::Bool = false, tracking::Bool = false) -> LQRTracker{NX, NU, NZ}\n\nA continuous [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe inputs are `x`, the plant state, `z`, the command variables, and `z_ref`,\ntheir reference. Two outputs come from [stage 2](@ref g-stage-function), `u_raw`\nand `u`, its clamp to `[u_min, u_max]` per channel:\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nThe [library component](@ref g-library-component) holds one continuous state,\nthe field `x`, written `q` below. It is the integral term in output units, one\nchannel per control input. One law moves it:\n\n    q̇ = ε + (ref - u_raw) / Tt\n\nThe two anti-windup axes of [`PID`](@ref), each adding inputs, fill the slots\n`ε` and `ref` over the integrator input `e = K_int (z_ref - z)`. They fill them\nchannel by channel, by the table of [`AbstractAntiWindupController`](@ref).\n\n`hold = true` adds two inputs. `saturation`, a code per channel from the path\ndownstream, gates each channel whose code agrees with the sign of its integrator\ninput. `engaged`, a flag per channel that reads true in command, zeroes the\nintegrator input of a channel not engaged whatever its code. Without tracking, a\nchannel not engaged freezes, its own clamp's correction alone moving it.\n\n`tracking = true` adds the input `v` as the correction's reference in place of\nthe own `u`. With the hold, `v` is the reference in a channel only while it is\nlimited or not engaged. A channel not engaged therefore converges to `v` at rate\n`1/Tt` and engagement is bumpless. The own clamp is the correction's, and\n`Tt = Inf` switches it off.\n\nTracking with a `Tt` given as a value and infinite in any channel is refused as\nan `ArgumentError`, as for `PID`. A `u_min` above `u_max`, both given as values,\nis refused as an `ArgumentError`, and so is a `Tt` given as a value and not\npositive in every channel. The default `Tt = Inf` passes.\n\nThe [ports](@ref g-port) are each an `SVector` at every size. `x` is an\n`SVector{NX, Float64}`, `z` and `z_ref` are `SVector{NZ, Float64}`, and `u`,\n`u_raw` and `v` are `SVector{NU, Float64}`. `saturation` is an\n`SVector{NU, Int8}` and `engaged` an `SVector{NU, Bool}`.\n\nAny of the nine parameters may be an input port in place of a field, spelled\n`K_fbk = AsPort()` with [`AsPort`](@ref) and typed as the field would be, an\n`SMatrix{NU, NX, Float64, NU * NX}` for `K_fbk`. That is how a gain schedule\nreaches the component. Under a `Dual` [activation](@ref g-activation), the port\ncarries partials. A component tree that wants it frozen at its plain `Float64`\nvalue routes it through [`Freeze`](@ref).\n\nThe first form reads `NX`, `NU` and `NZ` off the values given, `K_fbk` first,\nthen `K_fwd`, `K_int` and the trims. The second, the explicit spelling, takes\nthe sizes and the same keywords. A matrix or a vector that does not fit the\nsizes read is refused as an `ArgumentError`. A size no value carries, every\ncarrier a port or left at its default, is refused likewise, naming the explicit\nspelling.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, whether `y_direct` reads it or not. An\n`x` assembled from what the plant publishes from state, and a `z` selected from\nthe same, close no loop. A `z_ref` computed memorylessly from the component's\nown `u` closes an `AlgebraicCycle` classified real, since the direct law reads\nit. A tracking input wired from a memoryless clamp of `u` closes one classified\n[artificial](@ref g-algebraic-loop), since only the derivative reads it. A\nparameter port computed memorylessly from `u` closes a cycle too, artificial for\n`K_int` and `Tt` and real for the others.\n\nThe component publishes no saturation code. The gains are designed outside, from\n[`trim!`](@ref Redstone.trim!) and [`linearize`](@ref Redstone.linearize).\n\n`K_int` and the trims default to zero. `Tt`, `u_min` and `u_max` are each a real\nbroadcast to an `SVector{NU, Float64}`, or a vector of length `NU`. Integer\nentries qualify.\n\n# Keywords\n\n- `K_fbk`: the `NU × NX` feedback gain, any `AbstractMatrix` of reals stored as\n  an `SMatrix{NU, NX, Float64}`.\n- `K_fwd`: the `NU × NZ` feedforward gain, stored likewise.\n- `K_int`: the `NU × NZ` integral gain, stored likewise, zero for the tracker\n  without integral action.\n- `x_trim`: the plant state at trim, a vector of length `NX`.\n- `u_trim`: the control input at trim, a vector of length `NU`.\n- `z_trim`: the command variables at trim, a vector of length `NZ`.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`DiscreteLQRTracker`](@ref), [`AbstractLQRTracker`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2751
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2755
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2920
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.DiscreteLQRTracker",
+            "docstring": "    DiscreteLQRTracker(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                       x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                       z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                       hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker\n    DiscreteLQRTracker{NX, NU, NZ}(; K_fbk, K_fwd, K_int = zero(SMatrix{NU, NZ, Float64}),\n                                   x_trim = zero(SVector{NX, Float64}), u_trim = zero(SVector{NU, Float64}),\n                                   z_trim = zero(SVector{NZ, Float64}), Tt = Inf, u_min = -Inf, u_max = Inf,\n                                   hold::Bool = false, tracking::Bool = false) -> DiscreteLQRTracker{NX, NU, NZ}\n\nA discrete [primitive](@ref g-primitive) that runs an LQR tracker about a trim\npoint, with anti-windup.\n\nThe [library component](@ref g-library-component) takes the parameters,\ndefaults, [ports](@ref g-port), outputs and law of [`LQRTracker`](@ref) to the\ndiscrete [tier](@ref g-tier). A [store](@ref g-store) field `q` stands in for\nits continuous state, and a second, `saturated`, holds its code. `Δt` is the\n[component](@ref g-component)'s own period.\n\nThe inputs are `x`, `z` and `z_ref`. Two outputs come from\n[stage 2](@ref g-stage-function), `u_raw` and `u`, its clamp to\n`[u_min, u_max]` per channel:\n\n    u_raw = u_trim + K_fwd (z_ref - z_trim) - K_fbk (x - x_trim) + q\n\nEach [tick](@ref g-tick) moves the integral term by forward Euler and the\ncorrection's exact step:\n\n    q⁺ = q + Δt ε + β (ref - u_raw),    β = 1 - exp(-Δt / Tt)\n\nThe two anti-windup axes fill the slots `ε` and `ref` over the integrator input\n`e = K_int (z_ref - z)`. They fill them channel by channel, by the table of\n[`AbstractAntiWindupController`](@ref).\n\n`hold` adds the inputs `saturation` and `engaged`. A channel not engaged without\ntracking freezes. `tracking` adds the input `v`. With the hold, the reference\nfalls back to `u` in each channel that is free. All of this is as in\n`LQRTracker`.\n\n`tracking = true` with a `Tt` given infinite in any channel is refused as an\n`ArgumentError`, as in `LQRTracker`. So is a `u_min` above `u_max`, both given\nas values, and so is a `Tt` given as a value and negative in any channel.\n\nEvery `Tt` is stable. `Tt = Inf` switches the correction off. `Tt = 0` is legal\nand brings `u_raw` to the reference plus the tick's integral step `Δt ε` by the\nnext tick. A channel not engaged with tracking lands `u_raw` on the tick's `v`\none tick later, exact for a constant `v` while the direct terms hold.\n\nThe ports, the nine parameters and their types, the [`AsPort`](@ref) spelling,\nthe size inference and the explicit spelling, the second form, are those of\n`LQRTracker`, and so are the refusals.\n\nA third output, `saturated`, publishes the `Int8` code of the component's own\nclamp per channel at `SVector{NU, Int8}`. The code is `1` with `u_raw` at or\nabove `u_max`, `-1` at or below `u_min` and `0` between. The component stores\nthe code from `u_raw` at the tick and publishes it from stage 1 at the next. It\nis therefore one tick stale, and flips only on a tick\n[boundary](@ref g-boundary).\n\nThe code serves the hold of an outer controller in a cascade, wired to its input\n`saturation`, each channel reaching a scalar consumer through\n[`Unpack`](@ref)`{Int8, NU}`. The outer integrator takes one extra step before\nthe hold engages. As a stage-1 port the code closes no cycle through the outer\ncomponent's `u`.\n\n`u` is a stage-2 output, so every input makes a\n[feedthrough](@ref g-feedthrough) edge, as for `LQRTracker`. A `z_ref` or a\ntracking input computed memorylessly from the component's own `u` is refused as\nan `AlgebraicCycle` classified real. A parameter port computed memorylessly from\n`u` closes a cycle likewise.\n\n# Keywords\n\n- `K_fbk`: the `NU × NX` feedback gain.\n- `K_fwd`: the `NU × NZ` feedforward gain.\n- `K_int`: the `NU × NZ` integral gain.\n- `x_trim`: the plant state at trim.\n- `u_trim`: the control input at trim.\n- `z_trim`: the command variables at trim.\n- `Tt`: the time constant of the correction per channel, `Inf` to switch it off\n  and `0` to correct within one tick.\n- `u_min`: the lower limit of `u` per channel.\n- `u_max`: the upper limit of `u` per channel.\n- `hold`: `true` to add the inputs `saturation` and `engaged`.\n- `tracking`: `true` to add the input `v`.\n\nSee also [`AbstractLQRTracker`](@ref), [`DiscretePID`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2751
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 3048
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 3046
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Fn",
+            "docstring": "    Fn{U, Y}(f) -> Fn{U, Y}\n    Fn{U}(f) -> Fn{U, U}\n\nA continuous [primitive](@ref g-primitive) that publishes a function of its one\ninput as its one output.\n\nThe one input, `u`, is typed `U`, and the one output, `y`, is typed `Y`, the\ntwo parameters as written. It publishes `y = f(u)`, and a wire names its\n[ports](@ref g-port) as in `\"fn/u\"` and `\"fn/y\"`. `Fn{U}(f)` is `Fn{U, U}(f)`.\nThe port types are never read off `f`, so `f` returns a `Y`. Nothing converts\nat nominal, so a value of another type is refused as `ConformanceFailure`, at\nbuild for the value the build reads and as a `StepError` carrying it on a later\n[frame](@ref g-frame).\n\nThe [library component](@ref g-library-component) is the one-input\n[`Junction`](@ref) with its input bare. It spells a step between two children\nthat wires cannot, such as a unit conversion or a sign flip. It is not a gain.\nEach instance is a separate [component](@ref g-component) and costs a build\nentry, a cell, a gather and a scatter, so a one-line expression is cheaper\ninside the consumer's own stage.\n\n`f` runs under every [activation](@ref g-activation) of the build, a `Dual` one\nincluded. A `Y` wrapped in [`Pinned`](@ref) declares an output that carries no\npartials. `f` must then drop them itself, as [`Freeze`](@ref) does for a\n`Float64` or an `SArray`. An `f` that passes them on is refused as\n`ConformanceFailure` by the first build, linearization or trim that runs it\nunder a `Dual` activation.\n\nThe function holds no state and declares no [events](@ref g-state-event), so a\ndiscontinuity written into it lands wherever it falls inside a step, as in a\n`Junction`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 168
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 169
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 167
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Fields",
+            "docstring": "    Fields{V}() -> Fields{V}\n\nA continuous [primitive](@ref g-primitive) that publishes each field of its\nstruct input as an output of its own.\n\nThe one input, `u`, is typed `V`, a struct or `NamedTuple` type with at least\none field. The outputs take the field names of `V`, each typed as its field\nand publishing that field of `u`. A wire names the input as in `\"fields/u\"` and\nan output as in `\"fields/pose\"`. The\n[library component](@ref g-library-component) is stateless and unbundles one\nlevel only, so a field that is itself a struct is one output.\n\nA wire takes a [port](@ref g-port) whole, so the component is how a wired\nconsumer takes less than a struct-valued port. A read takes a field directly\nthrough the [leaf address](@ref g-leaf-address) and needs no component.\n\nAny other `V` is refused as an `ArgumentError`. A `Float64` and an `SArray` are\namong them, and [`Unpack`](@ref) splits an `SVector`.\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 230
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 231
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 229
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Select",
+            "docstring": "    Select{V, K}() -> Select{V, K}\n\nA continuous [primitive](@ref g-primitive) that publishes one of its inputs,\npicked by an enum input.\n\n`K` is an enum type. The component has one input per instance of `K`, named\nafter the instance and typed `V`, and the input `select`, a `K`. The one output,\n`y`, is typed `V`. It is the input that `select` names, so over\n`@enum Leg CLIMB CRUISE` a wire reads `\"sel/CRUISE\"`. The\n[library component](@ref g-library-component) is stateless.\n\nThe output reads every input. A `select` wired from a memoryless function of the\noutput therefore closes an [algebraic loop](@ref g-algebraic-loop), which the\nbuild refuses as `AlgebraicCycle`. A linearization takes no partials through\n`select`, and the picked input's partials pass through.\n\nThe component declares no [event](@ref g-state-event), so the jump in the output\nlands where `select` changes. A `select` published from a mode, or held between\n[ticks](@ref g-tick), changes on a [boundary](@ref g-boundary) and the jump is\nclean. One computed from a continuous quantity inside a\n[stage body](@ref g-stage-function) changes inside a step and smears that step.\n\nAn abstract `K`, or an enum with an instance named `select`, is refused as an\n`ArgumentError`.\n\nSee also [`Switch`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 317
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 319
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 316
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Sequence",
+            "docstring": "    Sequence(; times, values, localized::Bool = true) -> Sequence\n\nA continuous [primitive](@ref g-primitive) that publishes a schedule of values,\nswitching at each of its breakpoints.\n\nIts one output, `y`, publishes `values[1]` before `times[1]`, `values[k + 1]`\nfrom `times[k]` until `times[k + 1]`, and the last value from the last\nbreakpoint on. The [library component](@ref g-library-component) has no inputs\nand no continuous state, and is a [`Step`](@ref) at one breakpoint.\n\nIts one mode, the field `m`, counts the breakpoints passed. One\n[state event](@ref g-state-event), `advance`, fires when `t` reaches the next\nbreakpoint and sets the count to every breakpoint at or before `t`.\n\n`values` broadcast to one shape and type, the parameter `V`, `Float64` or an\n`SArray` of `Float64`, so a scalar pairs with a vector and integer values\nqualify. The output is [pinned](@ref g-walked) at `V`, so it carries zero\npartials under every [activation](@ref g-activation).\n\n`localized` picks the detection policy.\n[Localized](@ref g-localized), each breakpoint ends the step at its crossing, so\ntwo breakpoints inside one step each land at their own time.\n[Non-localized](@ref g-non-localized), each jump lands on the first\n[boundary](@ref g-boundary) at or after its breakpoint, and breakpoints passed\ninside one step advance together there.\n\nThe breakpoints at or before `t₀` are passed at\n[boundary zero](@ref g-boundary-zero), and the output starts at the value that\nfollows them.\n\n`times` that do not ascend strictly, or a count of `values` other than `N + 1`,\nare refused as an `ArgumentError`.\n\n# Keywords\n\n- `times`: the `N` breakpoints, strictly ascending, any times.\n- `values`: the `N + 1` values.\n- `localized`: `true` for localized breakpoints, `false` for non-localized\n  ones.\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1720
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1718
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1719
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 1725
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Backlash",
+            "docstring": "    Backlash(; width, s0 = 0.0) -> Backlash\n\nA discrete [primitive](@ref g-primitive) that holds its output inside a deadband\nabout it and moves it with the input outside.\n\nThe output `y` holds while the input `u` stays within half of `width` of it,\nand follows `u` at that offset once `u` moves further. One [store](@ref g-store)\nvalue, the field `s`, holds the previous output, and each [tick](@ref g-tick)\nstores `y`:\n\n    y = clamp(s, u - width / 2, u + width / 2)\n\nOver an `SArray` the deadband is componentwise.\n\n`y` reads `u`, so the [library component](@ref g-library-component) has\n[feedthrough](@ref g-feedthrough). A loop closed on it through a memoryless path\nis refused as `AlgebraicCycle`. A [`UnitDelay`](@ref) after the component breaks\nthat loop, and lags the output by one tick at every rate.\n\nThe width, the state and both [ports](@ref g-port) share one type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, the broadcast of `width` and `s0` to\none shape, so a scalar width pairs with a vector `s0` and integer values\nqualify. A `width` that is not positive in every component is refused as an\n`ArgumentError`. The width stays at `Float64` whatever scalar the model runs at.\n\n# Keywords\n\n- `width`: the full width of the deadband, positive.\n- `s0`: the previous output at the first tick, so the output at `t₀` already\n  sits within half a width of the input.\n\nSee also [`RateLimiter`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 777
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 778
+              },
+              {
+                "function": "s_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 776
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.LimitedDoubleIntegrator",
+            "docstring": "    LimitedDoubleIntegrator(; lower, upper, q0 = zero(lower), v0 = zero(lower), localized::Bool = true) -> LimitedDoubleIntegrator\n\nA continuous [primitive](@ref g-primitive) that publishes the double time\nintegral of its input, its position held between two limits.\n\nThe [library component](@ref g-library-component) is a mechanical stop. It holds\na named continuous state of two leaves, the position `q` and the velocity `v`.\nIts one input `u` is the acceleration, with `q̇ = v` and `v̇ = u` while free and\nboth zero while saturated. The outputs `out` and `velocity` publish `q` and `v`\nfrom [stage 1](@ref g-stage-function).\n\nFour [state events](@ref g-state-event) move the mode, the field `m`, a signed\n`Int8` code with the sign of the limit in force. The code is `-1` at `lower`,\n`0` free and `+1` at `upper`.\n\n- `hit_upper` and `hit_lower` fire when `q` reaches a limit. They are\n  [localized](@ref g-localized). They write `q` to the limit exactly, zero `v`\n  and saturate, so the stop absorbs the impact.\n- `leave_upper` and `leave_lower` fire when `u` turns strictly back into the\n  range, and they free the component from rest. An input of exactly zero at a\n  limit keeps it saturated.\n\nA component that reaches a limit while `u` already points back into the range\nsaturates and frees at the same [boundary](@ref g-boundary), so it leaves the\nlimit from rest. An input that turns outward again after a leave, even within\nthe same step, stops the component on the limit.\n\nThe output `saturation` publishes the code from stage 1, so it has no\n[feedthrough](@ref g-feedthrough). It serves an anti-windup consumer. The code\nchanges only when an event fires, and so only on a declared boundary.\n\n`localized` picks how the leave events fire. With `true`, a departure ends the\nstep at the input's zero crossing, at the cost of root-finding and a split step.\nWith `false`, the leave events are\n[non-localized](@ref g-non-localized), and a departure costs neither. It fires\nat the first boundary after `u` points back into the range, at the latest the\nend of that step. `q` and `v` stay on the limit until then. From then on `v`\ncarries an offset of about `a h² / 2` at most, to leading order in `h`, with `a`\nthe input's slope at its zero crossing and `h` the step. `q` carries an offset\nthat grows by as much per unit time. The next limit removes both.\n\nOver an `SArray`, the limits, the leaves and the codes are componentwise,\n`velocity` publishes an `SArray` of the same shape and `saturation` one of\n`Int8`. The integrator declares one copy of each event per component, named\n`hit_upper_1` to `hit_upper_N`, then `hit_lower_i`, `leave_upper_i` and\n`leave_lower_i`. Each copy acts on its own component.\n\nA `q0` outside the limits is clamped at [boundary zero](@ref g-boundary-zero)\nwith `v` zeroed. A `q0` on a limit with `v0` pointing back into the range starts\nfree and keeps `v0`. At rest there, the initial mode agrees with the initial\ninput.\n\n`q0`, `v0`, `lower` and `upper` broadcast to one shape and type, the parameter\n`V`, `Float64` or an `SArray` of `Float64`, so a scalar limit pairs with a\nvector and integer values qualify. A `lower` not below `upper`, componentwise\nover an `SArray`, is refused as an `ArgumentError`.\n\n# Keywords\n\n- `lower`: the lower limit on `q`, below `upper`.\n- `upper`: the upper limit on `q`.\n- `q0`: the initial value of `q`.\n- `v0`: the initial value of `v`.\n- `localized`: `true` for localized leave events, `false` for non-localized\n  ones.\n\nSee also [`LimitedIntegrator`](@ref), [`Integrator`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2012
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2013
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2010
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2011
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2038
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Comparator",
+            "docstring": "    Comparator(; threshold = nothing, lower = nothing, upper = nothing,\n               localized::Bool = true) -> Comparator\n\nA continuous [primitive](@ref g-primitive) that publishes whether its input has\nrisen past a threshold, with optional hysteresis.\n\nIts input is `u`, and its one output, `y`, is a `Bool` published from\n[stage 1](@ref g-stage-function) by the mode, the field `m`. The mode is an\n`Int8` code, `0` below and `1` above. Two [state events](@ref g-state-event)\nmove it. `switch_on` fires when `u` rises to `upper` while below, and\n`switch_off` when `u` falls strictly below `lower` while above. At\n`lower == upper` the [library component](@ref g-library-component) is a plain\nthreshold and publishes `u ≥ threshold`. Between them it holds its last value,\nwhich is the hysteresis.\n\nThe output is [pinned](@ref g-walked) at `Bool`, and it changes only when an\nevent fires, so only on a [boundary](@ref g-boundary). It is the declared way to\nfeed a [`Switch`](@ref)'s `select` from a continuous quantity, and the switch's\njump then lands where the comparator's event lands. `y` reads no input, so the\ncomponent has no [feedthrough](@ref g-feedthrough).\n\n`localized` picks the detection policy.\n[Localized](@ref g-localized), each switch ends the step at the crossing.\n[Non-localized](@ref g-non-localized), each switch lands on the first\nboundary that observes it.\n\nOver an `SArray`, the thresholds and the codes are componentwise, and `y` is an\n`SArray` of `Bool` of the same shape. The comparator declares `N` copies of the\ntwo events, one per component, named `switch_on_1` to `switch_on_N`, then\n`switch_off_i`. Each copy acts on its own component.\n\nThe component starts below. An input already at or above `upper` at `t₀`\nswitches the component on at [boundary zero](@ref g-boundary-zero).\n\nA plain comparator takes `threshold` alone. Hysteresis takes `lower` and `upper`\ntogether and without `threshold`. Any other combination of the three keywords,\nor a `lower` above `upper`, is refused as an `ArgumentError`.\n\n`lower` and `upper` broadcast to one shape and type, the parameter `V`, which\nthe input `u` shares, `Float64` or an `SArray` of `Float64`, so a scalar pairs\nwith a vector and integer values qualify.\n\n# Keywords\n\n- `threshold`: the threshold of a plain comparator, which sets both `lower` and\n  `upper`.\n- `lower`: the threshold `u` falls below for the output to turn `false`, at most\n  `upper`, componentwise over an `SArray`.\n- `upper`: the threshold `u` rises to for the output to turn `true`.\n- `localized`: `true` for localized switches, `false` for non-localized\n  ones.\n\nSee also [`Relay`](@ref), [`Switch`](@ref).\n",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2245
+              },
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2246
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2243
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2244
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+                "line": 2258
+              }
+            ]
+          }
+        ]
+      },
+      "outputs": {
+        "order": [
+          "sum",
+          "or",
+          "pack",
+          "constant",
+          "step",
+          "source",
+          "noise",
+          "integrator",
+          "limited",
+          "lag",
+          "ss",
+          "tf",
+          "relay",
+          "unit_delay",
+          "d_integrator",
+          "rate_limiter",
+          "dss",
+          "dtf",
+          "zoh_ss",
+          "zoh_tf",
+          "d_limited",
+          "delay",
+          "freeze",
+          "fn",
+          "apply",
+          "pair",
+          "fields",
+          "gear",
+          "sequence",
+          "ld_integrator",
+          "comparator",
+          "and",
+          "stop",
+          "unpack",
+          "d_lqr",
+          "lqr",
+          "pid",
+          "select",
+          "switch",
+          "d_pid",
+          "backlash"
+        ],
+        "components": [
+          {
+            "path": "sum",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "or",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "and",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "pack",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "unpack",
+            "stage1": [],
+            "stage2": [
+              "out1",
+              "out2"
+            ]
+          },
+          {
+            "path": "switch",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "stop",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "constant",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "step",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "source",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "noise",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "integrator",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "limited",
+            "stage1": [
+              "out",
+              "saturation"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "lag",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "ss",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "tf",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "relay",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "unit_delay",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "d_integrator",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "rate_limiter",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "dss",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "dtf",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "zoh_ss",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "zoh_tf",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "d_limited",
+            "stage1": [
+              "out",
+              "saturation"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "delay",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "freeze",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "pid",
+            "stage1": [],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "d_pid",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "lqr",
+            "stage1": [],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "d_lqr",
+            "stage1": [
+              "saturated"
+            ],
+            "stage2": [
+              "u",
+              "u_raw"
+            ]
+          },
+          {
+            "path": "fn",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "apply",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "pair",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "fields",
+            "stage1": [],
+            "stage2": [
+              "a",
+              "b"
+            ]
+          },
+          {
+            "path": "gear",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "select",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "sequence",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "backlash",
+            "stage1": [],
+            "stage2": [
+              "y"
+            ]
+          },
+          {
+            "path": "ld_integrator",
+            "stage1": [
+              "out",
+              "velocity",
+              "saturation"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "comparator",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          }
+        ]
+      },
+      "events": {
+        "components": [
+          {
+            "path": "sum",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "or",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "and",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "unpack",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "switch",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "stop",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "constant",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "step",
+            "events": [
+              {
+                "name": "fire",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "source",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "noise",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "integrator",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "limited",
+            "events": [
+              {
+                "name": "hit_upper",
+                "policy": "localized"
+              },
+              {
+                "name": "hit_lower",
+                "policy": "localized"
+              },
+              {
+                "name": "leave_upper",
+                "policy": "localized"
+              },
+              {
+                "name": "leave_lower",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "lag",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "ss",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "tf",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "relay",
+            "events": [
+              {
+                "name": "switch_on",
+                "policy": "localized"
+              },
+              {
+                "name": "switch_off",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "unit_delay",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "d_integrator",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "rate_limiter",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "dss",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "dtf",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "zoh_ss",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "zoh_tf",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "d_limited",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "delay",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "freeze",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pid",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "d_pid",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "lqr",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "d_lqr",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fn",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "apply",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pair",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "fields",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "gear",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "select",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "sequence",
+            "events": [
+              {
+                "name": "advance",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "backlash",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "ld_integrator",
+            "events": [
+              {
+                "name": "hit_upper",
+                "policy": "localized"
+              },
+              {
+                "name": "hit_lower",
+                "policy": "localized"
+              },
+              {
+                "name": "leave_upper",
+                "policy": "localized"
+              },
+              {
+                "name": "leave_lower",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "comparator",
+            "events": [
+              {
+                "name": "switch_on",
+                "policy": "localized"
+              },
+              {
+                "name": "switch_off",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          }
+        ]
+      },
+      "warnings": []
+    },
+    "dt_frame": {
+      "num": 1,
+      "den": 100
+    },
+    "dt_base": {
+      "num": 1,
+      "den": 100
+    },
+    "h_max": {
+      "num": 1,
+      "den": 100
+    },
+    "algorithm": {
+      "text": "RK4()",
+      "proposes": false
+    },
+    "firing_budget": 4,
+    "localization_tol": 1.0e-6,
+    "localization_budget": 8,
+    "attempt_budget": 7,
+    "schedule": {
+      "anchors": [
+        {
+          "D": 10,
+          "phi": 0
+        },
+        {
+          "D": 2,
+          "phi": 0
+        }
+      ],
+      "rows": [
+        {
+          "path": "noise",
+          "D": 10,
+          "phi": 0
+        },
+        {
+          "path": "unit_delay",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "d_integrator",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "rate_limiter",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "dss",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "dtf",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "zoh_ss",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "zoh_tf",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "d_limited",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "delay",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "d_pid",
+          "D": 2,
+          "phi": 1
+        },
+        {
+          "path": "d_lqr",
+          "D": 1,
+          "phi": 0
+        },
+        {
+          "path": "backlash",
+          "D": 1,
+          "phi": 0
+        }
+      ],
+      "scopes": []
+    },
+    "warnings": []
+  }
+}

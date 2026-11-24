@@ -41,6 +41,20 @@ export function fitView(extent: Rect, viewport: Size, padding: number, maxScale 
   };
 }
 
+/**
+ * The fit leaving a box in the bottom-left corner clear (deployment_overlay.md answer 13): of two candidates, the
+ * box's height left free at the bottom or its width left free at the left, the larger scale, the bottom on a tie.
+ * Without a box, or with neither candidate room for the padding, `fitView` over the whole viewport.
+ */
+export function fitBeside(extent: Rect, viewport: Size, padding: number, maxScale: number, box?: Size): View {
+  const whole = fitView(extent, viewport, padding, maxScale);
+  if (!box) return whole;
+  const below = fitView(extent, { width: viewport.width, height: viewport.height - box.height }, padding, maxScale);
+  const right = fitView(extent, { width: viewport.width - box.width, height: viewport.height }, padding, maxScale);
+  if (below.scale <= 0 && right.scale <= 0) return whole;
+  return right.scale > below.scale ? { ...right, x: right.x - box.width / right.scale } : below;
+}
+
 /** The world point under a screen point, relative to the SVG's top-left corner. */
 export const toWorld = (v: View, p: Point): Point => ({ x: v.x + p.x / v.scale, y: v.y + p.y / v.scale });
 

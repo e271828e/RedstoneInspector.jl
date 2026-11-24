@@ -42,7 +42,8 @@ export const palette = {
    * bands by step, the strokes the same hue darkened. Fills color the wires too, so they keep clear of the error,
    * warning, highlight and wire colors under every vision; every fill pair is CIEDE2000 12 or more apart under
    * normal vision and, under the simulations, never identical (4 and up), the legend focus telling any two apart.
-   * Step 0, the base grid wherever a block ticks on it, is the warm peach opposite the continuous blue.
+   * Step 0 is the warm peach opposite the continuous blue, the first triple in palette order and nothing more
+   * (deployment_overlay.md answer 13); the order is the build's alone, so a deployed model keeps its colors.
    */
   rate: [
     { fill: "#f8bc91", stroke: "#8d4900" }, // peach, brown

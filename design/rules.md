@@ -378,6 +378,51 @@ full text stays.
 - **A mutant runner in place.** A runner that swaps source files in place
   shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
   until it has restored the last one.
+- **Enter on a drawer button.** The shell's Enter opens a selected closed
+  assembly before the browser presses the focused button, so Enter on a chart
+  swatch or a row's button then opens the assembly; Space presses it. Found
+  2026-11-23.
+- **A sticky column beside a wide timeline.** The chart's labels are one
+  sticky element in a `width: max-content` flex row, so they stay while the
+  tab's body scrolls sideways; the fit measures the labels' `offsetWidth`,
+  their gap their own padding so their background covers it.
+- **A Playwright probe outside the tree.** A probe config and spec outside the
+  tree load the harness only with a `node_modules` symlink beside them
+  and a `package.json` of `{"type": "module"}`. A locator's `textContent()`
+  waits its whole timeout for an absent element; a probe reads absent ones
+  through `evaluate`.
+- **A column head as a term of the law.** The check that every timing head is
+  a term of the help page's law admits `k`, which the law writes only as the
+  subscript of `Δtₖ` and its kin.
+- **A fit before its legend.** The legend is drawn from the level's state, so
+  a fit run in the same turn as the new level measures no legend; a first fit
+  waits a `tick()`, and `data-ready` waits for it.
+- **The mode across two drops.** The color mode is kept per browser, so a
+  check's second drop opens in rate mode already, and `r` then turns it off.
+- **A table in the narrow pane.** The frames table beside its `dt` overflowed
+  the 240 px pane by 6 px; it stands in a section of the pane's whole
+  width, a path takes a `<wbr>`
+  after each slash, and only the values are `nowrap`. Even so `staggered`'s
+  table and a build's seconds row overflowed it by up to 25 px. Values free
+  to wrap wrapped at 360 px too, since an auto table squeezes every column
+  that can wrap, so a value is two `nowrap` spans, broken after its equals
+  sign only in a container of at most 300 px. Found 2026-11-23.
+- **A retired word inside another.** The help check's retired words match
+  "leaves" as well as "leaf", so a verb trips it.
+- **An inline model in Vitest.** `timing.ts` reads `model.descriptor.kind`, so
+  an inline `Model` cast without a descriptor throws in `legendText`; give it
+  `descriptor: {kind: "build"}`.
+- **New fixtures on the drift line.** The drift check of `AGENTS.md`,
+  `git status --porcelain -- frontend/fixtures frontend/schema`, lists a new
+  fixture, staged or untracked; it prints nothing only after the commit.
+- **A collapsed section in a check.** A closed `details` keeps its content in
+  the DOM, so `toHaveText` and `toHaveCount` pass on it; a check that a
+  section is collapsed asserts visibility. `openSection` in
+  `e2e/fixtures.ts` opens one by its heading, and returns before the
+  `toggle` event reaches the session, up to a frame later. Found 2026-11-24.
+- **Uppercase on Greek.** `text-transform: uppercase` draws `Δt` as `ΔT` and
+  `τ` as `Τ`, so a symbol beside a heading stands outside the `h3`. Found
+  2026-11-24.
 
 ## Amending a record
 

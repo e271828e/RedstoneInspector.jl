@@ -1,11 +1,12 @@
 // Rate mode's data (visual_grammar.md answer 6): each drawn block's timing
-// triple, the model's palette order, a level's legend and the clock badge.
+// triple, the model's palette order, a level's legend lines and the clock badge.
 import type { Node } from "./descriptor";
 import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
 import { terminalProducer } from "./resolve";
+import { fromRational, lt, mul, q, type Q } from "./timing";
 
-/** A timing triple: the anchor's index (0 the base grid), the multiple `m` and the phase `c`. */
+/** A timing triple: the anchor's index `k` (0 the base grid), `m` and `c` in that anchor's ticks. */
 export type Triple = [anchor: number, m: number, c: number];
 export const tripleKey = (t: Triple): string => t.join(",");
 /** The palette's colored steps; a triple from this index on is an extra. */
@@ -45,11 +46,16 @@ export function blockTriple(model: Model, path: string): Triple | undefined {
 /** Whether an assembly's discrete primitives tick on several triples, the assembly gray's case. */
 export const mixed = (model: Model, path: string): boolean => clocksBeneath(model, path).length > 1;
 
-/** A triple's period in seconds, the anchor's `T` times `m`; the base grid before every anchor. */
-function period(model: Model, t: Triple): number {
-  if (t[0] === 0) return -1;
-  const T = model.structure!.anchors[t[0] - 1].dt;
-  return (T.num / T.den) * t[1];
+/** A triple's `Δt` in seconds, `m · Δtₖ`, exact; undefined on the base grid, which comes before every anchor. */
+function period(model: Model, t: Triple): Q | undefined {
+  return t[0] === 0 ? undefined : mul(q(t[1]), fromRational(model.structure!.anchors[t[0] - 1].dt));
+}
+
+/** Two triples by their exact periods, the base grid's first; 0 on a tie. */
+function byPeriod(model: Model, a: Triple, b: Triple): number {
+  const pa = period(model, a), pb = period(model, b);
+  if (!pa || !pb) return (pa ? 1 : 0) - (pb ? 1 : 0);
+  return lt(pa, pb) ? -1 : lt(pb, pa) ? 1 : 0;
 }
 
 /**
@@ -63,28 +69,16 @@ export function tripleOrder(model: Model): Triple[] {
     const t = blockTriple(model, n.path);
     if (t) seen.set(tripleKey(t), t);
   }
-  return [...seen.values()].sort((a, b) => period(model, a) - period(model, b) || a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+  return [...seen.values()].sort((a, b) => byPeriod(model, a, b) || a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
 }
 
 /** Each triple's step by its key. */
 export const stepsOf = (model: Model): Map<string, number> => new Map(tripleOrder(model).map((t, i) => [tripleKey(t), i]));
 
-/** A triple read out: `anchor 1 (1/10 s) × 2, phase 1`, `base grid` for anchor 0, `× m` past 1, the phase past 0. */
-export function tripleText(model: Model, t: Triple): string {
-  const T = t[0] === 0 ? undefined : model.structure!.anchors[t[0] - 1].dt;
-  const head = T ? `anchor ${t[0]} (${T.num}/${T.den} s)` : "base grid";
-  return `${head}${t[1] > 1 ? ` × ${t[1]}` : ""}${t[2] > 0 ? `, phase ${t[2]}` : ""}`;
-}
-
-/** The anchor's key and the scope declaring it, `fast at the root`; the base grid for anchor 0. */
-export function tripleTitle(model: Model, t: Triple): string {
-  if (t[0] === 0) return "the base grid";
-  const a = model.structure!.anchors[t[0] - 1];
-  return `${a.key} at ${a.scope === "" ? "the root" : a.scope}`;
-}
-
 /** The continuous line's key, beside the triples' keys. */
 export const CONTINUOUS = "continuous";
+/** The continuous line's tooltip; a triple's line reads `legendText` (deployment_overlay.md answer 13). */
+export const CONTINUOUS_TITLE = "No rate: continuous primitives, assemblies with no discrete primitive, and their wires";
 
 /** A legend line: a triple's, or the continuous color's, which has no triple and no step. */
 export interface LegendLine {
@@ -92,8 +86,6 @@ export interface LegendLine {
   key: string;
   triple?: Triple;
   step?: number;
-  text: string;
-  title: string;
 }
 
 /** The blocks a level draws that can take a color: its children, or a primitive root itself. */
@@ -121,9 +113,9 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
     else if (!fromRootInput(model, level, w)) continuous = true;
   }
   const lines: LegendLine[] = [...visible.values()]
-    .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))!, text: tripleText(model, t), title: tripleTitle(model, t) }))
+    .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))! }))
     .sort((a, b) => a.step! - b.step!);
-  if (continuous) lines.unshift({ key: CONTINUOUS, text: "continuous", title: "No rate: continuous primitives, assemblies with no discrete primitive, and their wires" });
+  if (continuous) lines.unshift({ key: CONTINUOUS });
   return lines;
 }
 

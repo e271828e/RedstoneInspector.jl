@@ -20,6 +20,19 @@ const CLOSED_LOOP: Record<string, Pins> = {
 // large's root draws its two output pins in reverse declaration order. Increment 6's ELK pass found one option
 // that fixes it, forceNodeModelOrder, and it raises large's crossings (663 to 699), so the option stays off, the
 // reversed order is accepted and no check pins the pins' order.
+const RATES: Record<string, Pins> = {
+  "": row(6, 5, 0, 3, 2, 1, 0),
+  fast: row(5, 4, 1, 2, 1, 0, 0),
+  "fast/outer": row(3, 2, 1, 1, 0, 0, 0),
+  slow: row(3, 2, 1, 1, 0, 0, 0),
+};
+const LIBRARY: Record<string, Pins> = { "": row(43, 48, 2, 0, 0, 29, 9) };
+const TIMING: Record<string, Pins> = {
+  "": row(11, 9, 2, 6, 1, 0, 1),
+  fast: row(7, 6, 1, 4, 1, 0, 0),
+  "fast/outer": row(7, 6, 1, 3, 1, 0, 0),
+  "fast/outer/deep": row(3, 2, 1, 1, 0, 0, 0),
+};
 const LARGE_INNER = ["b008", "b023", "b038", "b053", "b068", "b083", "b098", "b113", "b128", "b143"];
 const TABLE: Record<string, Record<string, Pins>> = {
   aircraft: { "": row(3, 2, 2, 0, 0, 6, 0) },
@@ -29,15 +42,22 @@ const TABLE: Record<string, Record<string, Pins>> = {
   containers: { "": row(8, 7, 1, 1, 1, 0, 0), scale: row(3, 2, 1, 1, 0, 0, 0) },
   primitive: { "": row(5, 4, 2, 2, 0, 1, 0) },
   kinds: { "": row(18, 10, 0, 9, 0, 9, 6) },
-  rates: {
-    "": row(6, 5, 0, 3, 2, 1, 0),
-    fast: row(5, 4, 1, 2, 1, 0, 0),
-    "fast/outer": row(3, 2, 1, 1, 0, 0, 0),
-    slow: row(3, 2, 1, 1, 0, 0, 0),
-  },
+  rates: RATES,
+  rates_deployment: RATES,
   large: { "": row(156, 323, 4, 2, 10, 294, 0), ...Object.fromEntries(LARGE_INNER.map((p) => [p, row(4, 3, 1, 1, 0, 2, 0)])) },
   failure_cycle: { "": row(5, 5, 2, 1, 0, 0, 0) },
-  library: { "": row(43, 48, 2, 0, 0, 29, 9) },
+  library: LIBRARY,
+  library_deployment: LIBRARY,
+  timing: TIMING,
+  timing_deployment: TIMING,
+  approach_deployment: {
+    "": row(8, 7, 5, 0, 1, 1, 0),
+    vehicle: row(11, 20, 5, 1, 4, 6, 0),
+    "vehicle/actuators": row(8, 6, 2, 2, 0, 2, 0),
+    "vehicle/cascade": row(16, 22, 9, 2, 0, 5, 1),
+    "vehicle/selection": row(15, 14, 5, 5, 0, 3, 0),
+    "vehicle/sensing": row(4, 3, 1, 1, 0, 1, 0),
+  },
   failure_nested: { "": row(5, 5, 2, 1, 1, 0, 0), ctl: row(4, 3, 2, 1, 0, 0, 0) },
   failure_dead: { "": row(5, 5, 2, 0, 0, 0, 0) },
   failure_probe: { "": row(3, 1, 1, 0, 1, 0, 0), s: row(4, 3, 1, 1, 0, 0, 0) },

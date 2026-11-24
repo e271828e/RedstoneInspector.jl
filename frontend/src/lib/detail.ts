@@ -1,9 +1,10 @@
 // What the detail pane shows, as data (workspace.md answer 4): one function per
 // selectable element, each a function of the model and the element's key.
-import type { Anchor, KindMarker, Location, Parameter, PrimitiveFace, Rational, Timing } from "./descriptor";
+import type { KindMarker, Location, Parameter, PrimitiveFace } from "./descriptor";
 import { inPinId, levelOf, outPinId, portId } from "./level";
 import type { Model } from "./model";
 import { folderOf } from "./outline";
+import { chainLine, framesTable, scopeFramesTable, type FramesTable } from "./timing";
 import { faceInfo, faceKey, isRootInput, terminalConsumers, terminalProducer, type Face, type Side } from "./resolve";
 import { displayName, type Membership, type Tree } from "./tree";
 
@@ -32,35 +33,6 @@ export function kindPhrase(k: KindMarker): string {
   }
 }
 
-const rational = (r: Rational) => `${r.num}/${r.den}`;
-
-/** A timing read out: the anchor by its key, or the base grid for anchor 0, with its T and tau; the multiple and the phase. */
-export function timingPhrase(t: Timing, anchors: Anchor[]): string {
-  const a = t.anchor === 0 ? undefined : anchors[t.anchor - 1];
-  const base = t.anchor === 0 ? "the base grid" : `anchor ${a?.key ?? t.anchor}`;
-  const rate = a ? ` (T ${rational(a.dt)} s, tau ${rational(a.tau)} s)` : "";
-  return `${base}${rate}, m ${t.m}, c ${t.c}`;
-}
-
-/** An ordinal: 2nd, 3rd, 4th, 11th, 21st. */
-function ordinal(n: number): string {
-  const teen = n % 100 >= 11 && n % 100 <= 13;
-  return `${n}${teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
-}
-
-/**
- * A discrete primitive's rate as a phrase: anchor 0 as "every base tick", another anchor as "every tick of q_ctl,
- * 1/50 s" with its key and T, and its tau when non-zero; `m` > 1 as "every 4th", `c` > 0 adding ", offset 1".
- */
-export function ratePhrase(t: Timing, anchors: Anchor[]): string {
-  const every = t.m === 1 ? "every" : `every ${ordinal(t.m)}`;
-  const a = t.anchor === 0 ? undefined : anchors[t.anchor - 1];
-  const head = t.anchor === 0 ? `${every} base tick`
-    : !a ? `${every} tick of anchor ${t.anchor}`
-    : `${every} tick of ${a.key}, ${rational(a.dt)} s${a.tau.num === 0 ? "" : `, tau ${rational(a.tau)} s`}`;
-  return t.c > 0 ? `${head}, offset ${t.c}` : head;
-}
-
 /** The class in the reader's words and, on a primitive, the tier: "primitive, continuous", "assembly". */
 export function classPhrase(kind: "primitive" | "assembly", tier?: string): string {
   return tier ? `${kind}, ${tier}` : kind;
@@ -81,11 +53,15 @@ export function memberTitle(m: { how: Membership | undefined; field: string; key
 export const FACT_TITLES = {
   type: "The node's Julia type, qualified by its module, with the alias the library gives it when it gives one.",
   class: "Whether the node is a primitive or an assembly and, for a primitive, its tier: continuous or discrete.",
-  rate: "When the discrete primitive runs: every m-th tick of its anchor's grid, offset by c ticks.",
   children: "How many child nodes the assembly holds directly.",
   wires: "How many wires the assembly declares on its own level.",
   member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
 } as const;
+
+/** The pane's collapsible sections, in order (workspace.md answer 4). */
+export type Section = "signature" | "docstring" | "locations" | "timing" | "parameters" | "faces";
+/** The TIMING heading's hover title, a primitive's and a rate scope's. */
+export const TIMING_TITLE = "When the discrete primitive or the rate scope ticks, in each of its frames down to seconds.";
 
 /** One face's facts: its type and kind phrase, what feeds it and what it feeds, an output's stage. */
 export interface FaceFacts {
@@ -107,10 +83,9 @@ export interface FaceFacts {
   consumers?: Face[];
 }
 
-/** The open level: its node's facts as a closed assembly's (workspace.md answer 4) and its rate scopes. */
+/** The open level: its node's facts as a closed assembly's (workspace.md answer 4). */
 export interface LevelFacts extends Omit<NodeFacts, "kind"> {
   kind: "level";
-  scopes: { key: string; timing: string }[];
 }
 export interface NodeFacts {
   kind: "primitive" | "assembly";
@@ -119,8 +94,8 @@ export interface NodeFacts {
   segment: string;
   displayName: string;
   tier?: "continuous" | "discrete";
-  /** A discrete primitive's rate: the phrase and the timing in full for its hover title. A continuous primitive has none. */
-  rate?: { phrase: string; title: string };
+  /** A discrete primitive's or a rate scope's frames table; a primitive's chain line, none on an empty chain (deployment_overlay.md answer 10). */
+  timing?: { table: FramesTable; chain?: string };
   membership?: { how: Membership | undefined; field: string; key: string };
   alias?: string;
   type: string;
@@ -200,8 +175,10 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
   if (n.key !== undefined) facts.membership = { how: tree.membership.get(path), field: n.field!, key: n.key };
   if (n.class === "primitive") {
     facts.tier = n.tier;
-    if (n.tier === "discrete") facts.rate = { phrase: ratePhrase(n.timing, s.anchors), title: timingPhrase(n.timing, s.anchors) };
+    if (n.tier === "discrete") facts.timing = { table: framesTable(model, path)!, chain: chainLine(model, path) };
   } else {
+    const table = scopeFramesTable(model, path);
+    if (table) facts.timing = { table };
     facts.children = tree.children.get(path)!.length;
     facts.wires = n.wires.length;
   }
@@ -209,17 +186,12 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
 }
 
 /** A count in words, the singular for one: `1 wire`, `2 wires`. */
-export const count = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
+export const count = (n: number | bigint, one: string, many: string): string => `${n} ${Number(n) === 1 ? one : many}`;
 
-/** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is the root itself. */
+/** The open level's facts: its node's as a closed assembly's; a primitive root's level is the root itself. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
-  const s = model.structure!, n = model.tree!.byPath.get(path)!;
   const node = nodeFacts(model, path);
-  if (n.class === "primitive") return node;
-  return {
-    ...node, kind: "level",
-    scopes: s.scopes.filter((x) => x.path === path).map((x) => ({ key: x.key, timing: timingPhrase(x.timing, s.anchors) })),
-  };
+  return node.kind === "primitive" ? node : { ...node, kind: "level" };
 }
 
 export function folderFacts(model: Model, path: string): FolderFacts | undefined {

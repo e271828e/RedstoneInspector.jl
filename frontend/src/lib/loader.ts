@@ -1,5 +1,6 @@
-// The header check and the label rule (workspace.md answer 10). The page
-// validates nothing else at runtime.
+// The header check, the refusal of a file an older core wrote and the label rule
+// (workspace.md answer 10, deployment_overlay.md answer 2). The page validates
+// nothing else at runtime.
 import type { OutputsSection, RedstoneDescriptor, StructureSection } from "./descriptor";
 import { MAJOR } from "./protocol";
 import { displayName } from "./tree";
@@ -45,6 +46,12 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
   if (d.kind === "failure" && d.failure.structure !== undefined && !Array.isArray(d.failure.structure?.nodes)) {
     return refuse("This failure descriptor has no failure.structure.nodes.");
   }
+  // A file an older core wrote says 1.0 too, so its structure tells it (deployment_overlay.md answer 2).
+  const older = (key: string) => refuse(`This ${d.kind} descriptor has no ${key}: an older Redstone wrote it. Write the file again with the current Redstone.`);
+  const structure = d.kind === "build" ? d.build.structure : d.kind === "deployment" ? d.deployment.build.structure : d.failure.structure;
+  const at = d.kind === "deployment" ? "deployment.build.structure" : `${d.kind}.structure`;
+  if (structure !== undefined && (typeof structure.grid !== "object" || structure.grid === null)) return older(`${at}.grid`);
+  if (d.kind === "deployment" && (typeof d.deployment.schedule !== "object" || d.deployment.schedule === null)) return older("deployment.schedule");
   const descriptor = d as RedstoneDescriptor;
   const loaded: Loaded = { ok: true, descriptor, label: labelOf(descriptor, fileName) };
   if (minor > 0) loaded.note = `format ${MAJOR}.${minor}, newer than this page's ${MAJOR}.0; unknown fields ignored`;

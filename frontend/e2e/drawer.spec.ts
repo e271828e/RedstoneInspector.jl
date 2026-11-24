@@ -277,3 +277,29 @@ test("large: with the drawer focused, j k and the vertical arrows scroll its bod
   await press(page, "d");
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });
+
+// deployment_overlay.md answer 4: a deployment's own warnings after its build's, under the same rules
+test("timing_deployment: its own GridUtilization the one amber row, counted, the drawer closed, the root's tree row marked, the message whole", async ({ page }) => {
+  await drop(page, "timing_deployment");
+  await expect(drawer(page)).toHaveAttribute("data-open", "false");
+  await expect(drawer(page).locator('button.tab[data-tab="diagnostics"] .count')).toHaveText("1");
+  await drawer(page).locator('button.tab[data-tab="diagnostics"]').click();
+  await expect(rowsOf(page)).toHaveCount(1);
+  await expect(row(page, 0)).toHaveAttribute("data-severity", "warning");
+  await expect(row(page, 0).locator(".kind")).toHaveText("GridUtilization");
+  await expect(treeRow(page, "").locator('span.mark[data-mark="warning"]')).toHaveAttribute("title", "1 warning");
+  // the message's ten lines stand whole, each on its own line
+  const text = await row(page, 0).locator("span.message").innerText();
+  expect(text.split("\n")).toHaveLength(10);
+  expect(text).toContain("declaring 0//1 or 1//50 keeps 1//50");
+  await shot(page, "timing_deployment", "", "drawer-deployment-warning");
+});
+
+test("timing_deployment with its warning moved to fast: fast amber on the canvas and in the tree", async ({ page }) => {
+  const d = JSON.parse(fixtureText("timing_deployment"));
+  d.deployment.warnings[0].path = "fast";
+  await drop(page, "timing_deployment", JSON.stringify(d));
+  await expect(page.locator('rect.mark-halo[data-id="fast"][data-severity="warning"]')).toHaveCount(1);
+  await expect(treeRow(page, "fast").locator('span.mark[data-mark="warning"]')).toHaveAttribute("title", "1 warning");
+  await expect(drawer(page)).toHaveAttribute("data-open", "false");
+});

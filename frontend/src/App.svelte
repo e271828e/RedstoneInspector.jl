@@ -31,7 +31,7 @@
   import { faceText, originOf, routeDrawing, routeLevels, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
     back, clearLegendFocus, clearRoute, climb, closeHelp, escape, forward, load, open, openDrawer, openFromHistory, select, session, setFocus,
-    say, setLayout, setQuery, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
+    say, setLayout, setQuery, setSection, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
@@ -161,6 +161,12 @@
     toggleDiagnosticFocus(index);
     const s = session.diagnosticFocus === index ? diagnosticTarget(model!, diagnostics[index]) : undefined;
     if (s) select(s);
+  }
+
+  /** A timing chart's swatch: the legend's focus, rate mode's alone, so a press in tier mode turns rate mode on first. */
+  function chartSwatch(key: string) {
+    if (prefs.mode === "tier") setMode("rate");
+    toggleLegendFocus(key);
   }
 
   /**
@@ -483,13 +489,14 @@
           {model} level={session.level} selection={session.selection} focused={session.focus === "detail"}
           editor={live.state === "connected"} onselect={select} onopen={open} {onlocation}
           origin={selectionOrigin} tracing={sameFace(selectionOrigin, session.route)} ontrace={traceFrom}
+          sections={session.sections} onsection={setSection}
         />
       {/snippet}
       {#snippet drawer()}
         <Drawer
           {model} open={session.drawer.open} tab={session.drawer.tab} focused={session.focus === "drawer"} {diagnostics}
           current={session.diagnosticFocus} editor={live.state === "connected"} ontab={toggleDrawer} ondiagnostic={diagnostic} {onlocation}
-          onrow={select}
+          onrow={select} {legendFocus} onlegend={chartSwatch}
         />
       {/snippet}
       {#snippet status()}

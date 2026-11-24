@@ -22,7 +22,7 @@
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { orderBadge } from "../lib/analysis";
-  import { blockTriple, clockCount, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
+  import { blockTriple, clockCount, CONTINUOUS_TITLE, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
   import { labelledPorts, levelWireClasses, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
@@ -34,7 +34,8 @@
   import type { Face } from "../lib/resolve";
   import { originOf, type RouteDrawing } from "../lib/routes";
   import { follow as followView, type Box } from "../lib/navigate";
-  import { centreOn, fitView, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
+  import { legendText } from "../lib/timing";
+  import { centreOn, fitBeside, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
   import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
   import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
@@ -93,6 +94,8 @@
   } = $props();
 
   const FIT_PADDING = 24;
+  /** The legend's inset from the viewport's bottom-left corner, its CSS's `bottom` and `left`. */
+  const LEGEND_INSET = 8;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
   /** The wheel's zoom per pixel of scroll. */
@@ -101,6 +104,8 @@
   const CLICK_SLOP = 3;
 
   let svg = $state<SVGSVGElement>();
+  /** The legend's box, present in rate mode with a line. */
+  let legendBox = $state<HTMLDivElement>();
   let width = $state(0);
   let height = $state(0);
   let shown = $state.raw<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
@@ -211,13 +216,26 @@
   }
 
   function draw(level: Level, sizes: Map<string, BlockSize>, geometry: Geometry, d: ReadonlySet<string>, v: View | undefined) {
-    shown = { level, sizes, geometry };
+    const drawn = { level, sizes, geometry };
+    shown = drawn;
     dragged = d;
-    if (v) setView(v);
-    else fit();
-    ready = true;
-    if (pending !== undefined) follow(pending);
-    pending = undefined;
+    const finish = () => {
+      ready = true;
+      if (pending !== undefined) follow(pending);
+      pending = undefined;
+    };
+    if (v) {
+      setView(v);
+      finish();
+    } else {
+      // the fit measures the level's own legend, drawn once the DOM has the new level
+      const mine = run;
+      tick().then(() => {
+        if (mine !== run || shown !== drawn) return;
+        fit();
+        finish();
+      });
+    }
   }
 
   /** The latest ELK run; a level change or a newer run leaves an older one's result unused. */
@@ -263,7 +281,7 @@
     onview?.(v);
   }
 
-  /** Fits the level, dragged blocks included. */
+  /** Fits the level, dragged blocks included, leaving the legend's box and its inset clear. */
   export function fit() {
     if (!shown) return;
     const g = shown.geometry;
@@ -272,7 +290,8 @@
       x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
       x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
     }
-    setView(fitView({ x: x0, y: y0, width: x1 - x0, height: y1 - y0 }, { width, height }, FIT_PADDING, FIT_MAX_SCALE));
+    const box = legendBox && { width: legendBox.offsetWidth + LEGEND_INSET, height: legendBox.offsetHeight + LEGEND_INSET };
+    setView(fitBeside({ x: x0, y: y0, width: x1 - x0, height: y1 - y0 }, { width, height }, FIT_PADDING, FIT_MAX_SCALE, box));
   }
 
   /** Zooms by a factor about the viewport's center. */
@@ -880,11 +899,13 @@
     </div>
   {/if}
   {#if lines.length}
-    <div class="legend" aria-label="the rates on this level">
+    <div class="legend" aria-label="the rates on this level" bind:this={legendBox}>
       <ul>
         {#each lines as l (l.key)}
-          <li data-step={l.step} class:continuous={l.step === undefined} title={l.title}>
+          {@const t = l.triple && legendText(model, l.triple)}
+          <li data-step={l.step} class:continuous={l.step === undefined} title={t ? t.title : CONTINUOUS_TITLE}>
             <button class="line" aria-pressed={legendFocus === l.key} onclick={() => onlegend?.(l.key)}>
+            <span class="marks">
             {#if l.step === undefined}
               <span class="swatch" style:background={palette.continuous.fill} style:border-color={palette.continuous.stroke}></span>
             {:else if l.step < STEPS}
@@ -895,7 +916,9 @@
               {/if}
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
             {/if}
-            <span class="text">{l.text}</span>
+            </span>
+            <span class="text">{t ? t.text : "continuous"}</span>
+            <span class="dt">{t?.dt ?? ""}</span>
             </button>
           </li>
         {/each}
@@ -935,12 +958,14 @@
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
   }
-  .legend ul { list-style: none; margin: 0; padding: 0; }
-  .legend li { line-height: 16px; }
+  /* The short line (deployment_overlay.md answer 13): the marks, the anchor with m and c, and Δt, each a column across the lines. */
+  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto auto auto; column-gap: 6px; }
+  .legend li { line-height: 16px; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
   .legend .line {
-    all: unset; display: flex; align-items: center; gap: 6px; box-sizing: border-box; width: 100%; padding: 0 4px; white-space: nowrap;
-    border-radius: 3px; cursor: pointer;
+    all: unset; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; box-sizing: border-box; padding: 0 4px;
+    white-space: nowrap; border-radius: 3px; cursor: pointer;
   }
+  .legend .marks { display: flex; align-items: center; gap: 6px; }
   .legend .line:hover { background: color-mix(in srgb, var(--highlight) 10%, transparent); }
   .legend .line[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 18%, transparent); }
   .legend .line:focus-visible { outline: 2px solid var(--highlight); }

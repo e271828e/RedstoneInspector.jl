@@ -47,8 +47,9 @@ channel: `inspect(x; name = "variant")` draws at `/?tab=variant`. The page
 shows `name` as the model's label and names its download after it; without a
 `name` the label is the root's type, `Group` for a root built with `Group`.
 
-Press `?` in the page for the legend and the keyboard. A click on a source
-location opens it in your editor through `InteractiveUtils.edit`.
+Press `?` in the page for the legend, the timing notation and the keyboard. A
+click on a source location opens it in your editor through
+`InteractiveUtils.edit`.
 
 On a remote machine, set `open_browser` to `false`, forward the port with
 `ssh -L 8601:localhost:8601 host` and open `http://localhost:8601/` locally.

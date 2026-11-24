@@ -1,7 +1,8 @@
 // The help page (workspace.md answers 11 and 10; initial_design.md answer 15;
 // build_release.md answers 7 and 8): reached from the landing's link, `?` and the
-// status bar's link; its four sections with the lead paragraph, the legend's fifteen
-// drawn terms, the vocabulary of look_inspector_08.md's 7.2, the keyboard table as
+// status bar's link; its five sections with the lead paragraph, the legend's fifteen
+// drawn terms, the timing notation and the root inputs' type rule (deployment_overlay.md
+// answers 3 and 14), the vocabulary of look_inspector_08.md's 7.2, the keyboard table as
 // long as the map's, both Vimium patterns, the privacy statement and the versions;
 // shown over the frame or the landing, kept mounted and inert, the focus, the tree's
 // scroll and the drawer's sort surviving it; a history entry `#help` over the
@@ -43,7 +44,7 @@ async function dropUnder(page: Page, name: string) {
   await expect(page).toHaveTitle(`${name} – Redstone inspector`);
 }
 
-test("before a drop: the landing's link opens four sections over the inert landing, the lead, fifteen drawn terms, nineteen Simulink rows and the map's keys; the close button the landing again", async ({ page }) => {
+test("before a drop: the landing's link opens five sections over the inert landing, the lead, fifteen drawn terms, nineteen Simulink rows and the map's keys; the close button the landing again", async ({ page }) => {
   await page.goto("/");
   await page.locator(".landing a.help").click();
   await expect(help(page)).toHaveCount(1);
@@ -53,9 +54,10 @@ test("before a drop: the landing's link opens four sections over the inert landi
   const h = help(page);
   await expect(h.locator("h1")).toHaveText("Redstone inspector");
   expect(await h.locator("section[data-section]").evaluateAll((s) => s.map((e) => (e as HTMLElement).dataset.section)))
-    .toEqual(["reading", "simulink", "keyboard", "about"]);
-  await expect(h.locator("nav a")).toHaveCount(4);
-  await expect(h.locator("section[data-section] > h2")).toHaveCount(4);
+    .toEqual(["reading", "timing", "keyboard", "simulink", "about"]);
+  expect(await h.locator("nav a").evaluateAll((a) => a.map((e) => e.getAttribute("href")))).toEqual(["#help-reading", "#help-timing", "#help-keyboard", "#help-simulink", "#help-about"]);
+  await expect(h.locator("nav a")).toHaveText(["Reading the diagram", "Timing and root inputs", "The keyboard", "Coming from Simulink", "About"]);
+  await expect(h.locator("section[data-section] > h2")).toHaveCount(5);
   await expect(h.locator('section[data-section="refusals"]')).toHaveCount(0);
   // the lead paragraph opens the section, above the legend
   const lead = h.locator('section[data-section="reading"] > h2 + p.lead + ul.terms');
@@ -83,7 +85,13 @@ test("before a drop: the landing's link opens four sections over the inert landi
   const legend = h.locator('svg.sample[data-sample="legend"]');
   await expect(legend.locator("rect.legend")).toHaveCount(1);
   expect(new Set(await legend.locator("rect:not(.legend)").evaluateAll((r) => r.map((e) => e.getAttribute("fill")))).size).toBe(2);
-  await expect(legend.locator("text")).toHaveText(["base grid", "anchor 1 (1/4 s)"]);
+  await expect(legend.locator("text")).toHaveText(["A₀ (base) · m 1 · c 0", "A₁ (fast) · m 2 · c 1"]);
+  // the legend's sample keeps inside its frame, scaled to it
+  const box = await legend.evaluate((svg) => {
+    const s = svg.getBoundingClientRect(), g = svg.querySelector("g")!.getBoundingClientRect();
+    return { left: g.left - s.left, right: s.right - g.right };
+  });
+  expect(Math.min(box.left, box.right)).toBeGreaterThanOrEqual(-0.5);
   const vocabulary = h.locator("table.vocabulary tbody tr");
   await expect(vocabulary).toHaveCount(19);
   await expect(vocabulary.first().locator("td").nth(0)).toHaveText("block");
@@ -122,6 +130,30 @@ test("before a drop: the landing's link opens four sections over the inert landi
   await expect(help(page)).toHaveCount(0);
   await expect(under(page)).not.toHaveAttribute("inert");
   expect(await hash(page)).toBe("");
+});
+
+/** The notation's symbols (deployment_overlay.md answer 3), each defined once on the help page. */
+const SYMBOLS = ["Δt_base", "Δt_frame", "Aₖ (key)", "Δtₖ", "τₖ", "Dₖ", "Φₖ", "K", "φ", "m", "c", "D", "Φ", "Δt", "τ"];
+
+test("the timing section defines each symbol of the notation once, states the law's four lines and the root inputs' type rule once, and its link scrolls to it", async ({ page }) => {
+  await page.goto("/#help");
+  const h = help(page), t = h.locator('section[data-section="timing"]');
+  await expect(t.locator("h2")).toHaveText("Timing and root inputs");
+  const defined = (await t.locator("table.notation th code").allTextContents()).flatMap((x) => x.split(/,\s*/));
+  expect([...defined].sort()).toEqual([...SYMBOLS].sort());
+  // a symbol's row is its one definition: no other row's head names it
+  expect(new Set(defined).size).toBe(defined.length);
+  await expect(t.locator("table.law tr")).toHaveText([
+    /^in seconds\s*Δt = m · Δtₖ\s*τ = τₖ \+ c · Δtₖ$/, /^in base ticks\s*D = m · Dₖ\s*Φ = Φₖ \+ c · Dₖ$/,
+    /^linked by\s*Δtₖ = Dₖ · Δt_base\s*τₖ = Φₖ · Δt_base$/, /^hence\s*Δt = D · Δt_base\s*τ = Φ · Δt_base$/,
+  ]);
+  // §14.10's type rule, stated once on the whole page
+  const rule = "a Float64 reached by at most one index step";
+  await expect(t.locator("p.type-rule")).toContainText(rule);
+  expect((await h.textContent())!.split(rule).length - 1).toBe(1);
+  await h.locator('nav a[href="#help-timing"]').click();
+  await expect.poll(() => t.evaluate((e) => e.getBoundingClientRect().top)).toBeLessThan(40);
+  await shot(page, "none", "", "help-timing");
 });
 
 test("at a window 360 px wide the help page does not scroll sideways, its addresses and patterns breaking", async ({ page }) => {

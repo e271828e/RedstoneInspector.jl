@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { centreOn, fitView, pan, toWorld, viewRect, zoomAt, type View } from "./view";
+import { centreOn, fitBeside, fitView, pan, toWorld, viewRect, zoomAt, type View } from "./view";
 
 const viewport = { width: 1600, height: 1000 };
 
@@ -76,5 +76,41 @@ describe("centreOn", () => {
     const mid = toWorld(c, { x: viewport.width / 2, y: viewport.height / 2 });
     expect(mid.x).toBeCloseTo(340, 9);
     expect(mid.y).toBeCloseTo(-25, 9);
+  });
+});
+
+describe("fitBeside (deployment_overlay.md answer 13)", () => {
+  const box = { width: 200, height: 300 };
+  /** The extent's screen rectangle under a view. */
+  const onScreen = (e: { x: number; y: number; width: number; height: number }, v: View) =>
+    ({ left: (e.x - v.x) * v.scale, top: (e.y - v.y) * v.scale, right: (e.x + e.width - v.x) * v.scale, bottom: (e.y + e.height - v.y) * v.scale });
+
+  it("a wide extent takes the bottom candidate, the box's height left free below it", () => {
+    const extent = { x: 0, y: 0, width: 3000, height: 400 };
+    const v = fitBeside(extent, viewport, 20, 2, box);
+    expect(v.scale).toBeCloseTo(Math.min((1600 - 40) / 3000, (1000 - 300 - 40) / 400), 12);
+    expect(onScreen(extent, v).bottom).toBeLessThanOrEqual(1000 - 300 - 20 + 1e-9);
+  });
+
+  it("a tall extent takes the left candidate, the box's width left free beside it", () => {
+    const extent = { x: 0, y: 0, width: 300, height: 2400 };
+    const v = fitBeside(extent, viewport, 20, 2, box);
+    expect(v.scale).toBeCloseTo((1000 - 40) / 2400, 12);
+    const r = onScreen(extent, v);
+    expect(r.left).toBeGreaterThanOrEqual(200 + 20 - 1e-9);
+    // centered in the room right of the box
+    expect((r.left + r.right) / 2).toBeCloseTo(200 + (1600 - 200) / 2, 9);
+  });
+
+  it("takes the larger of the two candidates' scales, and fitView's alone without a box", () => {
+    const extent = { x: 5, y: 7, width: 900, height: 700 };
+    const below = fitView(extent, { width: 1600, height: 700 }, 20, 2), left = fitView(extent, { width: 1400, height: 1000 }, 20, 2);
+    expect(fitBeside(extent, viewport, 20, 2, box).scale).toBeCloseTo(Math.max(below.scale, left.scale), 12);
+    expect(fitBeside(extent, viewport, 20, 2)).toEqual(fitView(extent, viewport, 20, 2));
+  });
+
+  it("falls back to the whole viewport when neither candidate leaves room for the padding", () => {
+    const extent = { x: 0, y: 0, width: 100, height: 100 };
+    expect(fitBeside(extent, { width: 200, height: 200 }, 20, 2, { width: 190, height: 190 })).toEqual(fitView(extent, { width: 200, height: 200 }, 20, 2));
   });
 });

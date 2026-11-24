@@ -2,12 +2,13 @@
   // The help page at `#help` (workspace.md answer 11), over the frame or the
   // landing, which the shell keeps mounted and inert beneath it: the lead paragraph
   // and the legend of the diagram's terms with small static drawings in the canvas's
-  // shapes and colors, the Simulink vocabulary, the keyboard, and the about section.
+  // shapes and colors, the timing notation and the root inputs' type rule, the
+  // keyboard, the Simulink vocabulary, and the about section.
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
   import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
-  import { KEYS, KEYS_NOTE, LEAD, LINKS, PRIVACY, TERMS, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
+  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
   let { onclose }: { onclose: () => void } = $props();
@@ -15,7 +16,8 @@
   onMount(() => article?.focus({ preventScroll: true }));
 
   const SECTIONS: [string, string][] = [
-    ["reading", "Reading the diagram"], ["simulink", "Coming from Simulink"], ["keyboard", "The keyboard"], ["about", "About"],
+    ["reading", "Reading the diagram"], ["timing", "Timing and root inputs"], ["keyboard", "The keyboard"], ["simulink", "Coming from Simulink"],
+    ["about", "About"],
   ];
   /** A section's link scrolls to it, the hash left as `#help`. */
   function jump(e: MouseEvent, id: string) {
@@ -34,10 +36,11 @@
   /** The badge sample's assembly, the clock pill straddling its top edge at the left as the canvas draws it. */
   const BADGE_BOX = { x: 8, y: 12, width: 104, height: 32 };
   const pillTop = BADGE_BOX.y + BADGE_TOP;
-  /** The legend sample's two lines, as the canvas's legend reads two triples, and its box in the legend's CSS sizes. */
+  /** The legend sample's two lines in the canvas's short form, without their `Δt`, its box in the legend's CSS sizes, scaled to the frame. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
-  const legendLines = ["base grid", "anchor 1 (1/4 s)"];
+  const legendLines = ["A₀ (base) · m 1 · c 0", "A₁ (fast) · m 2 · c 1"];
   const legendWidth = Math.ceil(Math.max(...legendLines.map((t) => textWidth(t, LEGEND_FONT)))) + 38;
+  const legendScale = Math.min(1, (W - 1) / legendWidth);
   const wires = [["number", ""], ["flag", "flag"], ["vector", "vector"], ["struct", "struct"]];
 </script>
 
@@ -99,12 +102,14 @@
         <path d={GLYPHS.sum.d} fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" />
       </g>
     {:else if key === "legend"}
-      <rect class="legend" x="0.5" y="3.5" width={legendWidth - 1} height="41" rx="4" />
-      {#each legendLines as line, i (line)}
-        {@const y = 8 + i * 16}
-        <rect x="9.5" y={y + 2.5} width="13" height="11" rx="2" fill={stepPair(i).fill} stroke={stepPair(i).stroke} />
-        <text x="29" y={y + 12} style="font:{LEGEND_FONT}">{line}</text>
-      {/each}
+      <g transform="translate(0,{(H - 48 * legendScale) / 2}) scale({legendScale})">
+        <rect class="legend" x="0.5" y="3.5" width={legendWidth - 1} height="41" rx="4" />
+        {#each legendLines as line, i (line)}
+          {@const y = 8 + i * 16}
+          <rect x="9.5" y={y + 2.5} width="13" height="11" rx="2" fill={stepPair(i).fill} stroke={stepPair(i).stroke} />
+          <text x="29" y={y + 12} style="font:{LEGEND_FONT}">{line}</text>
+        {/each}
+      </g>
     {:else if key === "halo"}
       <rect class="halo" x="11" y="5" width="98" height="38" rx="7" />
       <rect x="14" y="8" width="92" height="32" rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
@@ -167,16 +172,25 @@
       </ul>
     </section>
 
-    <section data-section="simulink">
-      <h2>Coming from Simulink</h2>
-      <table class="vocabulary">
-        <thead><tr><th>Simulink</th><th>Redstone</th><th></th></tr></thead>
+    <section data-section="timing">
+      <h2>Timing and root inputs</h2>
+      <p class="notation-lead">{@render text(NOTATION_LEAD)}</p>
+      <table class="notation">
         <tbody>
-          {#each VOCABULARY as [simulink, redstone, note] (simulink)}
-            <tr><td>{@render text(simulink)}</td><td>{@render text(redstone)}</td><td class="note">{@render text(note)}</td></tr>
+          {#each NOTATION as [symbols, meaning] (symbols)}
+            <tr><th scope="row">{@render text(symbols)}</th><td>{@render text(meaning)}</td></tr>
           {/each}
         </tbody>
       </table>
+      <p>{LAW_LEAD}</p>
+      <table class="law">
+        <tbody>
+          {#each EQUATIONS as e (e.frame)}
+            <tr><th scope="row">{e.frame}</th><td><code>{e.period}</code></td><td><code>{e.phase}</code></td></tr>
+          {/each}
+        </tbody>
+      </table>
+      <p class="type-rule">{@render text(TYPE_RULE)}</p>
     </section>
 
     <section data-section="keyboard">
@@ -195,6 +209,18 @@
       <p class="vimium">
         {VIMIUM.before} <code>{VIMIUM_PATTERNS[0]}</code> {VIMIUM.between} <code>{VIMIUM_PATTERNS[1]}</code> {VIMIUM.after}
       </p>
+    </section>
+
+    <section data-section="simulink">
+      <h2>Coming from Simulink</h2>
+      <table class="vocabulary">
+        <thead><tr><th>Simulink</th><th>Redstone</th><th></th></tr></thead>
+        <tbody>
+          {#each VOCABULARY as [simulink, redstone, note] (simulink)}
+            <tr><td>{@render text(simulink)}</td><td>{@render text(redstone)}</td><td class="note">{@render text(note)}</td></tr>
+          {/each}
+        </tbody>
+      </table>
     </section>
 
     <section data-section="about">
@@ -239,6 +265,8 @@
   th { font-weight: 600; }
   td.note { color: var(--text-light); }
   td.keys { white-space: nowrap; width: 1%; }
+  .notation th, .law th { font-weight: 400; white-space: nowrap; width: 1%; }
+  .law th { color: var(--text-light); }
   dl.about { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
   dt { color: var(--text-light); }
   dd { margin: 0; }
