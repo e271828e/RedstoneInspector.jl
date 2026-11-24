@@ -6,7 +6,7 @@ import { parseDescriptor } from "./loader";
 import { fixtureJson, fixtureModel } from "./fixtures";
 import { loadModel, type Model } from "./model";
 import {
-  anchorTable, anchorTitle, baseMultiple, CHART_PAD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks, EQUATIONS,
+  anchorTable, anchorTitle, baseMultiple, CHART_PAD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks,
   frameLines, frameTopX, framesTable, gridReport, headList, hyperperiod, hyperperiodLine, jointLine, jointPeriod, julia,
   lcmQ, legendText, q, scopeFramesTable, scopeTable, seconds, stepsPerFrame, tickX, type DrawnFit,
 } from "./timing";
@@ -19,11 +19,11 @@ function edited(name: string, edit: (d: any) => void): Model {
   if (!loaded.ok) throw new Error(loaded.reason);
   return loadModel(loaded);
 }
-/** The grid report as the tab prints it under the anchors table, line by line. */
+/** The grid report as the tab prints it in the base grid's section under the first line, line by line. */
 function gridReportLines(m: Model): string[] {
   const r = gridReport(m);
   if (!r) return [];
-  return [...r.alternatives, ...(r.primes ? [r.primes] : []), ...r.attribution.map((a) => `${a.power}: ${a.suppliers.map((x) => x.text).join(", ")}`)];
+  return [...r.entries, ...(r.primes ? [r.primes] : []), ...r.attribution.map((a) => `${a.power}: ${a.suppliers.map((x) => x.text).join(", ")}`)];
 }
 const timingDep = fixtureModel("timing_deployment");
 const libDep = fixtureModel("library_deployment");
@@ -51,39 +51,55 @@ describe("exact fractions", () => {
 });
 
 describe("the anchors table (answers 6 and 9)", () => {
-  it("library: the base grid first and each period's factor beside Δtₖ; a build's A₀ symbolic", () => {
+  it("library: the base grid first, a build's A₀ symbolic, no pool factor in a row", () => {
     expect(anchorTable(fixtureModel("library"))).toEqual([
       { index: 0, label: "A₀ (base)", dt: "Δt_base", tau: "0" },
-      { index: 1, label: "A₁ (noise)", dt: "1/10 s", tau: "0", dtFactor: 1, tauFactor: undefined, scope: "", key: "noise" },
-      { index: 2, label: "A₂ (dss)", dt: "1/50 s", tau: "0", dtFactor: 5, tauFactor: undefined, scope: "", key: "dss" },
+      { index: 1, label: "A₁ (noise)", dt: "1/10 s", tau: "0", scope: "", key: "noise" },
+      { index: 2, label: "A₂ (dss)", dt: "1/50 s", tau: "0", scope: "", key: "dss" },
     ]);
   });
-  it("timing_deployment: the offset's factor 6 beside τₖ, and the deployment's Dₖ and Φₖ, A₀ at its value", () => {
-    const rows = anchorTable(timingDep);
-    expect(rows[0]).toEqual({ index: 0, label: "A₀ (base)", dt: "1/300 s", tau: "0", D: 1, phi: 0 });
-    expect(rows[1]).toMatchObject({ label: "A₁ (staggered)", dt: "1/10 s", dtFactor: 1, tau: "1/300 s", tauFactor: 6, D: 30, phi: 1 });
-    expect(rows[2]).toMatchObject({ label: "A₂ (fast)", dt: "1/50 s", dtFactor: 1, tau: "0", tauFactor: undefined, D: 6, phi: 0 });
+  it("timing_deployment: the deployment's Dₖ and Φₖ, A₀ at its value", () => {
+    expect(anchorTable(timingDep)).toEqual([
+      { index: 0, label: "A₀ (base)", dt: "1/300 s", tau: "0", D: 1, phi: 0 },
+      { index: 1, label: "A₁ (staggered)", dt: "1/10 s", tau: "1/300 s", D: 30, phi: 1, scope: "", key: "staggered" },
+      { index: 2, label: "A₂ (fast)", dt: "1/50 s", tau: "0", D: 6, phi: 0, scope: "", key: "fast" },
+    ]);
   });
-  it("the coarsest line: a build's tick, a deployment's Δt_base divided into it, the 1 left out, none without anchors", () => {
+  it("the coarsest line: a build's tick, a deployment's Δt_base beside it, equal or not, none without anchors", () => {
     expect(coarsestLine(fixtureModel("library"))).toBe("coarsest admissible Δt_base: 1/50 s");
-    expect(coarsestLine(libDep)).toBe("Δt_base: 1/100 s, the coarsest admissible 1/50 s divided by 2");
-    expect(coarsestLine(timingDep)).toBe("Δt_base: 1/300 s, the coarsest admissible");
+    expect(coarsestLine(libDep)).toBe("Δt_base: 1/100 s, coarsest admissible: 1/50 s");
+    expect(coarsestLine(timingDep)).toBe("Δt_base: 1/300 s, coarsest admissible: 1/300 s");
     expect(coarsestLine(fixtureModel("kinds"))).toBeUndefined();
   });
 });
 
 describe("the grid report (answers 6 and 9)", () => {
-  it("timing: the offset's alternatives, then the denominator's factors and a row per prime power by anchor and kind", () => {
-    expect(gridReportLines(fixtureModel("timing"))).toEqual([
-      "A₁ (staggered): declaring τ₁ = 0 or 1/50 s keeps 1/50 s",
-      "primes: 300 = 2²·3·5²",
+  it("timing, as a build and as a deployment: the offset's factor with its alternatives, then the denominator's factors and a row per prime power by anchor and kind", () => {
+    for (const m of [fixtureModel("timing"), timingDep]) expect(gridReportLines(m)).toEqual([
+      "τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
+      "Prime factors of the denominator, 300 = 2²·3·5²",
       "2²: τ₁ (staggered)",
       "3: τ₁ (staggered)",
       "5²: Δt₂ (fast), τ₁ (staggered)",
     ]);
   });
-  it("library: no alternatives, two prime rows", () => {
-    expect(gridReportLines(libDep)).toEqual(["primes: 50 = 2·5²", "2: Δt₁ (noise), Δt₂ (dss)", "5²: Δt₂ (dss)"]);
+  it("library and rates, builds and deployments: a period's sentence alone, for the one entry whose factor is above 1, then two prime rows", () => {
+    for (const m of [fixtureModel("library"), libDep]) expect(gridReportLines(m)).toEqual([
+      "Δt₂ = 1/50 s (dss) makes the grid 5× finer.", "Prime factors of the denominator, 50 = 2·5²", "2: Δt₁ (noise), Δt₂ (dss)", "5²: Δt₂ (dss)",
+    ]);
+    for (const m of [fixtureModel("rates"), fixtureModel("rates_deployment")]) expect(gridReport(m)!.entries).toEqual(["Δt₁ = 1/50 s (fast) makes the grid 5× finer."]);
+  });
+  it("closed_loop: ten factors of 1, no sentence", () => {
+    for (const name of ["closed_loop", "closed_loop_deployment"] as const) {
+      expect(gridReport(fixtureModel(name))!.entries).toEqual([]);
+      expect(gridReport(fixtureModel(name))!.primes).toBe("Prime factors of the denominator, 50 = 2·5²");
+    }
+  });
+  it("the sentences keep the pool's order, a period's before an offset's (an inline copy of timing)", () => {
+    const m = edited("timing", (d) => (d.build.structure.grid.pool[1].factor = 2));
+    expect(gridReport(m)!.entries.map((e) => e.split(".")[0])).toEqual([
+      "Δt₂ = 1/50 s (fast) makes the grid 2× finer", "τ₁ = 1/300 s (staggered) makes the grid 6× finer",
+    ]);
   });
   it("a whole-second grid has no prime line, an unfactored cofactor says so, no anchors no report", () => {
     const whole = edited("library", (d) => {
@@ -91,13 +107,13 @@ describe("the grid report (answers 6 and 9)", () => {
       s.anchors.forEach((a: any) => (a.dt = { num: 2, den: 1 }));
       s.grid = { admissible: { num: 2, den: 1 }, pool: [{ anchor: 1, kind: "period", factor: 1 }, { anchor: 2, kind: "period", factor: 1 }], primes: [] };
     });
-    expect(gridReport(whole)).toEqual({ alternatives: [], attribution: [] });
+    expect(gridReport(whole)).toEqual({ entries: [], attribution: [] });
     expect(gridReportLines(whole)).toEqual([]);
     const big = edited("library", (d) => {
       d.build.structure.grid.primes = [{ prime: 1099511627791, power: 1, suppliers: [2], unfactored: true }];
       d.build.structure.grid.admissible = { num: 1, den: 1099511627791 };
     });
-    expect(gridReportLines(big)).toEqual(["primes: 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt₂ (dss)"]);
+    expect(gridReportLines(big).slice(1)).toEqual(["Prime factors of the denominator, 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt₂ (dss)"]);
     expect(gridReport(big)!.attribution.map((a) => a.unfactored)).toEqual([true]);
     expect(gridReport(libDep)!.attribution.map((a) => a.unfactored)).toEqual([false, false]);
     expect(gridReportLines(fixtureModel("kinds"))).toEqual([]);
@@ -173,11 +189,11 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
 });
 
 describe("the head list and the steps per frame (answer 9)", () => {
-  it("timing_deployment: the parameters, no h_min, and the steps per unsplit frame naming staggered", () => {
+  it("timing_deployment: three lines, no h_min and no attempt_budget, the splitting rows an item of their own", () => {
     expect(headList(timingDep)).toEqual([
-      { label: "Δt_frame", value: "1/100 s" }, { label: "Δt_base", value: "1/300 s" }, { label: "h_max", value: "1/100 s" },
-      { label: "algorithm", value: "RK4()" }, { label: "attempt_budget", value: "7" },
-      { label: "steps per unsplit frame", value: "1; the rows that split frames: staggered" },
+      [{ label: "Δt_frame", values: ["1/100 s"] }, { label: "Δt_base", values: ["1/300 s"] }],
+      [{ label: "algorithm", values: ["RK4()"] }, { label: "h_max", values: ["1/100 s"] }],
+      [{ label: "steps per unsplit frame", values: ["1"], prose: true }, { label: "rows that split frames", values: ["staggered"] }],
     ]);
     expect(stepsPerFrame(timingDep)).toEqual({ label: "steps per unsplit frame", value: "1", splitting: ["staggered"] });
   });
@@ -189,19 +205,27 @@ describe("the head list and the steps per frame (answer 9)", () => {
     const root = primitiveRootDep({ num: 1, den: 100 });
     expect(componentTable(root).map((r) => [r.path, r.splits])).toEqual([["", true]]);
     expect(stepsPerFrame(root)).toEqual({ label: "steps per unsplit frame", value: "1", splitting: ["/"] });
-    expect(headList(root)!.at(-1)).toEqual({ label: "steps per unsplit frame", value: "1; the rows that split frames: /" });
+    expect(headList(root)!.at(-1)!.at(-1)).toEqual({ label: "rows that split frames", values: ["/"] });
   });
   it("library_deployment: one step per frame, no row splitting", () => {
     expect(stepsPerFrame(libDep)).toEqual({ label: "steps per frame", value: "1", splitting: [] });
+    expect(headList(libDep)!.at(-1)).toEqual([{ label: "steps per frame", values: ["1"], prose: true }]);
   });
-  it("a proposing method takes a range up to ⌊Δt_frame / h_min⌋ and the list shows h_min (an inline copy)", () => {
+  it("a proposing method takes a range up to ⌊Δt_frame / h_min⌋ and the list shows h_min and attempt_budget after h_max (an inline copy)", () => {
     const proposing = edited("library_deployment", (d) => {
       d.deployment.algorithm = { text: "BS3(reltol = 1.0e-6, abstol = 1.0e-9)", proposes: true };
       d.deployment.h_min = { num: 1, den: 400 };
     });
     expect(stepsPerFrame(proposing)!.value).toBe("1 to 4, as proposed");
-    expect(headList(proposing)!.map((x) => x.label)).toEqual(["Δt_frame", "Δt_base", "h_max", "h_min", "algorithm", "attempt_budget", "steps per frame"]);
-    expect(headList(proposing)![3].value).toBe("1/400 s");
+    expect(headList(proposing)!.map((l) => l.map((x) => x.label))).toEqual([
+      ["Δt_frame", "Δt_base"], ["algorithm", "h_max", "h_min", "attempt_budget"], ["steps per frame"],
+    ]);
+    expect(headList(proposing)![1].map((x) => x.values[0])).toEqual(["BS3(reltol = 1.0e-6, abstol = 1.0e-9)", "1/100 s", "1/400 s", "7"]);
+  });
+  it("a proposing method with no h_min shows attempt_budget alone, a fixed-step one with h_min set neither (inline copies)", () => {
+    const line = (edit: (d: any) => void) => headList(edited("library_deployment", edit))![1].map((x) => x.label);
+    expect(line((d) => (d.deployment.algorithm.proposes = true))).toEqual(["algorithm", "h_max", "attempt_budget"]);
+    expect(line((d) => (d.deployment.h_min = { num: 1, den: 400 }))).toEqual(["algorithm", "h_max"]);
   });
   it("the upper count is never below the lower", () => {
     const floor = edited("library_deployment", (d) => {
@@ -289,7 +313,7 @@ describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
     expect(fitOf(timingDep, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
   });
   it("past the threshold omits the timeline with one line of its length in base ticks and seconds", () => {
-    expect(fitOf(timingDep, 1000, 100)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 360 base ticks, 6/5 s" });
+    expect(fitOf(timingDep, 1000, 100)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 360 base ticks (6/5 s)" });
     expect(fitOf(timingDep, 1000, 360).kind).toBe("scroll");
   });
   it("counts the frame tops too, and gives the pitch to the frame where it is finer than the base tick and does not divide it", () => {
@@ -324,21 +348,21 @@ describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
 });
 
 describe("the chart's lines and geometry (answers 8 and 11)", () => {
-  it("states the hyperperiod in base ticks and seconds, and the joint period only where it outlasts the hyperperiod", () => {
-    expect(hyperperiodLine(jointPeriod(libDep)!)).toBe("hyperperiod: 10 base ticks, 1/10 s");
-    expect(hyperperiodLine(jointPeriod(timingDep)!)).toBe("hyperperiod: 360 base ticks, 6/5 s");
+  it("states the hyperperiod in base ticks with the seconds in parentheses, and the joint period only where it outlasts the hyperperiod", () => {
+    expect(hyperperiodLine(jointPeriod(libDep)!)).toBe("hyperperiod: 10 base ticks (1/10 s)");
+    expect(hyperperiodLine(jointPeriod(timingDep)!)).toBe("hyperperiod: 360 base ticks (6/5 s)");
     expect(jointLine(jointPeriod(timingDep)!)).toBeUndefined();
     expect(jointLine(jointPeriod(fixtureModel("rates_deployment"))!)).toBeUndefined();
     const m = edited("library_deployment", (d) => (d.deployment.dt_frame = { num: 3, den: 200 }));
-    expect(hyperperiodLine(jointPeriod(m)!)).toBe("hyperperiod: 10 base ticks, 1/10 s");
-    expect(jointLine(jointPeriod(m)!)).toBe("the chart spans the joint period with Δt_frame: 3/10 s, 30 base ticks, 20 frames");
+    expect(hyperperiodLine(jointPeriod(m)!)).toBe("hyperperiod: 10 base ticks (1/10 s)");
+    expect(jointLine(jointPeriod(m)!)).toBe("the chart spans the joint period with Δt_frame: 30 base ticks (3/10 s), 20 frames");
   });
   it("reads a count of one in the singular: a hyperperiod of 1 base tick, a joint period of 1 frame", () => {
     const root = primitiveRootDep({ num: 1, den: 100 });
-    expect(hyperperiodLine(jointPeriod(root)!)).toBe("hyperperiod: 1 base tick, 1/150 s");
-    expect(jointLine(jointPeriod(root)!)).toBe("the chart spans the joint period with Δt_frame: 1/50 s, 3 base ticks, 2 frames");
+    expect(hyperperiodLine(jointPeriod(root)!)).toBe("hyperperiod: 1 base tick (1/150 s)");
+    expect(jointLine(jointPeriod(root)!)).toBe("the chart spans the joint period with Δt_frame: 3 base ticks (1/50 s), 2 frames");
     const one = primitiveRootDep({ num: 1, den: 50 });
-    expect(jointLine(jointPeriod(one)!)).toBe("the chart spans the joint period with Δt_frame: 1/50 s, 3 base ticks, 1 frame");
+    expect(jointLine(jointPeriod(one)!)).toBe("the chart spans the joint period with Δt_frame: 3 base ticks (1/50 s), 1 frame");
   });
   it("puts base tick k at k pitches from the margin, and frame top j at j·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
     const fit = chartFit(jointPeriod(timingDep)!, frameLines(timingDep)!, 1000) as DrawnFit;
@@ -358,18 +382,10 @@ describe("the chart's lines and geometry (answers 8 and 11)", () => {
     expect(dueTicks(staggered, tj)).toEqual(Array.from({ length: 12 }, (_, i) => BigInt(1 + 30 * i)));
     for (const r of chartRows(timingDep)) for (const k of dueTicks(r, tj)) expect(r.due(k)).toBe(true);
   });
-  it("captions the tables with the law in seconds and in base ticks, linked by Δt_base", () => {
-    expect(EQUATIONS.map((e) => `${e.frame}: ${e.period}, ${e.phase}`)).toEqual([
-      "in seconds: Δt = m · Δtₖ, τ = τₖ + c · Δtₖ",
-      "in base ticks: D = m · Dₖ, Φ = Φₖ + c · Dₖ",
-      "linked by: Δtₖ = Dₖ · Δt_base, τₖ = Φₖ · Δt_base",
-      "hence: Δt = D · Δt_base, τ = Φ · Δt_base",
-    ]);
-  });
 });
 
 describe("the pane's frames table and the chain line (answer 10)", () => {
-  const rows = (m: Model, p: string) => framesTable(m, p)!.rows.map((r) => [r.frame, r.opens ?? r.name, r.period, r.phase, r.unit]);
+  const rows = (m: Model, p: string) => framesTable(m, p)!.rows.map((r) => [r.frame, r.name, r.period, r.phase, r.unit]);
   it("timing_deployment's fast/outer/hold is answer 10's example, its chain the core's", () => {
     expect(rows(timingDep, "fast/outer/hold")).toEqual([
       ["scope", "fast/outer", "K = 3", "φ = 1", "ticks of fast/outer"],
@@ -387,14 +403,30 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
     ]);
     expect(chainLine(fixtureModel("timing"), "fast/outer/same")).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
   });
-  it("a component with its own Absolute entry opens its anchor, naming the declaring scope", () => {
-    expect(rows(timingDep, "staggered")[0]).toEqual(["scope", "opens A₁ at the root", "", "", ""]);
+  it("a component with its own Absolute entry has no scope row, its anchor's name titled with the declaring key and scope", () => {
+    expect(rows(timingDep, "staggered")).toEqual([
+      ["anchor", "A₁ (staggered)", "m = 1", "c = 0", "ticks of A₁"],
+      ["base grid", "", "D = 30", "Φ = 1", "base ticks"],
+      ["seconds", "", "Δt = 1/10 s", "τ = 1/300 s", ""],
+    ]);
+    expect(framesTable(timingDep, "staggered")!.rows[0].nameTitle).toBe("staggered at the root");
+    expect(framesTable(fixtureModel("library"), "d_pid")!.rows.map((r) => r.nameTitle)).toEqual([undefined, "the base grid", undefined]);
     expect(chainLine(timingDep, "staggered")).toBe("staggered = Absolute(1//10, 1//300)");
   });
   it("the nested scope deep divides by mₛ = 2 and subtracts cₛ = 1; the primitive under it is its (1, 0)", () => {
-    expect(scopeFramesTable(timingDep, "fast/outer/deep", "deep")!.rows[0]).toMatchObject({ name: "fast/outer", period: "K = 2", phase: "φ = 1" });
+    expect(scopeFramesTable(timingDep, "fast/outer/deep")!.rows[0]).toMatchObject({ name: "fast/outer", period: "K = 2", phase: "φ = 1" });
     expect(rows(timingDep, "fast/outer/deep/hold")[0]).toEqual(["scope", "fast/outer/deep", "K = 1", "φ = 0", "ticks of fast/outer/deep"]);
-    expect(scopeFramesTable(timingDep, "fast", "fast")!.rows[0].opens).toBe("opens A₂ at the root");
+  });
+  it("a scope with its own Absolute entry has no scope row either: fast", () => {
+    expect(scopeFramesTable(timingDep, "fast")!.rows.map((r) => [r.frame, r.name, r.nameTitle])).toEqual([
+      ["anchor", "A₂ (fast)", "fast at the root"], ["base grid", "", undefined], ["seconds", "", undefined],
+    ]);
+  });
+  it("carries the seconds pair for the heading: exact, and a build's on A₀ symbolic", () => {
+    expect(framesTable(timingDep, "staggered")!.pair).toEqual(["Δt 1/10 s", "τ 1/300 s"]);
+    expect(scopeFramesTable(timingDep, "fast/outer")!.pair).toEqual(["Δt 1/25 s", "τ 1/50 s"]);
+    expect(framesTable(fixtureModel("library"), "d_pid")!.pair).toEqual(["Δt 2·Δt_base", "τ Δt_base"]);
+    expect(framesTable(libDep, "d_pid")!.pair).toEqual(["Δt 1/50 s", "τ 1/100 s"]);
   });
   it("library: a component under no keyed assembly reads the root in base ticks, its seconds in Δt_base; no entry, no chain", () => {
     expect(rows(fixtureModel("library"), "d_pid")).toEqual([
@@ -420,10 +452,11 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
     });
     expect(rows(root, "")[0]).toEqual(["scope", "the root", "K = 2", "φ = 1", "base ticks"]);
   });
-  it("gives no table for a continuous primitive or an assembly, nor for a scope that is not one", () => {
+  it("gives no table for a continuous primitive or an assembly, nor a scope's for a node that is none", () => {
     expect(framesTable(timingDep, "frozen")).toBeUndefined();
     expect(framesTable(timingDep, "fast")).toBeUndefined();
-    expect(scopeFramesTable(timingDep, "fast", "outer")).toBeUndefined();
+    expect(scopeFramesTable(timingDep, "")).toBeUndefined();
+    expect(scopeFramesTable(timingDep, "staggered")).toBeUndefined();
   });
 });
 

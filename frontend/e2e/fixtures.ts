@@ -130,6 +130,16 @@ export const widen = (el: Locator) => el.evaluate((e) => {
 export const paneRing = (page: Page, pane: string) =>
   page.locator(`.pane[data-pane="${pane}"]`).evaluate((p) => getComputedStyle(p).outlineStyle !== "none");
 
+/** A collapsible section of the detail pane. */
+export const section = (page: Page, name: string) => page.locator(`aside.detail details.section[data-section="${name}"]`);
+
+/** Opens a section of the detail pane by its heading; one already open stays so. */
+export async function openSection(page: Page, name: string): Promise<void> {
+  const s = section(page, name);
+  if (!(await s.evaluate((e) => (e as HTMLDetailsElement).open))) await s.locator("summary").click();
+  await expect(s).toHaveAttribute("open");
+}
+
 /** Every element under the canvas carrying `selected`. */
 export const selected = (page: Page) => page.locator("svg.canvas .selected");
 

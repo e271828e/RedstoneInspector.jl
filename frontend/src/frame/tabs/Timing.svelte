@@ -1,8 +1,7 @@
 <script lang="ts">
-  // The timing tab (workspace.md answer 6, deployment_overlay.md answers 3, 8, 9 and 11): a deployment's head list and
-  // hyperperiod chart; the notation's law as the tables' caption; the anchors with the coarsest line, each pool entry's
-  // factor and the grid report under them; the rate scopes and the components in the same columns, sortable by period,
-  // a deployment adding D and Φ. A build's tab ends saying what needs a deployment. A row's click selects its scope's
+  // The timing tab (workspace.md answer 6, deployment_overlay.md answers 3, 6, 8, 9 and 11): a deployment's head list and
+  // hyperperiod chart; the anchors; the base grid's section, the grid report; the rate scopes and the components in the
+  // same columns, sortable by period, a deployment adding D and Φ. A build's tab ends saying what needs a deployment. A row's click selects its scope's
   // or primitive's node (reading 12); the whole row takes it, its button there for the keyboard (look pass 1.2).
   import { stepPair } from "../../canvas/palette";
   import { rowTarget } from "../../lib/analysis";
@@ -10,7 +9,7 @@
   import type { Model } from "../../lib/model";
   import { stepsOf, tripleKey } from "../../lib/rates";
   import {
-    anchorTable, anchorTitle, coarsestLine, componentTable, EQUATIONS, gridReport, headList, jointPeriod, scopeTable, type TimingRow,
+    anchorTable, anchorTitle, coarsestLine, componentTable, gridReport, headList, jointPeriod, scopeTable, type TimingRow,
   } from "../../lib/timing";
   import Chart from "./Chart.svelte";
   import { rowClick } from "./rowClick";
@@ -35,7 +34,6 @@
   const scopes = $derived(scopeTable(model));
   const components = $derived(componentTable(model, byPeriod));
   const steps = $derived(model.structure ? stepsOf(model) : new Map<string, number>());
-  const FACTOR = "This pool entry's factor: the grid would be this many times coarser without the entry";
 </script>
 
 {#snippet button(s: Selection | undefined, text: string, title: string)}
@@ -63,23 +61,20 @@
   <p class="empty">No timing: the descriptor carries no structure.</p>
 {:else}
   {#if head}
-    <dl class="head">
-      {#each head as h (h.label)}<div class="item" data-item={h.label}><dt>{h.label}</dt><dd>{h.value}</dd></div>{/each}
-    </dl>
+    {#each head as line, i (i)}
+      <dl class="head">
+        {#each line as h (h.label)}
+          <div class="item" data-item={h.label}><dt>{h.label}:</dt><dd>{#each h.values as v, j (v)}{#if j}{", "}{/if}{#if h.prose}{v}{:else}<code>{v}</code>{/if}{/each}</dd></div>
+        {/each}
+      </dl>
+    {/each}
   {/if}
   {#if joint}
     <h3>Hyperperiod</h3>
     <Chart {model} {joint} {legendFocus} {onlegend} />
   {/if}
 
-  <table class="equations" aria-label="the notation's law">
-    <tbody>
-      {#each EQUATIONS as e (e.frame)}<tr><th>{e.frame}</th><td><code>{e.period}</code></td><td><code>{e.phase}</code></td></tr>{/each}
-    </tbody>
-  </table>
-
   <h3>Anchors</h3>
-  {#if coarsest}<p class="coarsest">{coarsest}</p>{/if}
   <table class="anchors">
     <thead><tr><th>k</th><th>Δtₖ</th><th>τₖ</th>{#if deployed}<th>Dₖ</th><th>Φₖ</th>{/if}<th>declared in</th></tr></thead>
     <tbody>
@@ -88,8 +83,8 @@
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
         <tr class="anchor" class:base={a.index === 0} data-index={a.index} onclick={s && rowClick(() => onrow(s))}>
           <td class="k">{@render anchor(a.index, a.label)}</td>
-          <td class="dt">{a.dt}{#if a.dtFactor !== undefined}{" "}<span class="factor" title={FACTOR}>×{a.dtFactor}</span>{/if}</td>
-          <td class="tau">{a.tau}{#if a.tauFactor !== undefined}{" "}<span class="factor" title={FACTOR}>×{a.tauFactor}</span>{/if}</td>
+          <td class="dt">{a.dt}</td>
+          <td class="tau">{a.tau}</td>
           {#if deployed}<td class="D">{a.D}</td><td class="phi">{a.phi}</td>{/if}
           <td class="scope">{#if a.scope === undefined}—{:else if a.scope === ""}the root{:else}{@render button(s, a.scope, "Select the declaring scope")}{/if}</td>
         </tr>
@@ -97,8 +92,10 @@
     </tbody>
   </table>
   {#if report}
+    <h3>Base grid</h3>
     <div class="grid-report">
-      {#each report.alternatives as line (line)}<p class="alternative">{line}</p>{/each}
+      <p class="coarsest">{coarsest}</p>
+      {#each report.entries as line (line)}<p class="entry">{line}</p>{/each}
       {#if report.primes}
         <p class="primes">{report.primes}</p>
         <ul class="powers">
@@ -169,25 +166,18 @@
   tr:hover .row code { text-decoration: underline; }
   span.swatch { display: inline-block; width: 12px; height: 10px; border: 1px solid; border-radius: 2px; vertical-align: middle; }
   td.swatch { padding-right: 6px; }
-  .factor { color: var(--text-light); }
   .sort-period {
     font: 11px system-ui, sans-serif; color: var(--text); background: var(--bg); border: 1px solid var(--border);
     border-radius: 3px; padding: 1px 6px; margin-bottom: 4px; cursor: pointer;
   }
   .sort-period[aria-pressed="true"] { background: var(--strip); border-color: var(--text-light); font-weight: 600; }
-  /* The head list: one line of label and value pairs, wrapping. */
-  dl.head { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 0 0 6px; font-size: 12px; color: var(--text); }
+  /* The head list: a line of label and value pairs each, wrapping; a value wraps under itself. */
+  dl.head { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 0 0 2px; font-size: 12px; color: var(--text); }
   dl.head .item { display: flex; gap: 6px; }
-  dl.head dt { color: var(--text-light); }
-  dl.head dd { margin: 0; font-family: ui-monospace, monospace; }
-  /* The caption: the law in each unit, the column heads being its terms. */
-  table.equations { margin: 10px 0 0; }
-  table.equations:first-child { margin-top: 0; }
-  table.equations th { font-weight: 400; padding: 0 12px 0 0; }
-  table.equations td { padding: 0 16px 0 0; }
-  table.equations tbody tr:hover { background: none; }
-  .coarsest, .grid-report p { margin: 0 0 4px; color: var(--text); font-size: 12px; }
-  .grid-report { margin-top: 4px; }
+  dl.head dt { color: var(--text-light); white-space: nowrap; }
+  dl.head dd { margin: 0; }
+  .grid-report p { margin: 0 0 4px; color: var(--text); font-size: 12px; }
+  .grid-report .primes { margin-top: 8px; }
   ul.powers { list-style: none; margin: 0; padding: 0 0 0 16px; font-size: 12px; color: var(--text); }
   .deployment-note { margin: 10px 0 0; color: var(--text-light); }
   .empty { margin: 0; color: var(--text-light); }

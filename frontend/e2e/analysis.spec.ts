@@ -130,7 +130,7 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   const a1 = body(page).locator('tr.anchor[data-index="1"]');
   await expect(a1.locator("td.scope")).toHaveText("sensing");
   await expect(a1.locator("td.k")).toHaveText("A₁ (noise)");
-  await expect(a1.locator("td.dt")).toHaveText("1/50 s ×1");
+  await expect(a1.locator("td.dt")).toHaveText("1/50 s");
   await expect(body(page).locator("table.scopes")).toHaveCount(0);
   await expect(body(page).locator("p.empty")).toHaveText(["No assembly is keyed in sample_times; every key names a primitive."]);
   await expect(body(page).locator("p.empty code")).toHaveText("sample_times");

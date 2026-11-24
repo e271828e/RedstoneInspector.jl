@@ -86,6 +86,13 @@ export const NOTATION: [string, string][] = [
 /** The paragraphs of the timing and root inputs section. */
 export const NOTATION_LEAD = "A discrete component runs on a period and a phase, stated in four frames: its rate scope, its anchor, the base grid and seconds. The detail pane shows them as a table, a row per frame. The pane, the legend, the timing tab and their tooltips name each quantity by its symbol alone.";
 export const LAW_LEAD = "One law composes the frames, in seconds and in base ticks:";
+/** The law (deployment_overlay.md answer 3): each line's frame and its two equations. */
+export const EQUATIONS: { frame: string; period: string; phase: string }[] = [
+  { frame: "in seconds", period: "Δt = m · Δtₖ", phase: "τ = τₖ + c · Δtₖ" },
+  { frame: "in base ticks", period: "D = m · Dₖ", phase: "Φ = Φₖ + c · Dₖ" },
+  { frame: "linked by", period: "Δtₖ = Dₖ · Δt_base", phase: "τₖ = Φₖ · Δt_base" },
+  { frame: "hence", period: "Δt = D · Δt_base", phase: "τ = Φ · Δt_base" },
+];
 export const TYPE_RULE = "The root inputs tab marks with ◆ an input that some consumer pins, and names each pinning consumer with its cause: by tier for a discrete consumer, by declaration for a continuous one. A pinned input is frozen at every activation, so `linearize` cannot seed it. `linearize` seeds a root input only at a `Float64` reached by at most one index step: the input itself when it is a `Float64`, or one element of an array of `Float64`, never a field. The tab's type and kind columns show which.";
 
 /** The Simulink vocabulary (look_inspector_08.md 7.2), `[simulink, redstone, note]`, an empty note where it has none. */

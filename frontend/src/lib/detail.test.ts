@@ -42,12 +42,12 @@ describe("kindPhrase", () => {
   });
 });
 
-/** A frames table's rows as the pane prints them: the frame, then the name and the pair with its unit, or the opening. */
-const cells = (t: FramesTable) => t.rows.map((r) => (r.opens ? [r.frame, r.opens] : [r.frame, r.name, r.period, r.phase, r.unit]));
+/** A frames table's rows as the pane prints them: the frame, then the name and the pair with its unit. */
+const cells = (t: FramesTable) => t.rows.map((r) => [r.frame, r.name, r.period, r.phase, r.unit]);
 
-describe("the rate fact (deployment_overlay.md answer 10)", () => {
+describe("a primitive's timing (deployment_overlay.md answer 10)", () => {
   it("timing_deployment's fast/outer/hold: the four frames of the record's example, and the chain under them, outermost first", () => {
-    const r = nodeFacts(fixtureModel("timing_deployment"), "fast/outer/hold").rate!;
+    const r = nodeFacts(fixtureModel("timing_deployment"), "fast/outer/hold").timing!;
     expect(cells(r.table)).toEqual([
       ["scope", "fast/outer", "K = 3", "φ = 1", "ticks of fast/outer"],
       ["anchor", "A₂ (fast)", "m = 6", "c = 3", "ticks of A₂"],
@@ -57,16 +57,16 @@ describe("the rate fact (deployment_overlay.md answer 10)", () => {
     expect(r.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)");
   });
   it("a build has no base grid row: timing's fast/outer/hold", () => {
-    expect(cells(nodeFacts(fixtureModel("timing"), "fast/outer/hold").rate!.table).map((c) => c[0])).toEqual(["scope", "anchor", "seconds"]);
+    expect(cells(nodeFacts(fixtureModel("timing"), "fast/outer/hold").timing!.table).map((c) => c[0])).toEqual(["scope", "anchor", "seconds"]);
   });
-  it("a component opening its own anchor has no K and φ: timing's staggered opens A₁ at the root", () => {
-    expect(cells(nodeFacts(fixtureModel("timing"), "staggered").rate!.table)[0]).toEqual(["scope", "opens A₁ at the root"]);
+  it("a component with its own anchor has no K and φ, so no scope row: timing's staggered", () => {
+    expect(cells(nodeFacts(fixtureModel("timing"), "staggered").timing!.table).map((c) => c[0])).toEqual(["anchor", "seconds"]);
   });
   it("the explicit Relative(1) stays in the chain: timing's fast/outer/same", () => {
-    expect(nodeFacts(fixtureModel("timing"), "fast/outer/same").rate!.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
+    expect(nodeFacts(fixtureModel("timing"), "fast/outer/same").timing!.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
   });
   it("on A₀ under no keyed assembly: the root's base ticks, m·Δt_base and c·Δt_base in a build's seconds row, library's d_pid", () => {
-    const r = nodeFacts(fixtureModel("library"), "d_pid").rate!;
+    const r = nodeFacts(fixtureModel("library"), "d_pid").timing!;
     expect(cells(r.table)).toEqual([
       ["scope", "the root", "K = 2", "φ = 1", "base ticks"],
       ["anchor", "A₀ (base)", "m = 2", "c = 1", "base ticks"],
@@ -75,15 +75,15 @@ describe("the rate fact (deployment_overlay.md answer 10)", () => {
     expect(r.chain).toBe("d_pid = Relative(2, 1)");
   });
   it("an empty chain has no line: library's d_lqr, kinds' discrete primitive", () => {
-    expect(nodeFacts(fixtureModel("library"), "d_lqr").rate!.chain).toBeUndefined();
+    expect(nodeFacts(fixtureModel("library"), "d_lqr").timing!.chain).toBeUndefined();
     const kinds = fixtureModel("kinds");
     const discrete = [...kinds.tree!.byPath.values()].find((n) => n.class === "primitive" && n.tier === "discrete")!;
-    expect(cells(nodeFacts(kinds, discrete.path).rate!.table)[2]).toEqual(["seconds", "", "Δt = Δt_base", "τ = 0", ""]);
-    expect(nodeFacts(kinds, discrete.path).rate!.chain).toBeUndefined();
+    expect(cells(nodeFacts(kinds, discrete.path).timing!.table)[2]).toEqual(["seconds", "", "Δt = Δt_base", "τ = 0", ""]);
+    expect(nodeFacts(kinds, discrete.path).timing!.chain).toBeUndefined();
   });
-  it("a continuous primitive has no rate; the class phrase names the tier", () => {
+  it("a continuous primitive has no timing; the class phrase names the tier", () => {
     const p = nodeFacts(cl, "plant");
-    expect(p.rate).toBeUndefined();
+    expect(p.timing).toBeUndefined();
     expect(classPhrase(p.kind, p.tier)).toBe("primitive, continuous");
     expect(classPhrase("primitive", "discrete")).toBe("primitive, discrete");
     expect(classPhrase("assembly")).toBe("assembly");
@@ -99,19 +99,19 @@ describe("the rate fact (deployment_overlay.md answer 10)", () => {
 });
 
 describe("closed_loop's elements", () => {
-  it("the root level's facts: label, display name, counts, the root inputs as faces, no outputs, no scopes", () => {
+  it("the root level's facts: label, display name, counts, the root inputs as faces, no outputs, no timing", () => {
     const l = levelFacts(cl, "") as LevelFacts;
     expect([l.kind, l.path, l.segment, l.displayName, l.children, l.wires]).toEqual(["level", "", "closed_loop", "Group", 6, 30]);
     expect(l.inputs.map((f) => f.name)).toEqual(["h_ref", "V_ref", "mode"]);
     expect(l.outputs).toEqual([]);
     expect(by(l.inputs, "mode").phrase).toBe("boolean");
-    expect(l.scopes).toEqual([]);
+    expect(l.timing).toBeUndefined();
   });
 
   it("the open level carries its node's facts as a closed assembly's: the root's docstring, locations, parameters and faces' consumers", () => {
     const l = levelFacts(cl, "") as LevelFacts;
-    const { kind, scopes, ...rest } = l;
-    expect([kind, l.wires, scopes]).toEqual(["level", 30, []]);
+    const { kind, ...rest } = l;
+    expect([kind, l.wires]).toEqual(["level", 30]);
     expect(rest).toEqual({ ...nodeFacts(cl, ""), kind: undefined });
     expect([!!l.docstring, l.locations.length, l.parameters.length, l.type]).toEqual([true, 5, 4, "Redstone.Group"]);
     expect(by(l.inputs, "h_ref").consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
@@ -122,7 +122,7 @@ describe("closed_loop's elements", () => {
 
   it("plant's facts as a primitive: tier, membership, parameters, locations, each input's producer, each output's stage and consumers", () => {
     const p = nodeFacts(cl, "plant");
-    expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.rate, p.alias, p.type])
+    expect([p.kind, p.segment, p.displayName, p.path, p.tier, p.timing, p.alias, p.type])
       .toEqual(["primitive", "plant", "Longitudinal", "plant", "continuous", undefined, undefined, "RedstoneExamples.Longitudinal"]);
     expect(p.membership).toEqual({ how: "transparent", field: "children", key: "plant" });
     expect([p.parameters.length, p.locations.length, !!p.docstring]).toEqual([14, 3, true]);
@@ -144,9 +144,9 @@ describe("closed_loop's elements", () => {
     expect(by(a.outputs, "y").stage).toBe(2);
   });
 
-  it("sensing's facts as a closed assembly: its child and wire counts, no tier or rate, its faces typed through the resolution", () => {
+  it("sensing's facts as a closed assembly: its child and wire counts, no tier or timing, its faces typed through the resolution", () => {
     const s = nodeFacts(cl, "sensing");
-    expect([s.kind, s.displayName, s.children, s.wires, s.tier, s.rate]).toEqual(["assembly", "Group", 2, 3, undefined, undefined]);
+    expect([s.kind, s.displayName, s.children, s.wires, s.tier, s.timing]).toEqual(["assembly", "Group", 2, 3, undefined, undefined]);
     expect(s.inputs.map((f) => [f.name, f.type, f.phrase])).toEqual([["h", "Float64", "float"]]);
     expect(s.outputs.map((f) => [f.name, f.type, f.stage])).toEqual([["h_meas", "Float64", undefined]]);
     expect(by(s.inputs, "h").producer).toEqual(face("plant", "out", "h"));
@@ -235,22 +235,27 @@ describe("other fixtures", () => {
     expect(nodeFacts(c, "scale").membership).toBeUndefined();
   });
 
-  it("rates' level fast declares one scope", () => {
+  it("rates' level fast is a rate scope, its timing with no chain", () => {
     const l = levelFacts(fixtureModel("rates"), "fast") as LevelFacts;
     expect([l.children, l.wires, l.inputs.map((f) => f.name), l.outputs.map((f) => f.name)]).toEqual([2, 4, ["in"], ["inner", "outer"]]);
-    expect(l.scopes.map((x) => x.key)).toEqual(["fast"]);
+    expect(l.timing?.table.pair).toEqual(["Δt 1/50 s", "τ 0"]);
+    expect(l.timing?.chain).toBeUndefined();
   });
 
-  it("the open level shows each rate scope by the frames table's derivation: timing_deployment's fast/outer/deep against fast/outer, fast opening A₂", () => {
+  it("a keyed assembly's timing, open or closed, is its scope row's frames table and no chain: timing_deployment's fast/outer/deep against fast/outer, fast with no scope row; an unkeyed one has none", () => {
     const m = fixtureModel("timing_deployment");
-    const deep = levelFacts(m, "fast/outer/deep") as LevelFacts;
-    expect(deep.scopes.map((x) => [x.key, cells(x.table)])).toEqual([["deep", [
-      ["scope", "fast/outer", "K = 2", "φ = 1", "ticks of fast/outer"],
-      ["anchor", "A₂ (fast)", "m = 4", "c = 3", "ticks of A₂"],
-      ["base grid", "", "D = 24", "Φ = 18", "base ticks"],
-      ["seconds", "", "Δt = 2/25 s", "τ = 3/50 s", ""],
-    ]]]);
-    expect(cells((levelFacts(m, "fast") as LevelFacts).scopes[0].table)[0]).toEqual(["scope", "opens A₂ at the root"]);
+    for (const facts of [levelFacts, nodeFacts]) {
+      const deep = facts(m, "fast/outer/deep").timing!;
+      expect(cells(deep.table)).toEqual([
+        ["scope", "fast/outer", "K = 2", "φ = 1", "ticks of fast/outer"],
+        ["anchor", "A₂ (fast)", "m = 4", "c = 3", "ticks of A₂"],
+        ["base grid", "", "D = 24", "Φ = 18", "base ticks"],
+        ["seconds", "", "Δt = 2/25 s", "τ = 3/50 s", ""],
+      ]);
+      expect(deep.chain).toBeUndefined();
+      expect(cells(facts(m, "fast").timing!.table).map((c) => c[0])).toEqual(["anchor", "base grid", "seconds"]);
+      expect(facts(m, "").timing).toBeUndefined();
+    }
   });
 
   it("an assembly's facts count its own level's wires, open or closed", () => {

@@ -53,11 +53,15 @@ export function memberTitle(m: { how: Membership | undefined; field: string; key
 export const FACT_TITLES = {
   type: "The node's Julia type, qualified by its module, with the alias the library gives it when it gives one.",
   class: "Whether the node is a primitive or an assembly and, for a primitive, its tier: continuous or discrete.",
-  rate: "When the discrete primitive runs, in each frame from its rate scope to seconds.",
   children: "How many child nodes the assembly holds directly.",
   wires: "How many wires the assembly declares on its own level.",
   member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
 } as const;
+
+/** The pane's collapsible sections, in order (workspace.md answer 4). */
+export type Section = "signature" | "docstring" | "locations" | "timing" | "parameters" | "faces";
+/** The TIMING heading's hover title, a primitive's and a rate scope's. */
+export const TIMING_TITLE = "When the discrete primitive or the rate scope ticks, in each of its frames down to seconds.";
 
 /** One face's facts: its type and kind phrase, what feeds it and what it feeds, an output's stage. */
 export interface FaceFacts {
@@ -79,11 +83,9 @@ export interface FaceFacts {
   consumers?: Face[];
 }
 
-/** The open level: its node's facts as a closed assembly's (workspace.md answer 4) and its rate scopes. */
+/** The open level: its node's facts as a closed assembly's (workspace.md answer 4). */
 export interface LevelFacts extends Omit<NodeFacts, "kind"> {
   kind: "level";
-  /** Each rate scope the level declares, with its frames table. */
-  scopes: { key: string; table: FramesTable }[];
 }
 export interface NodeFacts {
   kind: "primitive" | "assembly";
@@ -92,8 +94,8 @@ export interface NodeFacts {
   segment: string;
   displayName: string;
   tier?: "continuous" | "discrete";
-  /** A discrete primitive's frames table and its chain line, none on an empty chain (deployment_overlay.md answer 10). */
-  rate?: { table: FramesTable; chain?: string };
+  /** A discrete primitive's or a rate scope's frames table; a primitive's chain line, none on an empty chain (deployment_overlay.md answer 10). */
+  timing?: { table: FramesTable; chain?: string };
   membership?: { how: Membership | undefined; field: string; key: string };
   alias?: string;
   type: string;
@@ -173,8 +175,10 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
   if (n.key !== undefined) facts.membership = { how: tree.membership.get(path), field: n.field!, key: n.key };
   if (n.class === "primitive") {
     facts.tier = n.tier;
-    if (n.tier === "discrete") facts.rate = { table: framesTable(model, path)!, chain: chainLine(model, path) };
+    if (n.tier === "discrete") facts.timing = { table: framesTable(model, path)!, chain: chainLine(model, path) };
   } else {
+    const table = scopeFramesTable(model, path);
+    if (table) facts.timing = { table };
     facts.children = tree.children.get(path)!.length;
     facts.wires = n.wires.length;
   }
@@ -184,15 +188,10 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
 /** A count in words, the singular for one: `1 wire`, `2 wires`. */
 export const count = (n: number | bigint, one: string, many: string): string => `${n} ${Number(n) === 1 ? one : many}`;
 
-/** The open level's facts: its node's as a closed assembly's, with its scopes; a primitive root's level is the root itself. */
+/** The open level's facts: its node's as a closed assembly's; a primitive root's level is the root itself. */
 export function levelFacts(model: Model, path: string): LevelFacts | NodeFacts {
-  const s = model.structure!, n = model.tree!.byPath.get(path)!;
   const node = nodeFacts(model, path);
-  if (n.class === "primitive") return node;
-  return {
-    ...node, kind: "level",
-    scopes: s.scopes.filter((x) => x.path === path).map((x) => ({ key: x.key, table: scopeFramesTable(model, path, x.key)! })),
-  };
+  return node.kind === "primitive" ? node : { ...node, kind: "level" };
 }
 
 export function folderFacts(model: Model, path: string): FolderFacts | undefined {

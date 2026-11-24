@@ -112,16 +112,12 @@ function secondsPair(s: StructureSection, t: Timing, bound?: Bound, counts?: { D
 
 // --- the timing tab's tables (answer 9) ----------------------------------------
 
-/** An anchors table row: the base grid first. A pool entry's factor stands beside its value; a deployment adds `Dₖ`, `Φₖ`. */
+/** An anchors table row: the base grid first; a deployment adds `Dₖ`, `Φₖ`. */
 export interface AnchorTableRow {
   index: number;
   label: string;
   dt: string;
   tau: string;
-  /** The period's pool factor, on every anchor but `A₀`. */
-  dtFactor?: number;
-  /** The offset's pool factor, on an anchor with a nonzero `τₖ`. */
-  tauFactor?: number;
   D?: number;
   phi?: number;
   /** The declaring scope, `""` for the root; undefined for `A₀`. */
@@ -133,12 +129,10 @@ export function anchorTable(model: Model): AnchorTableRow[] {
   const s = model.structure;
   if (!s) return [];
   const bound = boundOf(model);
-  const factor = (k: number, kind: "period" | "offset") => s.grid.pool.find((e) => e.anchor === k && e.kind === kind)?.factor;
   return [
     { index: 0, label: anchorLabel(s, 0), dt: bound ? seconds(bound.base) : "Δt_base", tau: "0", ...(bound && { D: 1, phi: 0 }) },
     ...s.anchors.map((a, i): AnchorTableRow => ({
       index: i + 1, label: anchorLabel(s, i + 1), dt: seconds(fromRational(a.dt)), tau: seconds(fromRational(a.tau)),
-      dtFactor: factor(i + 1, "period"), tauFactor: factor(i + 1, "offset"),
       ...(bound && bound.anchors[i + 1]), scope: a.scope, key: a.key,
     })),
   ];
@@ -197,15 +191,16 @@ export function scopeTable(model: Model): TimingRow[] {
 
 // --- the grid report (answers 6 and 9) ------------------------------------------
 
-/** The line above the anchors table: a build's coarsest admissible tick, or a deployment's `Δt_base` against it. */
+/** The base grid section's first line: a build's coarsest admissible tick, or a deployment's `Δt_base` beside it. */
 export function coarsestLine(model: Model): string | undefined {
   const g = model.structure?.grid;
   if (!g?.admissible) return undefined;
-  const admissible = fromRational(g.admissible), bound = boundOf(model);
-  if (!bound) return `coarsest admissible Δt_base: ${seconds(admissible)}`;
-  const k = div(admissible, bound.base);
-  return `Δt_base: ${seconds(bound.base)}, the coarsest admissible` + (k.n === 1n && k.d === 1n ? "" : ` ${seconds(admissible)} divided by ${k.n}`);
+  const admissible = seconds(fromRational(g.admissible)), bound = boundOf(model);
+  return bound ? `Δt_base: ${seconds(bound.base)}, coarsest admissible: ${admissible}` : `coarsest admissible Δt_base: ${admissible}`;
 }
+
+/** A pool entry's symbol: `Δt₂`, `τ₁`. */
+const entrySymbol = (e: { anchor: number; kind: "period" | "offset" }) => `${e.kind === "period" ? "Δt" : "τ"}${subscript(e.anchor)}`;
 
 /** A supplier of a prime power: a pool entry named by its anchor and its kind, `Δt₂ (fast)`, `τ₁ (staggered)`. */
 export interface Supplier {
@@ -220,10 +215,11 @@ export interface PrimeAttribution {
   unfactored: boolean;
   suppliers: Supplier[];
 }
-/** The report under the anchors table: the alternatives' lines, then the denominator's factors and one row per prime power. */
+/** The base grid section under its first line: a line per pool entry that refines the grid, then one row per prime power. */
 export interface GridReport {
-  alternatives: string[];
-  /** `primes: 300 = 2²·3·5²`; undefined on a whole-second grid. */
+  /** In pool order, the entries whose factor is above 1: `Δt₂ = 1/50 s (dss) makes the grid 5× finer.`, then an offset's alternatives. */
+  entries: string[];
+  /** The rows' label, `Prime factors of the denominator, 300 = 2²·3·5²`; undefined on a whole-second grid. */
   primes?: string;
   attribution: PrimeAttribution[];
 }
@@ -232,19 +228,23 @@ export function gridReport(model: Model): GridReport | undefined {
   const s = model.structure, g = s?.grid;
   if (!s || !g?.admissible) return undefined;
   const admissible = fromRational(g.admissible);
-  const alternatives = g.pool.flatMap((e) => e.alternatives
-    ? [`${anchorLabel(s, e.anchor)}: declaring τ${subscript(e.anchor)} = ${e.alternatives.map((a) => seconds(fromRational(a))).join(" or ")} keeps ${seconds(mul(q(e.factor), admissible))}`]
-    : []);
+  const entries = g.pool.filter((e) => e.factor > 1).map((e) => {
+    const a = s.anchors[e.anchor - 1], symbol = entrySymbol(e);
+    const line = `${symbol} = ${seconds(fromRational(e.kind === "period" ? a.dt : a.tau))} (${a.key}) makes the grid ${e.factor}× finer.`;
+    if (!e.alternatives) return line;
+    const values = e.alternatives.map((x) => seconds(fromRational(x))).join(" or ");
+    return `${line} With ${symbol} = ${values}, the coarsest admissible Δt_base would be ${seconds(mul(q(e.factor), admissible))}.`;
+  });
   const powers = g.primes.map((p) => (p.unfactored ? `${p.prime} unfactored` : `${p.prime}${superscript(p.power)}`));
   const attribution = g.primes.map((p, i): PrimeAttribution => ({
     power: powers[i],
     unfactored: !!p.unfactored,
     suppliers: p.suppliers.map((j) => {
       const e = g.pool[j - 1];
-      return { anchor: e.anchor, kind: e.kind, text: `${e.kind === "period" ? "Δt" : "τ"}${subscript(e.anchor)} (${s.anchors[e.anchor - 1].key})` };
+      return { anchor: e.anchor, kind: e.kind, text: `${entrySymbol(e)} (${s.anchors[e.anchor - 1].key})` };
     }),
   }));
-  return { alternatives, ...(powers.length && { primes: `primes: ${admissible.d} = ${powers.join("·")}` }), attribution };
+  return { entries, ...(powers.length && { primes: `Prime factors of the denominator, ${admissible.d} = ${powers.join("·")}` }), attribution };
 }
 
 // --- the head list and the steps per frame (answer 9) ----------------------------
@@ -269,23 +269,31 @@ export function stepsPerFrame(model: Model): Steps | undefined {
 }
 
 export interface HeadItem {
-  /** The symbol or name: `Δt_frame`, `Δt_base`, `h_max`, `h_min`, `algorithm`, `attempt_budget`, then the steps' label. */
+  /** The symbol or name: `Δt_frame`, `h_max`, the steps' label, `rows that split frames`. */
   label: string;
-  value: string;
+  /** One value, or the splitting rows' paths. */
+  values: string[];
+  /** The value is prose, out of the code font: the steps' count. */
+  prose?: true;
 }
 
-/** The head list of a deployment's tab; the three event parameters wait for 10b. Undefined for a build. */
-export function headList(model: Model): HeadItem[] | undefined {
+/**
+ * The head list of a deployment's tab, three lines: the grids, the algorithm with its parameters, the steps. `h_min`
+ * and `attempt_budget` show for a proposing algorithm alone; the three event parameters wait for 10b. Undefined for a build.
+ */
+export function headList(model: Model): HeadItem[][] | undefined {
   const bound = boundOf(model), d = model.descriptor, steps = stepsPerFrame(model);
   if (!bound || d.kind !== "deployment" || !steps) return undefined;
+  const { algorithm, attempt_budget } = d.deployment;
+  const item = (label: string, value: string): HeadItem => ({ label, values: [value] });
   return [
-    { label: "Δt_frame", value: seconds(bound.frame) },
-    { label: "Δt_base", value: seconds(bound.base) },
-    { label: "h_max", value: seconds(bound.hMax) },
-    ...(bound.hMin ? [{ label: "h_min", value: seconds(bound.hMin) }] : []),
-    { label: "algorithm", value: d.deployment.algorithm.text },
-    { label: "attempt_budget", value: `${d.deployment.attempt_budget}` },
-    { label: steps.label, value: steps.value + (steps.splitting.length ? `; the rows that split frames: ${steps.splitting.join(", ")}` : "") },
+    [item("Δt_frame", seconds(bound.frame)), item("Δt_base", seconds(bound.base))],
+    [
+      item("algorithm", algorithm.text), item("h_max", seconds(bound.hMax)),
+      ...(algorithm.proposes && bound.hMin ? [item("h_min", seconds(bound.hMin))] : []),
+      ...(algorithm.proposes ? [item("attempt_budget", `${attempt_budget}`)] : []),
+    ],
+    [{ ...item(steps.label, steps.value), prose: true }, ...(steps.splitting.length ? [{ label: "rows that split frames", values: steps.splitting }] : [])],
   ];
 }
 
@@ -378,15 +386,17 @@ export function chartRows(model: Model): ChartRow[] {
     .sort((a, b) => a.D - b.D || a.phi - b.phi);
 }
 
-/** The hyperperiod as the tab states it (answer 8): `hyperperiod: 10 base ticks, 1/10 s`. */
-export const hyperperiodLine = (joint: JointPeriod): string =>
-  `hyperperiod: ${count(joint.hyperperiod, "base tick", "base ticks")}, ${seconds(joint.hyperSeconds)}`;
+/** A span in base ticks with its seconds (answer 8): `10 base ticks (1/10 s)`. */
+const spanText = (baseTicks: bigint, s: Q): string => `${count(baseTicks, "base tick", "base ticks")} (${seconds(s)})`;
+
+/** The hyperperiod as the tab states it (answer 8): `hyperperiod: 10 base ticks (1/10 s)`. */
+export const hyperperiodLine = (joint: JointPeriod): string => `hyperperiod: ${spanText(joint.hyperperiod, joint.hyperSeconds)}`;
 
 /** The span the chart draws where it outlasts the hyperperiod (answer 11); undefined where the two are equal. */
 export const jointLine = (joint: JointPeriod): string | undefined =>
   joint.baseTicks === joint.hyperperiod
     ? undefined
-    : `the chart spans the joint period with Δt_frame: ${seconds(joint.seconds)}, ${count(joint.baseTicks, "base tick", "base ticks")}, ${count(joint.frames, "frame", "frames")}`;
+    : `the chart spans the joint period with Δt_frame: ${spanText(joint.baseTicks, joint.seconds)}, ${count(joint.frames, "frame", "frames")}`;
 
 /** The chart's constants, the look pass's (answer 11): the threshold in units of the span, the minimum pitch in px. */
 export const CHART_THRESHOLD = 1000;
@@ -416,7 +426,7 @@ export type ChartFit =
 export function chartFit(joint: JointPeriod, lines: FrameLines, width: number, threshold = CHART_THRESHOLD, pitch = CHART_PITCH): ChartFit {
   const limit = BigInt(threshold);
   if (joint.baseTicks > limit || (lines.drawn && joint.frames > limit)) {
-    return { kind: "omitted", line: `chart omitted: the joint period is ${joint.baseTicks} base ticks, ${seconds(joint.seconds)}` };
+    return { kind: "omitted", line: `chart omitted: the joint period is ${spanText(joint.baseTicks, joint.seconds)}` };
   }
   const frameFiner = lines.drawn && lt(joint.frameInTicks, q(1));
   const units = frameFiner ? joint.frames : joint.baseTicks;
@@ -443,30 +453,24 @@ export function dueTicks(row: ChartRow, joint: JointPeriod): bigint[] {
   return out;
 }
 
-/** The notation's law (answer 3), the timing tab's caption: each line's frame and its two equations. */
-export const EQUATIONS: { frame: string; period: string; phase: string }[] = [
-  { frame: "in seconds", period: "Δt = m · Δtₖ", phase: "τ = τₖ + c · Δtₖ" },
-  { frame: "in base ticks", period: "D = m · Dₖ", phase: "Φ = Φₖ + c · Dₖ" },
-  { frame: "linked by", period: "Δtₖ = Dₖ · Δt_base", phase: "τₖ = Φₖ · Δt_base" },
-  { frame: "hence", period: "Δt = D · Δt_base", phase: "τ = Φ · Δt_base" },
-];
-
 // --- the pane's frames table (answer 10) -----------------------------------------
 
-/** One frame of answer 3: its head, its period and phase cells, its unit; `opens` replaces the pair on a scope row. */
+/** One frame of answer 3: its head, its period and phase cells, its unit. */
 export interface FramesRow {
   frame: "scope" | "anchor" | "base grid" | "seconds";
   /** The scope's or the anchor's name: `fast/outer`, `the root`, `A₂ (fast)`; empty on the last two. */
   name: string;
+  /** The anchor's declaring key and scope, its name's tooltip (`anchorTitle`). */
+  nameTitle?: string;
   period: string;
   phase: string;
   /** `ticks of fast/outer`, `ticks of A₂`, `base ticks`; empty on seconds. */
   unit: string;
-  /** On the scope row of a component that opens its own anchor: `opens A₁ at the root`. */
-  opens?: string;
 }
 export interface FramesTable {
   rows: FramesRow[];
+  /** The seconds pair, for the section's heading: `Δt 1/10 s`, `τ 1/300 s`. */
+  pair: [string, string];
 }
 
 /** Each frame's tooltip: its pair and unit, answer 3's table. */
@@ -487,35 +491,33 @@ function enclosingScope(model: Model, path: string): { path: string; timing: Tim
   return { path: "", timing: { anchor: 0, m: 1, c: 0 } };
 }
 
-function framesRows(model: Model, path: string, t: Timing, counts?: { D: number; phi: number }): FramesRow[] {
+function framesOf(model: Model, path: string, t: Timing, counts?: { D: number; phi: number }): FramesTable {
   const s = model.structure!, bound = boundOf(model);
   const enc = enclosingScope(model, path);
   const rows: FramesRow[] = [];
-  if (t.anchor !== enc.timing.anchor) {
-    const a = s.anchors[t.anchor - 1];
-    rows.push({ frame: "scope", name: "", period: "", phase: "", unit: "", opens: `opens ${anchorName(t.anchor)} at ${scopeName(a.scope)}` });
-  } else {
+  // an anchor other than the scope's is the component's own `Absolute` entry, which has no `(K, φ)`
+  if (t.anchor === enc.timing.anchor) {
     const K = t.m / enc.timing.m, phi = (t.c - enc.timing.c) / enc.timing.m;
     rows.push({ frame: "scope", name: scopeName(enc.path), period: `K = ${K}`, phase: `φ = ${phi}`, unit: enc.path === "" ? "base ticks" : `ticks of ${enc.path}` });
   }
-  rows.push({ frame: "anchor", name: anchorLabel(s, t.anchor), period: `m = ${t.m}`, phase: `c = ${t.c}`, unit: t.anchor === 0 ? "base ticks" : `ticks of ${anchorName(t.anchor)}` });
+  rows.push({ frame: "anchor", name: anchorLabel(s, t.anchor), nameTitle: anchorTitle(s, t.anchor), period: `m = ${t.m}`, phase: `c = ${t.c}`, unit: t.anchor === 0 ? "base ticks" : `ticks of ${anchorName(t.anchor)}` });
   if (bound && counts) rows.push({ frame: "base grid", name: "", period: `D = ${counts.D}`, phase: `Φ = ${counts.phi}`, unit: "base ticks" });
   const pair = secondsPair(s, t, bound, counts);
   rows.push({ frame: "seconds", name: "", period: `Δt = ${pair.dt}`, phase: `τ = ${pair.tau}`, unit: "" });
-  return rows;
+  return { rows, pair: [`Δt ${pair.dt}`, `τ ${pair.tau}`] };
 }
 
 /** A discrete primitive's frames table; undefined for any other node. */
 export function framesTable(model: Model, path: string): FramesTable | undefined {
   const n = model.tree?.byPath.get(path);
   if (n?.class !== "primitive" || n.tier !== "discrete") return undefined;
-  return { rows: framesRows(model, path, n.timing, scheduleRows(model).get(path)) };
+  return framesOf(model, path, n.timing, scheduleRows(model).get(path));
 }
 
-/** A rate scope's frames table, by the same derivation; an assembly carries no `rates`, so no chain line. */
-export function scopeFramesTable(model: Model, path: string, key: string): FramesTable | undefined {
-  const x = model.structure?.scopes.find((y) => y.path === path && y.key === key);
-  return x && { rows: framesRows(model, path, x.timing, scopeRowOf(model, path, key)) };
+/** A rate scope's frames table, by the same derivation, from the assembly's one scope row; undefined for any other node. */
+export function scopeFramesTable(model: Model, path: string): FramesTable | undefined {
+  const x = model.structure?.scopes.find((y) => y.path === path);
+  return x && framesOf(model, path, x.timing, scopeRowOf(model, path, x.key));
 }
 
 /** A rate link as `show` spells it: `outer = Relative(2, 1)`, `fast = Absolute(1//50, 0//1)`. */

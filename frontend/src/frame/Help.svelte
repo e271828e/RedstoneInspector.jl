@@ -3,13 +3,12 @@
   // landing, which the shell keeps mounted and inert beneath it: the lead paragraph
   // and the legend of the diagram's terms with small static drawings in the canvas's
   // shapes and colors, the timing notation and the root inputs' type rule, the
-  // Simulink vocabulary, the keyboard, and the about section.
+  // keyboard, the Simulink vocabulary, and the about section.
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
   import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
-  import { KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
-  import { EQUATIONS } from "../lib/timing";
+  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
   let { onclose }: { onclose: () => void } = $props();
@@ -17,7 +16,7 @@
   onMount(() => article?.focus({ preventScroll: true }));
 
   const SECTIONS: [string, string][] = [
-    ["reading", "Reading the diagram"], ["timing", "Timing and root inputs"], ["simulink", "Coming from Simulink"], ["keyboard", "The keyboard"],
+    ["reading", "Reading the diagram"], ["timing", "Timing and root inputs"], ["keyboard", "The keyboard"], ["simulink", "Coming from Simulink"],
     ["about", "About"],
   ];
   /** A section's link scrolls to it, the hash left as `#help`. */
@@ -194,18 +193,6 @@
       <p class="type-rule">{@render text(TYPE_RULE)}</p>
     </section>
 
-    <section data-section="simulink">
-      <h2>Coming from Simulink</h2>
-      <table class="vocabulary">
-        <thead><tr><th>Simulink</th><th>Redstone</th><th></th></tr></thead>
-        <tbody>
-          {#each VOCABULARY as [simulink, redstone, note] (simulink)}
-            <tr><td>{@render text(simulink)}</td><td>{@render text(redstone)}</td><td class="note">{@render text(note)}</td></tr>
-          {/each}
-        </tbody>
-      </table>
-    </section>
-
     <section data-section="keyboard">
       <h2>The keyboard</h2>
       <p>{KEYS_NOTE}</p>
@@ -222,6 +209,18 @@
       <p class="vimium">
         {VIMIUM.before} <code>{VIMIUM_PATTERNS[0]}</code> {VIMIUM.between} <code>{VIMIUM_PATTERNS[1]}</code> {VIMIUM.after}
       </p>
+    </section>
+
+    <section data-section="simulink">
+      <h2>Coming from Simulink</h2>
+      <table class="vocabulary">
+        <thead><tr><th>Simulink</th><th>Redstone</th><th></th></tr></thead>
+        <tbody>
+          {#each VOCABULARY as [simulink, redstone, note] (simulink)}
+            <tr><td>{@render text(simulink)}</td><td>{@render text(redstone)}</td><td class="note">{@render text(note)}</td></tr>
+          {/each}
+        </tbody>
+      </table>
     </section>
 
     <section data-section="about">

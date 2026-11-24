@@ -1,13 +1,13 @@
 // The per-tab state in memory (workspace.md answer 9's second lifetime): the
 // model, the open level and its hash, each visited level's view and layout, the
 // selection, the tree's expansion, the query, the legend's focus, the focused
-// diagnostic, the standing route, the drawer, the keyboard's region and the help
-// page. Keyed by path and name, never by index; a push rekeys it (`rekey`, the
+// diagnostic, the standing route, the drawer, the detail pane's open sections, the
+// keyboard's region and the help page. Keyed by path and name, never by index; a push rekeys it (`rekey`, the
 // route through `rekeyRoute`) and drops the focused diagnostic.
 // Nothing here touches local storage; the open level is the URL's hash, the help
 // page `#help` pushed over it.
 import type { Geometry, LevelLayout } from "../canvas/layout";
-import type { Selection } from "../lib/detail";
+import type { Section, Selection } from "../lib/detail";
 import { diagnosticsOf } from "../lib/diagnostics";
 import type { Model } from "../lib/model";
 import { rekeyFocus } from "../lib/focus";
@@ -28,6 +28,8 @@ let level = $state("");
 let selection = $state.raw<Selection | undefined>();
 let expanded = $state.raw<ReadonlySet<string>>(new Set());
 let drawer = $state.raw<{ open: boolean; tab: Tab }>({ open: false, tab: "diagnostics" });
+/** Every node shares one state per section, which a load of any model keeps: only a page load resets it. */
+let sections = $state.raw<ReadonlySet<Section>>(new Set(["parameters", "faces"]));
 let views = $state.raw<ReadonlyMap<string, View>>(new Map());
 let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
 let query = $state("");
@@ -47,6 +49,8 @@ export const session = {
   /** The expanded node and folder rows, by path. */
   get expanded() { return expanded; },
   get drawer() { return drawer; },
+  /** The detail pane's open sections, one state for every node. */
+  get sections() { return sections; },
   /** Each visited level's zoom and pan, by path. */
   get views() { return views; },
   /** Each visited level's geometry, by path. */
@@ -307,6 +311,12 @@ export function openDrawer(tab: Tab) {
 /** A click on a tab: opens the drawer on it, or closes the drawer when it is the open tab. */
 export function toggleDrawer(tab: Tab) {
   drawer = drawer.open && drawer.tab === tab ? { open: false, tab } : { open: true, tab };
+}
+
+/** A section of the detail pane opened or closed, for every node. */
+export function setSection(section: Section, open: boolean) {
+  if (sections.has(section) === open) return;
+  sections = new Set(open ? [...sections, section] : [...sections].filter((s) => s !== section));
 }
 
 export function setView(path: string, view: View) {

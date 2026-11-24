@@ -5,7 +5,7 @@
 // and greeted again, a refused push; and the hosted copy, where none of it shows.
 import { readFileSync } from "node:fs";
 import { test } from "@playwright/test";
-import { drop, expect, fixtureText, live, readyLevel, rows, shot, status } from "./fixtures";
+import { drop, expect, fixtureText, live, openSection, readyLevel, rows, shot, status } from "./fixtures";
 
 const connection = (page: import("@playwright/test").Page) => status(page).locator(".connection");
 
@@ -40,6 +40,7 @@ test("a live tab greets, draws pushes, saves the bytes, opens locations, and rec
   expect(readFileSync(await download.path()).equals(Buffer.from(text, "utf8"))).toBe(true);
 
   await page.locator('g.block[data-id="plant"]').click();
+  await openSection(page, "locations");
   const location = page.locator("aside.detail .locations li").first().locator("button.location");
   await expect(location).toHaveAttribute("title", "Open in the editor");
   const label = (await location.locator(".file").textContent())!;
@@ -112,6 +113,7 @@ test("the hosted copy: no connection, no download", async ({ page }) => {
   if (!socket.isClosed()) await socket.waitForEvent("close");
   await expect(status(page)).toHaveAttribute("data-kind", "build");
   await page.locator('g.block[data-id="plant"]').click();
+  await openSection(page, "locations");
   await expect(page.locator("aside.detail .locations li button.location").first()).toHaveAttribute("title", "Copy the file label");
   await expect(connection(page)).toHaveCount(0);
   await expect(page.locator("button.download")).toHaveCount(0);
@@ -122,6 +124,7 @@ test("the hosted copy: a location click copies the file label", async ({ page, c
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').click();
+  await openSection(page, "locations");
   const first = page.locator("aside.detail .locations li").first();
   await expect(first.locator("button.location")).toHaveAttribute("title", "Copy the file label");
   const label = (await first.locator(".file").textContent())!;

@@ -54,8 +54,9 @@ test("before a drop: the landing's link opens five sections over the inert landi
   const h = help(page);
   await expect(h.locator("h1")).toHaveText("Redstone inspector");
   expect(await h.locator("section[data-section]").evaluateAll((s) => s.map((e) => (e as HTMLElement).dataset.section)))
-    .toEqual(["reading", "timing", "simulink", "keyboard", "about"]);
-  await expect(h.locator("nav a")).toHaveCount(5);
+    .toEqual(["reading", "timing", "keyboard", "simulink", "about"]);
+  expect(await h.locator("nav a").evaluateAll((a) => a.map((e) => e.getAttribute("href")))).toEqual(["#help-reading", "#help-timing", "#help-keyboard", "#help-simulink", "#help-about"]);
+  await expect(h.locator("nav a")).toHaveText(["Reading the diagram", "Timing and root inputs", "The keyboard", "Coming from Simulink", "About"]);
   await expect(h.locator("section[data-section] > h2")).toHaveCount(5);
   await expect(h.locator('section[data-section="refusals"]')).toHaveCount(0);
   // the lead paragraph opens the section, above the legend

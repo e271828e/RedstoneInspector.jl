@@ -1,19 +1,21 @@
 <script lang="ts">
   // The detail pane (workspace.md answer 4): one layout per element kind over
   // detail.ts's facts, the open level's when nothing is selected. Links select
-  // through the session; nothing here is truncated, the pane scrolls. A pin, a
-  // port and a wire carry the trace button.
+  // through the session; nothing here is truncated, the pane scrolls. A node's
+  // pane has six collapsible sections, their state the session's. A pin, a port
+  // and a wire carry the trace button.
   import {
-    classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
-    type Selection,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, TIMING_TITLE, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
+    type Section, type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
   import type { Model } from "../lib/model";
+  import type { Snippet } from "svelte";
   import { inPinId, outPinId, portId } from "../lib/level";
   import type { Face } from "../lib/resolve";
   import { FRAME_TITLES, type FramesTable } from "../lib/timing";
 
-  let { model, level, selection, focused = false, editor = false, origin, tracing = false, onselect, onopen, onlocation, ontrace }: {
+  let { model, level, selection, focused = false, editor = false, origin, tracing = false, sections, onselect, onopen, onlocation, ontrace, onsection }: {
     model: Model;
     level: string;
     selection: Selection | undefined;
@@ -30,6 +32,9 @@
     /** The origin's route stands: the button clears it. */
     tracing?: boolean;
     ontrace?: (face: Face) => void;
+    /** The open sections, one state for every node. */
+    sections: ReadonlySet<Section>;
+    onsection: (section: Section, open: boolean) => void;
   } = $props();
 
   const facts = $derived<Facts | undefined>(model.tree ? detailOf(model, level, selection) : undefined);
@@ -105,7 +110,7 @@
 {#snippet faces(inputs: FaceFacts[], outputs: FaceFacts[], stage: boolean, links_: boolean)}
   {#if inputs.length + outputs.length}
     <table class="faces">
-      <thead><tr><th></th><th>face</th><th>type</th><th>kind</th><th></th>{#if stage}<th title="the output's stage">st.</th>{/if}{#if links_}<th>from / to</th>{/if}</tr></thead>
+      <thead><tr><th></th><th>face</th><th>type</th><th>kind</th><th></th>{#if stage}<th title="the output's stage">stage</th>{/if}{#if links_}<th>from / to</th>{/if}</tr></thead>
       <tbody>
         {@render faceRows(inputs, "in", stage, links_)}
         {@render faceRows(outputs, "out", stage, links_)}
@@ -124,19 +129,23 @@
     <tbody>
       {#each t.rows as r (r.frame)}
         <tr data-frame={r.frame}>
-          <th class="frame" scope="row" title={FRAME_TITLES[r.frame]}><span class="word">{r.frame}</span>{#if r.name}{" "}<span class="name">{@render slashed(r.name)}</span>{/if}</th>
-          {#if r.opens}
-            <td class="opens" colspan="3">{@render slashed(r.opens)}</td>
-          {:else}
-            <td class="period">{@render value(r.period)}</td><td class="phase">{@render value(r.phase)}</td><td class="unit">{@render slashed(r.unit)}</td>
-          {/if}
+          <th class="frame" scope="row" title={FRAME_TITLES[r.frame]}><span class="word">{r.frame}</span>{#if r.name}{" "}<span class="name" title={r.nameTitle}>{@render slashed(r.name)}</span>{/if}</th>
+          <td class="period">{@render value(r.period)}</td><td class="phase">{@render value(r.phase)}</td><td class="unit">{@render slashed(r.unit)}</td>
         </tr>
       {/each}
     </tbody>
   </table>
 {/snippet}
 
-{#snippet node(f: NodeFacts | LevelFacts, scopes: LevelFacts["scopes"] = [])}
+<!-- A collapsible section: the heading's `toggle`, from a click, a key or the browser's own search, is the session's. -->
+{#snippet section(name: Section, body: Snippet, title?: string, pair?: [string, string])}
+  <details class="section" data-section={name} open={sections.has(name)} ontoggle={(e) => onsection(name, e.currentTarget.open)}>
+    <summary {title}><h3>{name}</h3>{#if pair}{" "}<span class="pair"><span>{pair[0]} ·</span> <span>{pair[1]}</span></span>{/if}</summary>
+    {@render body()}
+  </details>
+{/snippet}
+
+{#snippet node(f: NodeFacts | LevelFacts)}
   <dl class="facts">
     <dt title={FACT_TITLES.type}>type</dt>
     <dd data-fact="type">
@@ -144,13 +153,6 @@
     </dd>
     <dt title={FACT_TITLES.class}>class</dt>
     <dd data-fact="class">{classPhrase(f.kind === "primitive" ? "primitive" : "assembly", f.tier)}</dd>
-    {#if f.rate}
-      <dt title={FACT_TITLES.rate}>rate</dt>
-      <dd data-fact="rate">
-        {@render frames(f.rate.table)}
-        {#if f.rate.chain}<p class="chain"><code>{f.rate.chain}</code></p>{/if}
-      </dd>
-    {/if}
     {#if f.children !== undefined}
       <dt title={FACT_TITLES.children}>children</dt>
       <dd data-fact="children">{f.children}</dd>
@@ -166,18 +168,10 @@
       </dd>
     {/if}
   </dl>
-  {#if f.signature !== f.type}{#key f.path}<details class="signature"><summary>signature</summary><code>{f.signature}</code></details>{/key}{/if}
-  {#if f.docstring}
-    {#key f.path}
-      <details class="docstring">
-        <summary><span class="title">docstring</span></summary>
-        <!-- renderDocstring escapes raw HTML and keeps only http links, so the HTML is safe to insert -->
-        <div class="docstring">{@html renderDocstring(f.docstring, f.type)}</div>
-      </details>
-    {/key}
-  {/if}
-  {#if f.locations.length}
-    <h3>Locations</h3>
+  {#snippet signature()}<code class="signature">{f.signature}</code>{/snippet}
+  <!-- renderDocstring escapes raw HTML and keeps only http links, so the HTML is safe to insert -->
+  {#snippet docstring()}<div class="docstring">{@html renderDocstring(f.docstring!, f.type)}</div>{/snippet}
+  {#snippet locations()}
     <ul class="locations">
       {#each f.locations as l, i (i)}
         {@const parts = fileParts(l.file)}
@@ -191,17 +185,22 @@
         </li>
       {/each}
     </ul>
-  {/if}
-  {#if scopes.length}
-    <h3>Rate scopes</h3>
-    <ul class="scopes">{#each scopes as s (s.key)}<li data-key={s.key}><code>{s.key}</code>{@render frames(s.table)}</li>{/each}</ul>
-  {/if}
-  {#if f.parameters.length}
-    <h3>Parameters</h3>
+  {/snippet}
+  {#snippet timing()}
+    {@render frames(f.timing!.table)}
+    {#if f.timing!.chain}<p class="chain"><code>{f.timing!.chain}</code></p>{/if}
+  {/snippet}
+  {#snippet parameters()}
     <table class="parameters"><tbody>{#each f.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
-  {/if}
-  {#if f.inputs.length + f.outputs.length}<h3>Faces</h3>{/if}
-  {@render faces(f.inputs, f.outputs, f.kind === "primitive", true)}
+  {/snippet}
+  {#snippet faceTable()}{@render faces(f.inputs, f.outputs, f.kind === "primitive", true)}{/snippet}
+
+  {#if f.signature !== f.type}{@render section("signature", signature)}{/if}
+  {#if f.docstring}{@render section("docstring", docstring)}{/if}
+  {#if f.locations.length}{@render section("locations", locations)}{/if}
+  {#if f.timing}{@render section("timing", timing, TIMING_TITLE, f.timing.table.pair)}{/if}
+  {#if f.parameters.length}{@render section("parameters", parameters)}{/if}
+  {#if f.inputs.length + f.outputs.length}{@render section("faces", faceTable)}{/if}
 {/snippet}
 
 {#if !facts}
@@ -215,7 +214,7 @@
   <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
     {#if facts.kind === "level"}
       {@render header(facts.segment, facts.displayName, facts.path, false, false, true)}
-      {@render node(facts, facts.scopes)}
+      {@render node(facts)}
     {:else if "signature" in facts}
       <!-- a primitive root's level is the primitive itself, so its pane carries the open level's mark -->
       {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly", false, facts.path === level)}
@@ -263,6 +262,11 @@
   h2 .segment { font-weight: 600; }
   h2 .name { color: var(--text-light); }
   h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-light); margin: 14px 0 4px; font-weight: 600; }
+  /* A section's heading is the h3 after the summary's marker; TIMING's pair moves below it whole, then breaks at its dot. */
+  summary { margin: 14px 0 4px; color: var(--text-light); font-size: 11px; cursor: pointer; }
+  summary h3 { display: inline; margin: 0; }
+  summary .pair { display: inline-block; margin-left: 6px; color: var(--text); font-size: 12px; }
+  summary .pair > span { white-space: nowrap; }
   .path-line { display: flex; gap: 6px; align-items: center; }
   .path { color: var(--text-light); }
   .copy { font: 11px system-ui, sans-serif; padding: 0 6px; }
@@ -276,10 +280,8 @@
   .level-mark { font-size: 11px; color: var(--text-light); }
   .trace[aria-pressed="true"] { background: color-mix(in srgb, var(--highlight) 20%, transparent); }
   p { margin: 6px 0; }
-  code, .signature { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-  .signature summary, details.docstring summary { font-family: system-ui, sans-serif; cursor: pointer; color: var(--text-light); }
-  .signature code { display: block; white-space: pre-wrap; margin-top: 4px; }
-  details.docstring { margin: 8px 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  code.signature { display: block; white-space: pre-wrap; }
   /* The rendered docstring keeps the pane's font; code blocks in monospace on the strip, unwrapped and scrolling sideways, links in the highlight. */
   div.docstring { margin: 4px 0 8px; }
   div.docstring :global(p), div.docstring :global(ul), div.docstring :global(ol) { margin: 6px 0; }
@@ -306,14 +308,10 @@
   .frames th.frame { color: var(--text); font-size: 13px; cursor: help; }
   .frames .word { color: var(--text-light); font-size: 11px; }
   .frames :is(th, td) { padding: 1px 4px 1px 0; }
-  /* The table takes the pane's whole width under its label, so the narrow pane keeps each cell on a line or two. */
-  dl.facts dd[data-fact="rate"] { grid-column: 1 / -1; }
   .frames .period, .frames .phase, .frames :is(.period, .phase) > span { white-space: nowrap; }
   .frames .period { padding-right: 8px; }
-  .frames .unit, .frames .opens { color: var(--text-light); }
+  .frames .unit { color: var(--text-light); }
   .chain { margin: 4px 0 0; color: var(--text-light); }
-  .scopes { list-style: none; padding: 0; }
-  .scopes li { margin: 4px 0 8px; }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }
   .faces .side, .faces .pinned, .faces .stage { white-space: nowrap; }
