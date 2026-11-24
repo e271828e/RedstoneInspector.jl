@@ -364,7 +364,7 @@ describe("the chart's lines and geometry (answers 8 and 11)", () => {
     const one = primitiveRootDep({ num: 1, den: 50 });
     expect(jointLine(jointPeriod(one)!)).toBe("the chart spans the joint period with Δt_frame: 3 base ticks (1/50 s), 1 frame");
   });
-  it("puts base tick k at k pitches from the margin, and frame top j at j·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
+  it("puts base tick n at n pitches from the margin, and frame top k at k·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
     const fit = chartFit(jointPeriod(timingDep)!, frameLines(timingDep)!, 1000) as DrawnFit;
     expect([tickX(0n, fit), tickX(5n, fit)]).toEqual([CHART_PAD, CHART_PAD + 30]);
     expect(frameTopX(2n, jointPeriod(timingDep)!, fit)).toBe(tickX(6n, fit));
@@ -413,7 +413,7 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
     expect(framesTable(fixtureModel("library"), "d_pid")!.rows.map((r) => r.nameTitle)).toEqual([undefined, "the base grid", undefined]);
     expect(chainLine(timingDep, "staggered")).toBe("staggered = Absolute(1//10, 1//300)");
   });
-  it("the nested scope deep divides by mₛ = 2 and subtracts cₛ = 1; the primitive under it is its (1, 0)", () => {
+  it("the nested scope deep divides by Dₐ(s) = 2 and subtracts Φₐ(s) = 1; the primitive under it is its (1, 0)", () => {
     expect(scopeFramesTable(timingDep, "fast/outer/deep")!.rows[0]).toMatchObject({ name: "fast/outer", period: "Dₛ = 2", phase: "Φₛ = 1" });
     expect(rows(timingDep, "fast/outer/deep/hold")[0]).toEqual(["scope", "fast/outer/deep", "Dₛ = 1", "Φₛ = 0", "ticks of fast/outer/deep"]);
   });

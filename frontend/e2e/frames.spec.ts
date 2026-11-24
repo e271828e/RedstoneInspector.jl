@@ -51,8 +51,9 @@ test("timing_deployment's fast/outer/hold: the section TIMING, collapsed at firs
   ]);
   await expect(timing(page).locator("table.frames thead th")).toHaveText(["", "period", "phase", ""]);
   // each frame's head is titled with its pair and unit, the three counts told apart by their subscripts
-  for (const [f, pair] of [["scope", "Dₛ and Φₛ"], ["anchor", "Dₐ and Φₐ"], ["base grid", "D₀ and Φ₀"], ["seconds", "Δt and τ"]]) {
-    await expect(timing(page).locator(`tr[data-frame="${f}"] th.frame`)).toHaveAttribute("title", new RegExp(pair));
+  for (const [f, title] of [["scope", "Its rate scope: Dₛ and Φₛ in ticks of the enclosing scope, as declared"], ["anchor", "Its anchor: Dₐ and Φₐ in ticks of the anchor"],
+    ["base grid", "The base grid: D₀ and Φ₀ in base ticks, the deployment's"], ["seconds", "Seconds: Δt and τ"]]) {
+    await expect(timing(page).locator(`tr[data-frame="${f}"] th.frame`)).toHaveAttribute("title", title);
   }
   // the anchor's name carries its own title, the rest of the row's head the frame's
   await expect(timing(page).locator('tr[data-frame="anchor"] .name')).toHaveAttribute("title", "fast at the root");

@@ -9,7 +9,8 @@ to the core's `fcd3660`, whose notation they now read
   not in it. `crosscheck.jl` writes the core's own text for it to compare
   with, under `show/`. Both write beside themselves, so copy them out of
   the tree first, then run `crosscheck.jl` and `oracle.py` as their heads
-  say. 567 checks, none failed.
+  say. 589 checks, none failed, 22 of them on the heads of `show`'s
+  tables.
 - **The look's reading**, `look_reading.py`, derives what the page shows
   since the look. `look_modules.test.ts` dumps what the modules give, run
   through `vitest.config.mjs`, and `look_compare.py` compares the two.

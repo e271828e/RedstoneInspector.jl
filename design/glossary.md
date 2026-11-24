@@ -303,9 +303,10 @@ no entry here.
   the version `Project.toml` claims if no tag of that version exists
   (`build_release.md` answer 6).
 - **Timing.** A primitive node's or a scope's `{"anchor", "D", "phi"}`: the
-  anchor it hangs from, its `Dₐ` and its `Φₐ` in that anchor's ticks. The grammar and the frontend's code call it the triple, the
-  compiled clock rate mode keys its colors on (`descriptor_design.md`
-  answer 9, `visual_grammar.md` answer 6).
+  anchor it hangs from, its `Dₐ` and its `Φₐ` in that anchor's ticks. The
+  grammar and the frontend's code call it the triple, the compiled clock
+  rate mode keys its colors on (`descriptor_design.md` answer 9,
+  `visual_grammar.md` answer 6).
 - **Trace.** The action that starts a route: the detail pane's button, the
   right-click entry or `t`. Not the core's trace, a session's record
   (`workspace.md` answer 8).

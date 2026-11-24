@@ -21,8 +21,9 @@ The session's, each open to the user.
 
 1. **The target is the tip of the core's GitHub master**, with its four
    workflows green. The core's local `master` is 22 commits ahead, unpushed,
-   so nothing there can be pinned. Those commits touch docstrings and
-   comments in `src/`, no descriptor code.
+   so nothing there can be pinned. In `src/` those commits
+   touch docstrings, comments and one diagnostic's citations, and no
+   descriptor code.
 2. **The branch is left unmerged**, by `AGENTS.md`'s "the user merges it".
    The last bump committed on `master` by a ruling of the user's that named
    that run alone.
@@ -54,9 +55,10 @@ The session's, each open to the user.
    `Da`, `phia`, `D0`, `phi0`, on `TimingRow` and in the table cells'
    classes. A row of one lattice keeps the bare `D` and `phi`, as D-478 lets
    a field do, so the schedule's and the chart's rows are untouched.
-10. **The chart's base tick index is `n`, D-479's**, in its code, its
-    comments and the attribute `data-n`, and the frame tops keep `j`.
-    A local `k` that indexes anything else stays.
+10. **The chart's base tick index is `n` and its frame top index `k`,
+    D-479's**, in its code, its comments and the attributes `data-n` and
+    `data-k`. A local `k` elsewhere stays. The review's finding 6 moved the
+    frame tops, which kept `j` at first.
 11. **The loader's refusal is not extended.** See the first finding.
 
 ## The shape built
@@ -91,7 +93,7 @@ The session's, each open to the user.
 | | at `9e75f39` | at the pin |
 |---|---|---|
 | the Julia gate | 128 passed | 128 passed |
-| `npm test` | 611 passed in 30 files | 611 passed in 30 files |
+| `npm test` | 611 passed in 30 files | 612 passed in 30 files |
 | `npm run check` | 0 errors, 405 files | 0 errors, 405 files |
 | `npm run e2e`, both browsers | 620 passed, 4 skipped | 620 passed, 4 skipped |
 
@@ -106,7 +108,7 @@ files and 50 unit tests failed in 6.
 
 ## What the tests pin
 
-37 mutants, `tools/mutants.py`, each a change of the bump reverted or a pair
+37 mutants of the session's, `tools/mutants.py`, each a change of the bump reverted or a pair
 of counts swapped, on a scratch copy. All are killed. Four survived at
 first. Three were prose of the help page, and `help.spec.ts` now checks that
 no retired letter stands in a code span of the page and no backquote in its
@@ -134,16 +136,20 @@ To look at, each judged acceptable here:
 
 ## Findings
 
-1. **A file of the last pin breaks the page.** A build or a deployment the
-   core wrote between `7ea3600` and the rename has `grid`, so the loader
-   accepts it, and its timings have `m` and `c`. Dropped, the canvas draws,
-   and rate mode and the timing tab throw "Cannot convert undefined to a
-   BigInt" (`tools/old_file.mjs` on `9e75f39`'s `rates.json` and
-   `rates_deployment.json`). Answer 2 says the page refuses an older file.
+1. **A file with the old timing keys breaks the page.** A descriptor the
+   core wrote between its `44d52cc`, which added `grid`, and its `7c24c48`,
+   which renamed the keys, has `grid`, so the loader accepts it, and its
+   timings have `m` and `c`. Dropped, the canvas draws, and rate mode and
+   the timing tab throw "Cannot convert undefined to a BigInt"
+   (`tools/old_file.mjs` on `9e75f39`'s `rates.json` and
+   `rates_deployment.json`). A deployment's pane does not throw. Its frames
+   table prints `Dₛ = NaN` and `Dₐ = undefined` beside a correct base grid
+   and seconds, so the page shows wrong text with no error (the review's
+   finding 2). A failure with a structure has the same keys. Answer 2 says the page refuses an older file.
    The change is small, a third check in `loader.ts` beside the two there:
 
    ```ts
-   const timing = structure?.nodes.find((n) => n.class === "primitive")?.timing;
+   const timing = structure?.nodes.find((n: any) => n.class === "primitive")?.timing;
    if (timing && !("D" in timing)) return older(`${at}.nodes[].timing.D`);
    ```
 
@@ -182,4 +188,28 @@ against the code. An empty review is acceptable.
 
 ## The review's record
 
-Filled after the review.
+One high-tier agent reviewed `f7defc9` in a worktree of its own. Its gate
+was green at the notes' counts. It found no reader of the descriptor the
+bump missed and every printed symbol the core's. It ran 56 mutants of its
+own, two of them no faults. Nothing was a must-fix. The findings, as
+adjudicated by the session, all landed in one commit:
+
+- **1, the snippet of finding 1 did not pass the checker.** Fixed, `n: any`.
+- **2, that finding's window and effect were wrong.** Fixed here, in answer 2
+  and in `pending.md`, after a check of the three commits' schemas.
+- **3, a test's name held `mₛ` and `cₛ`.** Fixed.
+- **4, the help page's check let a bare `D` or `Φ` and a `Δt₁` through.**
+  Fixed.
+- **5, the anchor row's title was matched in part.** Fixed for the four.
+- **6, the frame tops kept `j` against D-479.** Taken, as ruling 10 now says.
+- **7, ruling 1's sentence on the unpushed commits.** Fixed.
+- **8, a count in a tool's README.** Fixed. A replacement of the session's
+  had failed without a word.
+- **9, wording.** Taken, but for the roadmap's letters, which wait for the
+  merge.
+- **Missing tests.** Taken for a focus and a rekeyed key with a phase and
+  for the cells' classes on a component's row. Left for the chart's base
+  tick strokes, `path.grid`, older than the bump: no check reads them, and
+  an empty path survives.
+
+It disagreed with ruling 10 alone.

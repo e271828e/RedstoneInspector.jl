@@ -82,8 +82,8 @@ export const NOTATION: [string, string][] = [
 ];
 
 /** The paragraphs of the timing and root inputs section. */
-export const NOTATION_LEAD = "A discrete component runs on a period and a phase, stated in four frames: its rate scope, its anchor, the base grid and seconds. The detail pane shows them as a table, a row per frame. The pane, the legend, the timing tab and their tooltips name each quantity by its symbol alone. A subscript names the ticks a count is in, and `0 ≤ Φ < D` holds under each. An argument names the node a symbol belongs to, a component, a scope or an anchor, as in `Δt(A₁)`. A table omits it, since its row names the node.";
-export const LAW_LEAD = "One law composes the frames, in seconds and in base ticks, for a component `i` on an anchor `a`:";
+export const NOTATION_LEAD = "A discrete component runs on a period and a phase, stated in four frames: its rate scope, its anchor, the base grid and seconds. The detail pane shows them as a table, a row per frame. The pane, the legend, the timing tab and their tooltips name each quantity by its symbol alone. A subscript names the ticks a count is in, and `0 ≤ Φ < D` holds under each. An argument names the node a symbol belongs to, a component, a scope or an anchor, as in `Δt(A₁)`. A table and a line of a legend omit it.";
+export const LAW_LEAD = "One law composes the frames, in seconds and in base ticks, for a component or a scope `i` on an anchor `a`:";
 /** The law (deployment_overlay.md answer 3): each line's frame and its two equations. */
 export const EQUATIONS: { frame: string; period: string; phase: string }[] = [
   { frame: "in seconds", period: "Δt(i) = Dₐ(i) · Δt(a)", phase: "τ(i) = τ(a) + Φₐ(i) · Δt(a)" },

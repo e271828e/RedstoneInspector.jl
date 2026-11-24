@@ -32,7 +32,7 @@
   const fit = $derived(chartFit(joint, lines, Math.max(0, width - labels - 2 * CHART_PAD)));
   const tops = $derived.by(() => {
     if (fit.kind === "omitted" || !lines.drawn) return [];
-    return Array.from({ length: Number(joint.frames) + 1 }, (_, j) => ({ j, x: frameTopX(BigInt(j), joint, fit) }));
+    return Array.from({ length: Number(joint.frames) + 1 }, (_, k) => ({ k, x: frameTopX(BigInt(k), joint, fit) }));
   });
   /** The base ticks as one path of short strokes, so the pitch reads where no row is due. */
   const grid = $derived(
@@ -72,7 +72,7 @@
         {#each rows as r (r.label)}
           <svg class="lane" data-d={r.D} data-phi={r.phi} width={fit.width + 2 * CHART_PAD} height={ROW} aria-hidden="true">
             <path class="grid" d={grid} />
-            {#each tops as t (t.j)}<line class="frame-top" data-j={t.j} x1={t.x} x2={t.x} y1="0" y2={ROW} />{/each}
+            {#each tops as t (t.k)}<line class="frame-top" data-k={t.k} x1={t.x} x2={t.x} y1="0" y2={ROW} />{/each}
             {#each dueTicks(r, joint) as n (n)}<circle class="due" data-n={n} cx={tickX(n, fit)} cy={ROW / 2} r="2.5" />{/each}
           </svg>
         {/each}

@@ -82,9 +82,10 @@ the user away): both stood open in the core's `pending.md`.*
    `grid` alone tells every older file and the `schedule` check is a
    second guard. Amended 2026-11-24 (the pin bump to the core's
    `fcd3660`, the user away): that held until the core renamed the keys
-   of a timing and of a `Relative` link (its D-478). A file the core
-   wrote between `7ea3600` and that commit has `grid` and the old keys.
-   It loads, and the readers then throw. `pending.md` holds the question.*
+   of a timing and of a `Relative` link (its D-478, commit `7c24c48`). A
+   file written between `44d52cc` and that commit has `grid` and the old
+   keys. It loads, and the readers then throw or print `NaN` and
+   `undefined`. `pending.md` holds the question.*
    *Why:* D-433's annotation, D-434 and D-437 each added to version one
    unbumped, "no reader to protect while unreleased", and a rule replaces
    the repeated exception. A minor bump only adds fields, so a 1.1 schema
@@ -104,11 +105,12 @@ the user away): both stood open in the core's `pending.md`.*
 
    A subscript names the lattice a count is in, and an argument the node
    a symbol belongs to, as in `D₀(i)`, `Δt(a)` and `τ(A₁)`. A table leaves
-   the argument out, since its row names the node. An anchor has the
+   the argument out, since its row names the node, and so does a line that
+   names a clock. An anchor has the
    seconds pair and the base grid's, and the base grid is anchor `A₀`,
    with `Δt(A₀) = Δt_base`, `τ(A₀) = 0`, `D₀(A₀) = 1` and `Φ₀(A₀) = 0`.
-   One law composes them in each unit, for a component `i` on an anchor
-   `a`:
+   One law composes them in each unit, for a component or a scope `i` on
+   an anchor `a`:
 
    ```
    in seconds:      Δt(i) = Dₐ(i) · Δt(a)      τ(i)  = τ(a)  + Φₐ(i) · Δt(a)    a build knows both unless a is A₀
@@ -153,9 +155,10 @@ the user away): both stood open in the core's `pending.md`.*
    D-478 superseded. They were `(K, φ)` in scope ticks, `(m, c)` in anchor
    ticks, a bare `(D, Φ)` in base ticks, and `(Δtₖ, τₖ)` and `(Dₖ, Φₖ)` for
    anchor `k`, which read `Aₖ (key)`. The file's keys were `m`, `c` and
-   `K`. The notes, the *Why* and the *Rejected* of every answer of this
-   record keep the letters of their dates, and there `Dₖ` is anchor `k`'s
-   divisor in base ticks.*
+   `K`. The component's `τ` was cited from the core's §9.2. In this record
+   the notes, the *Why*, the *Rejected* and the *Cost accepted*, answer 17's
+   table and answer 13's report of the roadmap's ruling keep the letters of
+   their dates, and there `Dₖ` is anchor `k`'s divisor in base ticks.*
    *Why:* the page printed `c` as "phase" in the legend and as "offset"
    in the pane, while the core gives "phase" to `Φ` and calls `τ` the
    anchor's offset: one quantity under two words, and each word on two
@@ -242,8 +245,8 @@ the user away): both stood open in the core's `pending.md`.*
    times `dt_base` and `τ` as `Φ₀` times `dt_base`, each as an exact
    fraction over the integers the file holds and never as a product of
    floats. The writer computes each
-   anchor's `D₀(a)` and `Φ₀(a)` as `Δt(a) / Δt_base` and `τ(a) / Δt_base`.
-   In
+   anchor's `D₀(a)` and `Φ₀(a)` as `Δt(a) / Δt_base` and
+   `τ(a) / Δt_base`. In
    `structure.anchors` the period's key is `dt`, which amends
    `descriptor_design.md` answer 9. That a node holds its chain as
    `rates` amends that record's answer 4.

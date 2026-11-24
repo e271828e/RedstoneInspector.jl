@@ -314,7 +314,7 @@ export interface JointPeriod {
   seconds: Q;
   baseTicks: bigint;
   frames: bigint;
-  /** A frame in base ticks, `Δt_frame / Δt_base`: frame top `j` stands at `j·frameInTicks` base ticks. */
+  /** A frame in base ticks, `Δt_frame / Δt_base`: frame top `k` stands at `k·frameInTicks` base ticks. */
   frameInTicks: Q;
 }
 
@@ -443,9 +443,9 @@ export type DrawnFit = Exclude<ChartFit, { kind: "omitted" }>;
 export const CHART_PAD = 4;
 /** Base tick `n`'s x on a drawn timeline: `n` pitches in from the margin. */
 export const tickX = (n: bigint, fit: DrawnFit): number => CHART_PAD + Number(n) * fit.tickPx;
-/** Frame top `j`'s x: `j·Δt_frame / Δt_base` base ticks in, which can fall between two ticks. */
-export const frameTopX = (j: bigint, joint: JointPeriod, fit: DrawnFit): number =>
-  CHART_PAD + toNumber(mul(q(j), joint.frameInTicks)) * fit.tickPx;
+/** Frame top `k`'s x: `k·Δt_frame / Δt_base` base ticks in, which can fall between two ticks. */
+export const frameTopX = (k: bigint, joint: JointPeriod, fit: DrawnFit): number =>
+  CHART_PAD + toNumber(mul(q(k), joint.frameInTicks)) * fit.tickPx;
 /** The base ticks of the span where a chart row is due: `Φ₀`, `Φ₀ + D₀`, and on. */
 export function dueTicks(row: ChartRow, joint: JointPeriod): bigint[] {
   const out: bigint[] = [];

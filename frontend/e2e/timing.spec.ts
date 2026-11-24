@@ -28,11 +28,11 @@ function edited(name: string, edit: (d: any) => void): string {
   return JSON.stringify(d);
 }
 
-/** Each lane's due marks as `[n, cx]`, and its frame tops as `[j, x]`, read from the DOM. */
+/** Each lane's due marks as `[n, cx]`, and its frame tops as `[k, x]`, read from the DOM. */
 const lanes = (page: Page) => body(page).locator(".chart svg.lane").evaluateAll((ls) => ls.map((l) => ({
   D: Number(l.getAttribute("data-d")), phi: Number(l.getAttribute("data-phi")),
   marks: [...l.querySelectorAll("circle.due")].map((c) => [Number(c.getAttribute("data-n")), Number(c.getAttribute("cx"))]),
-  tops: [...l.querySelectorAll("line.frame-top")].map((t) => [Number(t.getAttribute("data-j")), Number(t.getAttribute("x1"))]),
+  tops: [...l.querySelectorAll("line.frame-top")].map((t) => [Number(t.getAttribute("data-k")), Number(t.getAttribute("x1"))]),
   width: Number(l.getAttribute("width")),
 })));
 
@@ -205,6 +205,7 @@ test("timing_deployment: the anchors and the scopes add the base grid's columns,
   await expect(body(page).locator('tr.scope[data-path="fast/outer"] td')).toHaveText(["fast/outer", "outer", "A₂ (fast)", "2", "1", "12", "6", "1/25 s", "1/50 s"]);
   await expect(body(page).locator("table.components th")).toHaveText(["", "path", "anchor", "Dₐ", "Φₐ", "D₀", "Φ₀", "Δt", "τ"]);
   await expect(body(page).locator('tr.component[data-path="staggered"] td')).toHaveText(["", "staggered", "A₁ (staggered)", "1", "0", "30", "1", "1/10 s", "1/300 s"]);
+  await expect(body(page).locator('tr.component[data-path="staggered"]').locator("td.Da, td.phia, td.D0, td.phi0")).toHaveText(["1", "0", "30", "1"]);
   await expect(body(page).locator("p.deployment-note")).toHaveCount(0);
   // the law's terms, from the help page: each line split at its operators, an argument dropped, since a table's row names the node
   await press(page, "?");
@@ -265,13 +266,13 @@ test("rates_deployment: a frame of two base ticks draws a frame top every two ti
   const pitch = pitchOf(ls[0].marks);
   for (const l of ls) {
     expectMarks(l, 40, pitch);
-    expect(l.tops.map((t) => t[0])).toEqual(Array.from({ length: 21 }, (_, j) => j));
-    for (const [j, x] of l.tops) expect(x).toBeCloseTo(PAD + j * 2 * pitch, 6);
+    expect(l.tops.map((t) => t[0])).toEqual(Array.from({ length: 21 }, (_, k) => k));
+    for (const [k, x] of l.tops) expect(x).toBeCloseTo(PAD + k * 2 * pitch, 6);
   }
   await shot(page, "rates_deployment", "", "timing-tab");
 });
 
-test("a frame of one and a half base ticks (an inline copy of rates_deployment): the frame tops fall between ticks at j·3/2 pitches over the joint period, every row splits frames", async ({ page }) => {
+test("a frame of one and a half base ticks (an inline copy of rates_deployment): the frame tops fall between ticks at k·3/2 pitches over the joint period, every row splits frames", async ({ page }) => {
   await timingOf(page, "rates_deployment", edited("rates_deployment", (d) => {
     d.deployment.dt_frame = { num: 3, den: 400 };
     d.deployment.h_max = { num: 3, den: 400 };
@@ -283,10 +284,10 @@ test("a frame of one and a half base ticks (an inline copy of rates_deployment):
   const pitch = pitchOf(ls[0].marks);
   expectMarks(ls[0], 120, pitch);
   expect(ls[0].tops).toHaveLength(81);
-  for (const [j, x] of ls[0].tops) expect(x).toBeCloseTo(PAD + j * 1.5 * pitch, 6);
+  for (const [k, x] of ls[0].tops) expect(x).toBeCloseTo(PAD + k * 1.5 * pitch, 6);
   // an odd frame top stands halfway between two base ticks
   const marks = new Set(ls[0].marks.map((m) => m[1]));
-  expect(ls[0].tops.filter(([j]) => j % 2 === 1).every(([, x]) => !marks.has(x))).toBe(true);
+  expect(ls[0].tops.filter(([k]) => k % 2 === 1).every(([, x]) => !marks.has(x))).toBe(true);
   await shot(page, "rates_deployment_frame_3_400", "", "timing-tab");
 });
 
@@ -299,7 +300,7 @@ test("timing_deployment: the timeline at the minimum pitch scrolls the tab's bod
   const ls = await lanes(page);
   expect(pitchOf(ls[0].marks)).toBeCloseTo(PITCH, 6);
   for (const l of ls) expectMarks(l, 360, PITCH);
-  for (const [j, x] of ls[0].tops) expect(x).toBeCloseTo(PAD + j * 3 * PITCH, 6);
+  for (const [k, x] of ls[0].tops) expect(x).toBeCloseTo(PAD + k * 3 * PITCH, 6);
   expect(ls[0].tops).toHaveLength(121);
   const place = () => body(page).evaluate((b) => ({
     left: b.scrollLeft, over: b.scrollWidth > b.clientWidth,

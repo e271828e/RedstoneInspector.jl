@@ -148,8 +148,9 @@ test("the timing section defines each symbol of the notation once, states the la
     /^linked by\s*Δt\(a\) = D₀\(a\) · Δt_base\s*τ\(a\) = Φ₀\(a\) · Δt_base$/, /^hence\s*Δt\(i\) = D₀\(i\) · Δt_base\s*τ\(i\) = Φ₀\(i\) · Δt_base$/,
   ]);
   // D-464's letters, which the core's D-478 retired, stand in no code span of the page, and no backquote is left as text
-  const spans = (await h.locator("code").allTextContents()).flatMap((x) => x.split(/[\s,·()=+]+/));
-  expect(spans.filter((x) => ["Aₖ", "Δtₖ", "τₖ", "Dₖ", "Φₖ", "K", "φ", "m", "c"].includes(x))).toEqual([]);
+  // nor a bare count outside the constructor and the constraint, nor a subscript on the seconds pair
+  const spans = (await h.locator("code").allTextContents()).filter((x) => !["Relative(D, Φ)", "0 ≤ Φ < D"].includes(x)).flatMap((x) => x.split(/[\s,·()=+]+/));
+  expect(spans.filter((x) => ["Aₖ", "Dₖ", "Φₖ", "K", "φ", "m", "c", "D", "Φ"].includes(x) || /^(Δt|τ)[₀-₉ₖ]/.test(x))).toEqual([]);
   expect(await h.textContent()).not.toContain("`");
   // §14.10's type rule, stated once on the whole page
   const rule = "a Float64 reached by at most one index step";

@@ -28,6 +28,12 @@ describe("legendLit", () => {
     expect(lit(cl, "selection", "4,1,0")).toEqual({ blocks: [], wires: ["selection/select_δe|in|in1"] });
   });
 
+  it("lights timing's fast by the triple of hold beneath, which has a phase, and by none without it", () => {
+    const timing = fixtureModel("timing");
+    expect(lit(timing, "", "2,6,3").blocks).toEqual(["fast"]);
+    expect(lit(timing, "", "2,6,0").blocks).toEqual([]);
+  });
+
   it("lights an extra's limiter and actuators above it", () => {
     expect(lit(cl, "", "9,1,0")).toEqual({ blocks: ["actuators"], wires: [] });
     expect(lit(cl, "actuators", "9,1,0")).toEqual({ blocks: ["actuators/δe_limiter"], wires: ["actuators/δe_lag|in|u"] });
@@ -74,6 +80,8 @@ describe("rekeyFocus", () => {
     expect(rekeyFocus("4,1,0", cl, dep)).toBe("4,1,0");
     expect(rekeyFocus(CONTINUOUS, cl, dep)).toBe(CONTINUOUS);
     expect(rekeyFocus("9,1,0", cl, rates)).toBeUndefined();
+    // a triple with a phase keeps it
+    expect(rekeyFocus("2,6,3", fixtureModel("timing"), fixtureModel("timing_deployment"))).toBe("2,6,3");
   });
 
   it("drops the continuous color when the one node without a triple is a mixed assembly", () => {
