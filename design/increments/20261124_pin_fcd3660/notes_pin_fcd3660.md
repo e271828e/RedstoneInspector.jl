@@ -20,10 +20,10 @@ local to one machine.
 The session's, each open to the user.
 
 1. **The target is the tip of the core's GitHub master**, with its four
-   workflows green. The core's local `master` is 22 commits ahead, unpushed,
-   so nothing there can be pinned. In `src/` those commits
-   touch docstrings, comments and one diagnostic's citations, and no
-   descriptor code.
+   workflows green. The core's local `master` is 22 commits ahead,
+   unpushed, so nothing there can be pinned. In `src/` those commits touch
+   docstrings, comments and one diagnostic's citations, and no descriptor
+   code.
 2. **The branch is left unmerged**, by `AGENTS.md`'s "the user merges it".
    The last bump committed on `master` by a ruling of the user's that named
    that run alone.
@@ -137,16 +137,17 @@ To look at, each judged acceptable here:
 ## Findings
 
 1. **A file with the old timing keys breaks the page.** A descriptor the
-   core wrote between its `44d52cc`, which added `grid`, and its `7c24c48`,
-   which renamed the keys, has `grid`, so the loader accepts it, and its
-   timings have `m` and `c`. Dropped, the canvas draws, and rate mode and
-   the timing tab throw "Cannot convert undefined to a BigInt"
-   (`tools/old_file.mjs` on `9e75f39`'s `rates.json` and
-   `rates_deployment.json`). A deployment's pane does not throw. Its frames
-   table prints `Dₛ = NaN` and `Dₐ = undefined` beside a correct base grid
-   and seconds, so the page shows wrong text with no error (the review's
-   finding 2). A failure with a structure has the same keys. Answer 2 says the page refuses an older file.
-   The change is small, a third check in `loader.ts` beside the two there:
+   core wrote between its `44d52cc`, which added `grid`, and its
+   `7c24c48`, which renamed the keys, has `grid`, so the loader accepts
+   it, and its timings have `m` and `c`. Dropped, the canvas draws, and
+   rate mode and the timing tab throw "Cannot convert undefined to a
+   BigInt" (`tools/old_file.mjs` on `9e75f39`'s `rates.json` and
+   `rates_deployment.json`). A deployment's pane does not throw. Its
+   frames table prints `Dₛ = NaN` and `Dₐ = undefined` beside a correct
+   base grid and seconds, so the page shows wrong text with no error (the
+   review's finding 2). A failure with a structure has the same keys.
+   Answer 2 says the page refuses an older file. The change is small, a
+   third check in `loader.ts` beside the two there:
 
    ```ts
    const timing = structure?.nodes.find((n: any) => n.class === "primitive")?.timing;
@@ -190,9 +191,9 @@ against the code. An empty review is acceptable.
 
 One high-tier agent reviewed `f7defc9` in a worktree of its own. Its gate
 was green at the notes' counts. It found no reader of the descriptor the
-bump missed and every printed symbol the core's. It ran 56 mutants of its
-own, two of them no faults. Nothing was a must-fix. The findings, as
-adjudicated by the session, all landed in one commit:
+bump missed and every printed symbol the core's. It ran 55 mutants of its
+own in 56 runs, two of them no faults. Nothing was a must-fix. The
+findings, as adjudicated by the session, all landed in one commit:
 
 - **1, the snippet of finding 1 did not pass the checker.** Fixed, `n: any`.
 - **2, that finding's window and effect were wrong.** Fixed here, in answer 2
@@ -212,4 +213,14 @@ adjudicated by the session, all landed in one commit:
   tick strokes, `path.grid`, older than the bump: no check reads them, and
   an empty path survives.
 
-It disagreed with ruling 10 alone.
+It disagreed with ruling 10 alone. It checked the fixes' delta at `2d317b5`,
+where nine mutants, its own survivors among them, die, and left two nits of
+wording and wrapping, landed with this record's close.
+
+## To clear
+
+After the merge and the push: the worktrees `pin_fcd3660` (branch
+`pin-fcd3660`) and `pin_fcd3660_review` (detached), and the folders
+`pin_fcd3660_look` and `pin_fcd3660_review_probes`, all under
+`~/.julia/dev/RedstoneInspector.jl-worktrees/`. The record rests on nothing
+in them that is not committed.

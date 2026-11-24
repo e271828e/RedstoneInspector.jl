@@ -115,11 +115,12 @@ landed (`roadmap.md`).
   `design/rules.md`'s "about 700". A trim outside any increment's text
   brings it back.
 - **A file with the old timing keys** (the pin bump to `fcd3660`). A
-  descriptor the core wrote between its `44d52cc` and `7c24c48` has `grid`
-  and timings under `m` and `c`. The loader accepts it. Rate mode and the
-  timing tab then throw, and a deployment's pane prints `NaN` and
-  `undefined`. Answer 2 of `deployment_overlay.md` wants it refused. The change is
-  in the bump's notes, finding 1, and is the user's to rule.
+  descriptor the core wrote between its `44d52cc` and `7c24c48` has
+  `grid` and timings under `m` and `c`. The loader accepts it. Rate mode
+  and the timing tab then throw, and a deployment's pane prints `NaN`
+  and `undefined`. Answer 2 of `deployment_overlay.md` wants it refused.
+  The change is in the bump's notes, finding 1, and is the user's to
+  rule.
 - **An integer past `2^53`** (the core's
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
   2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into

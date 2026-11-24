@@ -105,8 +105,8 @@ the user away): both stood open in the core's `pending.md`.*
 
    A subscript names the lattice a count is in, and an argument the node
    a symbol belongs to, as in `D₀(i)`, `Δt(a)` and `τ(A₁)`. A table leaves
-   the argument out, since its row names the node, and so does a line that
-   names a clock. An anchor has the
+   the argument out, since its row names the node, and so do a legend
+   line and a chart label. An anchor has the
    seconds pair and the base grid's, and the base grid is anchor `A₀`,
    with `Δt(A₀) = Δt_base`, `τ(A₀) = 0`, `D₀(A₀) = 1` and `Φ₀(A₀) = 0`.
    One law composes them in each unit, for a component or a scope `i` on
