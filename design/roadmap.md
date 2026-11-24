@@ -495,9 +495,9 @@ without a brief, the pin moving from the core's `6afd6fb` to `7ea3600`;
 its notes are `increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`. The
 record was brought to the pin the same day, fifteen answers amended, its
 rulings in `increments/inspector_10_deployment_overlay/notes_record_at_pin.md`.
-Both are on `master`, not pushed. The implementation was built on
-2026-11-23, with the user away, on the branch `increment-10`, which is not
-merged. It holds a docs commit, four stage commits taken from a prototype in three
+Both are on `master`. The implementation was built on
+2026-11-23, with the user away, on the branch `increment-10`, and merged on
+2026-11-24 at `7b2e050`. It holds a docs commit, four stage commits taken from a prototype in three
 parts on `increment-10-proto`, the cold review's fixes at `52524d1` with
 the delta check green, and the closing docs commit. The user's look of
 2026-11-24 followed, its rulings in `look_inspector_10.md` and its fixes at
@@ -506,9 +506,7 @@ tab in the notation with the chart, the pane's frames table with the
 chain line, the legend's short line with room in the fit, a deployment's
 own warnings, the root inputs' pinned mark and its causes, the loader's
 refusal of an older core's file and the link rule that reads a target.
-The four pairs kept as patches are ruled as built. The user's
-diff check and merge are owed, as the section "The look and its
-fixes" of `notes_implementation.md` lists them; that file and
+The four pairs kept as patches are ruled as built. The user's diff check is done. `notes_implementation.md` and
 `brief_inspector_10_implementation.md`, beside it, hold the rulings, the
 39 readings and the reviews. Facts 10b's brief takes: the gate stands at
 128 Julia tests, 611 unit tests, and 620 browser checks passed and 4

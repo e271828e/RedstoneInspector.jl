@@ -27,14 +27,14 @@ The bullets stand in working order, the first one next.
   work came first, in four parts, and is landed and pushed (the core's
   D-464, D-466, D-467, D-468 and D-471). Increment 10 runs in three
   steps, in this order, by the user's ruling of 2026-11-22. The first,
-  the pin bump, landed on 2026-11-23 and is not pushed: the pin stands
+  the pin bump, landed on 2026-11-23: the pin stands
   at the core's `7ea3600`, with the fixtures regenerated, `descent`
   built in the script and nothing new drawn. Its notes,
   `increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`, hold its
   rulings, the answers to the two checks of `deployment_overlay.md`
   answer 16, what the regenerated fixtures show and the look by
-  captures. The second, the record at the new pin, landed the same day
-  and is not pushed. `deployment_overlay.md` was read against the core's
+  captures. The second, the record at the new pin, landed the same day.
+  `deployment_overlay.md` was read against the core's
   §13.9 as pinned, the schema copy, the fixtures and the deployments of
   answer 16 built in scratch, with the user away, and fifteen of its
   answers are amended. Nothing was found that the core must change. The
@@ -46,7 +46,7 @@ The bullets stand in working order, the first one next.
   hold each ruling with its reason and the alternative it rejected, and
   the user's review of them is owed. The third, the implementation, was
   built and cold-reviewed on 2026-11-23 on the branch `increment-10`,
-  with the user away, and is not merged. Its brief,
+  with the user away, and merged on 2026-11-24 at `7b2e050`. Its brief,
   `increments/inspector_10_deployment_overlay/brief_inspector_10_implementation.md`,
   and `notes_implementation.md` beside it hold the rulings, the 39
   readings, the reviews and their adjudication. The user's look of
@@ -61,27 +61,24 @@ The bullets stand in working order, the first one next.
   renames the descriptor's keys with the format left at 1.0 (§13.9): a
   node's and a scope's `timing` `{anchor, m, c}` becomes
   `{anchor, D, phi}`, and a `Relative` link's `{K, phi}` becomes
-  `{D, phi}`. The page reads the old keys in `analysis.ts`, `rates.ts`,
-  `focus.ts` and `detail.ts`, and `detail.ts` prints `m` and `c`, so the
-  bump adapts the reads, prints the timing under the core's symbols
+  `{D, phi}`. The page holds the old keys and letters in `timing.ts`,
+  `rates.ts`, `focus.ts`, `help.ts` and `Timing.svelte` at least, and the
+  bump's brief lists them all. The bump adapts the reads, prints the timing under the core's symbols
   (`Dₐ`, `Φₐ`, `D₀`, `Φ₀`), regenerates the fixtures and copies the
   schema. `deployment_overlay.md`, whose answers still write the core's
-  D-464 letters, follows at the bump with a dated note. The core's commits are not pushed yet, and the pin names a
-  revision on GitHub, so the core's push comes first.
+  D-464 letters, follows at the bump with a dated note. The core's
+  increment is on GitHub, where the pin must name a revision.
 
   Then 10b, the events, after a short
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
   release, with a check that runs the real server. Stage reached on 10:
-  the pin bump and the record at the new pin landed and not pushed, the
-  bump cold-reviewed, the user's look at the bump and review of the
-  record's rulings owed. The implementation is built and cold-reviewed
-  on the branch `increment-10`, unmerged, the review's fixes at
-  `52524d1` and the look's at `c4ddea3`, each with the delta check green.
-  A second look followed the same day. The diff check of the arc and the
-  merge are owed, as the notes' section
-  "The look and its fixes" lists them. Next, 10b's design
-  session. The design session's handover is `notes_inspector_10.md`.
+  the pin bump and the record at the new pin landed, the bump
+  cold-reviewed, the user's look at the bump and review of the
+  record's rulings owed. The implementation is merged at `7b2e050`, the
+  review's fixes at `52524d1` and the look's at `c4ddea3`, each with the
+  delta check green, a second look after them and the user's diff check
+  done. Next, the pin bump to the core's timing notation. The design session's handover is `notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check
   passed, so increment 6's reading 18, non-blocking until the release, is

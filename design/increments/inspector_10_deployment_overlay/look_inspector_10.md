@@ -296,11 +296,13 @@ exclude each other.
 - [x] **10.1** Record amendments the look settles, and the patches taken,
   docs commit first. Ruling: `a4bc9b4`, then the fixes at `c4ddea3`. No
   patch is taken.
-- [ ] **10.2** The merge of `increment-10` into `master`.
+- [x] **10.2** The merge of `increment-10` into `master`. Ruling: a merge
+  commit, `7b2e050`, so that the hashes the records cite stay valid.
 - [ ] **10.3** The push and its CI run, the first with CI's fonts on this
   increment.
-- [ ] **10.4** The roadmap's landed note and the `pending.md` stage, with
-  10b's design session next.
+- [x] **10.4** The roadmap's landed note and the `pending.md` stage, with
+  the pin bump to the core's timing notation next, before 10b's design
+  session.
 - [ ] **10.5** The worktrees under `RedstoneInspector.jl-worktrees/`
   removed: `increment_10_proto` and its branch, `increment_10_review`,
   `increment_10_alt`, `pin_bump_review`, and `pin_bump` with its branch.

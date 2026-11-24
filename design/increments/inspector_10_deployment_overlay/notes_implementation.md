@@ -481,9 +481,8 @@ heading so is `frames.spec.ts`.
 
 The agents' notes are `W/increment_10_notes/notes_look_fix.md` and
 `notes_look_review.md`. The captures for the user's second look are in
-`W/increment_10_look/second/`, and show the pair. The user's items owed
-are now the diff check of the arc, the merge, the push and the removal of the
-worktrees.
+`W/increment_10_look/second/`, and show the pair. The user checked the
+arc's diff on 2026-11-24, and the branch was merged as `7b2e050`.
 
 ## Noticed, not touched
 
