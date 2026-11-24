@@ -298,11 +298,16 @@ exclude each other.
   patch is taken.
 - [x] **10.2** The merge of `increment-10` into `master`. Ruling: a merge
   commit, `7b2e050`, so that the hashes the records cite stay valid.
-- [ ] **10.3** The push and its CI run, the first with CI's fonts on this
-  increment.
+- [x] **10.3** The push and its CI run, the first with CI's fonts on this
+  increment. Ruling: `c8d1c02`, run 45490878537, every job green.
 - [x] **10.4** The roadmap's landed note and the `pending.md` stage, with
   the pin bump to the core's timing notation next, before 10b's design
   session.
-- [ ] **10.5** The worktrees under `RedstoneInspector.jl-worktrees/`
+- [x] **10.5** The worktrees under `RedstoneInspector.jl-worktrees/`
   removed: `increment_10_proto` and its branch, `increment_10_review`,
   `increment_10_alt`, `pin_bump_review`, and `pin_bump` with its branch.
+  Ruling: removed, and `increment_10` with them. The user closed two
+  reviews still owed, the look at the pin bump, which the two looks at
+  increment 10 supersede, and the record's rulings, whose three choices
+  are pairs 9.1 to 9.3. `Group`'s five bare links, unchecked until then,
+  each have an anchor on the core's API page.

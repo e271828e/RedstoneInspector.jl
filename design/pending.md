@@ -24,6 +24,10 @@ landed (`roadmap.md`).
     `help.ts` and `Timing.svelte` at least. Its brief lists them all.
   - `deployment_overlay.md`, whose answers write D-464's letters, follows
     with a dated note.
+  - Two stale passages go with it. The glossary's entry "`τ`, a
+    component's" defines a term the core's Appendix D now holds.
+    `descriptor_design.md` answer 9's title reads "the chain later", and
+    its answer 13 that the deployment body holds `build` alone.
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
@@ -85,11 +89,10 @@ landed (`roadmap.md`).
 
 ## Unordered
 
-- **The user's reviews owed on increment 10's first two steps**: the look
-  at the pin bump by captures (`increments/20261123_pin_7ea3600/notes_pin_7ea3600.md`)
-  and the record's rulings
-  (`increments/inspector_10_deployment_overlay/notes_record_at_pin.md`).
-  They block nothing.
+- **`signature` in a live session** (the pin bump of 2026-11-23). The
+  descriptor prints a type as the session's `Main` sees it (the core's
+  D-433), so an imported name prints bare and the pane then shows the
+  signature on every such node. The page's to weigh.
 - **Format changes still open.** Each is ruled in the core first, free
   until the first release and a minor bump after it
   (`deployment_overlay.md` answer 2).

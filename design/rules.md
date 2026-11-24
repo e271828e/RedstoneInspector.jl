@@ -412,6 +412,9 @@ full text stays.
 - **An inline model in Vitest.** `timing.ts` reads `model.descriptor.kind`, so
   an inline `Model` cast without a descriptor throws in `legendText`; give it
   `descriptor: {kind: "build"}`.
+- **An imported name in the fixture script.** A type name imported into the
+  fixture script's `Main` prints bare in every `signature`; the script
+  qualifies its types.
 - **New fixtures on the drift line.** The drift check of `AGENTS.md`,
   `git status --porcelain -- frontend/fixtures frontend/schema`, lists a new
   fixture, staged or untracked; it prints nothing only after the commit.
