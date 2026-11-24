@@ -236,7 +236,9 @@ The same model as a build, with no deployment.
   a reload, `signature` and `docstring` included, which collapsed again
   at each selection.
   TIMING's heading carries the seconds pair, `TIMING  Δt 1/10 s · τ
-  1/300 s`, and reading 32's tooltip. The section holds the frames table
+  1/300 s`, and reading 32's tooltip. *Amended at the second look,
+  2026-11-24: the heading is the word alone, since the section's state is
+  remembered, and the tooltip is reading 38's.* The section holds the frames table
   and, on a primitive, the chain line. An assembly that is a rate scope
   has it too, as the open level, where it replaces "Rate scopes", and
   selected as a block, where no timing showed. The headings of a pin's
@@ -248,6 +250,15 @@ The same model as a build, with no deployment.
   `phase` head (answer 3).
 - [x] **8.3** In Firefox, 1.12 to 1.15, 2.5 and the help page, where the
   traps say the browsers break text differently.
+
+- [x] **8.4** The second look, 2026-11-24, at `63fa68d`. REVIEW: Since the collapsed or expanded state of the headings is remembered, I'd rather not have the period and phase next to "TIMING".
+  Ruling: the pair goes. With it, the user agreed to TIMING's tooltip as
+  reading 38 has it; to a build's closing sentence as "The columns in
+  base ticks and the hyperperiod chart need a deployment.", since a
+  section is now named "Base grid"; to a check on the headings'
+  disclosure marker; to Enter on a focused heading left to the keyboard
+  sweep; and to the Copy button's overflow at 240 px on the list of the
+  look pass.
 
 ## 9. The four pairs
 

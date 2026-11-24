@@ -127,9 +127,8 @@ Open items live in `pending.md`.
      editor through the server in the live session (axis 6) and copying
      the path in the hosted copy;
    - the timing as a frames table, a row per frame with its period and
-     its phase, the chain of `sample_times` links on a line under it and
-     the seconds pair in the heading (`deployment_overlay.md` answer 10),
-     and no section for a continuous primitive, which no rate gates;
+     its phase, and the chain of `sample_times` links on a line under it
+     (`deployment_overlay.md` answer 10), and no section for a continuous primitive, which no rate gates;
    - the parameters as a name and summary table, each summary under its
      name when the pane is narrow;
    - the faces, inputs then outputs, each with name, type, the kind marker

@@ -425,8 +425,8 @@ the user away): both stood open in the core's `pending.md`.*
    seconds has no primes and shows no prime lines. A structure with no
    anchors has no such section. The rate
    scopes' table takes the components' columns, with the key after the
-   path. A build's tab ends with a sentence saying that the base grid's
-   columns and the chart need a deployment.
+   path. A build's tab ends with a sentence saying that the columns
+   in base ticks and the chart need a deployment.
 
    The steps per frame are derived, as `show(::Deployment)` prints them.
    A fixed-step method takes `⌈Δt_frame / h_max⌉`. A proposing one takes
@@ -469,7 +469,8 @@ the user away): both stood open in the core's `pending.md`.*
    report under it with no heading, its primes reading as part of the
    line above them. The factors stay on the tab because
    `GridUtilization`, the only other place that holds them, is raised
-   for a derived base tick alone.*
+   for a derived base tick alone. The closing sentence said "the base
+   grid's columns", which the new section's name makes ambiguous.*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is
@@ -494,9 +495,7 @@ the user away): both stood open in the core's `pending.md`.*
 
     The example is `timing_deployment`'s `fast/outer/hold` (answer 16).
     The table stands in the pane's collapsible section TIMING
-    (`workspace.md` answer 4), whose heading carries the seconds pair,
-    `Δt 3/25 s · τ 3/50 s`, so the rate shows while the section is
-    collapsed. It fits the narrowest pane, where a value may break after
+    (`workspace.md` answer 4), whose heading is the word alone. It fits the narrowest pane, where a value may break after
     its equals sign. Its column heads keep the sketch's words, "period" and
     "phase", and each row's head is titled with answer 3's pair and
     unit.

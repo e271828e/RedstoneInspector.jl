@@ -501,13 +501,13 @@ merged. It holds a docs commit, four stage commits taken from a prototype in thr
 parts on `increment-10-proto`, the cold review's fixes at `52524d1` with
 the delta check green, and the closing docs commit. The user's look of
 2026-11-24 followed, its rulings in `look_inspector_10.md` and its fixes at
-`c4ddea3`, the delta check green. It draws the timing
+`c4ddea3`, the delta check green, and a second look's after it. It draws the timing
 tab in the notation with the chart, the pane's frames table with the
 chain line, the legend's short line with room in the fit, a deployment's
 own warnings, the root inputs' pinned mark and its causes, the loader's
 refusal of an older core's file and the link rule that reads a target.
-The four pairs kept as patches are ruled as built. The user's second
-look, diff check and merge are owed, as the section "The look and its
+The four pairs kept as patches are ruled as built. The user's
+diff check and merge are owed, as the section "The look and its
 fixes" of `notes_implementation.md` lists them; that file and
 `brief_inspector_10_implementation.md`, beside it, hold the rulings, the
 39 readings and the reviews. Facts 10b's brief takes: the gate stands at
@@ -531,7 +531,7 @@ aligned columns, `D`, `Φ`, `τ` and the declaring scope in its title, and
 the fit is `view.ts`'s `fitBeside` around the legend's measured box, the
 first fit waiting a tick, at a cost to `large` alone; the readings a mark
 or a legend line of 10b meets are the legend's 10, 26, 27 and 28, the
-swatch's 11 and the pane's 25, 36 and 39; `frontend/MAP.md` stands at 759
+swatch's 11 and the pane's 25 and 36; `frontend/MAP.md` stands at 759
 lines, past its 700 by ruling 8; the `events` section and the three event
 parameters are read and not shown.*
 

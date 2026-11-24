@@ -63,9 +63,8 @@ The bullets stand in working order, the first one next.
   record's rulings owed. The implementation is built and cold-reviewed
   on the branch `increment-10`, unmerged, the review's fixes at
   `52524d1` and the look's at `c4ddea3`, each with the delta check green.
-  The user's second look from
-  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/second/`,
-  the diff check of the arc and the merge are owed, as the notes' section
+  A second look followed the same day. The diff check of the arc and the
+  merge are owed, as the notes' section
   "The look and its fixes" lists them. Next, 10b's design
   session. The design session's handover is `notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
@@ -78,6 +77,10 @@ The bullets stand in working order, the first one next.
   legend and 10b has drawn the events, and before 11 captures the
   README's images. The hyperperiod chart's threshold and pitch are
   its too (`deployment_overlay.md` answer 11).
+  - **The pane's header at 240 px** (increment 10). In Chromium the Copy
+    button beside a long path scrolls the narrowest pane sideways by 14 to
+    21 px on six nodes, `closed_loop`'s `lqr_controller/command_pack`
+    among them.
   - **The text levels' floors** (increment 6). A root whose fit falls
     below a floor loads without its names: `library` fits at about 0.36,
     at `segments`, and `large` below the first floor. At 0.52 the display

@@ -440,8 +440,7 @@ as the look's 1.10 rewords it. The look amends readings 2, 3, 6, 13, 14,
 One fresh high-tier agent made the fixes as `c4ddea3`. Its gate,
 `look_fix_1`, is green on the committed tree: Julia 128, unit 612, the
 checker 0 errors, browser 620 passed and 4 skipped, the drift empty. Its
-32 mutants are red. Its readings, each found sound by the delta check and not
-yet ruled on by the user:
+32 mutants are red. Its readings, each found sound by the delta check:
 
 33. **A refused file keeps the sections' state**, which only a reload
     resets. *Rejected:* the reset that the drawer takes.
@@ -459,8 +458,8 @@ yet ruled on by the user:
     32's "from its rate scope" is false of an assembly and of a
     component with its own anchor. *Rejected:* reading 32's text, which
     the look's 8.1 names.
-39. **TIMING's pair stands beside the `h3`**, outside its uppercase, and
-    moves below the word whole where the pane is too narrow.
+39. **TIMING's pair stands beside the `h3`**, outside its uppercase.
+    The user's second look removed the pair, and the reading with it.
 
 An independent high-tier agent ran the delta check in
 `W/increment_10_review`. Its gate, `look_delta_1`, is green at the same
@@ -471,10 +470,15 @@ its verdict is sound to land. The two green mutants are style rules: a
 heading's disclosure marker, and the `nowrap` that keeps each half of
 TIMING's pair whole.
 
+The user's second look, on 2026-11-24, is the checklist's 8.4. It took
+the pair out of the heading, agreed to reading 38, reworded reading 22's
+sentence and added a check on the marker. The coordinator made that
+change, and the second green mutant went with the pair.
+
 The agents' notes are `W/increment_10_notes/notes_look_fix.md` and
 `notes_look_review.md`. The captures for the user's second look are in
-`W/increment_10_look/second/`. The user's items owed are now that look,
-the diff check of the arc, the merge, the push and the removal of the
+`W/increment_10_look/second/`, and show the pair. The user's items owed
+are now the diff check of the arc, the merge, the push and the removal of the
 worktrees.
 
 ## Noticed, not touched
