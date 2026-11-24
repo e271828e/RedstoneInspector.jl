@@ -511,7 +511,7 @@ diff check and merge are owed, as the section "The look and its
 fixes" of `notes_implementation.md` lists them; that file and
 `brief_inspector_10_implementation.md`, beside it, hold the rulings, the
 39 readings and the reviews. Facts 10b's brief takes: the gate stands at
-128 Julia tests, 612 unit tests, and 620 browser checks passed and 4
+128 Julia tests, 611 unit tests, and 620 browser checks passed and 4
 skipped; the 21 fixtures hold 1,378,469 bytes over 20 structures, the new
 ones `timing`, `timing_deployment`, `library_deployment`,
 `rates_deployment` and `approach_deployment`; `src/lib/timing.ts` holds

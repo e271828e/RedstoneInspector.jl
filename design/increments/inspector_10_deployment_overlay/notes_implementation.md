@@ -473,7 +473,11 @@ TIMING's pair whole.
 The user's second look, on 2026-11-24, is the checklist's 8.4. It took
 the pair out of the heading, agreed to reading 38, reworded reading 22's
 sentence and added a check on the marker. The coordinator made that
-change, and the second green mutant went with the pair.
+change as `7ddd859`, and the second green mutant went with the pair. The
+gate `look2_1` is green on it: Julia 128, unit 611, the checker 0 errors,
+browser 620 passed and 4 skipped, the drift empty. With the marker hidden
+the new check is red in both browsers, and with a word added to TIMING's
+heading so is `frames.spec.ts`.
 
 The agents' notes are `W/increment_10_notes/notes_look_fix.md` and
 `notes_look_review.md`. The captures for the user's second look are in
