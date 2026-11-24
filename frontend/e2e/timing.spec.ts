@@ -143,7 +143,7 @@ test("timing: a build's tab, no head list, no chart and no law; A₀ at Δt_base
   expect(gaps[1]).toBeGreaterThan(gaps[0]);
   await expect(body(page).locator("table.components th")).toHaveText(["", "path", "k", "m", "c", "Δt", "τ"]);
   await expect(body(page).locator('tr.component[data-path="fast/outer/hold"] td')).toHaveText(["", "fast/outer/hold", "A₂ (fast)", "6", "3", "3/25 s", "3/50 s"]);
-  await expect(body(page).locator("p.deployment-note")).toHaveText("The base grid's columns and the hyperperiod chart need a deployment.");
+  await expect(body(page).locator("p.deployment-note")).toHaveText("The columns in base ticks and the hyperperiod chart need a deployment.");
   expect(await body(page).evaluate((b) => b.lastElementChild?.className.split(" ")[0])).toBe("deployment-note");
   await shot(page, "timing", "", "timing-tab");
 });

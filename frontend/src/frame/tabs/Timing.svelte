@@ -150,7 +150,7 @@
     <p class="empty">No discrete primitives.</p>
   {/if}
 
-  {#if !deployed}<p class="deployment-note">The base grid's columns and the hyperperiod chart need a deployment.</p>{/if}
+  {#if !deployed}<p class="deployment-note">The columns in base ticks and the hyperperiod chart need a deployment.</p>{/if}
 {/if}
 
 <style>

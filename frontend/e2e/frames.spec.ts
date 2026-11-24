@@ -3,7 +3,7 @@
 // period and phase columns and no sentence, a build's without the base grid row; the scope row derived against the
 // nearest enclosing rate scope, the root's in base ticks, none for a component with its own anchor, whose name is
 // titled with the declaring key and scope; the chain line under it, none on an empty chain; a keyed assembly's the same
-// section with no chain line, as the open level and as a block; the heading's seconds pair and its title; the narrowest
+// section with no chain line, as the open level and as a block; the heading's title, the word alone; the narrowest
 // pane with no sideways scroll. Figures from increment 10's oracle (`oracle/<fixture>.txt`, "frames tables").
 import { test, type Page } from "@playwright/test";
 import { drop, expect, openPath, openSection, readyLevel, section, shot } from "./fixtures";
@@ -31,19 +31,17 @@ const paneWidth = (page: Page, detail: number) => page.evaluate((detail) => loca
 /** How far the pane's body scrolls sideways. */
 const over = (page: Page) => page.locator('.pane[data-pane="detail"] .body').evaluate((e) => e.scrollWidth - e.clientWidth);
 
-test("timing_deployment's fast/outer/hold: the section TIMING, collapsed at first with the seconds pair in its heading, is answer 10's table, the period and phase heads, four frames with their titles, no sentence, and the chain under it", async ({ page }) => {
+test("timing_deployment's fast/outer/hold: the section TIMING, collapsed at first under its word alone, is answer 10's table, the period and phase heads, four frames with their titles, no sentence, and the chain under it", async ({ page }) => {
   await drop(page, "timing_deployment");
   await openPath(page, "fast/outer");
   await selectBlock(page, "fast/outer/hold");
-  // no rate fact; the heading carries the pair, collapsed or open, in the text's own case, and its title
+  // no rate fact; the heading is the word alone, collapsed or open, with its title
   await expect(pane(page).locator('dl.facts dd[data-fact="rate"]')).toHaveCount(0);
   await expect(timing(page).locator("table.frames")).toBeHidden();
-  await expect(heading(page)).toHaveText(/^timing\s*Δt 3\/25 s · τ 3\/50 s$/);
+  await expect(heading(page)).toHaveText(/^timing$/);
   await expect(heading(page)).toHaveAttribute("title", "When the discrete primitive or the rate scope ticks, in each of its frames down to seconds.");
-  await expect(heading(page).locator(".pair")).toBeVisible();
-  expect(await heading(page).locator(".pair").evaluate((e) => getComputedStyle(e).textTransform)).toBe("none");
   await openSection(page, "timing");
-  await expect(heading(page).locator(".pair")).toHaveText("Δt 3/25 s · τ 3/50 s");
+  await expect(heading(page)).toHaveText(/^timing$/);
   await expect(timing(page).locator("table.frames")).toBeVisible();
   expect(await frames(timing(page))).toEqual([
     ["scope", "scope fast/outer | K = 3 | φ = 1 | ticks of fast/outer"],
@@ -75,7 +73,6 @@ test("timing, a build: no base grid row; staggered, with its own anchor, no scop
     ["seconds", "seconds | Δt = 1/10 s | τ = 1/300 s"],
   ]);
   await expect(timing(page).locator('tr[data-frame="anchor"] .name')).toHaveAttribute("title", "staggered at the root");
-  await expect(heading(page).locator(".pair")).toHaveText("Δt 1/10 s · τ 1/300 s");
   await expect(timing(page).locator("p.chain")).toHaveText("staggered = Absolute(1//10, 1//300)");
   await shot(page, "timing", "", "frames");
   await selectBlock(page, "frozen");
@@ -90,7 +87,6 @@ test("library and library_deployment: d_pid on A₀ under no keyed assembly read
   await drop(page, "library");
   await selectBlock(page, "d_pid");
   await openSection(page, "timing");
-  await expect(heading(page).locator(".pair")).toHaveText("Δt 2·Δt_base · τ Δt_base");
   expect(await frames(timing(page))).toEqual([
     ["scope", "scope the root | K = 2 | φ = 1 | base ticks"],
     ["anchor", "anchor A₀ (base) | m = 2 | c = 1 | base ticks"],
@@ -104,7 +100,6 @@ test("library and library_deployment: d_pid on A₀ under no keyed assembly read
   await drop(page, "library_deployment");
   await selectBlock(page, "d_pid");
   await openSection(page, "timing");
-  await expect(heading(page).locator(".pair")).toHaveText("Δt 1/50 s · τ 1/100 s");
   expect(await frames(timing(page))).toEqual([
     ["scope", "scope the root | K = 2 | φ = 1 | base ticks"],
     ["anchor", "anchor A₀ (base) | m = 2 | c = 1 | base ticks"],
@@ -122,7 +117,6 @@ test("timing_deployment's keyed assemblies: fast/outer's TIMING selected as a bl
   await openPath(page, "fast");
   await selectBlock(page, "fast/outer");
   await expect(pane(page)).toHaveAttribute("data-kind", "assembly");
-  await expect(heading(page).locator(".pair")).toHaveText("Δt 1/25 s · τ 1/50 s");
   await openSection(page, "timing");
   const outer = [
     ["scope", "scope fast | K = 2 | φ = 1 | ticks of fast"],
@@ -159,7 +153,7 @@ test("timing_deployment's keyed assemblies: fast/outer's TIMING selected as a bl
   await expect(timing(page).locator('tr[data-frame="anchor"] .name')).toHaveAttribute("title", "fast at the root");
 });
 
-test("the narrowest pane, 240 px: staggered, fast/outer and library's d_pid with a build's seconds, every section open and every one collapsed, fit without a sideways scroll, TIMING's heading whole inside the pane", async ({ page }) => {
+test("the narrowest pane, 240 px: staggered, fast/outer and library's d_pid with a build's seconds, every section open and every one collapsed, fit without a sideways scroll", async ({ page }) => {
   for (const [name, level, id] of [
     ["timing_deployment", "", "staggered"], ["timing_deployment", "fast", "fast/outer"], ["timing_deployment", "fast/outer/deep", "fast/outer/deep/hold"],
     ["library", "", "d_pid"], ["closed_loop", "pid_controller", "pid_controller/h_ctl"],
@@ -175,18 +169,9 @@ test("the narrowest pane, 240 px: staggered, fast/outer and library's d_pid with
     for (const n of names) if (await section(page, n).getAttribute("open") !== null) await section(page, n).locator("summary").click();
     await expect(pane(page).locator("details.section[open]")).toHaveCount(0);
     expect(await over(page), `${id} collapsed`).toBeLessThanOrEqual(0);
-    /** Each half of the heading's pair on one line, and the pair's right edge against the pane's. */
-    const halves = () => heading(page).evaluate((s) => ({
-      lines: [...s.querySelectorAll(".pair > span")].map((e) => e.getClientRects().length),
-      right: Math.max(...[...s.querySelectorAll(".pair > span")].map((e) => e.getBoundingClientRect().right)) - s.closest("aside")!.getBoundingClientRect().right,
-    }));
-    const closed = await halves();
-    expect(closed.lines, id).toEqual([1, 1]);
-    expect(closed.right, id).toBeLessThanOrEqual(-10);
     for (const n of names) await openSection(page, n);
     await expect(pane(page).locator("details.section:not([open])")).toHaveCount(0);
     expect(await over(page), `${id} open`).toBeLessThanOrEqual(0);
-    expect((await halves()).lines, id).toEqual([1, 1]);
   }
   await shot(page, "closed_loop", "pid_controller", "frames-narrow");
 });

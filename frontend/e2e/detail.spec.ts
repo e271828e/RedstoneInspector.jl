@@ -372,6 +372,11 @@ test("closed_loop's pid_controller/h_ctl: the six sections in order under one he
   await expect(pane(page).locator("details.section > summary > h3")).toHaveText(["signature", "docstring", "locations", "timing", "parameters", "faces"]);
   expect(new Set([...await look(pane(page).locator("h3")), ...fixed]).size).toBe(1);
   expect(await look(pane(page).locator("h3"))).toHaveLength(6);
+  // each heading shows its disclosure marker
+  expect(await pane(page).locator("details.section > summary").evaluateAll((es) => es.filter((e) => {
+    const c = getComputedStyle(e);
+    return c.display !== "list-item" || c.listStyleType === "none";
+  }).length)).toBe(0);
   await expectOpen(page, FIRST);
   for (const n of ["signature", "docstring", "locations", "timing"]) await section(page, n).locator("summary").click();
   await expectOpen(page, ["signature", "docstring", "locations", "timing", "parameters", "faces"]);

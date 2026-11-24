@@ -469,8 +469,6 @@ export interface FramesRow {
 }
 export interface FramesTable {
   rows: FramesRow[];
-  /** The seconds pair, for the section's heading: `Δt 1/10 s`, `τ 1/300 s`. */
-  pair: [string, string];
 }
 
 /** Each frame's tooltip: its pair and unit, answer 3's table. */
@@ -504,7 +502,7 @@ function framesOf(model: Model, path: string, t: Timing, counts?: { D: number; p
   if (bound && counts) rows.push({ frame: "base grid", name: "", period: `D = ${counts.D}`, phase: `Φ = ${counts.phi}`, unit: "base ticks" });
   const pair = secondsPair(s, t, bound, counts);
   rows.push({ frame: "seconds", name: "", period: `Δt = ${pair.dt}`, phase: `τ = ${pair.tau}`, unit: "" });
-  return { rows, pair: [`Δt ${pair.dt}`, `τ ${pair.tau}`] };
+  return { rows };
 }
 
 /** A discrete primitive's frames table; undefined for any other node. */

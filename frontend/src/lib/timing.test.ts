@@ -422,12 +422,6 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
       ["anchor", "A₂ (fast)", "fast at the root"], ["base grid", "", undefined], ["seconds", "", undefined],
     ]);
   });
-  it("carries the seconds pair for the heading: exact, and a build's on A₀ symbolic", () => {
-    expect(framesTable(timingDep, "staggered")!.pair).toEqual(["Δt 1/10 s", "τ 1/300 s"]);
-    expect(scopeFramesTable(timingDep, "fast/outer")!.pair).toEqual(["Δt 1/25 s", "τ 1/50 s"]);
-    expect(framesTable(fixtureModel("library"), "d_pid")!.pair).toEqual(["Δt 2·Δt_base", "τ Δt_base"]);
-    expect(framesTable(libDep, "d_pid")!.pair).toEqual(["Δt 1/50 s", "τ 1/100 s"]);
-  });
   it("library: a component under no keyed assembly reads the root in base ticks, its seconds in Δt_base; no entry, no chain", () => {
     expect(rows(fixtureModel("library"), "d_pid")).toEqual([
       ["scope", "the root", "K = 2", "φ = 1", "base ticks"],

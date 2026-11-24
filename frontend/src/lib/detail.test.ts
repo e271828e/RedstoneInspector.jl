@@ -238,7 +238,7 @@ describe("other fixtures", () => {
   it("rates' level fast is a rate scope, its timing with no chain", () => {
     const l = levelFacts(fixtureModel("rates"), "fast") as LevelFacts;
     expect([l.children, l.wires, l.inputs.map((f) => f.name), l.outputs.map((f) => f.name)]).toEqual([2, 4, ["in"], ["inner", "outer"]]);
-    expect(l.timing?.table.pair).toEqual(["Δt 1/50 s", "τ 0"]);
+    expect(l.timing?.table.rows.at(-1)).toMatchObject({ frame: "seconds", period: "Δt = 1/50 s", phase: "τ = 0" });
     expect(l.timing?.chain).toBeUndefined();
   });
 

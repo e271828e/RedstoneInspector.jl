@@ -138,9 +138,9 @@
 {/snippet}
 
 <!-- A collapsible section: the heading's `toggle`, from a click, a key or the browser's own search, is the session's. -->
-{#snippet section(name: Section, body: Snippet, title?: string, pair?: [string, string])}
+{#snippet section(name: Section, body: Snippet, title?: string)}
   <details class="section" data-section={name} open={sections.has(name)} ontoggle={(e) => onsection(name, e.currentTarget.open)}>
-    <summary {title}><h3>{name}</h3>{#if pair}{" "}<span class="pair"><span>{pair[0]} ·</span> <span>{pair[1]}</span></span>{/if}</summary>
+    <summary {title}><h3>{name}</h3></summary>
     {@render body()}
   </details>
 {/snippet}
@@ -198,7 +198,7 @@
   {#if f.signature !== f.type}{@render section("signature", signature)}{/if}
   {#if f.docstring}{@render section("docstring", docstring)}{/if}
   {#if f.locations.length}{@render section("locations", locations)}{/if}
-  {#if f.timing}{@render section("timing", timing, TIMING_TITLE, f.timing.table.pair)}{/if}
+  {#if f.timing}{@render section("timing", timing, TIMING_TITLE)}{/if}
   {#if f.parameters.length}{@render section("parameters", parameters)}{/if}
   {#if f.inputs.length + f.outputs.length}{@render section("faces", faceTable)}{/if}
 {/snippet}
@@ -262,11 +262,9 @@
   h2 .segment { font-weight: 600; }
   h2 .name { color: var(--text-light); }
   h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-light); margin: 14px 0 4px; font-weight: 600; }
-  /* A section's heading is the h3 after the summary's marker; TIMING's pair moves below it whole, then breaks at its dot. */
+  /* A section's heading is the h3 after the summary's marker. */
   summary { margin: 14px 0 4px; color: var(--text-light); font-size: 11px; cursor: pointer; }
   summary h3 { display: inline; margin: 0; }
-  summary .pair { display: inline-block; margin-left: 6px; color: var(--text); font-size: 12px; }
-  summary .pair > span { white-space: nowrap; }
   .path-line { display: flex; gap: 6px; align-items: center; }
   .path { color: var(--text-light); }
   .copy { font: 11px system-ui, sans-serif; padding: 0 6px; }

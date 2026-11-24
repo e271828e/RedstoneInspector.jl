@@ -503,7 +503,7 @@ What the records do not fix, or where the page differs:
   output by its position among the stage 2 calls".
 - **The detail pane.** Each `dt` is titled from `FACT_TITLES`, `member` `memberKind`
   with `memberTitle`. A section's `toggle`, a key's or the browser's search's too,
-  calls `onsection`. TIMING's heading adds the seconds pair, titled `TIMING_TITLE`; in
+  calls `onsection`. TIMING's heading is titled `TIMING_TITLE`; in
   its table each frame's head is titled from `FRAME_TITLES`, the anchor's name by
   `anchorTitle`, a path breaks after each slash, a value after its equals sign in a
   container of at most 300 px. Face rows and links select through `faceSelection`; on
@@ -582,7 +582,7 @@ What the records do not fix, or where the page differs:
 | the pane | `aside.detail[data-kind][data-id]`, the kind `level`, `primitive`, `assembly`, `folder`, `wire`, `pin` or `port` | the id a path for a level, node or folder, else the element's id; `data-id=""` on a structureless model |
 | the header | `h2 .segment`, `h2 .name`, `.path-line` holding `.path`, `button.copy`, `button.open-level` or `span.level-mark` "open level" right after it, `button.trace[aria-pressed]` | the open button on a closed assembly, the mark on the open level, a primitive root's included; trace on a pin, a port or a wire with a route |
 | the facts | `p.facts`; `dl.facts` of `dt[title]` and `dd[data-fact]`, `type`, `class`, `children`, `wires` or `member`, the type row holding `.type` and `.alias` | `p.facts` on a wire, a folder, a structureless model, and a pin or port with a stage or pinning, "stage 1 · pinned"; `dl.facts` on a level, primitive or assembly, `wires` under `children` |
-| the sections | `details.section[data-section][open]`, `signature`, `docstring`, `locations`, `timing`, `parameters`, `faces`, in order after `dl.facts`, each a `summary h3` and its content, `code.signature`, `div.docstring` or a table or list below; `timing`'s `summary[title] .pair` of two `span`s | with content, the signature only when it differs from the type; `timing` on a discrete primitive and a rate scope, open level or block; `open` from the session |
+| the sections | `details.section[data-section][open]`, `signature`, `docstring`, `locations`, `timing`, `parameters`, `faces`, in order after `dl.facts`, each a `summary h3` and its content, `code.signature`, `div.docstring` or a table or list below; `timing`'s `summary[title]` | with content, the signature only when it differs from the type; `timing` on a discrete primitive and a rate scope, open level or block; `open` from the session |
 | a frames table | `table.frames`, `thead` "period", "phase", then `tbody tr[data-frame]`, `scope`, `anchor`, `base grid` or `seconds`, with `th.frame[title]` holding `.word` and `.name`, then `td.period`, `td.phase`, `td.unit`; the anchor's `.name[title]` | the base grid row on a deployment; no scope row where the anchor differs from the enclosing scope's; `p.chain` after it on a primitive with a chain |
 | the lists | `.locations li` with `.file` holding `span.file-name`, `.parameters tr` with `td.param-name`, `td.param-value`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
 | the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a primitive, the ◆ on a primitive's own pinned face; the links on a level too |
