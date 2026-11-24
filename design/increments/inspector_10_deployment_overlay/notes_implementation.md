@@ -429,7 +429,60 @@ The user's items owed:
   and the detached worktrees `W/increment_10_review`,
   `W/pin_bump_review` and `W/increment_10_alt`.
 
+## The look and its fixes
+
+The user looked on 2026-11-24. Their words and each ruling stand under
+the entries of `look_inspector_10.md`, and the record's amendments landed
+first, in `a4bc9b4`. The four pairs are ruled as built, the grid report
+as the look's 1.10 rewords it. The look amends readings 2, 3, 6, 13, 14,
+18, 19, 24, 29 and 32, reading 13 by the caption alone.
+
+One fresh high-tier agent made the fixes as `c4ddea3`. Its gate,
+`look_fix_1`, is green on the committed tree: Julia 128, unit 612, the
+checker 0 errors, browser 620 passed and 4 skipped, the drift empty. Its
+32 mutants are red. Its readings, each found sound by the delta check and not
+yet ruled on by the user:
+
+33. **A refused file keeps the sections' state**, which only a reload
+    resets. *Rejected:* the reset that the drawer takes.
+34. **The joint period's line** gives the base ticks first, so the
+    seconds follow them in parentheses.
+35. **Values and paths keep the code font** in the head list. The steps'
+    count, which holds words under a proposing algorithm, is prose.
+36. **A section is a native `details`**, its `toggle` event feeding the
+    session. *Rejected:* a click handler that prevents the default, which
+    the browser's find-in-page would put out of step.
+37. **Space toggles a focused heading, and Enter too unless a closed
+    assembly is selected**, which it opens, as the map states.
+38. **TIMING's tooltip** reads "When the discrete primitive or the rate
+    scope ticks, in each of its frames down to seconds." *Why:* reading
+    32's "from its rate scope" is false of an assembly and of a
+    component with its own anchor. *Rejected:* reading 32's text, which
+    the look's 8.1 names.
+39. **TIMING's pair stands beside the `h3`**, outside its uppercase, and
+    moves below the word whole where the pane is too narrow.
+
+An independent high-tier agent ran the delta check in
+`W/increment_10_review`. Its gate, `look_delta_1`, is green at the same
+counts. Its own reading from the record agrees with the modules on 5350
+facts over 48 files and with the page on 2760 facts in each browser, and
+none disagrees. 51 of its 53 mutants are red. It found no defect, and
+its verdict is sound to land. The two green mutants are style rules: a
+heading's disclosure marker, and the `nowrap` that keeps each half of
+TIMING's pair whole.
+
+The agents' notes are `W/increment_10_notes/notes_look_fix.md` and
+`notes_look_review.md`. The captures for the user's second look are in
+`W/increment_10_look/second/`. The user's items owed are now that look,
+the diff check of the arc, the merge, the push and the removal of the
+worktrees.
+
 ## Noticed, not touched
+
+- At 240 px in Chromium the header's Copy button beside a long path
+  scrolls the pane sideways by 14 to 21 px on six nodes, `closed_loop`'s
+  `lqr_controller/command_pack` among them. The look's fixes do not touch
+  it (the look's delta check).
 
 - At 1100 by 700 `large`'s legend, 714 px tall, is taller than the
   canvas and is cut at the top with no scroll (the review).

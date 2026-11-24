@@ -48,14 +48,11 @@ The bullets stand in working order, the first one next.
   built and cold-reviewed on 2026-11-23 on the branch `increment-10`,
   with the user away, and is not merged. Its brief,
   `increments/inspector_10_deployment_overlay/brief_inspector_10_implementation.md`,
-  and `notes_implementation.md` beside it hold the rulings, the 32
-  readings, the review and its adjudication. The three readings the
-  record's notes list as a matter of taste are built as the second step
-  ruled them, with the joining of a bare docstring link kept (answer
-  15), the chain line shown (answer 10) and the grid report whole
-  (answer 9). A fourth pair joins them, the grid report in symbols
-  against `show`'s words. Each alternative is a patch at the tip, in
-  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/alternatives/`.
+  and `notes_implementation.md` beside it hold the rulings, the 39
+  readings, the reviews and their adjudication. The user's look of
+  2026-11-24 ruled the four pairs as built, with the grid report
+  reworded, and its other rulings are in `look_inspector_10.md` beside
+  them.
 
   Then 10b, the events, after a short
   design session of its own that also decides where the three event
@@ -64,11 +61,12 @@ The bullets stand in working order, the first one next.
   the pin bump and the record at the new pin landed and not pushed, the
   bump cold-reviewed, the user's look at the bump and review of the
   record's rulings owed. The implementation is built and cold-reviewed
-  on the branch `increment-10`, unmerged, its fixes at `52524d1` with
-  the delta check green. The user's look-and-adjust pass from
-  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/`, the
-  diff check of the arc, the choice on the four pairs and the merge are
-  owed, as the notes' section "The close" lists them. Next, 10b's design
+  on the branch `increment-10`, unmerged, the review's fixes at
+  `52524d1` and the look's at `c4ddea3`, each with the delta check green.
+  The user's second look from
+  `~/.julia/dev/RedstoneInspector.jl-worktrees/increment_10_look/second/`,
+  the diff check of the arc and the merge are owed, as the notes' section
+  "The look and its fixes" lists them. Next, 10b's design
   session. The design session's handover is `notes_inspector_10.md`.
   The Firefox project blocks CI as Chromium's does, by the
   user's ruling of 2026-11-15 after its first run with every check

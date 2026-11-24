@@ -499,37 +499,39 @@ Both are on `master`, not pushed. The implementation was built on
 2026-11-23, with the user away, on the branch `increment-10`, which is not
 merged. It holds a docs commit, four stage commits taken from a prototype in three
 parts on `increment-10-proto`, the cold review's fixes at `52524d1` with
-the delta check green, and the closing docs commit. It draws the timing
+the delta check green, and the closing docs commit. The user's look of
+2026-11-24 followed, its rulings in `look_inspector_10.md` and its fixes at
+`c4ddea3`, the delta check green. It draws the timing
 tab in the notation with the chart, the pane's frames table with the
 chain line, the legend's short line with room in the fit, a deployment's
 own warnings, the root inputs' pinned mark and its causes, the loader's
 refusal of an older core's file and the link rule that reads a target.
-The user's look-and-adjust pass, diff check, choice on four pairs kept as
-patches and merge are owed, as the section "The close" of
-`notes_implementation.md` lists them; that file and
+The four pairs kept as patches are ruled as built. The user's second
+look, diff check and merge are owed, as the section "The look and its
+fixes" of `notes_implementation.md` lists them; that file and
 `brief_inspector_10_implementation.md`, beside it, hold the rulings, the
-32 readings and the review. Facts 10b's brief takes: the gate stands at
-128 Julia tests, 607 unit tests, and 604 browser checks passed and 4
+39 readings and the reviews. Facts 10b's brief takes: the gate stands at
+128 Julia tests, 612 unit tests, and 620 browser checks passed and 4
 skipped; the 21 fixtures hold 1,378,469 bytes over 20 structures, the new
 ones `timing`, `timing_deployment`, `library_deployment`,
 `rates_deployment` and `approach_deployment`; `src/lib/timing.ts` holds
 every derivation as a pure function over exact fractions, `Q` over
 `BigInt`, joins the schedule's rows by path and never by position, and
 reads no float from the file and multiplies none, the palette's order
-included; the timing tab runs the head list, the chart, the caption's four
-equations, the anchors with the coarsest line and the grid report, the
-rate scopes, and the components sorted on request "by Δt"; the chart in
+included; the timing tab runs the head list, the chart, the anchors, the base
+grid's section with the coarsest line and the grid report, the rate scopes, and the components sorted on request "by Δt"; the chart in
 `Chart.svelte` has a row per `(D, Φ)` with swatch buttons holding the
 legend's focus, is omitted past `CHART_THRESHOLD`, 1000, and fits the
 tab or scrolls its body at `CHART_PITCH`, 6 px, the frame counting toward both only
-where frame tops are drawn; the pane's `table.frames` and `p.chain` sit
-in the rate fact across the facts' width and fit the 240 px pane; a
+where frame tops are drawn; the pane's six collapsible sections are `details.section[data-section]`,
+their state in `session.sections`, one for every node; `table.frames` and
+`p.chain` sit in TIMING and fit the 240 px pane; a
 legend line sets its marks, `legendText`'s text and its `Δt` in three
 aligned columns, `D`, `Φ`, `τ` and the declaring scope in its title, and
 the fit is `view.ts`'s `fitBeside` around the legend's measured box, the
 first fit waiting a tick, at a cost to `large` alone; the readings a mark
 or a legend line of 10b meets are the legend's 10, 26, 27 and 28, the
-swatch's 11 and the pane's 24 and 25; `frontend/MAP.md` stands at 759
+swatch's 11 and the pane's 25, 36 and 39; `frontend/MAP.md` stands at 759
 lines, past its 700 by ruling 8; the `events` section and the three event
 parameters are read and not shown.*
 

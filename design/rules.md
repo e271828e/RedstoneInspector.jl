@@ -392,7 +392,7 @@ full text stays.
   waits its whole timeout for an absent element; a probe reads absent ones
   through `evaluate`.
 - **A column head as a term of the law.** The check that every timing head is
-  a term of the caption admits `k`, which the law writes only as the
+  a term of the help page's law admits `k`, which the law writes only as the
   subscript of `Δtₖ` and its kin.
 - **A fit before its legend.** The legend is drawn from the level's state, so
   a fit run in the same turn as the new level measures no legend; a first fit
@@ -400,7 +400,8 @@ full text stays.
 - **The mode across two drops.** The color mode is kept per browser, so a
   check's second drop opens in rate mode already, and `r` then turns it off.
 - **A table in the narrow pane.** The frames table beside its `dt` overflowed
-  the 240 px pane by 6 px; it spans the facts' width, a path takes a `<wbr>`
+  the 240 px pane by 6 px; it stands in a section of the pane's whole
+  width, a path takes a `<wbr>`
   after each slash, and only the values are `nowrap`. Even so `staggered`'s
   table and a build's seconds row overflowed it by up to 25 px. Values free
   to wrap wrapped at 360 px too, since an auto table squeezes every column
@@ -414,6 +415,14 @@ full text stays.
 - **New fixtures on the drift line.** The drift check of `AGENTS.md`,
   `git status --porcelain -- frontend/fixtures frontend/schema`, lists a new
   fixture, staged or untracked; it prints nothing only after the commit.
+- **A collapsed section in a check.** A closed `details` keeps its content in
+  the DOM, so `toHaveText` and `toHaveCount` pass on it; a check that a
+  section is collapsed asserts visibility. `openSection` in
+  `e2e/fixtures.ts` opens one by its heading, and returns before the
+  `toggle` event reaches the session, up to a frame later. Found 2026-11-24.
+- **Uppercase on Greek.** `text-transform: uppercase` draws `Δt` as `ΔT` and
+  `τ` as `Τ`, so a symbol beside a heading stands outside the `h3`. Found
+  2026-11-24.
 
 ## Amending a record
 

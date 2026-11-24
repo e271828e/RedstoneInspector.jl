@@ -282,8 +282,9 @@ exclude each other.
 
 ## 10. After the look
 
-- [ ] **10.1** Record amendments the look settles, and the patches taken,
-  docs commit first.
+- [x] **10.1** Record amendments the look settles, and the patches taken,
+  docs commit first. Ruling: `a4bc9b4`, then the fixes at `c4ddea3`. No
+  patch is taken.
 - [ ] **10.2** The merge of `increment-10` into `master`.
 - [ ] **10.3** The push and its CI run, the first with CI's fonts on this
   increment.
