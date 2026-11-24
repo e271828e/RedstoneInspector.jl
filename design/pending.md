@@ -53,6 +53,20 @@ The bullets stand in working order, the first one next.
     the pool's alternatives and the prime attribution under the anchors
     table or left out (answer 9).
 
+  Then a pin bump to the core's timing notation (the core's D-478 and
+  D-479), after the user's visual review pass closes 10 and before 10b,
+  by the user's ruling of 2026-11-24. The core's increment, recorded in
+  `Redstone.jl/design/increments/20261124_timing_notation/notes_timing_notation.md`,
+  renames the descriptor's keys with the format left at 1.0 (§13.9): a
+  node's and a scope's `timing` `{anchor, m, c}` becomes
+  `{anchor, D, phi}`, and a `Relative` link's `{K, phi}` becomes
+  `{D, phi}`. The page reads the old keys in `analysis.ts`, `rates.ts`,
+  `focus.ts` and `detail.ts`, and `detail.ts` prints `m` and `c`, so the
+  bump adapts the reads, prints the timing under the core's symbols
+  (`Dₐ`, `Φₐ`, `D₀`, `Φ₀`), regenerates the fixtures and copies the
+  schema. The core's commits are not pushed yet, and the pin names a
+  revision on GitHub, so the core's push comes first.
+
   Then 10b, the events, after a short
   design session of its own that also decides where the three event
   parameters show; then the look pass, the next bullet; then 11, the
