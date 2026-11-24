@@ -1,5 +1,9 @@
 # Increment 10, the implementation: notes
 
+*The folders under `RedstoneInspector.jl-worktrees/` that this file names
+were local to one machine and are gone, deleted on 2026-11-24 with the
+worktrees. What a later increment needs is in `tools/`, beside this file.*
+
 The third of increment 10's three steps, from the first bullet of
 `design/pending.md` at `7b66e6b`. It builds what
 `design/deployment_overlay.md` rules, as amended at the core's `7ea3600`.

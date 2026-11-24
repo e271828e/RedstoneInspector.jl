@@ -1,5 +1,9 @@
 # The record at the new pin, notes
 
+*The folders under `RedstoneInspector.jl-worktrees/` that this file names
+were local to one machine and are gone, deleted on 2026-11-24 with the
+worktrees. What a later increment needs is in `tools/`, beside this file.*
+
 The second of increment 10's three steps, from the first bullet of
 `design/pending.md` at `fb8da65`. It brings `design/deployment_overlay.md`
 up to date at the core's `7ea3600`, before the implementation is briefed

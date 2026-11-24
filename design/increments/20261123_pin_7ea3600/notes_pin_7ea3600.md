@@ -1,5 +1,9 @@
 # The pin to the core's `7ea3600`, notes
 
+*The folders under `RedstoneInspector.jl-worktrees/` that this file names
+were local to one machine and are gone, deleted on 2026-11-24 with the
+worktrees. What a later increment needs is in `tools/`, beside this file.*
+
 The first of increment 10's three steps, from the first bullet of
 `design/pending.md` at `47f8ed9`. The pin moves from the core's `6afd6fb`
 to its tip `7ea360094d89f658fe3d3e0909be1af6fa4f5365`, 107 commits on.

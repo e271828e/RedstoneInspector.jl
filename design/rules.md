@@ -33,6 +33,11 @@ increments run the pipeline unchanged.
   the user's own frontend loop. What the user asks to change goes to the
   fixer as findings, with a cap of one pass per increment; what needs
   more is a note in the next brief.
+- **Nothing left on one machine.** What a later increment needs from a
+  run's scratch, an oracle or a capture script, is committed in the
+  increment's folder, with its paths as arguments, before the arc closes.
+  The local worktrees and folders are then removed, and no open item points
+  at one.
 - **Routing for the agent.** The prototype prompt names the records'
   answers, never whole records, and the agent reads the map whole before
   the frontend change; test output goes through `tail`, Vite's and

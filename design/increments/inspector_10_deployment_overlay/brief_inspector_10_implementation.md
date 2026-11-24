@@ -1,5 +1,9 @@
 # Brief: increment 10, the deployment overlay's implementation
 
+*The folders under `RedstoneInspector.jl-worktrees/` that this file names
+were local to one machine and are gone, deleted on 2026-11-24 with the
+worktrees. What a later increment needs is in `tools/`, beside this file.*
+
 The third of increment 10's three steps, from the first bullet of
 `design/pending.md`. The arc makes these commits on the branch
 `increment-10`: the docs commit that carries this brief, the record's

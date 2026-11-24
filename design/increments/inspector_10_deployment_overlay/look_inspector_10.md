@@ -1,5 +1,9 @@
 # Look: inspector increment 10
 
+*The folders under `RedstoneInspector.jl-worktrees/` that this file names
+were local to one machine and are gone, deleted on 2026-11-24 with the
+worktrees. What a later increment needs is in `tools/`, beside this file.*
+
 The user's checklist for the look over `increment-10` at `9d73d8c`, after
 the cold review and its fix. `notes_implementation.md` holds what was
 built, the 32 readings and the coordinator's rulings, cited here as

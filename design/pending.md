@@ -24,6 +24,9 @@ landed (`roadmap.md`).
     `help.ts` and `Timing.svelte` at least. Its brief lists them all.
   - `deployment_overlay.md`, whose answers write D-464's letters, follows
     with a dated note.
+  - It can adapt increment 10's oracle and reading
+    (`increments/inspector_10_deployment_overlay/tools/`) and the before
+    and after comparison (`increments/20261123_pin_7ea3600/tools/`).
   - Two stale passages go with it. The glossary's entry "`τ`, a
     component's" defines a term the core's Appendix D now holds.
     `descriptor_design.md` answer 9's title reads "the chain later", and
