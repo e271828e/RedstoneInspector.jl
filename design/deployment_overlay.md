@@ -282,15 +282,16 @@ the user away): both stood open in the core's `pending.md`.*
    keep the report in their payloads. So a build's page shows the report,
    a failure past the structure step shows it, and a deployment adds one
    comparison, its `Δt_base` against the coarsest admissible one. The
-   comparison reads as `show(::Deployment)` prints it: the coarsest
-   value and the whole number the base tick divides it by, the number
-   left out where it is 1.
+   comparison gives the two values, `Δt_base: 1/100 s, coarsest
+   admissible: 1/50 s`, equal or not.
    *Amended 2026-11-21 (the core's D-467, commit 1537538): the example
    counted the suppliers from 0. Amended 2026-11-23 (the record at the
    new pin, the user away): the answer did not name `unfactored`, which
    the core's D-467 added, nor an empty `primes`, and gave the
    comparison no form, which the core's D-471 has since fixed in
-   `show`.*
+   `show`. Amended 2026-11-24 (increment 10's look, 1.8): the comparison
+   read as `show(::Deployment)` prints it, the coarsest value and the
+   whole number the base tick divides it by, which the two values give.*
    *Why:* the report is a pure function of the anchors, and it answers
    which base ticks a model admits, which a user wants before choosing
    one. With the anchor index the page puts each factor beside the value
@@ -349,11 +350,13 @@ the user away): both stood open in the core's `pending.md`.*
 
 8. **The hyperperiod: derived by the client.** The page computes the
    least common multiple of the rows' `D` with `BigInt` and shows it in
-   base ticks and in seconds. A deployment with no discrete primitive
+   base ticks with the seconds in parentheses, `360 base ticks (6/5 s)`,
+   as it shows the two spans of answer 11. A deployment with no discrete primitive
    has no rows, and the page then shows no hyperperiod and no chart.
    *Amended 2026-11-23 (the record at the new pin, the user away): the
    case with no rows was unstated. `show(::Deployment)` prints "no rows"
-   there and no chart.*
+   there and no chart. Amended 2026-11-24 (increment 10's look, 1.3): the
+   seconds followed a comma.*
    *Why:* the core holds it as a `BigInt`, since coprime periods take it
    past `Int`, and a JSON number is exact in JavaScript only below
    `2^53`. The derivation is one lcm over integers the file holds, and
@@ -362,14 +365,20 @@ the user away): both stood open in the core's `pending.md`.*
    string.
 
 9. **The timing tab: the notation's home, a deployment filling the
-   tables in.** At the head, for a deployment, a short list: `Δt_frame`,
-   `Δt_base`, `h_max`, `h_min` when set, the algorithm, `attempt_budget`
-   and the steps per frame with the rows that split frames. The three
-   event parameters are not shown until 10b. The chart of answer 11
-   stands under the list. The equations of answer 3
-   stand above the tables as their caption, all four lines on a build
-   too, so each column head is one of
-   their terms. A deployment adds columns to the tables a build has and
+   tables in.** At the head, for a deployment, a short list on three lines, a colon
+   after each name:
+
+   ```
+   Δt_frame: 1/100 s   Δt_base: 1/300 s
+   algorithm: RK4()   h_max: 1/100 s
+   steps per unsplit frame: 1   rows that split frames: staggered
+   ```
+
+   `h_min` and `attempt_budget` follow `h_max` under an algorithm that
+   proposes its steps, and no other, since a fixed-step method uses
+   neither. The three event parameters are not shown until 10b. The chart
+   of answer 11 stands under the list. The equations of answer 3 are the
+   help page's alone. A deployment adds columns to the tables a build has and
    no table of its own:
 
    ```
@@ -388,22 +397,33 @@ the user away): both stood open in the core's `pending.md`.*
    In all three tables the `k` cell reads `Aₖ (key)`, where the sketch
    has the bare index for a component, so the anchors table has no key
    column of its own.
-   The anchors table keeps its "declared in" column and shows each pool
-   entry's factor beside the value it belongs to, as `×6`, a period's beside
-   `Δtₖ` and an offset's beside `τₖ`, with a line above it for the
-   coarsest admissible base tick. A deployment's line takes its place
-   and states `Δt_base` against that tick (answer 6), or that `Δt_base`
-   is the coarsest admissible where the two are equal. Under the table stands the rest of the
-   grid report, with the facts and the order of `show(::Structure)`.
-   Where `show` writes "period" and "offset" the tab writes the symbol,
-   so a supplier reads `Δt₂ (fast)` or `τ₁ (staggered)`. An offset entry with
-   alternatives gets a line naming the offsets to declare in its place
-   and the base tick they keep, its factor times the coarsest. The
-   prime attribution is one line with the denominator's factors, then a
-   row per prime power with its suppliers, each named by its anchor and
-   its kind, and a row marked `unfactored` says so. A grid whose
-   coarsest tick is a whole number of seconds has no primes and shows no
-   prime line. A structure with no anchors shows none of it. The rate
+   The anchors table keeps its "declared in" column. A section "Base
+   grid" follows it and holds the grid report, in the order of
+   `show(::Structure)`:
+
+   ```
+   Base grid
+   Δt_base: 1/300 s, coarsest admissible: 1/300 s
+   τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or
+   1/50 s, the coarsest admissible Δt_base would be 1/50 s.
+
+   Prime factors of the denominator, 300 = 2²·3·5²
+     2²: τ₁ (staggered)
+     3: τ₁ (staggered)
+     5²: Δt₂ (fast), τ₁ (staggered)
+   ```
+
+   The first line is answer 6's comparison, and a build's reads
+   `coarsest admissible Δt_base: 1/50 s`. A sentence follows for each
+   pool entry whose factor is above 1, and an entry with alternatives
+   gets a second one, with the offsets to declare in its place and the
+   coarsest tick they give, its factor times the present one. An entry
+   whose factor is 1 has no line. The prime attribution stands apart
+   under a label of its own, a row per prime power with its suppliers,
+   each named by its symbol and its anchor's key, and a row marked
+   `unfactored` says so. A grid whose coarsest tick is a whole number of
+   seconds has no primes and shows no prime lines. A structure with no
+   anchors has no such section. The rate
    scopes' table takes the components' columns, with the key after the
    path. A build's tab ends with a sentence saying that the base grid's
    columns and the chart need a deployment.
@@ -415,7 +435,7 @@ the user away): both stood open in the core's `pending.md`.*
    `Δt_frame` divides both `D·Δt_base` and `Φ·Δt_base`, and the row
    splits frames otherwise. Where some row splits, the list calls the
    count the steps per unsplit frame and names the rows that split, in
-   the same item, each by its path as the components' table shows it,
+   an item of their own, each by its path as the components' table shows it,
    the root's as `/`. That table sorts on request by `Δt`, by the exact
    value on a deployment and in the palette's order on a build, where an
    `A₀` row's `Δt` is a symbol. This
@@ -439,7 +459,17 @@ the user away): both stood open in the core's `pending.md`.*
    look (the implementation's notes, reading 3). The name of a splitting
    row at the root path and what the sort "by Δt" orders by were
    unstated, and the sort was the palette's order on a deployment too
-   (the cold review's findings 1 and 5).*
+   (the cold review's findings 1 and 5). Amended 2026-11-24 (increment
+   10's look, 1.1, 1.8 and 1.10): the list ran on, with `attempt_budget`
+   and a set `h_min` under any algorithm and the rows that split in the
+   steps' item. The equations stood above the tables as their caption,
+   which repeats the help page. Each factor, 1 included, stood as `×6`
+   beside its value in the anchors table, which did not say what it
+   counts. The comparison stood above that table and the rest of the
+   report under it with no heading, its primes reading as part of the
+   line above them. The factors stay on the tab because
+   `GridUtilization`, the only other place that holds them, is raised
+   for a derived base tick alone.*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is
@@ -449,8 +479,8 @@ the user away): both stood open in the core's `pending.md`.*
    thing for the keyboard and the map; a section in the root's pane,
    which changes with the open level.
 
-10. **The pane's timing: a frames table.** A discrete primitive's rate
-    fact is one small table, a row per frame of answer 3 with the same
+10. **The pane's timing: a frames table.** A discrete primitive's timing
+    is one small table, a row per frame of answer 3 with the same
     two columns, and no sentence:
 
     ```
@@ -463,8 +493,10 @@ the user away): both stood open in the core's `pending.md`.*
     ```
 
     The example is `timing_deployment`'s `fast/outer/hold` (answer 16).
-    The table spans the width of the pane's facts, under the fact's
-    label, and fits the narrowest pane, where a value may break after
+    The table stands in the pane's collapsible section TIMING
+    (`workspace.md` answer 4), whose heading carries the seconds pair,
+    `Δt 3/25 s · τ 3/50 s`, so the rate shows while the section is
+    collapsed. It fits the narrowest pane, where a value may break after
     its equals sign. Its column heads keep the sketch's words, "period" and
     "phase", and each row's head is titled with answer 3's pair and
     unit.
@@ -476,16 +508,18 @@ the user away): both stood open in the core's `pending.md`.*
     root, at `(1, 0)` on `A₀`, and its ticks are base ticks. The row
     then reads "scope the root" and "base ticks". A component
     whose anchor differs from the enclosing scope's has an `Absolute`
-    entry of its own and no `(K, φ)`, and its first row reads "opens
-    `A₁` at the root", naming the scope that declares the anchor. The
+    entry of its own and no `(K, φ)`, so it has no scope row. The anchor's
+    name is titled with its declaring key and scope, as on the timing
+    tab. The
     derived pair is the component's own `sample_times` entry where it
     has one, the last link of its `rates`, and `(1, 0)` where it has
     none. Under the table one line spells the whole chain from the
     node's `rates`, as `show(::Structure)` prints it, outermost first
     and the component's own link last, an explicit `Relative(1)` as
     `Relative(1, 0)`. A component with an empty chain
-    has no line. The open level's pane shows a rate scope with the same
-    table, by the same derivation, and no chain line, an assembly's node
+    has no line. An assembly that is a rate scope has the same section,
+    as the open level and selected as a block, with the same table by the
+    same derivation and no chain line, an assembly's node
     carrying no `rates`. This amends `workspace.md` answer 4, and
     `visual_grammar.md` answer 6, whose "the authored chain is not shown"
     now holds for color alone.
@@ -510,7 +544,11 @@ the user away): both stood open in the core's `pending.md`.*
     the quantity. Whether the table fits the narrowest pane was unstated,
     and the tables of `staggered` and of `library`'s `d_pid` overflowed
     the 240 px pane (the cold review's finding 3 and the fixer's
-    probes).*
+    probes). Amended 2026-11-24 (increment 10's look, 2.5 and 8.1): the
+    table was the fact "rate", a small label on a line of its own above
+    the table. A component with an `Absolute` entry had a scope row that
+    read "opens `A₁` at the root" across both columns. Only the open level
+    showed a rate scope's table, under the heading "Rate scopes".*
     *Why:* the seconds row holds everything the pane's sentence said, and
     the column heads give the words. The scope pair is what the author
     wrote, so it links the pane to the source, and it needs no change to
