@@ -28,10 +28,10 @@ function edited(name: string, edit: (d: any) => void): string {
   return JSON.stringify(d);
 }
 
-/** Each lane's due marks as `[k, cx]`, and its frame tops as `[j, x]`, read from the DOM. */
+/** Each lane's due marks as `[n, cx]`, and its frame tops as `[j, x]`, read from the DOM. */
 const lanes = (page: Page) => body(page).locator(".chart svg.lane").evaluateAll((ls) => ls.map((l) => ({
   D: Number(l.getAttribute("data-d")), phi: Number(l.getAttribute("data-phi")),
-  marks: [...l.querySelectorAll("circle.due")].map((c) => [Number(c.getAttribute("data-k")), Number(c.getAttribute("cx"))]),
+  marks: [...l.querySelectorAll("circle.due")].map((c) => [Number(c.getAttribute("data-n")), Number(c.getAttribute("cx"))]),
   tops: [...l.querySelectorAll("line.frame-top")].map((t) => [Number(t.getAttribute("data-j")), Number(t.getAttribute("x1"))]),
   width: Number(l.getAttribute("width")),
 })));
@@ -43,13 +43,13 @@ const baseGrid = (page: Page) => body(page).locator(".grid-report p, .grid-repor
 const pitchOf = (marks: number[][]) => (marks[1][1] - marks[0][1]) / (marks[1][0] - marks[0][0]);
 
 /**
- * The marks' rule: a row is due at base tick k exactly where k mod D = Φ, k under the span's ticks, and tick k
- * stands k pitches in from the margin.
+ * The marks' rule: a row is due at base tick n exactly where n mod D₀ = Φ₀, n under the span's ticks, and tick n
+ * stands n pitches in from the margin.
  */
 function expectMarks(lane: { D: number; phi: number; marks: number[][] }, ticks: number, pitch: number): void {
-  const due = Array.from({ length: ticks }, (_, k) => k).filter((k) => k % lane.D === lane.phi);
+  const due = Array.from({ length: ticks }, (_, n) => n).filter((n) => n % lane.D === lane.phi);
   expect(lane.marks.map((m) => m[0])).toEqual(due);
-  for (const [k, cx] of lane.marks) expect(cx).toBeCloseTo(PAD + k * pitch, 6);
+  for (const [n, cx] of lane.marks) expect(cx).toBeCloseTo(PAD + n * pitch, 6);
 }
 
 /** The head list's lines, each its items as `[name, value]`. */
@@ -79,7 +79,7 @@ test("timing_deployment: the head list's three lines, a colon after each name, n
   // the head list comes first, then the chart, then the anchors; the law stays on the help page
   const order = await body(page).evaluate((b) => [...b.querySelectorAll("dl.head, .chart, table, .grid-report")].map((e) => e.className.split(" ")[0]));
   expect(order).toEqual(["head", "head", "head", "chart", "anchors", "grid-report", "scopes", "components"]);
-  await expect(body(page)).not.toContainText("Δt = m · Δtₖ");
+  await expect(body(page)).not.toContainText("Δt(i) = Dₐ(i) · Δt(a)");
   await expect(body(page).locator("dl.head").first()).toBeVisible();
   for (const l of await head(page)) for (const [name] of l) expect(name).not.toMatch(/firing|localization/);
 });
@@ -125,8 +125,8 @@ test("timing: a build's tab, no head list, no chart and no law; A₀ at Δt_base
   await timingOf(page, "timing");
   await expect(body(page).locator("dl.head, .chart")).toHaveCount(0);
   await expect(body(page).locator("h3")).toHaveText(["Anchors", "Base grid", "Rate scopes", "Components"]);
-  await expect(body(page)).not.toContainText("Δt = m · Δtₖ");
-  await expect(body(page).locator("table.anchors th")).toHaveText(["k", "Δtₖ", "τₖ", "declared in"]);
+  await expect(body(page)).not.toContainText("Δt(i) = Dₐ(i) · Δt(a)");
+  await expect(body(page).locator("table.anchors th")).toHaveText(["anchor", "Δt", "τ", "declared in"]);
   const a = (k: number) => body(page).locator(`table.anchors tr.anchor[data-index="${k}"]`);
   await expect(a(0).locator("td")).toHaveText(["A₀ (base)", "Δt_base", "0", "—"]);
   await expect(a(1).locator("td")).toHaveText(["A₁ (staggered)", "1/10 s", "1/300 s", "the root"]);
@@ -134,14 +134,14 @@ test("timing: a build's tab, no head list, no chart and no law; A₀ at Δt_base
   await expect(body(page).locator("table.anchors")).not.toContainText("×");
   expect(await baseGrid(page)).toEqual([
     "coarsest admissible Δt_base: 1/300 s",
-    "τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
-    "Prime factors of the denominator, 300 = 2²·3·5²", "2²: τ₁ (staggered)", "3: τ₁ (staggered)", "5²: Δt₂ (fast), τ₁ (staggered)",
+    "τ(A₁) = 1/300 s (staggered) makes the grid 6× finer. With τ(A₁) = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
+    "Prime factors of the denominator, 300 = 2²·3·5²", "2²: τ(A₁) (staggered)", "3: τ(A₁) (staggered)", "5²: Δt(A₂) (fast), τ(A₁) (staggered)",
   ]);
   // the section follows the anchors table; the primes stand apart under their own label
   await expect(body(page).locator("table.anchors + h3 + .grid-report")).toHaveCount(1);
   const gaps = await body(page).locator(".grid-report p").evaluateAll((ps) => ps.slice(1).map((p, i) => p.getBoundingClientRect().top - ps[i].getBoundingClientRect().bottom));
   expect(gaps[1]).toBeGreaterThan(gaps[0]);
-  await expect(body(page).locator("table.components th")).toHaveText(["", "path", "k", "m", "c", "Δt", "τ"]);
+  await expect(body(page).locator("table.components th")).toHaveText(["", "path", "anchor", "Dₐ", "Φₐ", "Δt", "τ"]);
   await expect(body(page).locator('tr.component[data-path="fast/outer/hold"] td')).toHaveText(["", "fast/outer/hold", "A₂ (fast)", "6", "3", "3/25 s", "3/50 s"]);
   await expect(body(page).locator("p.deployment-note")).toHaveText("The columns in base ticks and the hyperperiod chart need a deployment.");
   expect(await body(page).evaluate((b) => b.lastElementChild?.className.split(" ")[0])).toBe("deployment-note");
@@ -153,8 +153,8 @@ test("library: a build's A₀ rows in Δt_base, d_pid at 2·Δt_base and Δt_bas
   await expect(body(page).locator('tr.component[data-path="d_pid"] td')).toHaveText(["", "d_pid", "A₀ (base)", "2", "1", "2·Δt_base", "Δt_base"]);
   await expect(body(page).locator('tr.anchor[data-index="2"] td.dt')).toHaveText("1/50 s");
   expect(await baseGrid(page)).toEqual([
-    "coarsest admissible Δt_base: 1/50 s", "Δt₂ = 1/50 s (dss) makes the grid 5× finer.",
-    "Prime factors of the denominator, 50 = 2·5²", "2: Δt₁ (noise), Δt₂ (dss)", "5²: Δt₂ (dss)",
+    "coarsest admissible Δt_base: 1/50 s", "Δt(A₂) = 1/50 s (dss) makes the grid 5× finer.",
+    "Prime factors of the denominator, 50 = 2·5²", "2: Δt(A₁) (noise), Δt(A₂) (dss)", "5²: Δt(A₂) (dss)",
   ]);
   await expect(body(page).locator(".chart")).toHaveCount(0);
   await shot(page, "library", "", "timing-tab");
@@ -162,9 +162,9 @@ test("library: a build's A₀ rows in Δt_base, d_pid at 2·Δt_base and Δt_bas
 
 test("library_deployment, rates, rates_deployment, closed_loop and closed_loop_deployment: the base grid's first line and the sentences, none where every factor is 1", async ({ page }) => {
   for (const [name, first, entries] of [
-    ["library_deployment", "Δt_base: 1/100 s, coarsest admissible: 1/50 s", ["Δt₂ = 1/50 s (dss) makes the grid 5× finer."]],
-    ["rates", "coarsest admissible Δt_base: 1/50 s", ["Δt₁ = 1/50 s (fast) makes the grid 5× finer."]],
-    ["rates_deployment", "Δt_base: 1/200 s, coarsest admissible: 1/50 s", ["Δt₁ = 1/50 s (fast) makes the grid 5× finer."]],
+    ["library_deployment", "Δt_base: 1/100 s, coarsest admissible: 1/50 s", ["Δt(A₂) = 1/50 s (dss) makes the grid 5× finer."]],
+    ["rates", "coarsest admissible Δt_base: 1/50 s", ["Δt(A₁) = 1/50 s (fast) makes the grid 5× finer."]],
+    ["rates_deployment", "Δt_base: 1/200 s, coarsest admissible: 1/50 s", ["Δt(A₁) = 1/50 s (fast) makes the grid 5× finer."]],
     ["closed_loop", "coarsest admissible Δt_base: 1/50 s", []],
     ["closed_loop_deployment", "Δt_base: 1/100 s, coarsest admissible: 1/50 s", []],
   ] as const) {
@@ -185,7 +185,7 @@ test("a whole-second grid (an inline copy of library) shows no prime lines, an u
   await timingOf(page, "library", edited("library", (d) => {
     Object.assign(d.build.structure.grid, { admissible: { num: 1, den: 1099511627791 }, primes: [{ prime: 1099511627791, power: 1, suppliers: [2], unfactored: true }] });
   }));
-  expect((await baseGrid(page)).slice(-2)).toEqual(["Prime factors of the denominator, 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt₂ (dss)"]);
+  expect((await baseGrid(page)).slice(-2)).toEqual(["Prime factors of the denominator, 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt(A₂) (dss)"]);
   await timingOf(page, "kinds");
   await expect(body(page).locator("table.anchors tr.anchor")).toHaveCount(1);
   await expect(body(page).locator("h3")).toHaveText(["Anchors", "Rate scopes", "Components"]);
@@ -194,30 +194,29 @@ test("a whole-second grid (an inline copy of library) shows no prime lines, an u
 
 test("timing_deployment: the anchors and the scopes add the base grid's columns, the scopes the key after the path; every column head is a term of the help page's law", async ({ page }) => {
   await timingOf(page, "timing_deployment");
-  await expect(body(page).locator("table.anchors th")).toHaveText(["k", "Δtₖ", "τₖ", "Dₖ", "Φₖ", "declared in"]);
+  await expect(body(page).locator("table.anchors th")).toHaveText(["anchor", "Δt", "τ", "D₀", "Φ₀", "declared in"]);
   await expect(body(page).locator('tr.anchor[data-index="0"] td')).toHaveText(["A₀ (base)", "1/300 s", "0", "1", "0", "—"]);
   await expect(body(page).locator('tr.anchor[data-index="1"] td')).toHaveText(["A₁ (staggered)", "1/10 s", "1/300 s", "30", "1", "the root"]);
   expect((await baseGrid(page)).slice(0, 2)).toEqual([
     "Δt_base: 1/300 s, coarsest admissible: 1/300 s",
-    "τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
+    "τ(A₁) = 1/300 s (staggered) makes the grid 6× finer. With τ(A₁) = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
   ]);
-  await expect(body(page).locator("table.scopes th")).toHaveText(["path", "key", "k", "m", "c", "D", "Φ", "Δt", "τ"]);
+  await expect(body(page).locator("table.scopes th")).toHaveText(["path", "key", "anchor", "Dₐ", "Φₐ", "D₀", "Φ₀", "Δt", "τ"]);
   await expect(body(page).locator('tr.scope[data-path="fast/outer"] td')).toHaveText(["fast/outer", "outer", "A₂ (fast)", "2", "1", "12", "6", "1/25 s", "1/50 s"]);
-  await expect(body(page).locator("table.components th")).toHaveText(["", "path", "k", "m", "c", "D", "Φ", "Δt", "τ"]);
+  await expect(body(page).locator("table.components th")).toHaveText(["", "path", "anchor", "Dₐ", "Φₐ", "D₀", "Φ₀", "Δt", "τ"]);
   await expect(body(page).locator('tr.component[data-path="staggered"] td')).toHaveText(["", "staggered", "A₁ (staggered)", "1", "0", "30", "1", "1/10 s", "1/300 s"]);
   await expect(body(page).locator("p.deployment-note")).toHaveCount(0);
-  // the law's terms, from the help page: each line split at its operators, and the anchor's index k, the subscript of Δtₖ and the others
+  // the law's terms, from the help page: each line split at its operators, an argument dropped, since a table's row names the node
   await press(page, "?");
-  const terms = new Set((await page.locator("article.help table.law td").allTextContents()).flatMap((t) => t.split(/[\s=·+]+/)).filter(Boolean));
+  const terms = new Set((await page.locator("article.help table.law td").allTextContents()).flatMap((t) => t.replace(/\([ia]\)/g, "").split(/[\s=·+]+/)).filter(Boolean));
   await press(page, "?");
-  expect(terms.size).toBeGreaterThan(8);
-  if ([...terms].some((t) => t.endsWith("ₖ"))) terms.add("k");
+  expect([...terms].sort()).toEqual(["D₀", "Dₐ", "Δt", "Δt_base", "Φ₀", "Φₐ", "τ"].sort());
   const heads = await body(page).locator("table.anchors th, table.scopes th, table.components th").allTextContents();
-  expect(heads.filter((h) => !["", "path", "key", "declared in"].includes(h) && !terms.has(h))).toEqual([]);
+  expect(heads.filter((h) => !["", "path", "key", "anchor", "declared in"].includes(h) && !terms.has(h))).toEqual([]);
   // the anchor's name carries the declaring scope in its tooltip
-  await expect(body(page).locator('tr.anchor[data-index="2"] td.k span.anchor')).toHaveAttribute("title", "fast at the root");
-  await expect(body(page).locator('tr.component[data-path="fast/inner"] td.k span.anchor')).toHaveAttribute("title", "fast at the root");
-  await expect(body(page).locator('tr.anchor[data-index="0"] td.k span.anchor')).toHaveAttribute("title", "the base grid");
+  await expect(body(page).locator('tr.anchor[data-index="2"] td.anchor span.anchor')).toHaveAttribute("title", "fast at the root");
+  await expect(body(page).locator('tr.component[data-path="fast/inner"] td.anchor span.anchor')).toHaveAttribute("title", "fast at the root");
+  await expect(body(page).locator('tr.anchor[data-index="0"] td.anchor span.anchor')).toHaveAttribute("title", "the base grid");
 });
 
 test("timing and timing_deployment: the words phase, offset and multiple stand nowhere on the timing tab, its tooltips included", async ({ page }) => {
@@ -232,11 +231,11 @@ test("timing and timing_deployment: the words phase, offset and multiple stand n
   }
 });
 
-test("library_deployment: four chart rows fastest first, (2, 0) with two swatches; every row on frame tops, no lines but the caption; the timeline fitted, each row due where k mod D = Φ", async ({ page }) => {
+test("library_deployment: four chart rows fastest first, (2, 0) with two swatches; every row on frame tops, no lines but the caption; the timeline fitted, each row due where n mod D₀ = Φ₀", async ({ page }) => {
   await timingOf(page, "library_deployment");
   await expect(body(page).locator("p.hyperperiod")).toHaveText("hyperperiod: 10 base ticks (1/10 s)");
   await expect(body(page).locator("p.joint")).toHaveCount(0);
-  await expect(rows(page).locator(".dphi")).toHaveText(["D 1 · Φ 0", "D 2 · Φ 0", "D 2 · Φ 1", "D 10 · Φ 0"]);
+  await expect(rows(page).locator(".dphi")).toHaveText(["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 0", "D₀ 2 · Φ₀ 1", "D₀ 10 · Φ₀ 0"]);
   await expect(rows(page).locator(".count")).toHaveText(["9 primitives", "2 primitives", "1 primitive", "1 primitive"]);
   await expect(rows(page).locator(".frames")).toHaveText(Array(4).fill("on frame tops"));
   await expect(rows(page).nth(1).locator("button.swatch")).toHaveCount(2);
@@ -260,7 +259,7 @@ test("library_deployment: four chart rows fastest first, (2, 0) with two swatche
 
 test("rates_deployment: a frame of two base ticks draws a frame top every two ticks over the joint period of 40, 0 to 20; three rows", async ({ page }) => {
   await timingOf(page, "rates_deployment");
-  await expect(rows(page).locator(".dphi")).toHaveText(["D 4 · Φ 0", "D 8 · Φ 0", "D 20 · Φ 0"]);
+  await expect(rows(page).locator(".dphi")).toHaveText(["D₀ 4 · Φ₀ 0", "D₀ 8 · Φ₀ 0", "D₀ 20 · Φ₀ 0"]);
   await expect(body(page).locator("p.frame-caption")).toHaveCount(0);
   const ls = await lanes(page);
   const pitch = pitchOf(ls[0].marks);
@@ -293,7 +292,7 @@ test("a frame of one and a half base ticks (an inline copy of rates_deployment):
 
 test("timing_deployment: the timeline at the minimum pitch scrolls the tab's body sideways under the labels, which stay; l and h from the drawer scroll it by the step; staggered's row splits frames", async ({ page }) => {
   await timingOf(page, "timing_deployment");
-  await expect(rows(page).locator(".dphi")).toHaveText(["D 6 · Φ 0", "D 12 · Φ 6", "D 24 · Φ 18", "D 30 · Φ 1", "D 36 · Φ 18"]);
+  await expect(rows(page).locator(".dphi")).toHaveText(["D₀ 6 · Φ₀ 0", "D₀ 12 · Φ₀ 6", "D₀ 24 · Φ₀ 18", "D₀ 30 · Φ₀ 1", "D₀ 36 · Φ₀ 18"]);
   await expect(body(page).locator('.chart-row[data-d="30"] .frames')).toHaveText("splits frames");
   await expect(body(page).locator('.chart-row[data-splits="true"]')).toHaveCount(1);
   await expect(body(page).locator(".chart")).toHaveAttribute("data-fit", "scroll");
@@ -345,7 +344,7 @@ test("a deployment whose schedule has no rows (an inline copy of closed_loop_dep
 test("closed_loop_deployment: one chart row of ten swatches; a swatch toggles the legend's focus, a press in tier mode turning rate mode on, and the second press clears it; the row takes no click", async ({ page }) => {
   await timingOf(page, "closed_loop_deployment");
   await expect(rows(page)).toHaveCount(1);
-  await expect(rows(page).locator(".dphi")).toHaveText("D 2 · Φ 0");
+  await expect(rows(page).locator(".dphi")).toHaveText("D₀ 2 · Φ₀ 0");
   await expect(rows(page).locator(".count")).toHaveText("10 primitives");
   const swatches = rows(page).locator("button.swatch");
   await expect(swatches).toHaveCount(10);

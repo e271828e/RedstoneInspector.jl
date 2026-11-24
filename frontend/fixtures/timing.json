@@ -165,8 +165,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 1,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -321,8 +321,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -482,8 +482,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 6,
-            "c": 3
+            "D": 6,
+            "phi": 3
           },
           "rates": [
             {
@@ -501,13 +501,13 @@
             {
               "scope": "fast",
               "key": "outer",
-              "K": 2,
+              "D": 2,
               "phi": 1
             },
             {
               "scope": "fast/outer",
               "key": "hold",
-              "K": 3,
+              "D": 3,
               "phi": 1
             }
           ],
@@ -543,8 +543,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 2,
-            "c": 1
+            "D": 2,
+            "phi": 1
           },
           "rates": [
             {
@@ -562,13 +562,13 @@
             {
               "scope": "fast",
               "key": "outer",
-              "K": 2,
+              "D": 2,
               "phi": 1
             },
             {
               "scope": "fast/outer",
               "key": "same",
-              "K": 1,
+              "D": 1,
               "phi": 0
             }
           ],
@@ -662,8 +662,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 4,
-            "c": 3
+            "D": 4,
+            "phi": 3
           },
           "rates": [
             {
@@ -681,13 +681,13 @@
             {
               "scope": "fast",
               "key": "outer",
-              "K": 2,
+              "D": 2,
               "phi": 1
             },
             {
               "scope": "fast/outer",
               "key": "deep",
-              "K": 2,
+              "D": 2,
               "phi": 1
             }
           ],
@@ -723,8 +723,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Main.Synthetic.PinnedGain",
@@ -830,8 +830,8 @@
           "key": "fast",
           "timing": {
             "anchor": 2,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           }
         },
         {
@@ -839,8 +839,8 @@
           "key": "outer",
           "timing": {
             "anchor": 2,
-            "m": 2,
-            "c": 1
+            "D": 2,
+            "phi": 1
           }
         },
         {
@@ -848,8 +848,8 @@
           "key": "deep",
           "timing": {
             "anchor": 2,
-            "m": 4,
-            "c": 3
+            "D": 4,
+            "phi": 3
           }
         }
       ],
@@ -917,27 +917,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 982
             }
           ]

@@ -27,10 +27,10 @@ function gridReportLines(m: Model): string[] {
 }
 const timingDep = fixtureModel("timing_deployment");
 const libDep = fixtureModel("library_deployment");
-/** A deployment of `primitive` made discrete (an inline structure): one row at the root path, `D = 1`, at the frame given. */
+/** A deployment of `primitive` made discrete (an inline structure): one row at the root path, `D₀ = 1`, at the frame given. */
 const primitiveRootDep = (frame: { num: number; den: number }) => edited("library_deployment", (d) => {
   const build = (fixtureJson("primitive") as any).build;
-  Object.assign(build.structure.nodes[0], { tier: "discrete", timing: { anchor: 0, m: 1, c: 0 } });
+  Object.assign(build.structure.nodes[0], { tier: "discrete", timing: { anchor: 0, D: 1, phi: 0 } });
   Object.assign(d.deployment, {
     build, dt_base: { num: 1, den: 150 }, dt_frame: frame, h_max: frame, schedule: { anchors: [], rows: [{ path: "", D: 1, phi: 0 }], scopes: [] }, warnings: [],
   });
@@ -58,7 +58,7 @@ describe("the anchors table (answers 6 and 9)", () => {
       { index: 2, label: "A₂ (dss)", dt: "1/50 s", tau: "0", scope: "", key: "dss" },
     ]);
   });
-  it("timing_deployment: the deployment's Dₖ and Φₖ, A₀ at its value", () => {
+  it("timing_deployment: the deployment's D₀ and Φ₀, A₀ at its value", () => {
     expect(anchorTable(timingDep)).toEqual([
       { index: 0, label: "A₀ (base)", dt: "1/300 s", tau: "0", D: 1, phi: 0 },
       { index: 1, label: "A₁ (staggered)", dt: "1/10 s", tau: "1/300 s", D: 30, phi: 1, scope: "", key: "staggered" },
@@ -76,18 +76,18 @@ describe("the anchors table (answers 6 and 9)", () => {
 describe("the grid report (answers 6 and 9)", () => {
   it("timing, as a build and as a deployment: the offset's factor with its alternatives, then the denominator's factors and a row per prime power by anchor and kind", () => {
     for (const m of [fixtureModel("timing"), timingDep]) expect(gridReportLines(m)).toEqual([
-      "τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
+      "τ(A₁) = 1/300 s (staggered) makes the grid 6× finer. With τ(A₁) = 0 or 1/50 s, the coarsest admissible Δt_base would be 1/50 s.",
       "Prime factors of the denominator, 300 = 2²·3·5²",
-      "2²: τ₁ (staggered)",
-      "3: τ₁ (staggered)",
-      "5²: Δt₂ (fast), τ₁ (staggered)",
+      "2²: τ(A₁) (staggered)",
+      "3: τ(A₁) (staggered)",
+      "5²: Δt(A₂) (fast), τ(A₁) (staggered)",
     ]);
   });
   it("library and rates, builds and deployments: a period's sentence alone, for the one entry whose factor is above 1, then two prime rows", () => {
     for (const m of [fixtureModel("library"), libDep]) expect(gridReportLines(m)).toEqual([
-      "Δt₂ = 1/50 s (dss) makes the grid 5× finer.", "Prime factors of the denominator, 50 = 2·5²", "2: Δt₁ (noise), Δt₂ (dss)", "5²: Δt₂ (dss)",
+      "Δt(A₂) = 1/50 s (dss) makes the grid 5× finer.", "Prime factors of the denominator, 50 = 2·5²", "2: Δt(A₁) (noise), Δt(A₂) (dss)", "5²: Δt(A₂) (dss)",
     ]);
-    for (const m of [fixtureModel("rates"), fixtureModel("rates_deployment")]) expect(gridReport(m)!.entries).toEqual(["Δt₁ = 1/50 s (fast) makes the grid 5× finer."]);
+    for (const m of [fixtureModel("rates"), fixtureModel("rates_deployment")]) expect(gridReport(m)!.entries).toEqual(["Δt(A₁) = 1/50 s (fast) makes the grid 5× finer."]);
   });
   it("closed_loop: ten factors of 1, no sentence", () => {
     for (const name of ["closed_loop", "closed_loop_deployment"] as const) {
@@ -98,7 +98,7 @@ describe("the grid report (answers 6 and 9)", () => {
   it("the sentences keep the pool's order, a period's before an offset's (an inline copy of timing)", () => {
     const m = edited("timing", (d) => (d.build.structure.grid.pool[1].factor = 2));
     expect(gridReport(m)!.entries.map((e) => e.split(".")[0])).toEqual([
-      "Δt₂ = 1/50 s (fast) makes the grid 2× finer", "τ₁ = 1/300 s (staggered) makes the grid 6× finer",
+      "Δt(A₂) = 1/50 s (fast) makes the grid 2× finer", "τ(A₁) = 1/300 s (staggered) makes the grid 6× finer",
     ]);
   });
   it("a whole-second grid has no prime line, an unfactored cofactor says so, no anchors no report", () => {
@@ -113,7 +113,7 @@ describe("the grid report (answers 6 and 9)", () => {
       d.build.structure.grid.primes = [{ prime: 1099511627791, power: 1, suppliers: [2], unfactored: true }];
       d.build.structure.grid.admissible = { num: 1, den: 1099511627791 };
     });
-    expect(gridReportLines(big).slice(1)).toEqual(["Prime factors of the denominator, 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt₂ (dss)"]);
+    expect(gridReportLines(big).slice(1)).toEqual(["Prime factors of the denominator, 1099511627791 = 1099511627791 unfactored", "1099511627791 unfactored: Δt(A₂) (dss)"]);
     expect(gridReport(big)!.attribution.map((a) => a.unfactored)).toEqual([true]);
     expect(gridReport(libDep)!.attribution.map((a) => a.unfactored)).toEqual([false, false]);
     expect(gridReportLines(fixtureModel("kinds"))).toEqual([]);
@@ -123,12 +123,12 @@ describe("the grid report (answers 6 and 9)", () => {
 describe("the components and scopes tables (answers 3, 5 and 9)", () => {
   it("library: d_pid's cell before and after binding, 2·Δt_base and 1/50 s", () => {
     const build = componentTable(fixtureModel("library")).find((r) => r.path === "d_pid")!;
-    expect(build).toEqual({ path: "d_pid", triple: [0, 2, 1], anchor: "A₀ (base)", m: 2, c: 1, dt: "2·Δt_base", tau: "Δt_base" });
+    expect(build).toEqual({ path: "d_pid", triple: [0, 2, 1], anchor: "A₀ (base)", Da: 2, phia: 1, dt: "2·Δt_base", tau: "Δt_base" });
     const dep = componentTable(libDep).find((r) => r.path === "d_pid")!;
-    expect(dep).toEqual({ path: "d_pid", triple: [0, 2, 1], anchor: "A₀ (base)", m: 2, c: 1, D: 2, phi: 1, splits: false, dt: "1/50 s", tau: "1/100 s" });
+    expect(dep).toEqual({ path: "d_pid", triple: [0, 2, 1], anchor: "A₀ (base)", Da: 2, phia: 1, D0: 2, phi0: 1, splits: false, dt: "1/50 s", tau: "1/100 s" });
   });
-  it("timing_deployment: the five rows in walk order with D, Φ and exact seconds; staggered splits frames", () => {
-    expect(componentTable(timingDep).map((r) => [r.path, r.anchor, r.m, r.c, r.D, r.phi, r.dt, r.tau, r.splits])).toEqual([
+  it("timing_deployment: the five rows in walk order with D₀, Φ₀ and exact seconds; staggered splits frames", () => {
+    expect(componentTable(timingDep).map((r) => [r.path, r.anchor, r.Da, r.phia, r.D0, r.phi0, r.dt, r.tau, r.splits])).toEqual([
       ["staggered", "A₁ (staggered)", 1, 0, 30, 1, "1/10 s", "1/300 s", true],
       ["fast/inner", "A₂ (fast)", 1, 0, 6, 0, "1/50 s", "0", false],
       ["fast/outer/hold", "A₂ (fast)", 6, 3, 36, 18, "3/25 s", "3/50 s", false],
@@ -136,14 +136,14 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
       ["fast/outer/deep/hold", "A₂ (fast)", 4, 3, 24, 18, "2/25 s", "3/50 s", false],
     ]);
   });
-  it("timing: a build's seconds from the anchors, τ = τₖ + c·Δtₖ", () => {
+  it("timing: a build's seconds from the anchors, τ(i) = τ(a) + Φₐ(i)·Δt(a)", () => {
     expect(componentTable(fixtureModel("timing")).map((r) => [r.path, r.dt, r.tau])).toEqual([
       ["staggered", "1/10 s", "1/300 s"], ["fast/inner", "1/50 s", "0"], ["fast/outer/hold", "3/25 s", "3/50 s"],
       ["fast/outer/same", "1/25 s", "1/50 s"], ["fast/outer/deep/hold", "2/25 s", "3/50 s"],
     ]);
   });
   it("timing_deployment: the scopes with the key after the path, joined by path and key", () => {
-    expect(scopeTable(timingDep).map((r) => [r.path, r.key, r.m, r.c, r.D, r.phi, r.dt, r.tau])).toEqual([
+    expect(scopeTable(timingDep).map((r) => [r.path, r.key, r.Da, r.phia, r.D0, r.phi0, r.dt, r.tau])).toEqual([
       ["fast", "fast", 1, 0, 6, 0, "1/50 s", "0"],
       ["fast/outer", "outer", 2, 1, 12, 6, "1/25 s", "1/50 s"],
       ["fast/outer/deep", "deep", 4, 3, 24, 18, "2/25 s", "3/50 s"],
@@ -160,10 +160,10 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
     expect(componentTable(libDep, true).map((r) => r.path)).toEqual(sorted);
     expect(componentTable(fixtureModel("failure_structure"), true)).toEqual([]);
   });
-  it("sorts a deployment by its exact Δt, ties in the palette's order, and a build in the palette's order (inline copies with d_limited at m 20)", () => {
+  it("sorts a deployment by its exact Δt, ties in the palette's order, and a build in the palette's order (inline copies with d_limited at Dₐ 20)", () => {
     const slow = (d: any) => {
       const b = d.kind === "deployment" ? d.deployment : d;
-      (b.build ?? b).structure.nodes.find((n: any) => n.path === "d_limited").timing.m = 20;
+      (b.build ?? b).structure.nodes.find((n: any) => n.path === "d_limited").timing.D = 20;
       if (d.kind === "deployment") d.deployment.schedule.rows.find((r: any) => r.path === "d_limited").D = 20;
     };
     const ones = ["unit_delay", "d_integrator", "rate_limiter", "dtf", "zoh_ss", "zoh_tf", "delay", "d_lqr", "backlash"];
@@ -282,24 +282,24 @@ describe("the frame lines and the chart's rows (answer 11)", () => {
     expect(frameLines(fine)).toEqual({ drawn: false, framesPerTick: 2n, caption: "every base tick is a frame top: 2 frames in one base tick" });
     expect(frameLines(fixtureModel("library"))).toBeUndefined();
   });
-  it("library_deployment: four rows by D then Φ, (2, 0) with two swatches in palette order", () => {
+  it("library_deployment: four rows by D₀ then Φ₀, (2, 0) with two swatches in palette order", () => {
     expect(chartRows(libDep).map((r) => [r.label, r.swatches.map((s) => s.key), r.countText, r.splits])).toEqual([
-      ["D 1 · Φ 0", ["0,1,0"], "9 primitives", false],
-      ["D 2 · Φ 0", ["0,2,0", "2,1,0"], "2 primitives", false],
-      ["D 2 · Φ 1", ["0,2,1"], "1 primitive", false],
-      ["D 10 · Φ 0", ["1,1,0"], "1 primitive", false],
+      ["D₀ 1 · Φ₀ 0", ["0,1,0"], "9 primitives", false],
+      ["D₀ 2 · Φ₀ 0", ["0,2,0", "2,1,0"], "2 primitives", false],
+      ["D₀ 2 · Φ₀ 1", ["0,2,1"], "1 primitive", false],
+      ["D₀ 10 · Φ₀ 0", ["1,1,0"], "1 primitive", false],
     ]);
     expect(chartRows(libDep)[1].swatches.map((s) => s.step)).toEqual([1, 3]);
   });
   it("closed_loop_deployment: one row of ten swatches; timing_deployment's staggered row splits frames", () => {
     const one = chartRows(fixtureModel("closed_loop_deployment"));
     expect(one).toHaveLength(1);
-    expect([one[0].label, one[0].swatches.length, one[0].count]).toEqual(["D 2 · Φ 0", 10, 10]);
+    expect([one[0].label, one[0].swatches.length, one[0].count]).toEqual(["D₀ 2 · Φ₀ 0", 10, 10]);
     expect(chartRows(timingDep).map((r) => [r.label, r.splits])).toEqual([
-      ["D 6 · Φ 0", false], ["D 12 · Φ 6", false], ["D 24 · Φ 18", false], ["D 30 · Φ 1", true], ["D 36 · Φ 18", false],
+      ["D₀ 6 · Φ₀ 0", false], ["D₀ 12 · Φ₀ 6", false], ["D₀ 24 · Φ₀ 18", false], ["D₀ 30 · Φ₀ 1", true], ["D₀ 36 · Φ₀ 18", false],
     ]);
   });
-  it("a row is due at base tick k where k mod D = Φ", () => {
+  it("a row is due at base tick n where n mod D₀ = Φ₀", () => {
     const row = chartRows(libDep)[2];
     expect([0n, 1n, 2n, 3n].map(row.due)).toEqual([false, true, false, true]);
   });
@@ -373,7 +373,7 @@ describe("the chart's lines and geometry (answers 8 and 11)", () => {
     expect(half.tickPx).toBe(20);
     expect([frameTopX(1n, joint, half), frameTopX(2n, joint, half)]).toEqual([CHART_PAD + 30, tickX(3n, half)]);
   });
-  it("marks a row due from Φ every D base ticks over the joint period", () => {
+  it("marks a row due from Φ₀ every D₀ base ticks over the joint period", () => {
     const joint = jointPeriod(libDep)!, rows = chartRows(libDep);
     expect(rows.map((r) => dueTicks(r, joint))).toEqual([
       [0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n], [0n, 2n, 4n, 6n, 8n], [1n, 3n, 5n, 7n, 9n], [0n],
@@ -388,25 +388,25 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
   const rows = (m: Model, p: string) => framesTable(m, p)!.rows.map((r) => [r.frame, r.name, r.period, r.phase, r.unit]);
   it("timing_deployment's fast/outer/hold is answer 10's example, its chain the core's", () => {
     expect(rows(timingDep, "fast/outer/hold")).toEqual([
-      ["scope", "fast/outer", "K = 3", "φ = 1", "ticks of fast/outer"],
-      ["anchor", "A₂ (fast)", "m = 6", "c = 3", "ticks of A₂"],
-      ["base grid", "", "D = 36", "Φ = 18", "base ticks"],
+      ["scope", "fast/outer", "Dₛ = 3", "Φₛ = 1", "ticks of fast/outer"],
+      ["anchor", "A₂ (fast)", "Dₐ = 6", "Φₐ = 3", "ticks of A₂"],
+      ["base grid", "", "D₀ = 36", "Φ₀ = 18", "base ticks"],
       ["seconds", "", "Δt = 3/25 s", "τ = 3/50 s", ""],
     ]);
     expect(chainLine(timingDep, "fast/outer/hold")).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)");
   });
   it("a build has no base grid row; an explicit Relative(1) shows in the chain alone", () => {
     expect(rows(fixtureModel("timing"), "fast/outer/same")).toEqual([
-      ["scope", "fast/outer", "K = 1", "φ = 0", "ticks of fast/outer"],
-      ["anchor", "A₂ (fast)", "m = 2", "c = 1", "ticks of A₂"],
+      ["scope", "fast/outer", "Dₛ = 1", "Φₛ = 0", "ticks of fast/outer"],
+      ["anchor", "A₂ (fast)", "Dₐ = 2", "Φₐ = 1", "ticks of A₂"],
       ["seconds", "", "Δt = 1/25 s", "τ = 1/50 s", ""],
     ]);
     expect(chainLine(fixtureModel("timing"), "fast/outer/same")).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
   });
   it("a component with its own Absolute entry has no scope row, its anchor's name titled with the declaring key and scope", () => {
     expect(rows(timingDep, "staggered")).toEqual([
-      ["anchor", "A₁ (staggered)", "m = 1", "c = 0", "ticks of A₁"],
-      ["base grid", "", "D = 30", "Φ = 1", "base ticks"],
+      ["anchor", "A₁ (staggered)", "Dₐ = 1", "Φₐ = 0", "ticks of A₁"],
+      ["base grid", "", "D₀ = 30", "Φ₀ = 1", "base ticks"],
       ["seconds", "", "Δt = 1/10 s", "τ = 1/300 s", ""],
     ]);
     expect(framesTable(timingDep, "staggered")!.rows[0].nameTitle).toBe("staggered at the root");
@@ -414,8 +414,8 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
     expect(chainLine(timingDep, "staggered")).toBe("staggered = Absolute(1//10, 1//300)");
   });
   it("the nested scope deep divides by mₛ = 2 and subtracts cₛ = 1; the primitive under it is its (1, 0)", () => {
-    expect(scopeFramesTable(timingDep, "fast/outer/deep")!.rows[0]).toMatchObject({ name: "fast/outer", period: "K = 2", phase: "φ = 1" });
-    expect(rows(timingDep, "fast/outer/deep/hold")[0]).toEqual(["scope", "fast/outer/deep", "K = 1", "φ = 0", "ticks of fast/outer/deep"]);
+    expect(scopeFramesTable(timingDep, "fast/outer/deep")!.rows[0]).toMatchObject({ name: "fast/outer", period: "Dₛ = 2", phase: "Φₛ = 1" });
+    expect(rows(timingDep, "fast/outer/deep/hold")[0]).toEqual(["scope", "fast/outer/deep", "Dₛ = 1", "Φₛ = 0", "ticks of fast/outer/deep"]);
   });
   it("a scope with its own Absolute entry has no scope row either: fast", () => {
     expect(scopeFramesTable(timingDep, "fast")!.rows.map((r) => [r.frame, r.name, r.nameTitle])).toEqual([
@@ -424,8 +424,8 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
   });
   it("library: a component under no keyed assembly reads the root in base ticks, its seconds in Δt_base; no entry, no chain", () => {
     expect(rows(fixtureModel("library"), "d_pid")).toEqual([
-      ["scope", "the root", "K = 2", "φ = 1", "base ticks"],
-      ["anchor", "A₀ (base)", "m = 2", "c = 1", "base ticks"],
+      ["scope", "the root", "Dₛ = 2", "Φₛ = 1", "base ticks"],
+      ["anchor", "A₀ (base)", "Dₐ = 2", "Φₐ = 1", "base ticks"],
       ["seconds", "", "Δt = 2·Δt_base", "τ = Δt_base", ""],
     ]);
     expect(chainLine(fixtureModel("library"), "d_lqr")).toBeUndefined();
@@ -434,17 +434,17 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
     const m = edited("rates", (d) => {
       const s = d.build.structure;
       s.scopes = s.scopes.filter((x: any) => x.path !== "fast/outer");
-      s.nodes.find((n: any) => n.path === "fast/outer/hold").timing = { anchor: 1, m: 2, c: 1 };
+      s.nodes.find((n: any) => n.path === "fast/outer/hold").timing = { anchor: 1, D: 2, phi: 1 };
     });
-    expect(rows(m, "fast/outer/hold")[0]).toEqual(["scope", "fast", "K = 2", "φ = 1", "ticks of fast"]);
+    expect(rows(m, "fast/outer/hold")[0]).toEqual(["scope", "fast", "Dₛ = 2", "Φₛ = 1", "ticks of fast"]);
   });
   it("a discrete primitive root reads the root as its scope (an inline structure)", () => {
     const root = edited("primitive", (d) => {
       const n = d.build.structure.nodes[0];
       n.tier = "discrete";
-      n.timing = { anchor: 0, m: 2, c: 1 };
+      n.timing = { anchor: 0, D: 2, phi: 1 };
     });
-    expect(rows(root, "")[0]).toEqual(["scope", "the root", "K = 2", "φ = 1", "base ticks"]);
+    expect(rows(root, "")[0]).toEqual(["scope", "the root", "Dₛ = 2", "Φₛ = 1", "base ticks"]);
   });
   it("gives no table for a continuous primitive or an assembly, nor a scope's for a node that is none", () => {
     expect(framesTable(timingDep, "frozen")).toBeUndefined();
@@ -457,13 +457,14 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
 describe("the legend's line (answer 13)", () => {
   it("library: which clock and how fast, the A₀ lines symbolic in a build and concrete in a deployment", () => {
     const lib = fixtureModel("library");
-    expect(legendText(lib, [0, 1, 0])).toEqual({ text: "A₀ (base) · m 1 · c 0", dt: "Δt_base", title: "τ 0; the base grid" });
-    expect(legendText(lib, [0, 2, 1])).toEqual({ text: "A₀ (base) · m 2 · c 1", dt: "2·Δt_base", title: "τ Δt_base; the base grid" });
-    expect(legendText(lib, [2, 1, 0])).toEqual({ text: "A₂ (dss) · m 1 · c 0", dt: "1/50 s", title: "τ 0; dss at the root" });
-    expect(legendText(libDep, [0, 2, 1])).toEqual({ text: "A₀ (base) · m 2 · c 1", dt: "1/50 s", title: "D 2 · Φ 1 · τ 1/100 s; the base grid" });
+    expect(legendText(lib, [0, 1, 0])).toEqual({ text: "A₀ (base) · Dₐ 1 · Φₐ 0", dt: "Δt_base", title: "τ 0; the base grid" });
+    expect(legendText(lib, [0, 2, 1])).toEqual({ text: "A₀ (base) · Dₐ 2 · Φₐ 1", dt: "2·Δt_base", title: "τ Δt_base; the base grid" });
+    expect(legendText(lib, [2, 1, 0])).toEqual({ text: "A₂ (dss) · Dₐ 1 · Φₐ 0", dt: "1/50 s", title: "τ 0; dss at the root" });
+    expect(legendText(libDep, [0, 2, 1])).toEqual({ text: "A₀ (base) · Dₐ 2 · Φₐ 1", dt: "1/50 s", title: "D₀ 2 · Φ₀ 1 · τ 1/100 s; the base grid" });
     expect(legendText(libDep, [1, 1, 0]).dt).toBe("1/10 s");
   });
-  it("timing_deployment: the tooltip's D, Φ and τ through the anchor's Φₖ", () => {
-    expect(legendText(timingDep, [1, 1, 0])).toEqual({ text: "A₁ (staggered) · m 1 · c 0", dt: "1/10 s", title: "D 30 · Φ 1 · τ 1/300 s; staggered at the root" });
+  it("timing_deployment: the tooltip's D₀, Φ₀ and τ through the anchor's Φ₀", () => {
+    expect(legendText(timingDep, [1, 1, 0])).toEqual({ text: "A₁ (staggered) · Dₐ 1 · Φₐ 0", dt: "1/10 s", title: "D₀ 30 · Φ₀ 1 · τ 1/300 s; staggered at the root" });
+    expect(legendText(timingDep, [2, 6, 3])).toEqual({ text: "A₂ (fast) · Dₐ 6 · Φₐ 3", dt: "3/25 s", title: "D₀ 36 · Φ₀ 18 · τ 3/50 s; fast at the root" });
   });
 });

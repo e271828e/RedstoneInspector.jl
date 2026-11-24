@@ -1,7 +1,7 @@
 <script lang="ts">
   // The timing tab (workspace.md answer 6, deployment_overlay.md answers 3, 6, 8, 9 and 11): a deployment's head list and
   // hyperperiod chart; the anchors; the base grid's section, the grid report; the rate scopes and the components in the
-  // same columns, sortable by period, a deployment adding D and Φ. A build's tab ends saying what needs a deployment. A row's click selects its scope's
+  // same columns, sortable by period, a deployment adding D₀ and Φ₀. A build's tab ends saying what needs a deployment. A row's click selects its scope's
   // or primitive's node (reading 12); the whole row takes it, its button there for the keyboard (look pass 1.2).
   import { stepPair } from "../../canvas/palette";
   import { rowTarget } from "../../lib/analysis";
@@ -40,21 +40,21 @@
   {#if s}<button class="row" {title}><code>{text}</code></button>{:else}<code>{text}</code>{/if}
 {/snippet}
 
-{#snippet anchor(k: number, label: string)}
-  <span class="anchor" title={anchorTitle(model.structure!, k)}>{label}</span>
+{#snippet anchor(a: number, label: string)}
+  <span class="anchor" title={anchorTitle(model.structure!, a)}>{label}</span>
 {/snippet}
 
 {#snippet cells(r: TimingRow)}
-  <td class="k">{@render anchor(r.triple[0], r.anchor)}</td>
-  <td class="m">{r.m}</td>
-  <td class="c">{r.c}</td>
-  {#if deployed}<td class="D">{r.D}</td><td class="phi">{r.phi}</td>{/if}
+  <td class="anchor">{@render anchor(r.triple[0], r.anchor)}</td>
+  <td class="Da">{r.Da}</td>
+  <td class="phia">{r.phia}</td>
+  {#if deployed}<td class="D0">{r.D0}</td><td class="phi0">{r.phi0}</td>{/if}
   <td class="dt">{r.dt}</td>
   <td class="tau">{r.tau}</td>
 {/snippet}
 
 {#snippet heads()}
-  <th>k</th><th>m</th><th>c</th>{#if deployed}<th>D</th><th>Φ</th>{/if}<th>Δt</th><th>τ</th>
+  <th>anchor</th><th>Dₐ</th><th>Φₐ</th>{#if deployed}<th>D₀</th><th>Φ₀</th>{/if}<th>Δt</th><th>τ</th>
 {/snippet}
 
 {#if !model.structure}
@@ -76,16 +76,16 @@
 
   <h3>Anchors</h3>
   <table class="anchors">
-    <thead><tr><th>k</th><th>Δtₖ</th><th>τₖ</th>{#if deployed}<th>Dₖ</th><th>Φₖ</th>{/if}<th>declared in</th></tr></thead>
+    <thead><tr><th>anchor</th><th>Δt</th><th>τ</th>{#if deployed}<th>D₀</th><th>Φ₀</th>{/if}<th>declared in</th></tr></thead>
     <tbody>
       {#each anchors as a (a.index)}
         {@const s = rowTarget(model, { kind: "anchor", scope: a.scope })}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
         <tr class="anchor" class:base={a.index === 0} data-index={a.index} onclick={s && rowClick(() => onrow(s))}>
-          <td class="k">{@render anchor(a.index, a.label)}</td>
+          <td class="anchor">{@render anchor(a.index, a.label)}</td>
           <td class="dt">{a.dt}</td>
           <td class="tau">{a.tau}</td>
-          {#if deployed}<td class="D">{a.D}</td><td class="phi">{a.phi}</td>{/if}
+          {#if deployed}<td class="D0">{a.D}</td><td class="phi0">{a.phi}</td>{/if}
           <td class="scope">{#if a.scope === undefined}—{:else if a.scope === ""}the root{:else}{@render button(s, a.scope, "Select the declaring scope")}{/if}</td>
         </tr>
       {/each}

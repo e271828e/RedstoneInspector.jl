@@ -65,7 +65,7 @@ describe("rekey", () => {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [], outputs: [], wires: [] },
         { ...id, path: "a", field: "a", class: "assembly", inputs: [], outputs: [], wires: [] },
-        { ...id, path: "a/b", field: "b", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [f("e")], outputs: [] },
+        { ...id, path: "a/b", field: "b", class: "primitive", tier: "continuous", timing: { anchor: 0, D: 1, phi: 0 }, rates: [], inputs: [f("e")], outputs: [] },
       ],
       root_inputs: [], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };

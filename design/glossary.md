@@ -181,8 +181,8 @@ no entry here.
   (`workspace.md` answer 10).
 - **Legend.** The canvas-corner list in rate mode: a line for the
   continuous color when anything continuous is visible, then every triple
-  visible on the open level's blocks and wires, each as its anchor, `m`,
-  `c` and `Δt`, which a deployment makes concrete on the `A₀` lines. A
+  visible on the open level's blocks and wires, each as its anchor, `Dₐ`,
+  `Φₐ` and `Δt`, which a deployment makes concrete on the `A₀` lines. A
   click on a line focuses it (`visual_grammar.md` answer 6,
   `deployment_overlay.md` answer 13).
 - **Level.** What the canvas draws at a time: an assembly's children as
@@ -302,9 +302,8 @@ no entry here.
 - **Tag-absent rule.** The release trigger: on a push to master, release
   the version `Project.toml` claims if no tag of that version exists
   (`build_release.md` answer 6).
-- **Timing.** A primitive node's or a scope's `{"anchor", "m", "c"}`: the
-  anchor it hangs from, its period multiple and its phase in that anchor's
-  ticks. The grammar and the frontend's code call it the triple, the
+- **Timing.** A primitive node's or a scope's `{"anchor", "D", "phi"}`: the
+  anchor it hangs from, its `Dₐ` and its `Φₐ` in that anchor's ticks. The grammar and the frontend's code call it the triple, the
   compiled clock rate mode keys its colors on (`descriptor_design.md`
   answer 9, `visual_grammar.md` answer 6).
 - **Trace.** The action that starts a route: the detail pane's button, the
@@ -318,7 +317,3 @@ no entry here.
 - **Types table.** `structure.types`, one row per qualified base name with
   the docstring and the locations, so a repeated type is described once
   (`descriptor_design.md` answers 3 and 10).
-- **`τ`, a component's.** A discrete component's phase in seconds,
-  `Φ·Δt_base`, the time of its first tick after `t₀`; equal to
-  `τₖ + c·Δtₖ`, so a build knows it for a component on an anchor other
-  than `A₀`. The anchor's own is `τₖ` (`deployment_overlay.md` answer 3).

@@ -166,8 +166,8 @@
             "tier": "discrete",
             "timing": {
               "anchor": 1,
-              "m": 1,
-              "c": 0
+              "D": 1,
+              "phi": 0
             },
             "rates": [
               {
@@ -322,8 +322,8 @@
             "tier": "discrete",
             "timing": {
               "anchor": 2,
-              "m": 1,
-              "c": 0
+              "D": 1,
+              "phi": 0
             },
             "rates": [
               {
@@ -483,8 +483,8 @@
             "tier": "discrete",
             "timing": {
               "anchor": 2,
-              "m": 6,
-              "c": 3
+              "D": 6,
+              "phi": 3
             },
             "rates": [
               {
@@ -502,13 +502,13 @@
               {
                 "scope": "fast",
                 "key": "outer",
-                "K": 2,
+                "D": 2,
                 "phi": 1
               },
               {
                 "scope": "fast/outer",
                 "key": "hold",
-                "K": 3,
+                "D": 3,
                 "phi": 1
               }
             ],
@@ -544,8 +544,8 @@
             "tier": "discrete",
             "timing": {
               "anchor": 2,
-              "m": 2,
-              "c": 1
+              "D": 2,
+              "phi": 1
             },
             "rates": [
               {
@@ -563,13 +563,13 @@
               {
                 "scope": "fast",
                 "key": "outer",
-                "K": 2,
+                "D": 2,
                 "phi": 1
               },
               {
                 "scope": "fast/outer",
                 "key": "same",
-                "K": 1,
+                "D": 1,
                 "phi": 0
               }
             ],
@@ -663,8 +663,8 @@
             "tier": "discrete",
             "timing": {
               "anchor": 2,
-              "m": 4,
-              "c": 3
+              "D": 4,
+              "phi": 3
             },
             "rates": [
               {
@@ -682,13 +682,13 @@
               {
                 "scope": "fast",
                 "key": "outer",
-                "K": 2,
+                "D": 2,
                 "phi": 1
               },
               {
                 "scope": "fast/outer",
                 "key": "deep",
-                "K": 2,
+                "D": 2,
                 "phi": 1
               }
             ],
@@ -724,8 +724,8 @@
             "tier": "continuous",
             "timing": {
               "anchor": 0,
-              "m": 1,
-              "c": 0
+              "D": 1,
+              "phi": 0
             },
             "rates": [],
             "type": "Main.Synthetic.PinnedGain",
@@ -831,8 +831,8 @@
             "key": "fast",
             "timing": {
               "anchor": 2,
-              "m": 1,
-              "c": 0
+              "D": 1,
+              "phi": 0
             }
           },
           {
@@ -840,8 +840,8 @@
             "key": "outer",
             "timing": {
               "anchor": 2,
-              "m": 2,
-              "c": 1
+              "D": 2,
+              "phi": 1
             }
           },
           {
@@ -849,8 +849,8 @@
             "key": "deep",
             "timing": {
               "anchor": 2,
-              "m": 4,
-              "c": 3
+              "D": 4,
+              "phi": 3
             }
           }
         ],
@@ -918,27 +918,27 @@
             "locations": [
               {
                 "function": "sample_times",
-                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
                 "line": 981
               },
               {
                 "function": "local_wires",
-                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
                 "line": 978
               },
               {
                 "function": "input_wires",
-                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
                 "line": 979
               },
               {
                 "function": "output_wires",
-                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
                 "line": 980
               },
               {
                 "function": "transparent_container",
-                "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
                 "line": 982
               }
             ]
@@ -1161,7 +1161,7 @@
         "kind": "GridUtilization",
         "severity": "warning",
         "path": "",
-        "message": "Δt_base derived as 1//300 s: the grid is 6× finer than the fastest declared work (`fast/inner` at D = 6) (§9.2)\n  admissible: gcd(pool)/k, coarsest 1//300\n  pool:\n    `sample_times` at the root component, key `staggered`  period 1//10   ×1\n    `sample_times` at the root component, key `fast`       period 1//50   ×1\n    `sample_times` at the root component, key `staggered`  offset 1//300  ×6  declaring 0//1 or 1//50 keeps 1//50\n  primes: 300 = 2²·3·5²\n    2²  staggered offset\n    3   staggered offset\n    5²  fast period, staggered offset"
+        "message": "Δt_base derived as 1//300 s: the grid is 6× finer than the fastest declared work (`fast/inner` at D₀ = 6) (§9.2)\n  admissible: gcd(pool)/Q, coarsest 1//300\n  pool:\n    `sample_times` at the root component, key `staggered`  period 1//10   ×1\n    `sample_times` at the root component, key `fast`       period 1//50   ×1\n    `sample_times` at the root component, key `staggered`  offset 1//300  ×6  declaring 0//1 or 1//50 keeps 1//50\n  primes: 300 = 2²·3·5²\n    2²  staggered offset\n    3   staggered offset\n    5²  fast period, staggered offset"
       }
     ]
   }

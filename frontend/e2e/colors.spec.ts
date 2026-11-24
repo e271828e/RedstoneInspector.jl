@@ -14,7 +14,7 @@ const badge = (page: Page, id: string) => block(page, id).locator("text.badge");
 const badgeTitle = (page: Page, id: string) => block(page, id).locator("g.badge-pill > title");
 /** closed_loop's anchors' keys, `A₁` to `A₁₀`, for the legend's short line (deployment_overlay.md answer 13). */
 const CL = ["noise", "h_ctl", "θ_ctl", "q_ctl", "V_ctl", "tracker", "command_δe", "command_δt", "δe_limiter", "δt_limiter"];
-const clLine = (a: number) => `A${[...String(a)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("")} (${CL[a - 1]}) · m 1 · c 0`;
+const clLine = (a: number) => `A${[...String(a)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("")} (${CL[a - 1]}) · Dₐ 1 · Φₐ 0`;
 /** The computed fill and stroke of a block's shape. */
 const look = (page: Page, id: string) => shape(page, id).evaluate((e) => [getComputedStyle(e).fill, getComputedStyle(e).stroke]);
 const legendLines = (page: Page) => page.locator(".viewport .legend li");
@@ -176,14 +176,14 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its primi
   await expect(badge(page, "slow")).toHaveText("1 clock");
   await expect(badgeTitle(page, "slow")).toHaveText("Every discrete primitive inside ticks on this one clock.");
   await expect(badgeTitle(page, "fast")).toHaveText(/^Multi-rate: .*2 clocks/);
-  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · m 1 · c 0", "A₁ (fast) · m 2 · c 0", "A₂ (slow) · m 1 · c 0"]);
+  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 0", "A₂ (slow) · Dₐ 1 · Φₐ 0"]);
   await openPath(page, "fast");
   const inner = await shape(page, "fast/inner").getAttribute("data-step");
   const outer = await shape(page, "fast/outer").getAttribute("data-step");
   expect([inner, outer]).toEqual(["0", "1"]);
   // no continuous block on fast: its line comes from the wires out of src
   await expect(page.locator("g.block:not(.pin) .shape:not([data-step])")).toHaveCount(0);
-  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · m 1 · c 0", "A₁ (fast) · m 2 · c 0"]);
+  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 0"]);
 });
 
 test("nothing yields: failure_nested's ctl shows its clock pill with its loop pill; rates' fast and slow keep their clock pills and order badges under a route; the overlay drawn after the blocks", async ({ page }) => {

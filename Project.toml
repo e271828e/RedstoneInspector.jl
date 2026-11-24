@@ -15,7 +15,7 @@ Preferences = "21216c6a-2e73-6563-6e65-726566657250"
 Redstone = "653472ee-a41b-4fb0-9ffa-a5db0d34d125"
 
 [sources]
-Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "7ea360094d89f658fe3d3e0909be1af6fa4f5365"}
+Redstone = {url = "https://github.com/e271828e/Redstone.jl", rev = "fcd3660618da4290696f49b0085831e50fc6cbba"}
 
 [compat]
 HTTP = "2"

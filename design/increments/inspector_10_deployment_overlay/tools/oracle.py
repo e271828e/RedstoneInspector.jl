@@ -79,7 +79,7 @@ def scope_label(path):
 
 
 def entry_text(link):
-    if "K" in link: return f"{link['key']} = Relative({link['K']}, {link['phi']})"
+    if "D" in link: return f"{link['key']} = Relative({link['D']}, {link['phi']})"
     return f"{link['key']} = Absolute({jl(fr(link['dt']))}, {jl(fr(link['tau']))})"
 
 
@@ -107,11 +107,11 @@ def terminal_consumers(s, byp, face_path, port, side):
 
 
 def palette_order(s, byp, children):
-    """tripleOrder by its definition: every drawn block's triple, anchor 0 first, then exact period, anchor, m, c."""
+    """tripleOrder by its definition: every drawn block's triple, anchor 0 first, then exact period, anchor, Dₐ, Φₐ."""
     def clocks(path):
         n = byp[path]
         if n["class"] == "primitive":
-            return [(n["timing"]["anchor"], n["timing"]["m"], n["timing"]["c"])] if n["tier"] == "discrete" else []
+            return [(n["timing"]["anchor"], n["timing"]["D"], n["timing"]["phi"])] if n["tier"] == "discrete" else []
         out = []
         for c in children.get(path, []): out += clocks(c)
         return out
@@ -215,14 +215,14 @@ def oracle(name, d):
         else:
             line = f"coarsest admissible Δt_base: {secs(adm)}"
         w(f"  line: {line}")
-    w(f"  A₀ (base) | Δtₖ {secs(base) if dep else 'Δt_base'} | τₖ 0" + (" | Dₖ 1 | Φₖ 0" if dep else "") + " | declared in —")
+    w(f"  A₀ (base) | Δt {secs(base) if dep else 'Δt_base'} | τ 0" + (" | D₀ 1 | Φ₀ 0" if dep else "") + " | declared in —")
     for k, a in enumerate(s["anchors"], 1):
         dt, tau = fr(a["dt"]), fr(a["tau"])
-        cells = f"{anchor_label(s, k)} | Δtₖ {secs(dt)} ×{period_factor[k]} | τₖ {secs(tau)}" + (f" ×{offset_factor[k]}" if k in offset_factor else "")
+        cells = f"{anchor_label(s, k)} | Δt {secs(dt)} ×{period_factor[k]} | τ {secs(tau)}" + (f" ×{offset_factor[k]}" if k in offset_factor else "")
         if dep:
             D, phi = counts[k]
-            check(dt == D * base and tau == phi * base, f"{name}: A{k}'s counts are Δtₖ/Δt_base and τₖ/Δt_base")
-            cells += f" | Dₖ {D} | Φₖ {phi}"
+            check(dt == D * base and tau == phi * base, f"{name}: A{k}'s counts are Δt(a)/Δt_base and τ(a)/Δt_base")
+            cells += f" | D₀ {D} | Φ₀ {phi}"
             check_show(shown, any(squash(f"A{sub(k)} {jl(dt)} {jl(tau)} {D} {phi}") == x for x in shown_lines), f"{name}: A{k}'s row is show's")
         w(f"  {cells} | declared in {scope_label(a['scope'])}, key {a['key']}")
     # the grid report's lines under the table
@@ -230,7 +230,7 @@ def oracle(name, d):
     for i, e in enumerate(g["pool"], 1):
         if "alternatives" in e:
             alts = " or ".join(secs(fr(x)) for x in e["alternatives"])
-            report.append(f"{anchor_label(s, e['anchor'])}: declaring τ{sub(e['anchor'])} = {alts} keeps {secs(e['factor'] * fr(g['admissible']))}")
+            report.append(f"{anchor_label(s, e['anchor'])}: declaring τ(A{sub(e['anchor'])}) = {alts} keeps {secs(e['factor'] * fr(g['admissible']))}")
             core = "declaring " + " or ".join(jl(fr(x)) for x in e["alternatives"]) + f" keeps {jl(e['factor'] * fr(g['admissible']))}"
             check_show(shown, any(x.endswith(squash(core)) for x in shown_lines), f"{name}: pool entry {i}'s alternatives are show's")
     if g["primes"]:
@@ -241,7 +241,7 @@ def oracle(name, d):
             sups = []
             for j in p["suppliers"]:
                 e = g["pool"][j - 1]
-                sups.append(f"{'Δt' if e['kind'] == 'period' else 'τ'}{sub(e['anchor'])} ({s['anchors'][e['anchor'] - 1]['key']})")
+                sups.append(f"{'Δt' if e['kind'] == 'period' else 'τ'}(A{sub(e['anchor'])}) ({s['anchors'][e['anchor'] - 1]['key']})")
             report.append(f"  {txt}: {', '.join(sups)}")
             core = txt + " " + ", ".join(f"{s['anchors'][g['pool'][j - 1]['anchor'] - 1]['key']} {g['pool'][j - 1]['kind']}" for j in p["suppliers"])
             check_show(shown, squash(core) in shown_lines, f"{name}: the prime row {txt} is show's")
@@ -252,15 +252,22 @@ def oracle(name, d):
 
     # the components and scopes tables (answers 3, 5 and 9)
     def cells(t, D=None, phi=None):
-        k, m, c = t["anchor"], t["m"], t["c"]
-        row = f"{anchor_label(s, k)} | m {m} | c {c}"
+        k, Da, Pa = t["anchor"], t["D"], t["phi"]
+        row = f"{anchor_label(s, k)} | Dₐ {Da} | Φₐ {Pa}"
         if dep:
             Dk, Pk = counts[k]
-            check(D == m * Dk and phi == Pk + c * Dk and 0 <= phi < D, f"{name}: D = m·Dₖ, Φ = Φₖ + c·Dₖ, 0 ≤ Φ < D")
-            return row + f" | D {D} | Φ {phi} | Δt {secs(D * base)} | τ {secs(phi * base)}"
-        if k == 0: return row + f" | Δt {base_mult(m)} | τ {base_mult(c)}"
+            check(D == Da * Dk and phi == Pk + Pa * Dk and 0 <= phi < D, f"{name}: D₀(i) = Dₐ(i)·D₀(a), Φ₀(i) = Φ₀(a) + Φₐ(i)·D₀(a), 0 ≤ Φ₀ < D₀")
+            return row + f" | D₀ {D} | Φ₀ {phi} | Δt {secs(D * base)} | τ {secs(phi * base)}"
+        if k == 0: return row + f" | Δt {base_mult(Da)} | τ {base_mult(Pa)}"
         a = s["anchors"][k - 1]
-        return row + f" | Δt {secs(m * fr(a['dt']))} | τ {secs(fr(a['tau']) + c * fr(a['dt']))}"
+        return row + f" | Δt {secs(Da * fr(a['dt']))} | τ {secs(fr(a['tau']) + Pa * fr(a['dt']))}"
+    # the core's own column heads, the page's (D-478); the rate scopes' table stands only where some scope is keyed
+    if dep:
+        for heads in ["anchor Δt τ D₀ Φ₀", "path anchor Dₐ Φₐ D₀ Φ₀ Δt τ"] + (["path key anchor Dₐ Φₐ D₀ Φ₀ Δt τ"] if s["scopes"] else []):
+            check_show(shown, squash(heads) in shown_lines, f"{name}: show(::Deployment) heads a table {heads}")
+    elif s["anchors"] or s["scopes"]:
+        check_show(shown, squash("anchor Δt τ scope key") in shown_lines, f"{name}: show(::Structure) heads the anchors {'anchor Δt τ scope key'}")
+        check_show(shown, squash("path tier anchor Dₐ Φₐ rates") in shown_lines, f"{name}: show(::Structure) heads the components path tier anchor Dₐ Φₐ rates")
     rows = {r["path"]: r for r in sch["rows"]} if dep else {}
     srows = {(r["path"], r["key"]): r for r in sch["scopes"]} if dep else {}
     discrete = [n for n in s["nodes"] if n["class"] == "primitive" and n["tier"] == "discrete"]
@@ -272,7 +279,7 @@ def oracle(name, d):
         r = rows.get(n["path"], {})
         w(f"  {n['path'] or '(root)'} | " + cells(n["timing"], r.get("D"), r.get("phi")))
         if dep:
-            core = f"{n['path'] or 'root'} {anchor_label(s, n['timing']['anchor']).split(' ')[0]} {n['timing']['m']} {n['timing']['c']} {r['D']} {r['phi']} {jl(r['D'] * base)} {jl(r['phi'] * base)}"
+            core = f"{n['path'] or 'root'} {anchor_label(s, n['timing']['anchor']).split(' ')[0]} {n['timing']['D']} {n['timing']['phi']} {r['D']} {r['phi']} {jl(r['D'] * base)} {jl(r['phi'] * base)}"
             check_show(shown, squash(core) in shown_lines, f"{name}: {n['path']}'s row is show's")
     w(f"scopes: {len(s['scopes'])}")
     for x in s["scopes"]:
@@ -308,13 +315,13 @@ def oracle(name, d):
             for r in sch["rows"]:
                 t = byp[r["path"]]["timing"]
                 e = chart.setdefault((r["D"], r["phi"]), {"triples": set(), "count": 0})
-                e["triples"].add((t["anchor"], t["m"], t["c"])); e["count"] += 1
+                e["triples"].add((t["anchor"], t["D"], t["phi"])); e["count"] += 1
             w(f"chart rows: {len(chart)}")
             for (D, phi), e in sorted(chart.items()):
                 ts = sorted(e["triples"], key=lambda t: step[t])
                 splits = (D * base / frame).denominator != 1 or (phi * base / frame).denominator != 1
                 marks = "".join("●" if k % D == phi else "·" for k in range(min(H, 40)))
-                w(f"  D {D} · Φ {phi} | {' '.join(f'#{step[t]}{list(t)}' for t in ts)} | {e['count']} primitive{'s' if e['count'] != 1 else ''} | {'splits frames' if splits else 'on frame tops'} | {marks}{'…' if H > 40 else ''}")
+                w(f"  D₀ {D} · Φ₀ {phi} | {' '.join(f'#{step[t]}{list(t)}' for t in ts)} | {e['count']} primitive{'s' if e['count'] != 1 else ''} | {'splits frames' if splits else 'on frame tops'} | {marks}{'…' if H > 40 else ''}")
 
     # the frames table of every discrete primitive and every rate scope, and the chain line (answer 10)
     scope_rows = {x["path"]: x for x in s["scopes"]}
@@ -322,7 +329,7 @@ def oracle(name, d):
     def enclosing(path):
         for p in strict_ancestors(path):
             if p in scope_rows: return p, scope_rows[p]["timing"]
-        return "", {"anchor": 0, "m": 1, "c": 0}
+        return "", {"anchor": 0, "D": 1, "phi": 0}
 
     def frames_table(path, t, sched):
         sp, st = enclosing(path)
@@ -332,19 +339,19 @@ def oracle(name, d):
             lines.append(f"scope: opens A{sub(t['anchor'])} at {scope_label(a['scope'])}")
             check(a["scope"] == parent_of(path), f"{name}: {path} opens an anchor its parent declares")
         else:
-            K, rK = divmod(t["m"], st["m"]); phi, rP = divmod(t["c"] - st["c"], st["m"])
-            check(rK == 0 and rP == 0 and phi >= 0, f"{name}: {path}'s scope pair is whole")
-            lines.append(f"scope {scope_label(sp)}: K = {K}, φ = {phi}, " + ("base ticks" if sp == "" else f"ticks of {sp}"))
+            Ds, rD = divmod(t["D"], st["D"]); phi, rP = divmod(t["phi"] - st["phi"], st["D"])
+            check(rD == 0 and rP == 0 and phi >= 0, f"{name}: {path}'s scope pair is whole")
+            lines.append(f"scope {scope_label(sp)}: Dₛ = {Ds}, Φₛ = {phi}, " + ("base ticks" if sp == "" else f"ticks of {sp}"))
         k = t["anchor"]
-        lines.append(f"anchor {anchor_label(s, k)}: m = {t['m']}, c = {t['c']}, " + ("base ticks" if k == 0 else f"ticks of A{sub(k)}"))
+        lines.append(f"anchor {anchor_label(s, k)}: Dₐ = {t['D']}, Φₐ = {t['phi']}, " + ("base ticks" if k == 0 else f"ticks of A{sub(k)}"))
         if dep:
-            lines.append(f"base grid: D = {sched['D']}, Φ = {sched['phi']}, base ticks")
+            lines.append(f"base grid: D₀ = {sched['D']}, Φ₀ = {sched['phi']}, base ticks")
             lines.append(f"seconds: Δt = {secs(sched['D'] * base)}, τ = {secs(sched['phi'] * base)}")
         elif k == 0:
-            lines.append(f"seconds: Δt = {'Δt_base' if t['m'] == 1 else str(t['m']) + '·Δt_base'}, τ = {base_mult(t['c'])}")
+            lines.append(f"seconds: Δt = {'Δt_base' if t['D'] == 1 else str(t['D']) + '·Δt_base'}, τ = {base_mult(t['phi'])}")
         else:
             a = s["anchors"][k - 1]
-            lines.append(f"seconds: Δt = {secs(t['m'] * fr(a['dt']))}, τ = {secs(fr(a['tau']) + t['c'] * fr(a['dt']))}")
+            lines.append(f"seconds: Δt = {secs(t['D'] * fr(a['dt']))}, τ = {secs(fr(a['tau']) + t['phi'] * fr(a['dt']))}")
         return lines
 
     w("frames tables:")
@@ -353,9 +360,9 @@ def oracle(name, d):
         for x in frames_table(n["path"], n["timing"], rows.get(n["path"])): w(f"    {x}")
         own = n["rates"][-1] if n["rates"] and n["rates"][-1]["scope"] == parent_of(n["path"]) else None
         sp, st = enclosing(n["path"])
-        if own and "K" in own:
-            K, phi = n["timing"]["m"] // st["m"], (n["timing"]["c"] - st["c"]) // st["m"]
-            check((own["K"], own["phi"]) == (K, phi), f"{name}: {n['path']}'s derived pair is its own entry")
+        if own and "D" in own:
+            Ds, phi = n["timing"]["D"] // st["D"], (n["timing"]["phi"] - st["phi"]) // st["D"]
+            check((own["D"], own["phi"]) == (Ds, phi), f"{name}: {n['path']}'s derived pair is its own entry")
         if n["rates"]:
             chain = " → ".join(entry_text(x) for x in n["rates"])
             w(f"    chain: {chain}")
@@ -370,16 +377,16 @@ def oracle(name, d):
     order = palette_order(s, byp, children)
     w(f"legend lines: {len(order)}")
     for i, t in enumerate(order):
-        k, m, c = t
-        if k == 0: dt = secs(m * base) if dep else ("Δt_base" if m == 1 else f"{m}·Δt_base")
-        else: dt = secs(m * fr(s["anchors"][k - 1]["dt"]))
+        k, Da, Pa = t
+        if k == 0: dt = secs(Da * base) if dep else ("Δt_base" if Da == 1 else f"{Da}·Δt_base")
+        else: dt = secs(Da * fr(s["anchors"][k - 1]["dt"]))
         if dep:
-            Dk, Pk = counts[k]; D, phi = m * Dk, Pk + c * Dk
-            tip = f"D {D} · Φ {phi} · τ {secs(phi * base)}"
+            Dk, Pk = counts[k]; D, phi = Da * Dk, Pk + Pa * Dk
+            tip = f"D₀ {D} · Φ₀ {phi} · τ {secs(phi * base)}"
         else:
-            tau = base_mult(c) if k == 0 else secs(fr(s["anchors"][k - 1]["tau"]) + c * fr(s["anchors"][k - 1]["dt"]))
+            tau = base_mult(Pa) if k == 0 else secs(fr(s["anchors"][k - 1]["tau"]) + Pa * fr(s["anchors"][k - 1]["dt"]))
             tip = f"τ {tau}"
-        w(f"  #{i} {anchor_label(s, k)} · m {m} · c {c} | {dt} | {tip}")
+        w(f"  #{i} {anchor_label(s, k)} · Dₐ {Da} · Φₐ {Pa} | {dt} | {tip}")
 
     # the root inputs (answer 14)
     w(f"root inputs: {len(s['root_inputs'])}")
@@ -446,12 +453,12 @@ def main():
     def sched(n): return fixtures[n]["deployment"]["schedule"]
     def st(n): return structure_of(fixtures[n])
     def distinct(n): return sorted({(r["D"], r["phi"]) for r in sched(n)["rows"]})
-    check(len(sched("closed_loop_deployment")["rows"]) == 10 and len(distinct("closed_loop_deployment")) == 1, "a16 closed_loop_deployment: ten rows on one (D, Φ)")
+    check(len(sched("closed_loop_deployment")["rows"]) == 10 and len(distinct("closed_loop_deployment")) == 1, "a16 closed_loop_deployment: ten rows on one (D₀, Φ₀)")
     check(sorted(r["name"] for r in st("closed_loop_deployment")["root_inputs"] if r["pinned"]) == ["V_ref", "h_ref"], "a16 closed_loop_deployment: h_ref and V_ref pinned")
     lib = fixtures["library_deployment"]["deployment"]
-    check(len(sched("library_deployment")["rows"]) == 13 and len(distinct("library_deployment")) == 4 and (2, 1) in distinct("library_deployment"), "a16 library_deployment: 13 rows on 4 (D, Φ), (2, 1) among them")
+    check(len(sched("library_deployment")["rows"]) == 13 and len(distinct("library_deployment")) == 4 and (2, 1) in distinct("library_deployment"), "a16 library_deployment: 13 rows on 4 (D₀, Φ₀), (2, 1) among them")
     s = st("library_deployment"); byp = {x["path"]: x for x in s["nodes"]}
-    check(len({(byp[r["path"]]["timing"]["anchor"], byp[r["path"]]["timing"]["m"], byp[r["path"]]["timing"]["c"]) for r in sched("library_deployment")["rows"] if (r["D"], r["phi"]) == (2, 0)}) == 2, "a16 library_deployment: (2, 0) from two triples")
+    check(len({(byp[r["path"]]["timing"]["anchor"], byp[r["path"]]["timing"]["D"], byp[r["path"]]["timing"]["phi"]) for r in sched("library_deployment")["rows"] if (r["D"], r["phi"]) == (2, 0)}) == 2, "a16 library_deployment: (2, 0) from two triples")
     check(len(s["grid"]["pool"]) == 2 and fr(s["grid"]["admissible"]) == Fraction(1, 50) and fr(lib["dt_base"]) < Fraction(1, 50), "a16 library_deployment: two pool entries, a base tick finer than 1/50")
     check(sum(bool(e["events"]) for e in lib["build"]["events"]["components"]) > 0, "a16 library_deployment: events")
     r = fixtures["rates_deployment"]["deployment"]
@@ -462,15 +469,15 @@ def main():
     ev = [(e["path"], [x["name"] for x in e["events"]]) for e in a["build"]["events"]["components"] if e["events"]]
     check(ev == [("vehicle/gear", ["touchdown"])] or [x[1] for x in ev] == [["touchdown"]], f"a16 approach_deployment: one event, {ev}")
     t = fixtures["timing_deployment"]["deployment"]; s = st("timing_deployment")
-    check(t["schedule"]["anchors"] == [{"D": 30, "phi": 1}, {"D": 6, "phi": 0}] and fr(t["dt_frame"]) / fr(t["dt_base"]) == 3, "a16 timing_deployment: an anchor with Φₖ = 1, a frame of three base ticks")
+    check(t["schedule"]["anchors"] == [{"D": 30, "phi": 1}, {"D": 6, "phi": 0}] and fr(t["dt_frame"]) / fr(t["dt_base"]) == 3, "a16 timing_deployment: an anchor with Φ₀ = 1, a frame of three base ticks")
     check([w["kind"] for w in t["warnings"]] == ["GridUtilization"] and t["warnings"][0]["path"] == "" and len(t["warnings"][0]["message"].split("\n")) == 10, "a16 timing_deployment: one GridUtilization at the root, ten lines")
     check(any("alternatives" in e and e["factor"] == 6 and [fr(x) for x in e["alternatives"]] == [0, Fraction(1, 50)] for e in s["grid"]["pool"]), "a16 timing: an offset of factor 6 with alternatives 0 and 1/50")
     pins = {x["name"]: [byp2["tier"] for byp2 in [next(n for n in s["nodes"] if n["path"] == e["path"]) for e in x["pinned_by"]]] for x in s["root_inputs"]}
     check(pins == {"u": ["discrete"] * 5, "ref": ["continuous"]}, f"a16 timing: u by tier through five, ref by declaration through one: {pins}")
     sc = {x["path"]: (x["key"], x["timing"]) for x in s["scopes"]}
-    check(sc.get("fast/outer") == ("outer", {"anchor": 2, "m": 2, "c": 1}) and sc.get("fast/outer/deep") == ("deep", {"anchor": 2, "m": 4, "c": 3}), "a16 timing: outer = Relative(2, 1) under fast, deep at (4, 3)")
+    check(sc.get("fast/outer") == ("outer", {"anchor": 2, "D": 2, "phi": 1}) and sc.get("fast/outer/deep") == ("deep", {"anchor": 2, "D": 4, "phi": 3}), "a16 timing: outer = Relative(2, 1) under fast, deep at (4, 3)")
     nodes = {x["path"]: x for x in s["nodes"]}
-    check(nodes["fast/outer/hold"]["rates"][-1] == {"scope": "fast/outer", "key": "hold", "K": 3, "phi": 1} and nodes["fast/outer/same"]["rates"][-1] == {"scope": "fast/outer", "key": "same", "K": 1, "phi": 0}, "a16 timing: hold = Relative(3, 1) and an explicit Relative(1)")
+    check(nodes["fast/outer/hold"]["rates"][-1] == {"scope": "fast/outer", "key": "hold", "D": 3, "phi": 1} and nodes["fast/outer/same"]["rates"][-1] == {"scope": "fast/outer", "key": "same", "D": 1, "phi": 0}, "a16 timing: hold = Relative(3, 1) and an explicit Relative(1)")
     check(fixtures["timing"]["kind"] == "build", "a16 timing: committed as a build too")
     with open(os.path.join(HERE, "checks.txt"), "w") as f:
         f.write("\n".join(checks) + "\n")

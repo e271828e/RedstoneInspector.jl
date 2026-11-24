@@ -1,5 +1,5 @@
 <script lang="ts">
-  // The hyperperiod chart (deployment_overlay.md answers 8 and 11): the hyperperiod, then one row per distinct (D, Φ),
+  // The hyperperiod chart (deployment_overlay.md answers 8 and 11): the hyperperiod, then one row per distinct (D₀, Φ₀),
   // fastest first, with every triple's swatch, its count, whether it splits frames and a mark at each base tick where
   // it is due. The timeline is drawn whole or omitted (`chartFit`): fitted to the tab, else at the minimum pitch with
   // the tab's body scrolling sideways under the labels, which stay. The frame tops are lines where some base tick is
@@ -36,7 +36,7 @@
   });
   /** The base ticks as one path of short strokes, so the pitch reads where no row is due. */
   const grid = $derived(
-    fit.kind === "omitted" ? "" : Array.from({ length: Number(joint.baseTicks) }, (_, k) => `M${tickX(BigInt(k), fit)} ${ROW / 2 - 2}v4`).join(""),
+    fit.kind === "omitted" ? "" : Array.from({ length: Number(joint.baseTicks) }, (_, n) => `M${tickX(BigInt(n), fit)} ${ROW / 2 - 2}v4`).join(""),
   );
 </script>
 
@@ -73,7 +73,7 @@
           <svg class="lane" data-d={r.D} data-phi={r.phi} width={fit.width + 2 * CHART_PAD} height={ROW} aria-hidden="true">
             <path class="grid" d={grid} />
             {#each tops as t (t.j)}<line class="frame-top" data-j={t.j} x1={t.x} x2={t.x} y1="0" y2={ROW} />{/each}
-            {#each dueTicks(r, joint) as k (k)}<circle class="due" data-k={k} cx={tickX(k, fit)} cy={ROW / 2} r="2.5" />{/each}
+            {#each dueTicks(r, joint) as n (n)}<circle class="due" data-n={n} cx={tickX(n, fit)} cy={ROW / 2} r="2.5" />{/each}
           </svg>
         {/each}
       </div>

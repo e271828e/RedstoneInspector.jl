@@ -355,8 +355,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "RedstoneExamples.Longitudinal",
@@ -564,8 +564,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 1,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -621,8 +621,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -968,8 +968,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -1102,8 +1102,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 3,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -1236,8 +1236,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 4,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -1370,8 +1370,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 5,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -1504,8 +1504,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Constant",
@@ -1817,8 +1817,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 6,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -2013,8 +2013,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -2093,8 +2093,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -2149,8 +2149,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -2205,8 +2205,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -2261,8 +2261,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Unpack",
@@ -2311,8 +2311,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Constant",
@@ -2349,8 +2349,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Junction",
@@ -2579,8 +2579,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Switch",
@@ -2631,8 +2631,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.Switch",
@@ -2683,8 +2683,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 7,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -2737,8 +2737,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 8,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -2899,8 +2899,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 9,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -2961,8 +2961,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.FirstOrderLag",
@@ -3006,8 +3006,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 10,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -3068,8 +3068,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Redstone.Library.FirstOrderLag",
@@ -3367,27 +3367,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 982
             }
           ]
@@ -3398,17 +3398,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "file": "<depot>/packages/RedstoneExamples/1RmqG/src/longitudinal.jl",
               "line": 52
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "file": "<depot>/packages/RedstoneExamples/1RmqG/src/longitudinal.jl",
               "line": 53
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/RedstoneExamples/nmvEs/src/longitudinal.jl",
+              "file": "<depot>/packages/RedstoneExamples/1RmqG/src/longitudinal.jl",
               "line": 51
             }
           ]
@@ -3419,12 +3419,12 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 858
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 857
             }
           ]
@@ -3435,17 +3435,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 116
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 118
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 115
             }
           ]
@@ -3456,17 +3456,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 2381
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 2694
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 2693
             }
           ]
@@ -3477,12 +3477,12 @@
           "locations": [
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 350
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 349
             }
           ]
@@ -3493,17 +3493,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 2751
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 3048
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 3046
             }
           ]
@@ -3514,17 +3514,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 192
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 193
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 191
             }
           ]
@@ -3535,17 +3535,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 261
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 262
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 260
             }
           ]
@@ -3556,17 +3556,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 381
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 382
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 380
             }
           ]
@@ -3577,17 +3577,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 725
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 726
             },
             {
               "function": "s_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 724
             }
           ]
@@ -3598,17 +3598,17 @@
           "locations": [
             {
               "function": "u_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 1011
             },
             {
               "function": "y_types",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 1012
             },
             {
               "function": "x_init",
-              "file": "<depot>/packages/Redstone/XbboR/src/library.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
               "line": 1010
             }
           ]

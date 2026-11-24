@@ -397,8 +397,8 @@ full text stays.
   waits its whole timeout for an absent element; a probe reads absent ones
   through `evaluate`.
 - **A column head as a term of the law.** The check that every timing head is
-  a term of the help page's law admits `k`, which the law writes only as the
-  subscript of `Δtₖ` and its kin.
+  a term of the help page's law drops the law's arguments, `(i)` and `(a)`,
+  which a table omits, and admits `anchor`.
 - **A fit before its legend.** The legend is drawn from the level's state, so
   a fit run in the same turn as the new level measures no legend; a first fit
   waits a `tick()`, and `data-ready` waits for it.

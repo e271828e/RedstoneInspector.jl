@@ -958,7 +958,7 @@
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
   }
-  /* The short line (deployment_overlay.md answer 13): the marks, the anchor with m and c, and Δt, each a column across the lines. */
+  /* The short line (deployment_overlay.md answer 13): the marks, the anchor with Dₐ and Φₐ, and Δt, each a column across the lines. */
   .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto auto auto; column-gap: 6px; }
   .legend li { line-height: 16px; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
   .legend .line {

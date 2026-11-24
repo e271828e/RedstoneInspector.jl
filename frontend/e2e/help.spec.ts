@@ -85,7 +85,7 @@ test("before a drop: the landing's link opens five sections over the inert landi
   const legend = h.locator('svg.sample[data-sample="legend"]');
   await expect(legend.locator("rect.legend")).toHaveCount(1);
   expect(new Set(await legend.locator("rect:not(.legend)").evaluateAll((r) => r.map((e) => e.getAttribute("fill")))).size).toBe(2);
-  await expect(legend.locator("text")).toHaveText(["A₀ (base) · m 1 · c 0", "A₁ (fast) · m 2 · c 1"]);
+  await expect(legend.locator("text")).toHaveText(["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"]);
   // the legend's sample keeps inside its frame, scaled to it
   const box = await legend.evaluate((svg) => {
     const s = svg.getBoundingClientRect(), g = svg.querySelector("g")!.getBoundingClientRect();
@@ -133,9 +133,9 @@ test("before a drop: the landing's link opens five sections over the inert landi
 });
 
 /** The notation's symbols (deployment_overlay.md answer 3), each defined once on the help page. */
-const SYMBOLS = ["Δt_base", "Δt_frame", "Aₖ (key)", "Δtₖ", "τₖ", "Dₖ", "Φₖ", "K", "φ", "m", "c", "D", "Φ", "Δt", "τ"];
+const SYMBOLS = ["Δt_base", "Δt_frame", "A₁ (key)", "Dₛ", "Φₛ", "Dₐ", "Φₐ", "D₀", "Φ₀", "Δt", "τ"];
 
-test("the timing section defines each symbol of the notation once, states the law's four lines and the root inputs' type rule once, and its link scrolls to it", async ({ page }) => {
+test("the timing section defines each symbol of the notation once, states the law's four lines and the root inputs' type rule once, holds no retired letter, and its link scrolls to it", async ({ page }) => {
   await page.goto("/#help");
   const h = help(page), t = h.locator('section[data-section="timing"]');
   await expect(t.locator("h2")).toHaveText("Timing and root inputs");
@@ -144,9 +144,13 @@ test("the timing section defines each symbol of the notation once, states the la
   // a symbol's row is its one definition: no other row's head names it
   expect(new Set(defined).size).toBe(defined.length);
   await expect(t.locator("table.law tr")).toHaveText([
-    /^in seconds\s*Δt = m · Δtₖ\s*τ = τₖ \+ c · Δtₖ$/, /^in base ticks\s*D = m · Dₖ\s*Φ = Φₖ \+ c · Dₖ$/,
-    /^linked by\s*Δtₖ = Dₖ · Δt_base\s*τₖ = Φₖ · Δt_base$/, /^hence\s*Δt = D · Δt_base\s*τ = Φ · Δt_base$/,
+    /^in seconds\s*Δt\(i\) = Dₐ\(i\) · Δt\(a\)\s*τ\(i\) = τ\(a\) \+ Φₐ\(i\) · Δt\(a\)$/, /^in base ticks\s*D₀\(i\) = Dₐ\(i\) · D₀\(a\)\s*Φ₀\(i\) = Φ₀\(a\) \+ Φₐ\(i\) · D₀\(a\)$/,
+    /^linked by\s*Δt\(a\) = D₀\(a\) · Δt_base\s*τ\(a\) = Φ₀\(a\) · Δt_base$/, /^hence\s*Δt\(i\) = D₀\(i\) · Δt_base\s*τ\(i\) = Φ₀\(i\) · Δt_base$/,
   ]);
+  // D-464's letters, which the core's D-478 retired, stand in no code span of the page, and no backquote is left as text
+  const spans = (await h.locator("code").allTextContents()).flatMap((x) => x.split(/[\s,·()=+]+/));
+  expect(spans.filter((x) => ["Aₖ", "Δtₖ", "τₖ", "Dₖ", "Φₖ", "K", "φ", "m", "c"].includes(x))).toEqual([]);
+  expect(await h.textContent()).not.toContain("`");
   // §14.10's type rule, stated once on the whole page
   const rule = "a Float64 reached by at most one index step";
   await expect(t.locator("p.type-rule")).toContainText(rule);

@@ -54,18 +54,18 @@ const SUPERSCRIPTS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 export const subscript = (k: number): string => [...String(k)].map((c) => SUBSCRIPTS[+c]).join("");
 const superscript = (p: number): string => (p === 1 ? "" : [...String(p)].map((c) => SUPERSCRIPTS[+c]).join(""));
 /** `A₂`. */
-export const anchorName = (k: number): string => `A${subscript(k)}`;
+export const anchorName = (a: number): string => `A${subscript(a)}`;
 /** `A₂ (fast)` by the declaring key, `A₀ (base)` for the base grid. */
-export const anchorLabel = (s: StructureSection, k: number): string => `${anchorName(k)} (${k === 0 ? "base" : s.anchors[k - 1].key})`;
+export const anchorLabel = (s: StructureSection, a: number): string => `${anchorName(a)} (${a === 0 ? "base" : s.anchors[a - 1].key})`;
 /** A scope's path as the tables read it, `the root` for "". */
 export const scopeName = (path: string): string => (path === "" ? "the root" : path);
-/** The tooltip of `Aₖ (key)`: the declaring key and scope, `fast at the root`; `the base grid` for `A₀`. */
-export const anchorTitle = (s: StructureSection, k: number): string =>
-  k === 0 ? "the base grid" : `${s.anchors[k - 1].key} at ${scopeName(s.anchors[k - 1].scope)}`;
+/** The tooltip of `A₁ (key)`: the declaring key and scope, `fast at the root`; `the base grid` for `A₀`. */
+export const anchorTitle = (s: StructureSection, a: number): string =>
+  a === 0 ? "the base grid" : `${s.anchors[a - 1].key} at ${scopeName(s.anchors[a - 1].scope)}`;
 
 // --- the deployment ------------------------------------------------------------
 
-/** What binding fixed: the base tick and the frame, exact, and each anchor's `(Dₖ, Φₖ)`, `A₀` at `(1, 0)` first. */
+/** What binding fixed: the base tick and the frame, exact, and each anchor's `(D₀, Φ₀)`, `A₀` at `(1, 0)` first. */
 export interface Bound {
   base: Q;
   frame: Q;
@@ -98,21 +98,21 @@ export function scheduleScopes(model: Model): Map<string, { D: number; phi: numb
 }
 export const scopeRowOf = (model: Model, path: string, key: string) => scheduleScopes(model).get(scopeKey(path, key));
 
-/** Whether a row with these counts splits frames (answer 9): `Δt_frame` fails to divide `D·Δt_base` or `Φ·Δt_base`. */
+/** Whether a row with these counts splits frames (answer 9): `Δt_frame` fails to divide `D₀·Δt_base` or `Φ₀·Δt_base`. */
 export const splitsFrames = (D: number, phi: number, bound: Bound): boolean =>
   !isWhole(div(mul(q(D), bound.base), bound.frame)) || !isWhole(div(mul(q(phi), bound.base), bound.frame));
 
 /** A timing's seconds pair: a build's on `A₀` symbolic, every other exact. */
 function secondsPair(s: StructureSection, t: Timing, bound?: Bound, counts?: { D: number; phi: number }): { dt: string; tau: string } {
   if (bound && counts) return { dt: seconds(mul(q(counts.D), bound.base)), tau: seconds(mul(q(counts.phi), bound.base)) };
-  if (t.anchor === 0) return { dt: baseMultiple(t.m), tau: baseMultiple(t.c) };
+  if (t.anchor === 0) return { dt: baseMultiple(t.D), tau: baseMultiple(t.phi) };
   const a = s.anchors[t.anchor - 1], dt = fromRational(a.dt);
-  return { dt: seconds(mul(q(t.m), dt)), tau: seconds(add(fromRational(a.tau), mul(q(t.c), dt))) };
+  return { dt: seconds(mul(q(t.D), dt)), tau: seconds(add(fromRational(a.tau), mul(q(t.phi), dt))) };
 }
 
 // --- the timing tab's tables (answer 9) ----------------------------------------
 
-/** An anchors table row: the base grid first; a deployment adds `Dₖ`, `Φₖ`. */
+/** An anchors table row: the base grid first; a deployment adds `D₀`, `Φ₀`. */
 export interface AnchorTableRow {
   index: number;
   label: string;
@@ -138,17 +138,17 @@ export function anchorTable(model: Model): AnchorTableRow[] {
   ];
 }
 
-/** A component's or a scope's row in the notation's columns: `k`, `m`, `c`, a deployment's `D`, `Φ`, then `Δt`, `τ`. */
+/** A component's or a scope's row in the notation's columns: the anchor, `Dₐ`, `Φₐ`, a deployment's `D₀`, `Φ₀`, then `Δt`, `τ`. */
 export interface TimingRow {
   path: string;
   /** A scope's key; undefined on a component. */
   key?: string;
   triple: Triple;
   anchor: string;
-  m: number;
-  c: number;
-  D?: number;
-  phi?: number;
+  Da: number;
+  phia: number;
+  D0?: number;
+  phi0?: number;
   dt: string;
   tau: string;
   /** Whether the row splits frames, on a deployment. */
@@ -157,15 +157,15 @@ export interface TimingRow {
 
 function timingRow(s: StructureSection, path: string, t: Timing, bound?: Bound, counts?: { D: number; phi: number }, key?: string): TimingRow {
   return {
-    path, ...(key !== undefined && { key }), triple: [t.anchor, t.m, t.c], anchor: anchorLabel(s, t.anchor), m: t.m, c: t.c,
-    ...(bound && counts && { D: counts.D, phi: counts.phi, splits: splitsFrames(counts.D, counts.phi, bound) }),
+    path, ...(key !== undefined && { key }), triple: [t.anchor, t.D, t.phi], anchor: anchorLabel(s, t.anchor), Da: t.D, phia: t.phi,
+    ...(bound && counts && { D0: counts.D, phi0: counts.phi, splits: splitsFrames(counts.D, counts.phi, bound) }),
     ...secondsPair(s, t, bound, counts),
   };
 }
 
 /**
  * Every discrete primitive in walk order, joined to its schedule row on a deployment. With `byPeriod` a deployment's
- * rows go by their exact `Δt`, which is `D·Δt_base`, so by `D`; a build's, whose `A₀` rows have a symbolic `Δt`, go
+ * rows go by their exact `Δt`, which is `D₀·Δt_base`, so by `D₀`; a build's, whose `A₀` rows have a symbolic `Δt`, go
  * in the palette's order of their triples (`tripleOrder`: anchor 0 first, then period ascending). Ties go in the
  * palette's order, then in walk order.
  */
@@ -177,8 +177,8 @@ export function componentTable(model: Model, byPeriod = false): TimingRow[] {
   if (!byPeriod) return out;
   const steps = stepsOf(model);
   const step = (r: TimingRow) => steps.get(tripleKey(r.triple))!;
-  const byD = (a: TimingRow, b: TimingRow) => (bound ? (a.D! < b.D! ? -1 : a.D! > b.D! ? 1 : 0) : 0);
-  return out.sort((a, b) => byD(a, b) || step(a) - step(b));
+  const byD0 = (a: TimingRow, b: TimingRow) => (bound ? (a.D0! < b.D0! ? -1 : a.D0! > b.D0! ? 1 : 0) : 0);
+  return out.sort((a, b) => byD0(a, b) || step(a) - step(b));
 }
 
 /** Every rate scope in `structure.scopes`' order, the key after the path, joined by path and key on a deployment. */
@@ -199,10 +199,10 @@ export function coarsestLine(model: Model): string | undefined {
   return bound ? `Δt_base: ${seconds(bound.base)}, coarsest admissible: ${admissible}` : `coarsest admissible Δt_base: ${admissible}`;
 }
 
-/** A pool entry's symbol: `Δt₂`, `τ₁`. */
-const entrySymbol = (e: { anchor: number; kind: "period" | "offset" }) => `${e.kind === "period" ? "Δt" : "τ"}${subscript(e.anchor)}`;
+/** A pool entry's symbol, its anchor in the argument (the core's D-478): `Δt(A₂)`, `τ(A₁)`. */
+const entrySymbol = (e: { anchor: number; kind: "period" | "offset" }) => `${e.kind === "period" ? "Δt" : "τ"}(${anchorName(e.anchor)})`;
 
-/** A supplier of a prime power: a pool entry named by its anchor and its kind, `Δt₂ (fast)`, `τ₁ (staggered)`. */
+/** A supplier of a prime power: a pool entry named by its anchor and its kind, `Δt(A₂) (fast)`, `τ(A₁) (staggered)`. */
 export interface Supplier {
   anchor: number;
   kind: "period" | "offset";
@@ -217,7 +217,7 @@ export interface PrimeAttribution {
 }
 /** The base grid section under its first line: a line per pool entry that refines the grid, then one row per prime power. */
 export interface GridReport {
-  /** In pool order, the entries whose factor is above 1: `Δt₂ = 1/50 s (dss) makes the grid 5× finer.`, then an offset's alternatives. */
+  /** In pool order, the entries whose factor is above 1: `Δt(A₂) = 1/50 s (dss) makes the grid 5× finer.`, then an offset's alternatives. */
   entries: string[];
   /** The rows' label, `Prime factors of the denominator, 300 = 2²·3·5²`; undefined on a whole-second grid. */
   primes?: string;
@@ -299,7 +299,7 @@ export function headList(model: Model): HeadItem[][] | undefined {
 
 // --- the hyperperiod and the chart (answers 8 and 11) ----------------------------
 
-/** The least common multiple of the rows' `D`, in base ticks; undefined for a build or a deployment with no rows. */
+/** The least common multiple of the rows' `D₀`, in base ticks; undefined for a build or a deployment with no rows. */
 export function hyperperiod(model: Model): bigint | undefined {
   const d = model.descriptor;
   if (d.kind !== "deployment" || !d.deployment.schedule.rows.length) return undefined;
@@ -352,18 +352,18 @@ export interface ChartSwatch {
 export interface ChartRow {
   D: number;
   phi: number;
-  /** `D 2 · Φ 1`. */
+  /** `D₀ 2 · Φ₀ 1`. */
   label: string;
   swatches: ChartSwatch[];
   count: number;
   /** `1 primitive`, `9 primitives`. */
   countText: string;
   splits: boolean;
-  /** Whether base tick `k` (from 0) is due: `k mod D = Φ`. */
-  due: (k: bigint) => boolean;
+  /** Whether base tick `n` (from 0) is due: `n mod D₀ = Φ₀`. */
+  due: (n: bigint) => boolean;
 }
 
-/** One row per distinct `(D, Φ)`, fastest first by `D` then `Φ`; empty for a build or no rows. */
+/** One row per distinct `(D₀, Φ₀)`, fastest first by `D₀` then `Φ₀`; empty for a build or no rows. */
 export function chartRows(model: Model): ChartRow[] {
   const bound = boundOf(model), d = model.descriptor, tree = model.tree;
   if (!bound || d.kind !== "deployment" || !tree) return [];
@@ -371,11 +371,11 @@ export function chartRows(model: Model): ChartRow[] {
   const rows = new Map<string, ChartRow>();
   for (const r of d.deployment.schedule.rows) {
     const n = tree.byPath.get(r.path) as Extract<Node, { class: "primitive" }>;
-    const triple: Triple = [n.timing.anchor, n.timing.m, n.timing.c];
+    const triple: Triple = [n.timing.anchor, n.timing.D, n.timing.phi];
     const k = `${r.D},${r.phi}`;
     if (!rows.has(k)) {
       const D = BigInt(r.D), phi = BigInt(r.phi);
-      rows.set(k, { D: r.D, phi: r.phi, label: `D ${r.D} · Φ ${r.phi}`, swatches: [], count: 0, countText: "", splits: splitsFrames(r.D, r.phi, bound), due: (t) => t % D === phi });
+      rows.set(k, { D: r.D, phi: r.phi, label: `D₀ ${r.D} · Φ₀ ${r.phi}`, swatches: [], count: 0, countText: "", splits: splitsFrames(r.D, r.phi, bound), due: (n) => n % D === phi });
     }
     const row = rows.get(k)!;
     row.count++;
@@ -441,15 +441,15 @@ export function chartFit(joint: JointPeriod, lines: FrameLines, width: number, t
 export type DrawnFit = Exclude<ChartFit, { kind: "omitted" }>;
 /** The timeline's margin at each end in px, so a mark at the span's ends is whole. */
 export const CHART_PAD = 4;
-/** Base tick `k`'s x on a drawn timeline: `k` pitches in from the margin. */
-export const tickX = (k: bigint, fit: DrawnFit): number => CHART_PAD + Number(k) * fit.tickPx;
+/** Base tick `n`'s x on a drawn timeline: `n` pitches in from the margin. */
+export const tickX = (n: bigint, fit: DrawnFit): number => CHART_PAD + Number(n) * fit.tickPx;
 /** Frame top `j`'s x: `j·Δt_frame / Δt_base` base ticks in, which can fall between two ticks. */
 export const frameTopX = (j: bigint, joint: JointPeriod, fit: DrawnFit): number =>
   CHART_PAD + toNumber(mul(q(j), joint.frameInTicks)) * fit.tickPx;
-/** The base ticks of the span where a chart row is due: `Φ`, `Φ + D`, and on. */
+/** The base ticks of the span where a chart row is due: `Φ₀`, `Φ₀ + D₀`, and on. */
 export function dueTicks(row: ChartRow, joint: JointPeriod): bigint[] {
   const out: bigint[] = [];
-  for (let k = BigInt(row.phi); k < joint.baseTicks; k += BigInt(row.D)) out.push(k);
+  for (let n = BigInt(row.phi); n < joint.baseTicks; n += BigInt(row.D)) out.push(n);
   return out;
 }
 
@@ -473,9 +473,9 @@ export interface FramesTable {
 
 /** Each frame's tooltip: its pair and unit, answer 3's table. */
 export const FRAME_TITLES: Record<FramesRow["frame"], string> = {
-  scope: "Its rate scope: K and φ in ticks of the enclosing scope, as declared",
-  anchor: "Its anchor: m and c in ticks of anchor k",
-  "base grid": "The base grid: D and Φ in base ticks, the deployment's",
+  scope: "Its rate scope: Dₛ and Φₛ in ticks of the enclosing scope, as declared",
+  anchor: "Its anchor: Dₐ and Φₐ in ticks of the anchor",
+  "base grid": "The base grid: D₀ and Φ₀ in base ticks, the deployment's",
   seconds: "Seconds: Δt and τ",
 };
 
@@ -486,20 +486,20 @@ function enclosingScope(model: Model, path: string): { path: string; timing: Tim
     const x = s.scopes.find((y) => y.path === p);
     if (x) return { path: p, timing: x.timing };
   }
-  return { path: "", timing: { anchor: 0, m: 1, c: 0 } };
+  return { path: "", timing: { anchor: 0, D: 1, phi: 0 } };
 }
 
 function framesOf(model: Model, path: string, t: Timing, counts?: { D: number; phi: number }): FramesTable {
   const s = model.structure!, bound = boundOf(model);
   const enc = enclosingScope(model, path);
   const rows: FramesRow[] = [];
-  // an anchor other than the scope's is the component's own `Absolute` entry, which has no `(K, φ)`
+  // an anchor other than the scope's is the component's own `Absolute` entry, which has no `(Dₛ, Φₛ)`
   if (t.anchor === enc.timing.anchor) {
-    const K = t.m / enc.timing.m, phi = (t.c - enc.timing.c) / enc.timing.m;
-    rows.push({ frame: "scope", name: scopeName(enc.path), period: `K = ${K}`, phase: `φ = ${phi}`, unit: enc.path === "" ? "base ticks" : `ticks of ${enc.path}` });
+    const D = t.D / enc.timing.D, phi = (t.phi - enc.timing.phi) / enc.timing.D;
+    rows.push({ frame: "scope", name: scopeName(enc.path), period: `Dₛ = ${D}`, phase: `Φₛ = ${phi}`, unit: enc.path === "" ? "base ticks" : `ticks of ${enc.path}` });
   }
-  rows.push({ frame: "anchor", name: anchorLabel(s, t.anchor), nameTitle: anchorTitle(s, t.anchor), period: `m = ${t.m}`, phase: `c = ${t.c}`, unit: t.anchor === 0 ? "base ticks" : `ticks of ${anchorName(t.anchor)}` });
-  if (bound && counts) rows.push({ frame: "base grid", name: "", period: `D = ${counts.D}`, phase: `Φ = ${counts.phi}`, unit: "base ticks" });
+  rows.push({ frame: "anchor", name: anchorLabel(s, t.anchor), nameTitle: anchorTitle(s, t.anchor), period: `Dₐ = ${t.D}`, phase: `Φₐ = ${t.phi}`, unit: t.anchor === 0 ? "base ticks" : `ticks of ${anchorName(t.anchor)}` });
+  if (bound && counts) rows.push({ frame: "base grid", name: "", period: `D₀ = ${counts.D}`, phase: `Φ₀ = ${counts.phi}`, unit: "base ticks" });
   const pair = secondsPair(s, t, bound, counts);
   rows.push({ frame: "seconds", name: "", period: `Δt = ${pair.dt}`, phase: `τ = ${pair.tau}`, unit: "" });
   return { rows };
@@ -520,7 +520,7 @@ export function scopeFramesTable(model: Model, path: string): FramesTable | unde
 
 /** A rate link as `show` spells it: `outer = Relative(2, 1)`, `fast = Absolute(1//50, 0//1)`. */
 export const linkText = (link: RateLink): string =>
-  "K" in link ? `${link.key} = Relative(${link.K}, ${link.phi})` : `${link.key} = Absolute(${julia(fromRational(link.dt))}, ${julia(fromRational(link.tau))})`;
+  "D" in link ? `${link.key} = Relative(${link.D}, ${link.phi})` : `${link.key} = Absolute(${julia(fromRational(link.dt))}, ${julia(fromRational(link.tau))})`;
 
 /** The chain line under a primitive's frames table, outermost first (ruling 2): one call the drawing can drop. */
 export function chainLine(model: Model, path: string): string | undefined {
@@ -531,24 +531,24 @@ export function chainLine(model: Model, path: string): string | undefined {
 // --- the legend's line (answer 13) -------------------------------------------------
 
 export interface LegendText {
-  /** `A₂ (dss) · m 1 · c 0`. */
+  /** `A₂ (dss) · Dₐ 1 · Φₐ 0`. */
   text: string;
   /** `Δt_base`, `2·Δt_base`, `1/50 s`; a deployment's `A₀` lines concrete. */
   dt: string;
-  /** The tooltip: a deployment's `D 2 · Φ 0 · τ 0`, a build's `τ 0`; then the declaring scope. */
+  /** The tooltip: a deployment's `D₀ 2 · Φ₀ 0 · τ 0`, a build's `τ 0`; then the declaring scope. */
   title: string;
 }
 
 export function legendText(model: Model, t: Triple): LegendText {
   const s = model.structure!, bound = boundOf(model);
-  const [k, m, c] = t;
-  const where = anchorTitle(s, k);
-  const timing = { anchor: k, m, c };
+  const [anchor, D, phi] = t;
+  const where = anchorTitle(s, anchor), text = `${anchorLabel(s, anchor)} · Dₐ ${D} · Φₐ ${phi}`;
+  const timing = { anchor, D, phi };
   if (bound) {
-    const A = bound.anchors[k], counts = { D: m * A.D, phi: A.phi + c * A.D };
+    const A = bound.anchors[anchor], counts = { D: D * A.D, phi: A.phi + phi * A.D };
     const pair = secondsPair(s, timing, bound, counts);
-    return { text: `${anchorLabel(s, k)} · m ${m} · c ${c}`, dt: pair.dt, title: `D ${counts.D} · Φ ${counts.phi} · τ ${pair.tau}; ${where}` };
+    return { text, dt: pair.dt, title: `D₀ ${counts.D} · Φ₀ ${counts.phi} · τ ${pair.tau}; ${where}` };
   }
   const pair = secondsPair(s, timing);
-  return { text: `${anchorLabel(s, k)} · m ${m} · c ${c}`, dt: pair.dt, title: `τ ${pair.tau}; ${where}` };
+  return { text, dt: pair.dt, title: `τ ${pair.tau}; ${where}` };
 }

@@ -80,7 +80,11 @@ the user away): both stood open in the core's `pending.md`.*
    file again", and those words say no such thing. The core added `grid`
    and `schedule` in one commit, its `44d52cc`, after the key `dt`, so
    `grid` alone tells every older file and the `schedule` check is a
-   second guard.*
+   second guard. Amended 2026-11-24 (the pin bump to the core's
+   `fcd3660`, the user away): that held until the core renamed the keys
+   of a timing and of a `Relative` link (its D-478). A file the core
+   wrote between `7ea3600` and that commit has `grid` and the old keys.
+   It loads, and the readers then throw. `pending.md` holds the question.*
    *Why:* D-433's annotation, D-434 and D-437 each added to version one
    unbumped, "no reader to protect while unreleased", and a rule replaces
    the repeated exception. A minor bump only adds fields, so a 1.1 schema
@@ -92,44 +96,49 @@ the user away): both stood open in the core's `pending.md`.*
    frames:
 
    ```
-   its rate scope   (K, φ)     ticks of the enclosing scope, as declared
-   its anchor       (m, c)     ticks of anchor k
-   the base grid    (D, Φ)     base ticks, the deployment's
+   its rate scope   (Dₛ, Φₛ)   ticks of the enclosing scope, as declared
+   its anchor       (Dₐ, Φₐ)   ticks of its anchor
+   the base grid    (D₀, Φ₀)   base ticks, the deployment's
    seconds          (Δt, τ)
    ```
 
-   An anchor has the same two pairs, `(Δtₖ, τₖ)` in seconds and
-   `(Dₖ, Φₖ)` in base ticks, and anchor 0 is `Δt₀ = Δt_base`, `τ₀ = 0`,
-   `D₀ = 1`, `Φ₀ = 0`.
-   One law composes them in each unit:
+   A subscript names the lattice a count is in, and an argument the node
+   a symbol belongs to, as in `D₀(i)`, `Δt(a)` and `τ(A₁)`. A table leaves
+   the argument out, since its row names the node. An anchor has the
+   seconds pair and the base grid's, and the base grid is anchor `A₀`,
+   with `Δt(A₀) = Δt_base`, `τ(A₀) = 0`, `D₀(A₀) = 1` and `Φ₀(A₀) = 0`.
+   One law composes them in each unit, for a component `i` on an anchor
+   `a`:
 
    ```
-   in seconds:      Δt = m · Δtₖ     τ = τₖ + c · Δtₖ     a build knows both when k ≥ 1
-   in base ticks:   D  = m · Dₖ      Φ = Φₖ + c · Dₖ      the deployment's
-   linked by:       Δtₖ = Dₖ · Δt_base      τₖ = Φₖ · Δt_base
-   hence:           Δt  = D · Δt_base       τ  = Φ · Δt_base
+   in seconds:      Δt(i) = Dₐ(i) · Δt(a)      τ(i)  = τ(a)  + Φₐ(i) · Δt(a)    a build knows both unless a is A₀
+   in base ticks:   D₀(i) = Dₐ(i) · D₀(a)      Φ₀(i) = Φ₀(a) + Φₐ(i) · D₀(a)    the deployment's
+   linked by:       Δt(a) = D₀(a) · Δt_base    τ(a)  = Φ₀(a) · Δt_base
+   hence:           Δt(i) = D₀(i) · Δt_base    τ(i)  = Φ₀(i) · Δt_base
    ```
 
    Wherever the page names one of these quantities it uses its symbol:
    the timing tab, the pane, the legend, the tooltips and the status bar.
    The words "phase", "offset" and "multiple" leave those surfaces, and
-   the help page defines each symbol once. An anchor reads `Aₖ (key)`,
-   the key of the `sample_times` entry that declares it, and the base
-   grid reads `A₀ (base)`. The subscript is the identity, since two
+   the help page defines each symbol once. An anchor reads `A₁ (key)`, by
+   its number and the key of the `sample_times` entry that declares it,
+   and the base grid reads `A₀ (base)`. The number is the identity, since two
    scopes can declare the same key, and the tooltip gives the declaring
    scope.
 
-   `τ` without a subscript is a component's phase in seconds.
-   `Φ·Δt_base` is the time of the component's first tick after `t₀`, and
-   it lies inside the first hyperperiod since `0 ≤ Φ < D`. The session
-   coined the letter by extending the `τ` that the spec gave to an
-   `Absolute` entry's offset in seconds, and the core's §9.2 names the
-   quantity so since D-464.
+   `τ(i)` is a component's phase in seconds, `Φ₀(i)·Δt_base`, the time of
+   its first tick after `t₀`, and it lies inside the first hyperperiod
+   since `0 ≤ Φ₀ < D₀`. The session coined the letter by extending the `τ`
+   that the spec gave to an `Absolute` entry's offset in seconds, and the
+   core's §6.3 names the quantity so.
 
    The core has the same notation, so the page and the REPL agree (its
-   D-464). The spec and `show(::Structure)` write an anchor's period
-   `Δtₖ`, the fields `Anchor.Δt` and `Absolute.Δt` hold it, and the
-   anchor's JSON key is `dt`. `Absolute(Δt, τ)` takes both arguments as
+   D-478, and D-479 for the letters beside it). `show` heads an anchor's
+   columns `Δt`, `τ`, `D₀` and `Φ₀`, the fields `Anchor.Δt` and
+   `Absolute.Δt` hold the period, and the anchor's JSON key is `dt`.
+   `Relative(D, Φ)` takes its child's `Dₛ` and `Φₛ`. A node's and a
+   scope's `timing` is `{anchor, D, phi}` in the file, and a `Relative`
+   link's pair is `{D, phi}`. `Absolute(Δt, τ)` takes both arguments as
    bare exact numbers of seconds, an integer or a `Rational`, since the
    core retired `Period` and `Hz` (its D-469). `Absolute(1//50)` is a
    50 Hz entry.
@@ -139,7 +148,14 @@ the user away): both stood open in the core's `pending.md`.*
    `Period` and `Hz`. The core took the notation as D-464 and retired
    both types as D-469. A component's `τ` was the page's coinage alone,
    the spec having no letter for it. Anchor 0's `τ₀` and `Φ₀` were
-   unstated.*
+   unstated. Amended 2026-11-24 (the pin bump to the core's `fcd3660`,
+   the user away): the answer wrote D-464's letters, which the core's
+   D-478 superseded. They were `(K, φ)` in scope ticks, `(m, c)` in anchor
+   ticks, a bare `(D, Φ)` in base ticks, and `(Δtₖ, τₖ)` and `(Dₖ, Φₖ)` for
+   anchor `k`, which read `Aₖ (key)`. The file's keys were `m`, `c` and
+   `K`. The notes, the *Why* and the *Rejected* of every answer of this
+   record keep the letters of their dates, and there `Dₖ` is anchor `k`'s
+   divisor in base ticks.*
    *Why:* the page printed `c` as "phase" in the legend and as "offset"
    in the pane, while the core gives "phase" to `Φ` and calls `τ` the
    anchor's offset: one quantity under two words, and each word on two
@@ -222,11 +238,12 @@ the user away): both stood open in the core's `pending.md`.*
    `structure.scopes` row by path and key, so it relies on neither
    order. A component's row has no `anchor`, which its node's `timing`
    holds, no chain of `sample_times` links, which its node holds as
-   `rates` (answer 10), and no float `Δt`. The page computes `Δt` as `D`
-   times `dt_base` and `τ` as `Φ` times `dt_base`, each as an exact
+   `rates` (answer 10), and no float `Δt`. The page computes `Δt` as `D₀`
+   times `dt_base` and `τ` as `Φ₀` times `dt_base`, each as an exact
    fraction over the integers the file holds and never as a product of
    floats. The writer computes each
-   anchor's `Dₖ` and `Φₖ` as `Δtₖ / Δt_base` and `τₖ / Δt_base`. In
+   anchor's `D₀(a)` and `Φ₀(a)` as `Δt(a) / Δt_base` and `τ(a) / Δt_base`.
+   In
    `structure.anchors` the period's key is `dt`, which amends
    `descriptor_design.md` answer 9. That a node holds its chain as
    `rates` amends that record's answer 4.
@@ -241,7 +258,9 @@ the user away): both stood open in the core's `pending.md`.*
    core's `pending.md`. It does not reach the page, which reads no float
    from the file. Amended 2026-11-23 (the implementation, the user away): the answer
    did not say that it amends `descriptor_design.md` answer 4, whose
-   note cites it.*
+   note cites it. Amended 2026-11-24 (the pin bump to the core's
+   `fcd3660`, the user away): the counts were written `Dₖ`, `Φₖ`, `D` and
+   `Φ` (the core's D-478). The section's keys are unchanged.*
    *Why:* `descriptor_design.md` answer 2 has each section project one
    artifact, and §9.2 calls the `Schedule` the single source of truth for
    `Δt`. Binding is exact rational division, and a JavaScript number is
@@ -349,14 +368,15 @@ the user away): both stood open in the core's `pending.md`.*
    a further change.
 
 8. **The hyperperiod: derived by the client.** The page computes the
-   least common multiple of the rows' `D` with `BigInt` and shows it in
+   least common multiple of the rows' `D₀` with `BigInt` and shows it in
    base ticks with the seconds in parentheses, `360 base ticks (6/5 s)`,
    as it shows the two spans of answer 11. A deployment with no discrete primitive
    has no rows, and the page then shows no hyperperiod and no chart.
    *Amended 2026-11-23 (the record at the new pin, the user away): the
    case with no rows was unstated. `show(::Deployment)` prints "no rows"
    there and no chart. Amended 2026-11-24 (increment 10's look, 1.3): the
-   seconds followed a comma.*
+   seconds followed a comma. Amended 2026-11-24 (the pin bump to the
+   core's `fcd3660`, the user away): the rows' `D₀` was written `D`.*
    *Why:* the core holds it as a `BigInt`, since coprime periods take it
    past `Int`, and a JSON number is exact in JavaScript only below
    `2^53`. The derivation is one lcm over integers the file holds, and
@@ -383,20 +403,20 @@ the user away): both stood open in the core's `pending.md`.*
 
    ```
    build                                    deployment, Δt_base = 1/100 s
-   k           Δtₖ       τₖ                 k           Δtₖ       τₖ   Dₖ   Φₖ
+   anchor      Δt        τ                  anchor      Δt        τ    D₀   Φ₀
    A₀ (base)   Δt_base   0                  A₀ (base)   1/100 s   0    1    0
    A₁ (noise)  1/10 s    0                  A₁ (noise)  1/10 s    0    10   0
    A₂ (dss)    1/50 s    0                  A₂ (dss)    1/50 s    0    2    0
 
-   path    k  m  c   Δt          τ          path    k  m  c   D   Φ   Δt       τ
-   noise   1  1  0   1/10 s      0          noise   1  1  0   10  0   1/10 s   0
-   dss     2  1  0   1/50 s      0          dss     2  1  0   2   0   1/50 s   0
-   d_pid   0  2  1   2·Δt_base   Δt_base    d_pid   0  2  1   2   1   1/50 s   1/100 s
+   path    anchor  Dₐ  Φₐ  Δt          τ          path    anchor  Dₐ  Φₐ  D₀  Φ₀  Δt       τ
+   noise   1       1   0   1/10 s      0          noise   1       1   0   10  0   1/10 s   0
+   dss     2       1   0   1/50 s      0          dss     2       1   0   2   0   1/50 s   0
+   d_pid   0       2   1   2·Δt_base   Δt_base    d_pid   0       2   1   2   1   1/50 s   1/100 s
    ```
 
-   In all three tables the `k` cell reads `Aₖ (key)`, where the sketch
-   has the bare index for a component, so the anchors table has no key
-   column of its own.
+   In all three tables the anchor's cell reads `A₁ (key)`, where the
+   sketch has the bare index for a component, so the anchors table has no
+   key column of its own.
    The anchors table keeps its "declared in" column. A section "Base
    grid" follows it and holds the grid report, in the order of
    `show(::Structure)`:
@@ -404,13 +424,13 @@ the user away): both stood open in the core's `pending.md`.*
    ```
    Base grid
    Δt_base: 1/300 s, coarsest admissible: 1/300 s
-   τ₁ = 1/300 s (staggered) makes the grid 6× finer. With τ₁ = 0 or
+   τ(A₁) = 1/300 s (staggered) makes the grid 6× finer. With τ(A₁) = 0 or
    1/50 s, the coarsest admissible Δt_base would be 1/50 s.
 
    Prime factors of the denominator, 300 = 2²·3·5²
-     2²: τ₁ (staggered)
-     3: τ₁ (staggered)
-     5²: Δt₂ (fast), τ₁ (staggered)
+     2²: τ(A₁) (staggered)
+     3: τ(A₁) (staggered)
+     5²: Δt(A₂) (fast), τ(A₁) (staggered)
    ```
 
    The first line is answer 6's comparison, and a build's reads
@@ -420,7 +440,8 @@ the user away): both stood open in the core's `pending.md`.*
    coarsest tick they give, its factor times the present one. An entry
    whose factor is 1 has no line. The prime attribution stands apart
    under a label of its own, a row per prime power with its suppliers,
-   each named by its symbol and its anchor's key, and a row marked
+   each named by its symbol, with its anchor in the argument, and the
+   anchor's key, and a row marked
    `unfactored` says so. A grid whose coarsest tick is a whole number of
    seconds has no primes and shows no prime lines. A structure with no
    anchors has no such section. The rate
@@ -432,7 +453,7 @@ the user away): both stood open in the core's `pending.md`.*
    A fixed-step method takes `⌈Δt_frame / h_max⌉`. A proposing one takes
    from that count up to `⌊Δt_frame / h_min⌋`, and the upper count is
    never below the lower. A row's ticks all land on frame tops when
-   `Δt_frame` divides both `D·Δt_base` and `Φ·Δt_base`, and the row
+   `Δt_frame` divides both `D₀·Δt_base` and `Φ₀·Δt_base`, and the row
    splits frames otherwise. Where some row splits, the list calls the
    count the steps per unsplit frame and names the rows that split, in
    an item of their own, each by its path as the components' table shows it,
@@ -470,7 +491,12 @@ the user away): both stood open in the core's `pending.md`.*
    line above them. The factors stay on the tab because
    `GridUtilization`, the only other place that holds them, is raised
    for a derived base tick alone. The closing sentence said "the base
-   grid's columns", which the new section's name makes ambiguous.*
+   grid's columns", which the new section's name makes ambiguous.
+   Amended 2026-11-24 (the pin bump to the core's `fcd3660`, the user
+   away): the heads were `k`, `Δtₖ`, `τₖ`, `Dₖ` and `Φₖ` on the anchors,
+   and `k`, `m`, `c`, `D` and `Φ` on the other two tables. The grid report
+   named its entries `Δt₂` and `τ₁`. The heads are now `show`'s, and the
+   seconds pair takes no subscript (the core's D-478).*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is
@@ -486,9 +512,9 @@ the user away): both stood open in the core's `pending.md`.*
 
     ```
                           period         phase
-    scope  fast/outer     K  = 3         φ = 1          ticks of fast/outer
-    anchor A₂ (fast)      m  = 6         c = 3          ticks of A₂
-    base grid             D  = 36        Φ = 18         base ticks
+    scope  fast/outer     Dₛ = 3         Φₛ = 1         ticks of fast/outer
+    anchor A₂ (fast)      Dₐ = 6         Φₐ = 3         ticks of A₂
+    base grid             D₀ = 36        Φ₀ = 18        base ticks
     seconds               Δt = 3/25 s    τ = 3/50 s
     fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)
     ```
@@ -500,14 +526,15 @@ the user away): both stood open in the core's `pending.md`.*
     "phase", and each row's head is titled with answer 3's pair and
     unit.
     A build shows the table without the base grid row, and a component
-    on `A₀` shows `m·Δt_base` and `c·Δt_base` in the seconds row. The
-    scope row is derived against the nearest enclosing rate scope's row,
-    whose own pair is `(mₛ, cₛ)`: `K = m / mₛ` and `φ = (c − cₛ) / mₛ`.
+    on `A₀` shows `Dₐ·Δt_base` and `Φₐ·Δt_base` in the seconds row. The
+    scope row of a component `i` is derived against the row of the nearest
+    enclosing rate scope `s`: `Dₛ(i) = Dₐ(i) / Dₐ(s)` and
+    `Φₛ(i) = (Φₐ(i) − Φₐ(s)) / Dₐ(s)`.
     Where no keyed assembly encloses the component, that scope is the
     root, at `(1, 0)` on `A₀`, and its ticks are base ticks. The row
     then reads "scope the root" and "base ticks". A component
     whose anchor differs from the enclosing scope's has an `Absolute`
-    entry of its own and no `(K, φ)`, so it has no scope row. The anchor's
+    entry of its own and no `(Dₛ, Φₛ)`, so it has no scope row. The anchor's
     name is titled with its declaring key and scope, as on the timing
     tab. The
     derived pair is the component's own `sample_times` entry where it
@@ -547,7 +574,10 @@ the user away): both stood open in the core's `pending.md`.*
     table was the fact "rate", a small label on a line of its own above
     the table. A component with an `Absolute` entry had a scope row that
     read "opens `A₁` at the root" across both columns. Only the open level
-    showed a rate scope's table, under the heading "Rate scopes".*
+    showed a rate scope's table, under the heading "Rate scopes".
+    Amended 2026-11-24 (the pin bump to the core's `fcd3660`, the user
+    away): the table's rows read `K` and `φ`, `m` and `c`, `D` and `Φ`
+    (the core's D-478). A core `Relative`'s fields were `K` and `φ`.*
     *Why:* the seconds row holds everything the pane's sentence said, and
     the column heads give the words. The scope pair is what the author
     wrote, so it links the pane to the source, and it needs no change to
@@ -558,20 +588,20 @@ the user away): both stood open in the core's `pending.md`.*
     nearest scope row; the fold's code was not read, and the oracle
     compares against the core's own rate links.
 
-11. **The chart: one row per distinct `(D, Φ)`, whole or omitted, the
+11. **The chart: one row per distinct `(D₀, Φ₀)`, whole or omitted, the
     frame tops over the joint period.** A row is everything that ticks
-    together under this deployment: its `D` and `Φ`, the swatch of every
+    together under this deployment: its `D₀` and `Φ₀`, the swatch of every
     triple that lands on it, the count of primitives, and a mark at each
-    base tick where it is due. The rows run fastest first, by `D` and
-    then `Φ`. Each swatch is a button with the legend's focus, and the
+    base tick where it is due. The rows run fastest first, by `D₀` and
+    then `Φ₀`. Each swatch is a button with the legend's focus, and the
     row itself takes no click. A press in tier mode turns rate mode on
     first, the legend's focus being rate mode's alone. For `library` at `Δt_base = 1/100 s`:
 
     ```
-    D 1  · Φ 0    ■      9 primitives    ●●●●●●●●●●
-    D 2  · Φ 0    ■ ■    2 primitives    ●·●·●·●·●·
-    D 2  · Φ 1    ■      1 primitive     ·●·●·●·●·●
-    D 10 · Φ 0    ■      1 primitive     ●·········
+    D₀ 1  · Φ₀ 0    ■      9 primitives    ●●●●●●●●●●
+    D₀ 2  · Φ₀ 0    ■ ■    2 primitives    ●·●·●·●·●·
+    D₀ 2  · Φ₀ 1    ■      1 primitive     ·●·●·●·●·●
+    D₀ 10 · Φ₀ 0    ■      1 primitive     ●·········
     ```
 
     The timeline is drawn whole or not at all. Up to a threshold it fits
@@ -614,7 +644,9 @@ the user away): both stood open in the core's `pending.md`.*
     of a tenth of a tick spread each tick over 60 px and a finer one
     omitted a chart whose ticks fit (the cold review's finding 7). The
     amendment of the record at the new pin gave its reason for a frame
-    that does not divide the tick, and its words reached further.*
+    that does not divide the tick, and its words reached further.
+    Amended 2026-11-24 (the pin bump to the core's `fcd3660`, the user
+    away): the counts were written `D` and `Φ` (the core's D-478).*
     *Why:* §9.2 has the schedule answer "what coincides with what", and
     `visual_grammar.md` answer 6 keys color on the triple because where
     an anchored clock lands is the deployment's fact, which a row per
@@ -662,14 +694,14 @@ the user away): both stood open in the core's `pending.md`.*
     runs:
 
     ```
-    ■ A₀ (base)  · m 1 · c 0     Δt_base
-    ■ A₀ (base)  · m 2 · c 1     2·Δt_base
-    ■ A₂ (dss)   · m 1 · c 0     1/50 s
-    ■ A₁ (noise) · m 1 · c 0     1/10 s
+    ■ A₀ (base)  · Dₐ 1 · Φₐ 0     Δt_base
+    ■ A₀ (base)  · Dₐ 2 · Φₐ 1     2·Δt_base
+    ■ A₂ (dss)   · Dₐ 1 · Φₐ 0     1/50 s
+    ■ A₁ (noise) · Dₐ 1 · Φₐ 0     1/10 s
     ```
 
     A deployment changes only the `Δt` of the `A₀` lines, from symbolic
-    to concrete. `D`, `Φ` and `τ` go to the line's tooltip, before the
+    to concrete. `D₀`, `Φ₀` and `τ` go to the line's tooltip, before the
     declaring scope it held already. The fit
     avoids the legend's box: it computes two candidates, one leaving the
     legend's height free at the bottom and one leaving its width free at
@@ -688,7 +720,9 @@ the user away): both stood open in the core's `pending.md`.*
     were unstated. Of the 16 fixtures' roots the fit costs `large`
     alone, whose 43 lines take its scale from 0.083 to 0.062. The text
     then put `D`, `Φ` and `τ` after the declaring scope, the reverse of
-    the page as built (the cold review's finding 6).*
+    the page as built (the cold review's finding 6). Amended 2026-11-24
+    (the pin bump to the core's `fcd3660`, the user away): a line read
+    `m` and `c`, and its tooltip `D` and `Φ` (the core's D-478).*
     *Why:* the full line, `A₁ (fast) · m 2 · c 0 · D 8 · Φ 0 · Δt 1/25 s
     · τ 0`, is too long for a canvas corner, and `closed_loop` has ten
     lines. The timing tab and the chart show `D`, `Φ` and `τ` in full,
@@ -836,8 +870,8 @@ the user away): both stood open in the core's `pending.md`.*
 
     | fixture | what it shows |
     |---|---|
-    | `closed_loop_deployment`, kept | ten rows on one `(D, Φ)`: one chart row with ten swatches; two root inputs pinned by tier |
-    | `library_deployment`, `Δt_frame = 1//100` | 13 rows on 4 distinct `(D, Φ)`, `(2, 1)` among them and `(2, 0)` from two triples; a grid report with two pool entries; a base tick finer than the coarsest admissible `1//50`; events |
+    | `closed_loop_deployment`, kept | ten rows on one `(D₀, Φ₀)`: one chart row with ten swatches; two root inputs pinned by tier |
+    | `library_deployment`, `Δt_frame = 1//100` | 13 rows on 4 distinct `(D₀, Φ₀)`, `(2, 1)` among them and `(2, 0)` from two triples; a grid report with two pool entries; a base tick finer than the coarsest admissible `1//50`; events |
     | `rates_deployment`, `Δt_frame = 1//100`, `Δt_base = 1//200` | rate scopes on anchors alone: 3 rows, 3 scope rows and a hyperperiod of 40; a frame of two base ticks, so the frame tops are drawn |
     | `approach_deployment`, `Δt_frame = 1//200` | the tutorial's model on two clocks, 11 rows on 11 anchors, and the examples' one event, `gear`'s `touchdown`, which 10b draws |
 
@@ -851,7 +885,7 @@ the user away): both stood open in the core's `pending.md`.*
     agree. A new synthetic model, `timing`, holds those cases, in the
     pattern of `kinds` and `library`:
 
-    - an anchor with a nonzero `τₖ` and a pool entry with alternatives,
+    - an anchor with a nonzero `τ(a)` and a pool entry with alternatives,
       which one entry gives: `Absolute(1//10, 1//300)` beside
       `Absolute(1//50)` has an offset of factor 6 with the alternatives
       `0` and `1/50`;
@@ -861,12 +895,12 @@ the user away): both stood open in the core's `pending.md`.*
       the scope `fast/outer`, itself `Relative(2, 1)` under `fast`: a
       keyed primitive `hold` at `Relative(3, 1)`, answer 10's example;
       an explicit `Relative(1)`; and a nested scope `deep` at
-      `Relative(2, 1)`, so that the derivation divides by an `mₛ` above
-      1 and subtracts a `cₛ` above 0.
+      `Relative(2, 1)`, so that the derivation divides by a `Dₐ(s)` above
+      1 and subtracts a `Φₐ(s)` above 0.
 
     `timing` is committed as a build and as a deployment,
     `timing_deployment`, at `Δt_frame = 1//100` and `Δt_base = :derive`.
-    The deployment adds an anchor with `Φₖ = 1`, a frame of three base
+    The deployment adds an anchor with `Φ₀(a) = 1`, a frame of three base
     ticks, a row that splits frames and the deployment's own warning, a
     `GridUtilization`. The timeline past the threshold needs no file: a
     unit test passes a small threshold.
@@ -884,7 +918,9 @@ the user away): both stood open in the core's `pending.md`.*
     in scratch at the pin, and the figures above are theirs. Amended
     2026-11-23 (the implementation, the user away): the five new
     fixtures hold 390,350 bytes beside 988,119, where the cost accepted
-    below estimates about 300 kB beside 870.*
+    below estimates about 300 kB beside 870. Amended 2026-11-24 (the pin
+    bump to the core's `fcd3660`, the user away): the counts were written
+    `(D, Φ)`, `mₛ`, `cₛ` and `Φₖ` (the core's D-478).*
     *Why:* `descent` has three primitives and about twenty test files
     read it, where `approach` has 19 under a child `vehicle`, so the move
     would rewrite every assertion on a path or a count for nothing. Each
@@ -930,7 +966,10 @@ the user away): both stood open in the core's `pending.md`.*
     away): the text still gave the numbers as the next five and the
     order as work to come, with part four and the tutorial's loose
     change free to run beside increment 10. Both ran first. The note of
-    2026-11-22 stood after the Why paragraph.*
+    2026-11-22 stood after the Why paragraph. Amended 2026-11-24 (the pin
+    bump to the core's `fcd3660`, the user away): the core's D-478
+    superseded D-464 and D-479 gave the letters beside it. The table states
+    the five entries as they landed, in D-464's letters.*
     *Why:* the core's `design/rules/log_rules.md` gives an entry to a
     design ruling with rejected alternatives and, by D-314 and D-448, to
     a rename, and none to the order of work. The root input's pin stands

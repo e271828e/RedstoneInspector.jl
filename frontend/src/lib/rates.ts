@@ -6,13 +6,13 @@ import type { Model } from "./model";
 import { terminalProducer } from "./resolve";
 import { fromRational, lt, mul, q, type Q } from "./timing";
 
-/** A timing triple: the anchor's index `k` (0 the base grid), `m` and `c` in that anchor's ticks. */
-export type Triple = [anchor: number, m: number, c: number];
+/** A timing triple `(a, Dₐ, Φₐ)`: the anchor's index (0 the base grid), then `Dₐ` and `Φₐ` in that anchor's ticks. */
+export type Triple = [anchor: number, D: number, phi: number];
 export const tripleKey = (t: Triple): string => t.join(",");
 /** The palette's colored steps; a triple from this index on is an extra. */
 export const STEPS = 8;
 
-const triple = (t: { anchor: number; m: number; c: number }): Triple => [t.anchor, t.m, t.c];
+const triple = (t: { anchor: number; D: number; phi: number }): Triple => [t.anchor, t.D, t.phi];
 const isDiscretePrimitive = (n: Node) => n.class === "primitive" && n.tier === "discrete";
 
 /** The timing triples of the discrete primitives beneath an assembly, in walk order, repeats kept. */
@@ -46,7 +46,7 @@ export function blockTriple(model: Model, path: string): Triple | undefined {
 /** Whether an assembly's discrete primitives tick on several triples, the assembly gray's case. */
 export const mixed = (model: Model, path: string): boolean => clocksBeneath(model, path).length > 1;
 
-/** A triple's `Δt` in seconds, `m · Δtₖ`, exact; undefined on the base grid, which comes before every anchor. */
+/** A triple's `Δt` in seconds, `Dₐ · Δt(a)`, exact; undefined on the base grid, which comes before every anchor. */
 function period(model: Model, t: Triple): Q | undefined {
   return t[0] === 0 ? undefined : mul(q(t[1]), fromRational(model.structure!.anchors[t[0] - 1].dt));
 }
@@ -60,7 +60,7 @@ function byPeriod(model: Model, a: Triple, b: Triple): number {
 
 /**
  * Every triple a drawn block takes, the root included when it is primitive, in palette order: anchor 0
- * first, then by period ascending, ties by anchor index, then `m`, then `c`. A triple's step is its index.
+ * first, then by period ascending, ties by anchor index, then `Dₐ`, then `Φₐ`. A triple's step is its index.
  */
 export function tripleOrder(model: Model): Triple[] {
   const seen = new Map<string, Triple>();

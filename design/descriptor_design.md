@@ -90,8 +90,8 @@ Open items live in `pending.md`.
    ```json
    {"path": "aircraft/loops/l1", "field": "loops", "key": "l1",
     "class": "primitive", "tier": "continuous",
-    "timing": {"anchor": 0, "m": 4, "c": 1},
-    "rates": [{"scope": "", "key": "aircraft", "K": 4, "phi": 1}],
+    "timing": {"anchor": 0, "D": 4, "phi": 1},
+    "rates": [{"scope": "", "key": "aircraft", "D": 4, "phi": 1}],
     "type": "Redstone.Library.PID", "signature": "PID{Float64, …}",
     "inputs":  [{"name": "r", "type": "Float64",
                  "kind": {"kind": "float"}, "pinned": false}, …],
@@ -124,7 +124,9 @@ Open items live in `pending.md`.
    `LeafFace` and the library's module `Redstone.Blocks`. Amended
    2026-11-23 (`deployment_overlay.md` answers 5 and 10, the record at
    the new pin, the user away): a primitive node had no `rates`, which
-   the core's D-467 added.*
+   the core's D-467 added. Amended 2026-11-24 (the pin bump to the core's
+   `fcd3660`, the user away): a `timing`'s keys were `m` and `c`, and a
+   `Relative` link's `K` (the core's D-478).*
    *Why:* `segment` and `membership` were in the first sketch and were
    dropped as derivable: the parent is the longest node path that is a
    proper prefix, which skips a container's non-node path such as
@@ -222,27 +224,30 @@ Open items live in `pending.md`.
    never has, so a `stage` field on the primitive face would be present only
    when the build completed, the subset rule answer 2 avoids. Carrying the
    edges would be the redundancy answer 18 rejected for wires.
-9. **Timing now, the chain later.** Each primitive node carries `timing`,
-   the anchor it hangs from with its period multiple and phase in that
-   anchor's ticks, and `structure` carries `anchors` and `scopes`:
+9. **Timing and the chain.** Each primitive node carries `timing`,
+   the anchor it hangs from with its `Dₐ` and `Φₐ` in that anchor's ticks,
+   and `structure` carries `anchors` and `scopes`:
    ```json
    "anchors": [{"dt": {"num": 1, "den": 100}, "tau": {"num": 0, "den": 1},
                 "scope": "aircraft", "key": "loops"}],
    "scopes":  [{"path": "aircraft", "key": "loops",
-                "timing": {"anchor": 1, "m": 1, "c": 0}}]
+                "timing": {"anchor": 1, "D": 1, "phi": 0}}]
    ```
    Anchor 0, the base grid, has no row, as in the artifact. Rationals are
    `{"num", "den"}` objects. The chain came with the deployment overlay.
    Each primitive node carries `rates`, its chain of `sample_times`
    links from the root down. A link holds the declaring `scope` and its
-   `key`, with `K` and `phi` for a `Relative` entry or `dt` and `tau`
+   `key`, with `D` and `phi` for a `Relative` entry or `dt` and `tau`
    for an `Absolute` one. The deployment's side is the `schedule` section
    (`deployment_overlay.md` answer 5).
    *Amended 2026-11-20 (`deployment_overlay.md` answers 3 and 5): the
    anchor's period had the key `T`. Amended 2026-11-23
    (`deployment_overlay.md` answers 5 and 10, the record at the new pin,
    the user away): the chain was not carried. The core's D-467 put it on
-   the node, since a client cannot derive it from the timings.*
+   the node, since a client cannot derive it from the timings. Amended
+   2026-11-24 (the pin bump to the core's `fcd3660`, the user away): the
+   title read "Timing now, the chain later". A timing's keys were `m` and
+   `c`, and a `Relative` link's `K` (the core's D-478).*
    *Why:* this widens the working order, which deferred the timing tables,
    because answer 9's core tier colors blocks by rate and a block's rate is
    its timing row. The rows are in the `Structure` the section mirrors, and
@@ -317,8 +322,9 @@ Open items live in `pending.md`.
     TypeScript types from the same file at build time.
 13. **Three methods in version one.** `descriptor(build::Build)` returns
     the build envelope, `descriptor(deployment::Deployment)` the
-    deployment envelope whose body holds `build` alone until the overlay's
-    bump, and `descriptor(err::DiagnosticError)` the failure envelope of
+    deployment envelope, whose body holds the `Deployment`'s fields, the
+    build's body under `build` among them (`deployment_overlay.md` answer
+    4), and `descriptor(err::DiagnosticError)` the failure envelope of
     any carrier, a build's with its structure or a service's with its list
     alone. All three return the value of answer 11, with
     `redstone_version` from `pkgversion`. The core offers no text, no file
@@ -328,7 +334,10 @@ Open items live in `pending.md`.
     `src/descriptor.jl` beside `show.jl`, included after the deployment's
     file.
     *Amended 2026-10-28 (`failure_descriptor.md` answer 3): two methods,
-    the failure method waiting for its bump.*
+    the failure method waiting for its bump. Amended 2026-11-24 (the pin
+    bump to the core's `fcd3660`, the user away): the deployment's body
+    held `build` alone until the overlay's bump, which the core's D-467
+    made.*
     *Why:* the deployment envelope costs one method and exercises the
     embedding and the `kind` tag from the first fixture, and a deployment
     is what a user has in hand.

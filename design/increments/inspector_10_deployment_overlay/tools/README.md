@@ -1,6 +1,8 @@
 # Increment 10's tools
 
-Each was run from here on 2026-11-24, at `5fdec7f`.
+Each was run from here on 2026-11-24, at `5fdec7f`, and again at the pin
+to the core's `fcd3660`, whose notation they now read
+(`../../20261124_pin_fcd3660/notes_pin_fcd3660.md`).
 
 - **The oracle**, `oracle.py`, derives every timing fact of the fixtures by
   the record's definitions as of the build, so the look's amendments are

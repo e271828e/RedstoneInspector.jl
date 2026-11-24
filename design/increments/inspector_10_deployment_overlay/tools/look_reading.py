@@ -47,7 +47,7 @@ def run(path):
     if A:
         adm=q(g["admissible"])
         emit("grid","first",f"Δt_base: {sec(base)}, coarsest admissible: {sec(adm)}" if dep else f"coarsest admissible Δt_base: {sec(adm)}")
-        sym=lambda e:("Δt" if e["kind"]=="period" else "τ")+sub(e["anchor"])
+        sym=lambda e:("Δt" if e["kind"]=="period" else "τ")+f"(A{sub(e['anchor'])})"
         n=0
         for e in pool:
             if e["factor"]<=1: continue
@@ -70,15 +70,15 @@ def run(path):
             if p in sc: return p
     def table(p,t,r):
         e=enc(p) if p else None
-        st=sc[e]["timing"] if e else {"anchor":0,"m":1,"c":0}
-        k,m,c=t["anchor"],t["m"],t["c"]; L=[]
+        st=sc[e]["timing"] if e else {"anchor":0,"D":1,"phi":0}
+        k,Da,Pa=t["anchor"],t["D"],t["phi"]; L=[]
         if k==st["anchor"]:
-            K=F(m,st["m"]); ph=F(c-st["c"],st["m"])
-            L.append(f"scope {e or 'the root'} K = {K} φ = {ph} "+(f"ticks of {e}" if e else "base ticks"))
-        L.append(f"anchor {aname(k)} m = {m} c = {c} "+(f"ticks of A{sub(k)}" if k else "base ticks")+" ["+("the base grid" if k==0 else f"{A[k-1]['key']} at {A[k-1]['scope'] or 'the root'}")+"]")
-        if dep: L.append(f"base grid D = {r['D']} Φ = {r['phi']} base ticks"); dt,tau=sec(r["D"]*base),sec(r["phi"]*base)
-        elif k==0: dt,tau=bm(m),bm(c)
-        else: dt,tau=sec(m*q(A[k-1]["dt"])),sec(q(A[k-1]["tau"])+c*q(A[k-1]["dt"]))
+            Ds=F(Da,st["D"]); ph=F(Pa-st["phi"],st["D"])
+            L.append(f"scope {e or 'the root'} Dₛ = {Ds} Φₛ = {ph} "+(f"ticks of {e}" if e else "base ticks"))
+        L.append(f"anchor {aname(k)} Dₐ = {Da} Φₐ = {Pa} "+(f"ticks of A{sub(k)}" if k else "base ticks")+" ["+("the base grid" if k==0 else f"{A[k-1]['key']} at {A[k-1]['scope'] or 'the root'}")+"]")
+        if dep: L.append(f"base grid D₀ = {r['D']} Φ₀ = {r['phi']} base ticks"); dt,tau=sec(r["D"]*base),sec(r["phi"]*base)
+        elif k==0: dt,tau=bm(Da),bm(Pa)
+        else: dt,tau=sec(Da*q(A[k-1]["dt"])),sec(q(A[k-1]["tau"])+Pa*q(A[k-1]["dt"]))
         L.append(f"seconds Δt = {dt} τ = {tau}")
         return " | ".join(L), f"Δt {dt} · τ {tau}"
     types={t["name"]:t for t in s["types"]}
@@ -88,7 +88,7 @@ def run(path):
             if n["tier"]=="discrete":
                 tm=table(p,n["timing"],rows.get(p))
                 jr=lambda o:f"{o['num']}//{o['den']}"
-                if n["rates"]: ch=" → ".join(f"{l['key']} = "+(f"Relative({l['K']}, {l['phi']})" if "K" in l else f"Absolute({jr(l['dt'])}, {jr(l['tau'])})") for l in n["rates"])
+                if n["rates"]: ch=" → ".join(f"{l['key']} = "+(f"Relative({l['D']}, {l['phi']})" if "D" in l else f"Absolute({jr(l['dt'])}, {jr(l['tau'])})") for l in n["rates"])
         elif p in sc: tm=table(p,sc[p]["timing"],srows.get((p,sc[p]["key"])))
         T=types.get(n["type"],{})
         S=[]

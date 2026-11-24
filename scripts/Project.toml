@@ -8,4 +8,4 @@ TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [sources]
 RedstoneInspector = {path = ".."}
-RedstoneExamples = {url = "https://github.com/e271828e/Redstone.jl", subdir = "examples", rev = "7ea360094d89f658fe3d3e0909be1af6fa4f5365"}
+RedstoneExamples = {url = "https://github.com/e271828e/Redstone.jl", subdir = "examples", rev = "fcd3660618da4290696f49b0085831e50fc6cbba"}

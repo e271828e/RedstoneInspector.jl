@@ -107,8 +107,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Main.Synthetic.Plant",
@@ -168,8 +168,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 1,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -303,27 +303,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 982
             }
           ]

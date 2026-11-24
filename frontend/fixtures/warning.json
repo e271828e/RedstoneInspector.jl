@@ -65,8 +65,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Main.Synthetic.Gain",
@@ -105,8 +105,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Main.Synthetic.Gain",

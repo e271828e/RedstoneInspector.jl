@@ -1,7 +1,7 @@
 // Captures the inspector's existing surfaces on every committed fixture of one checkout.
 //   node capture.mjs <frontend dir> <out dir> [port]
 // The checkout's frontend must be built (`npm run build`). Each fixture gets the root canvas in
-// both color modes, the detail pane on four selections and the drawer's four tabs, each tab as
+// both color modes, the detail pane on four selections with its sections open and the drawer's four tabs, each tab as
 // a screenshot with the drawer at 640 px and as the tab body's text, which holds the rows a
 // screenshot cuts off.
 import { createRequire } from "node:module";
@@ -62,6 +62,12 @@ async function drop(page, name) {
   await page.waitForTimeout(150);
 }
 
+// Opens every closed section of the pane; the session keeps them open for the next node.
+async function openSections(page) {
+  const opened = await page.locator("aside.detail details.section:not([open]) > summary").evaluateAll((all) => all.map((s) => s.click()).length);
+  if (opened) await page.waitForTimeout(80);
+}
+
 const save = async (page, name) => { await page.screenshot({ path: join(out, `${name}.png`) }); log.push(`${name}.png`); };
 const saveText = async (page, selector, name) => {
   const text = await page.locator(selector).first().evaluate((el) => el.innerText).catch(() => "(absent)");
@@ -75,6 +81,7 @@ for (const name of fixtures) {
   {
     const { context, page } = await open(200);
     await drop(page, name);
+    await openSections(page);
     await save(page, `${name}.canvas-tier`);
     await saveText(page, "nav.tree", `${name}.tree`);
     await saveText(page, "footer.status", `${name}.status`);
@@ -102,6 +109,7 @@ for (const name of fixtures) {
         if ((await target.count()) === 0) continue;
         await target.first().click({ force: true });
         await page.waitForTimeout(120);
+        await openSections(page);
         await save(page, `${name}.detail-${what}`);
         await saveText(page, "aside.detail", `${name}.detail-${what}`);
       }
@@ -116,6 +124,7 @@ for (const name of fixtures) {
       const count = Math.min(await rows.count(), 60);
       for (let i = 0; i < count; i++) {
         await rows.nth(i).locator(".segment").click({ force: true });
+        await openSections(page);
         all.push(await page.locator("aside.detail").evaluate((el) => el.innerText));
       }
       writeFileSync(join(out, `${name}.detail-all-nodes.txt`), all.join("\n\n=====\n\n") + "\n");

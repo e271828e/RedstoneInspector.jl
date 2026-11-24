@@ -224,14 +224,15 @@ Open items live in `pending.md`.
    (`deployment_overlay.md` answer 14), and, from stage 2, the claiming
    writer, a row selecting the root pin; the home of stage 3's input
    widgets. Timing, in the notation of `deployment_overlay.md` answer 3:
-   anchors as `Aₖ (key)` with `Δtₖ`, `τₖ` and the declaring scope, anchor
-   0 as the base grid; a section on the base grid with the coarsest
+   anchors as `A₁ (key)` with `Δt`, `τ` and the declaring scope, `A₀` as
+   the base grid; a section on the base grid with the coarsest
    admissible tick, the pool entries that refine it, their alternatives
    and the prime attribution; scopes and components in the same columns, every
-   discrete primitive in walk order with `k`, `m`, `c`, `Δt` and `τ`,
+   discrete primitive in walk order with its anchor, `Dₐ`, `Φₐ`, `Δt` and
+   `τ`,
    sortable by period, with its rate-mode swatch. A deployment heads the
-   tab with its parameters and the steps per frame, adds `Dₖ` and `Φₖ` to
-   the anchors and `D` and `Φ` to the scopes and components, and draws
+   tab with its parameters and the steps per frame, adds `D₀` and `Φ₀` to
+   the anchors, the scopes and the components, and draws
    the hyperperiod chart, which a build descriptor says needs a
    deployment (`deployment_overlay.md` answers 9 and 11). Execution
    order: two
@@ -271,7 +272,10 @@ Open items live in `pending.md`.
    gave the pool's alternatives and the prime attribution no place.
    Amended 2026-11-24 (`deployment_overlay.md` answer 9, increment 10's
    look): the equations were the tables' caption, and each pool entry's
-   factor stood in the anchors table.*
+   factor stood in the anchors table. Amended 2026-11-24
+   (`deployment_overlay.md` answer 3, the pin bump to the core's `fcd3660`,
+   the user away): the timing columns read `k`, `m`, `c`, `D` and `Φ`, and
+   an anchor's `Δtₖ`, `τₖ`, `Dₖ` and `Φₖ`.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -291,7 +295,7 @@ Open items live in `pending.md`.
    that edge draw over a badge they meet. A
    deployment descriptor makes the `Δt` of the legend's `A₀` lines
    concrete and adds the hyperperiod chart to the drawer's timing tab: a
-   row per distinct `(D, Φ)` with the swatch of every triple on it and a
+   row per distinct `(D₀, Φ₀)` with the swatch of every triple on it and a
    mark per tick, the timeline whole or omitted, and the frame tops over
    the joint period (`deployment_overlay.md` answers 11 and 13).
    *Amended 2026-11-11 (increment 8's look pass, 1.7): every primitive
@@ -302,7 +306,9 @@ Open items live in `pending.md`.
    pills. Amended 2026-11-20 (`deployment_overlay.md` answers 11 and 13):
    the legend was to gain the concrete `Δt` and `(D, Φ)` on every line,
    and the chart was a timeline over one hyperperiod with a row per
-   triple, both waiting on a bump of the format.*
+   triple, both waiting on a bump of the format.
+   Amended 2026-11-24 (`deployment_overlay.md` answer 3, the pin bump to
+   the core's `fcd3660`, the user away): the pair was written `(D, Φ)`.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.

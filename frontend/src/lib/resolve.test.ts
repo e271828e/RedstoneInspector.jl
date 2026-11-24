@@ -74,7 +74,7 @@ describe("the resolution", () => {
           wires: [{ from: { path: "", port: "x" }, to: { path: "A", port: "x" } }] },
         { ...id, path: "A", field: "A", class: "assembly", inputs: [{ name: "x" }], outputs: [{ name: "x" }],
           wires: [{ from: { path: "A", port: "x" }, to: { path: "A/L", port: "e" } }, { from: { path: "A/L", port: "o" }, to: { path: "A", port: "x" } }] },
-        { ...id, path: "A/L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [f("e")], outputs: [f("o")] },
+        { ...id, path: "A/L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, D: 1, phi: 0 }, rates: [], inputs: [f("e")], outputs: [f("o")] },
       ],
       root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };

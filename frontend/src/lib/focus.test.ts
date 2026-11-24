@@ -79,8 +79,8 @@ describe("rekeyFocus", () => {
   it("drops the continuous color when the one node without a triple is a mixed assembly", () => {
     const f = (name: string): PrimitiveFace => ({ name, type: "Float64", kind: { kind: "float" }, pinned: false });
     const id = { type: "T", signature: "T", parameters: [] };
-    const primitive = (name: string, m: number) =>
-      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, m, c: 0 }, rates: [], inputs: [f("u")], outputs: [f("v")] });
+    const primitive = (name: string, D: number) =>
+      ({ ...id, path: `A/${name}`, field: name, class: "primitive" as const, tier: "discrete" as const, timing: { anchor: 0, D, phi: 0 }, rates: [], inputs: [f("u")], outputs: [f("v")] });
     // an assembly `A` of the discrete primitives `D1` and `D2` on two clocks, alone under the root
     const structure: StructureSection = {
       nodes: [

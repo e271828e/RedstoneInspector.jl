@@ -49,9 +49,9 @@ describe("a primitive's timing (deployment_overlay.md answer 10)", () => {
   it("timing_deployment's fast/outer/hold: the four frames of the record's example, and the chain under them, outermost first", () => {
     const r = nodeFacts(fixtureModel("timing_deployment"), "fast/outer/hold").timing!;
     expect(cells(r.table)).toEqual([
-      ["scope", "fast/outer", "K = 3", "φ = 1", "ticks of fast/outer"],
-      ["anchor", "A₂ (fast)", "m = 6", "c = 3", "ticks of A₂"],
-      ["base grid", "", "D = 36", "Φ = 18", "base ticks"],
+      ["scope", "fast/outer", "Dₛ = 3", "Φₛ = 1", "ticks of fast/outer"],
+      ["anchor", "A₂ (fast)", "Dₐ = 6", "Φₐ = 3", "ticks of A₂"],
+      ["base grid", "", "D₀ = 36", "Φ₀ = 18", "base ticks"],
       ["seconds", "", "Δt = 3/25 s", "τ = 3/50 s", ""],
     ]);
     expect(r.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → hold = Relative(3, 1)");
@@ -59,17 +59,17 @@ describe("a primitive's timing (deployment_overlay.md answer 10)", () => {
   it("a build has no base grid row: timing's fast/outer/hold", () => {
     expect(cells(nodeFacts(fixtureModel("timing"), "fast/outer/hold").timing!.table).map((c) => c[0])).toEqual(["scope", "anchor", "seconds"]);
   });
-  it("a component with its own anchor has no K and φ, so no scope row: timing's staggered", () => {
+  it("a component with its own anchor has no Dₛ and Φₛ, so no scope row: timing's staggered", () => {
     expect(cells(nodeFacts(fixtureModel("timing"), "staggered").timing!.table).map((c) => c[0])).toEqual(["anchor", "seconds"]);
   });
   it("the explicit Relative(1) stays in the chain: timing's fast/outer/same", () => {
     expect(nodeFacts(fixtureModel("timing"), "fast/outer/same").timing!.chain).toBe("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
   });
-  it("on A₀ under no keyed assembly: the root's base ticks, m·Δt_base and c·Δt_base in a build's seconds row, library's d_pid", () => {
+  it("on A₀ under no keyed assembly: the root's base ticks, Dₐ·Δt_base and Φₐ·Δt_base in a build's seconds row, library's d_pid", () => {
     const r = nodeFacts(fixtureModel("library"), "d_pid").timing!;
     expect(cells(r.table)).toEqual([
-      ["scope", "the root", "K = 2", "φ = 1", "base ticks"],
-      ["anchor", "A₀ (base)", "m = 2", "c = 1", "base ticks"],
+      ["scope", "the root", "Dₛ = 2", "Φₛ = 1", "base ticks"],
+      ["anchor", "A₀ (base)", "Dₐ = 2", "Φₐ = 1", "base ticks"],
       ["seconds", "", "Δt = 2·Δt_base", "τ = Δt_base", ""],
     ]);
     expect(r.chain).toBe("d_pid = Relative(2, 1)");
@@ -247,9 +247,9 @@ describe("other fixtures", () => {
     for (const facts of [levelFacts, nodeFacts]) {
       const deep = facts(m, "fast/outer/deep").timing!;
       expect(cells(deep.table)).toEqual([
-        ["scope", "fast/outer", "K = 2", "φ = 1", "ticks of fast/outer"],
-        ["anchor", "A₂ (fast)", "m = 4", "c = 3", "ticks of A₂"],
-        ["base grid", "", "D = 24", "Φ = 18", "base ticks"],
+        ["scope", "fast/outer", "Dₛ = 2", "Φₛ = 1", "ticks of fast/outer"],
+        ["anchor", "A₂ (fast)", "Dₐ = 4", "Φₐ = 3", "ticks of A₂"],
+        ["base grid", "", "D₀ = 24", "Φ₀ = 18", "base ticks"],
         ["seconds", "", "Δt = 2/25 s", "τ = 3/50 s", ""],
       ]);
       expect(deep.chain).toBeUndefined();
@@ -265,7 +265,7 @@ describe("other fixtures", () => {
       nodes: [
         { ...id, path: "", class: "assembly", inputs: [{ name: "x" }], outputs: [],
           wires: [{ from: { path: "", port: "x" }, to: { path: "L", port: "e" } }] },
-        { ...id, path: "L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, m: 1, c: 0 }, rates: [], inputs: [f("e")], outputs: [] },
+        { ...id, path: "L", field: "L", class: "primitive", tier: "continuous", timing: { anchor: 0, D: 1, phi: 0 }, rates: [], inputs: [f("e")], outputs: [] },
       ],
       root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };

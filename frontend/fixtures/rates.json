@@ -109,8 +109,8 @@
           "tier": "continuous",
           "timing": {
             "anchor": 0,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [],
           "type": "Main.Synthetic.Ramp",
@@ -217,8 +217,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 1,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -324,8 +324,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 1,
-            "m": 2,
-            "c": 0
+            "D": 2,
+            "phi": 0
           },
           "rates": [
             {
@@ -343,7 +343,7 @@
             {
               "scope": "fast",
               "key": "outer",
-              "K": 2,
+              "D": 2,
               "phi": 0
             }
           ],
@@ -437,8 +437,8 @@
           "tier": "discrete",
           "timing": {
             "anchor": 2,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           },
           "rates": [
             {
@@ -512,8 +512,8 @@
           "key": "fast",
           "timing": {
             "anchor": 1,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           }
         },
         {
@@ -521,8 +521,8 @@
           "key": "outer",
           "timing": {
             "anchor": 1,
-            "m": 2,
-            "c": 0
+            "D": 2,
+            "phi": 0
           }
         },
         {
@@ -530,8 +530,8 @@
           "key": "slow",
           "timing": {
             "anchor": 2,
-            "m": 1,
-            "c": 0
+            "D": 1,
+            "phi": 0
           }
         }
       ],
@@ -577,27 +577,27 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 981
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 978
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 979
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 980
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/XbboR/src/assembly.jl",
+              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
               "line": 982
             }
           ]

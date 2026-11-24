@@ -1,6 +1,6 @@
 // The legend's short line and the fit around it (deployment_overlay.md answer 13, amending visual_grammar.md answer
-// 6): a line is the swatch, `Aₖ (key) · m · c` and the `Δt`, a deployment changing only the `A₀` lines' `Δt` from
-// symbolic to concrete, `D`, `Φ` and `τ` in the line's tooltip; the palette's order the build's alone. The fit leaves
+// 6): a line is the swatch, `A₁ (key) · Dₐ · Φₐ` and the `Δt`, a deployment changing only the `A₀` lines' `Δt` from
+// symbolic to concrete, `D₀`, `Φ₀` and `τ` in the line's tooltip; the palette's order the build's alone. The fit leaves
 // the legend's box clear, taking the larger of two candidates, the box's height free at the bottom or its width free
 // at the left: a rule each check recomputes from the DOM. Lines from increment 10's oracle ("legend lines").
 import { test, type Page } from "@playwright/test";
@@ -15,17 +15,17 @@ const read = (page: Page) => lines(page).evaluateAll((ls) => ls.map((l) => [
 const PADDING = 24;
 const MAX_SCALE = 2;
 
-test("library and library_deployment: the short line, the A₀ lines' Δt symbolic then concrete and nothing else changed, D Φ τ in the tooltip, the steps the build's", async ({ page }) => {
+test("library and library_deployment: the short line, the A₀ lines' Δt symbolic then concrete and nothing else changed, D₀ Φ₀ τ in the tooltip, the steps the build's", async ({ page }) => {
   await drop(page, "library");
   await press(page, "r");
   const build = await read(page);
   expect(build).toEqual([
     ["", "continuous", "", expect.stringMatching(/^No rate/)],
-    ["0", "A₀ (base) · m 1 · c 0", "Δt_base", "τ 0; the base grid"],
-    ["1", "A₀ (base) · m 2 · c 0", "2·Δt_base", "τ 0; the base grid"],
-    ["2", "A₀ (base) · m 2 · c 1", "2·Δt_base", "τ Δt_base; the base grid"],
-    ["3", "A₂ (dss) · m 1 · c 0", "1/50 s", "τ 0; dss at the root"],
-    ["4", "A₁ (noise) · m 1 · c 0", "1/10 s", "τ 0; noise at the root"],
+    ["0", "A₀ (base) · Dₐ 1 · Φₐ 0", "Δt_base", "τ 0; the base grid"],
+    ["1", "A₀ (base) · Dₐ 2 · Φₐ 0", "2·Δt_base", "τ 0; the base grid"],
+    ["2", "A₀ (base) · Dₐ 2 · Φₐ 1", "2·Δt_base", "τ Δt_base; the base grid"],
+    ["3", "A₂ (dss) · Dₐ 1 · Φₐ 0", "1/50 s", "τ 0; dss at the root"],
+    ["4", "A₁ (noise) · Dₐ 1 · Φₐ 0", "1/10 s", "τ 0; noise at the root"],
   ]);
   await shot(page, "library", "", "legend");
   // the mode is kept per browser, so the deployment opens in rate mode
@@ -33,11 +33,11 @@ test("library and library_deployment: the short line, the A₀ lines' Δt symbol
   const deployed = await read(page);
   expect(deployed.map((l) => [l[0], l[2], l[3]])).toEqual([
     ["", "", expect.stringMatching(/^No rate/)],
-    ["0", "1/100 s", "D 1 · Φ 0 · τ 0; the base grid"],
-    ["1", "1/50 s", "D 2 · Φ 0 · τ 0; the base grid"],
-    ["2", "1/50 s", "D 2 · Φ 1 · τ 1/100 s; the base grid"],
-    ["3", "1/50 s", "D 2 · Φ 0 · τ 0; dss at the root"],
-    ["4", "1/10 s", "D 10 · Φ 0 · τ 0; noise at the root"],
+    ["0", "1/100 s", "D₀ 1 · Φ₀ 0 · τ 0; the base grid"],
+    ["1", "1/50 s", "D₀ 2 · Φ₀ 0 · τ 0; the base grid"],
+    ["2", "1/50 s", "D₀ 2 · Φ₀ 1 · τ 1/100 s; the base grid"],
+    ["3", "1/50 s", "D₀ 2 · Φ₀ 0 · τ 0; dss at the root"],
+    ["4", "1/10 s", "D₀ 10 · Φ₀ 0 · τ 0; noise at the root"],
   ]);
   // the deployment keeps the build's steps and texts; only an A₀ line's Δt moves
   for (const [i, b] of build.entries()) {
@@ -51,8 +51,8 @@ test("timing_deployment: no word of the line names a quantity, the Δt column al
   await drop(page, "timing_deployment");
   await press(page, "r");
   expect((await read(page)).map((l) => [l[1], l[2]])).toEqual([
-    ["continuous", ""], ["A₂ (fast) · m 1 · c 0", "1/50 s"], ["A₂ (fast) · m 2 · c 1", "1/25 s"], ["A₂ (fast) · m 4 · c 3", "2/25 s"],
-    ["A₁ (staggered) · m 1 · c 0", "1/10 s"], ["A₂ (fast) · m 6 · c 3", "3/25 s"],
+    ["continuous", ""], ["A₂ (fast) · Dₐ 1 · Φₐ 0", "1/50 s"], ["A₂ (fast) · Dₐ 2 · Φₐ 1", "1/25 s"], ["A₂ (fast) · Dₐ 4 · Φₐ 3", "2/25 s"],
+    ["A₁ (staggered) · Dₐ 1 · Φₐ 0", "1/10 s"], ["A₂ (fast) · Dₐ 6 · Φₐ 3", "3/25 s"],
   ]);
   const lefts = await lines(page).evaluateAll((ls) => ls.map((l) => l.querySelector(".dt")!.getBoundingClientRect().left));
   expect(Math.max(...lefts) - Math.min(...lefts)).toBeLessThan(0.5);

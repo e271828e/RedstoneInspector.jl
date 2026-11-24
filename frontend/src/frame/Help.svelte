@@ -38,7 +38,7 @@
   const pillTop = BADGE_BOX.y + BADGE_TOP;
   /** The legend sample's two lines in the canvas's short form, without their `Δt`, its box in the legend's CSS sizes, scaled to the frame. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
-  const legendLines = ["A₀ (base) · m 1 · c 0", "A₁ (fast) · m 2 · c 1"];
+  const legendLines = ["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"];
   const legendWidth = Math.ceil(Math.max(...legendLines.map((t) => textWidth(t, LEGEND_FONT)))) + 38;
   const legendScale = Math.min(1, (W - 1) / legendWidth);
   const wires = [["number", ""], ["flag", "flag"], ["vector", "vector"], ["struct", "struct"]];
@@ -182,7 +182,7 @@
           {/each}
         </tbody>
       </table>
-      <p>{LAW_LEAD}</p>
+      <p>{@render text(LAW_LEAD)}</p>
       <table class="law">
         <tbody>
           {#each EQUATIONS as e (e.frame)}

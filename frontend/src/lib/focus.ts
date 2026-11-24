@@ -10,7 +10,7 @@ import { blockTriple, CONTINUOUS, fromRootInput, mixed, stepsOf, tripleKey, wire
 const keyOf = (t: Triple | undefined): string => (t ? tripleKey(t) : CONTINUOUS);
 /** A primitive's own key: a discrete primitive's timing, else the continuous color. */
 const primitiveKey = (n: Node): string =>
-  n.class === "primitive" && n.tier === "discrete" ? tripleKey([n.timing.anchor, n.timing.m, n.timing.c]) : CONTINUOUS;
+  n.class === "primitive" && n.tier === "discrete" ? tripleKey([n.timing.anchor, n.timing.D, n.timing.phi]) : CONTINUOUS;
 
 /** Whether a primitive of the key lies anywhere beneath an assembly. */
 function primitiveBeneath(model: Model, path: string, key: string): boolean {
@@ -67,13 +67,13 @@ export function rekeyFocus(key: string, old: Model, next: Model): string | undef
   if (key === CONTINUOUS) {
     return next.structure.nodes.some((n) => (n.path !== "" || n.class === "primitive") && !blockTriple(next, n.path) && !(n.class === "assembly" && mixed(next, n.path))) ? key : undefined;
   }
-  const [a, m, c] = key.split(",").map(Number);
+  const [a, D, phi] = key.split(",").map(Number);
   let anchor = 0;
   if (a > 0) {
     const was = old.structure!.anchors[a - 1];
     anchor = next.structure.anchors.findIndex((x) => x.key === was.key && x.scope === was.scope) + 1;
     if (anchor === 0) return undefined;
   }
-  const k = tripleKey([anchor, m, c]);
+  const k = tripleKey([anchor, D, phi]);
   return stepsOf(next).has(k) ? k : undefined;
 }

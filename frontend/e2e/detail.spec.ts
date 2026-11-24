@@ -215,7 +215,7 @@ test.describe("closed_loop", () => {
     await expectLabels(page, ["type", "class", "member"]);
     await expect(fact(page, "class")).toHaveText("primitive, discrete");
     await openSection(page, "timing");
-    await expect(framesRows(page)).toHaveText([/^anchor\s*A₄ \(q_ctl\)\s*m = 1\s*c = 0\s*ticks of A₄$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
+    await expect(framesRows(page)).toHaveText([/^anchor\s*A₄ \(q_ctl\)\s*Dₐ = 1\s*Φₐ = 0\s*ticks of A₄$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
     await expect(section(page, "timing").locator('tr[data-frame="anchor"] .name')).toHaveAttribute("title", "q_ctl at pid_controller");
     await expect(section(page, "timing").locator("p.chain")).toHaveText("q_ctl = Absolute(1//50, 0//1)");
   });
@@ -326,12 +326,12 @@ test("rates: level fast's TIMING after the locations and before the parameters, 
   await expect(pane(page)).toHaveAttribute("data-kind", "level");
   expect(await sectionNames(page)).toEqual(["signature", "docstring", "locations", "timing", "parameters", "faces"]);
   await openSection(page, "timing");
-  await expect(framesRows(page)).toHaveText([/^anchor\s*A₁ \(fast\)\s*m = 1\s*c = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
+  await expect(framesRows(page)).toHaveText([/^anchor\s*A₁ \(fast\)\s*Dₐ = 1\s*Φₐ = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/50 s\s*τ = 0$/]);
   await expect(section(page, "timing").locator("p.chain")).toHaveCount(0);
   await page.locator('g.block[data-id="fast/outer"]').dblclick();
   await page.locator(readyLevel("fast/outer")).waitFor();
   await page.locator('g.block[data-id="fast/outer/hold"]').click();
-  await expect(framesRows(page)).toHaveText([/^scope\s*fast\/outer\s*K = 1\s*φ = 0\s*ticks of fast\/outer$/, /^anchor\s*A₁ \(fast\)\s*m = 2\s*c = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/25 s\s*τ = 0$/]);
+  await expect(framesRows(page)).toHaveText([/^scope\s*fast\/outer\s*Dₛ = 1\s*Φₛ = 0\s*ticks of fast\/outer$/, /^anchor\s*A₁ \(fast\)\s*Dₐ = 2\s*Φₐ = 0\s*ticks of A₁$/, /^seconds\s*Δt = 1\/25 s\s*τ = 0$/]);
   await expect(section(page, "timing").locator("p.chain")).toHaveText("fast = Absolute(1//50, 0//1) → outer = Relative(2, 0)");
 });
 

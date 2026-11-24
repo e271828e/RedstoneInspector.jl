@@ -126,10 +126,10 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   await expect(anchors.first()).toHaveAttribute("data-index", "0");
   await expect(anchors.first()).toContainText("A₀ (base)");
   await expect(anchors.first().locator("button.row")).toHaveCount(0);
-  await expect(body(page).locator("table.anchors th")).toHaveText(["k", "Δtₖ", "τₖ", "declared in"]);
+  await expect(body(page).locator("table.anchors th")).toHaveText(["anchor", "Δt", "τ", "declared in"]);
   const a1 = body(page).locator('tr.anchor[data-index="1"]');
   await expect(a1.locator("td.scope")).toHaveText("sensing");
-  await expect(a1.locator("td.k")).toHaveText("A₁ (noise)");
+  await expect(a1.locator("td.anchor")).toHaveText("A₁ (noise)");
   await expect(a1.locator("td.dt")).toHaveText("1/50 s");
   await expect(body(page).locator("table.scopes")).toHaveCount(0);
   await expect(body(page).locator("p.empty")).toHaveText(["No assembly is keyed in sample_times; every key names a primitive."]);
@@ -143,9 +143,9 @@ test("closed_loop: the order's two groups, 13 and 16, and 16 presumed edges, the
   // the base grid's row takes no click and shows no pointer; an anchor row's name cell selects its scope's node
   expect(await cursor(anchors.first())).not.toBe("pointer");
   expect(await cursor(a1)).toBe("pointer");
-  await body(page).locator('tr.anchor[data-index="2"] td.k').click();
+  await body(page).locator('tr.anchor[data-index="2"] td.anchor').click();
   await expect(selected(page)).toHaveAttribute("data-id", "pid_controller");
-  await anchors.first().locator("td.k").click();
+  await anchors.first().locator("td.anchor").click();
   await expect(selected(page)).toHaveAttribute("data-id", "pid_controller");
 
   // the swatch is the primitive's rate fill in either mode
@@ -235,7 +235,7 @@ test("closed_loop_deployment: no closing sentence, the chart in its place, the a
   await expect(body(page).locator("p.deployment-note")).toHaveCount(0);
   await expect(body(page).locator(".chart")).toHaveCount(1);
   await expect(body(page).locator("table.anchors tr.anchor")).toHaveCount(11);
-  await expect(body(page).locator('tr.anchor[data-index="1"] td.D')).toHaveText("2");
+  await expect(body(page).locator('tr.anchor[data-index="1"] td.D0')).toHaveText("2");
 });
 
 test("rates: three scopes in the notation's columns, a scope row selecting its assembly, the components' Δt", async ({ page }) => {
@@ -248,9 +248,9 @@ test("rates: three scopes in the notation's columns, a scope row selecting its a
   await expect(body(page).locator("table.scopes tr.scope")).toHaveCount(3);
   const outer = body(page).locator('tr.scope[data-path="fast/outer"]');
   await expect(outer).toHaveAttribute("data-key", "outer");
-  await expect(outer.locator("td.k, td.m, td.c, td.dt")).toHaveText(["A₁ (fast)", "2", "0", "1/25 s"]);
+  await expect(outer.locator("td.anchor, td.Da, td.phia, td.dt")).toHaveText(["A₁ (fast)", "2", "0", "1/25 s"]);
   await expect(body(page).locator("table.components td.dt")).toHaveText(["1/50 s", "1/25 s", "1/10 s"]);
-  await outer.locator("td.k").click();
+  await outer.locator("td.anchor").click();
   await page.locator(readyLevel("fast")).waitFor();
   await expect(page.locator('g.block.selected[data-id="fast/outer"]')).toHaveCount(1);
 });

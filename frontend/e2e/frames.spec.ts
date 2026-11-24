@@ -44,14 +44,14 @@ test("timing_deployment's fast/outer/hold: the section TIMING, collapsed at firs
   await expect(heading(page)).toHaveText(/^timing$/);
   await expect(timing(page).locator("table.frames")).toBeVisible();
   expect(await frames(timing(page))).toEqual([
-    ["scope", "scope fast/outer | K = 3 | φ = 1 | ticks of fast/outer"],
-    ["anchor", "anchor A₂ (fast) | m = 6 | c = 3 | ticks of A₂"],
-    ["base grid", "base grid | D = 36 | Φ = 18 | base ticks"],
+    ["scope", "scope fast/outer | Dₛ = 3 | Φₛ = 1 | ticks of fast/outer"],
+    ["anchor", "anchor A₂ (fast) | Dₐ = 6 | Φₐ = 3 | ticks of A₂"],
+    ["base grid", "base grid | D₀ = 36 | Φ₀ = 18 | base ticks"],
     ["seconds", "seconds | Δt = 3/25 s | τ = 3/50 s"],
   ]);
   await expect(timing(page).locator("table.frames thead th")).toHaveText(["", "period", "phase", ""]);
-  // each frame's head is titled with its pair and unit, φ and Φ told apart by the row
-  for (const [f, pair] of [["scope", "K and φ"], ["anchor", "m and c"], ["base grid", "D and Φ"], ["seconds", "Δt and τ"]]) {
+  // each frame's head is titled with its pair and unit, the three counts told apart by their subscripts
+  for (const [f, pair] of [["scope", "Dₛ and Φₛ"], ["anchor", "Dₐ and Φₐ"], ["base grid", "D₀ and Φ₀"], ["seconds", "Δt and τ"]]) {
     await expect(timing(page).locator(`tr[data-frame="${f}"] th.frame`)).toHaveAttribute("title", new RegExp(pair));
   }
   // the anchor's name carries its own title, the rest of the row's head the frame's
@@ -69,7 +69,7 @@ test("timing, a build: no base grid row; staggered, with its own anchor, no scop
   await selectBlock(page, "staggered");
   await openSection(page, "timing");
   expect(await frames(timing(page))).toEqual([
-    ["anchor", "anchor A₁ (staggered) | m = 1 | c = 0 | ticks of A₁"],
+    ["anchor", "anchor A₁ (staggered) | Dₐ = 1 | Φₐ = 0 | ticks of A₁"],
     ["seconds", "seconds | Δt = 1/10 s | τ = 1/300 s"],
   ]);
   await expect(timing(page).locator('tr[data-frame="anchor"] .name')).toHaveAttribute("title", "staggered at the root");
@@ -83,13 +83,13 @@ test("timing, a build: no base grid row; staggered, with its own anchor, no scop
   await expect(timing(page).locator("p.chain")).toHaveText("fast = Absolute(1//50, 0//1) → outer = Relative(2, 1) → same = Relative(1, 0)");
 });
 
-test("library and library_deployment: d_pid on A₀ under no keyed assembly reads the root in base ticks, its build's seconds m·Δt_base and c·Δt_base, its deployment's exact; d_lqr's empty chain has no line", async ({ page }) => {
+test("library and library_deployment: d_pid on A₀ under no keyed assembly reads the root in base ticks, its build's seconds Dₐ·Δt_base and Φₐ·Δt_base, its deployment's exact; d_lqr's empty chain has no line", async ({ page }) => {
   await drop(page, "library");
   await selectBlock(page, "d_pid");
   await openSection(page, "timing");
   expect(await frames(timing(page))).toEqual([
-    ["scope", "scope the root | K = 2 | φ = 1 | base ticks"],
-    ["anchor", "anchor A₀ (base) | m = 2 | c = 1 | base ticks"],
+    ["scope", "scope the root | Dₛ = 2 | Φₛ = 1 | base ticks"],
+    ["anchor", "anchor A₀ (base) | Dₐ = 2 | Φₐ = 1 | base ticks"],
     ["seconds", "seconds | Δt = 2·Δt_base | τ = Δt_base"],
   ]);
   await expect(timing(page).locator("p.chain")).toHaveText("d_pid = Relative(2, 1)");
@@ -101,9 +101,9 @@ test("library and library_deployment: d_pid on A₀ under no keyed assembly read
   await selectBlock(page, "d_pid");
   await openSection(page, "timing");
   expect(await frames(timing(page))).toEqual([
-    ["scope", "scope the root | K = 2 | φ = 1 | base ticks"],
-    ["anchor", "anchor A₀ (base) | m = 2 | c = 1 | base ticks"],
-    ["base grid", "base grid | D = 2 | Φ = 1 | base ticks"],
+    ["scope", "scope the root | Dₛ = 2 | Φₛ = 1 | base ticks"],
+    ["anchor", "anchor A₀ (base) | Dₐ = 2 | Φₐ = 1 | base ticks"],
+    ["base grid", "base grid | D₀ = 2 | Φ₀ = 1 | base ticks"],
     ["seconds", "seconds | Δt = 1/50 s | τ = 1/100 s"],
   ]);
   await shot(page, "library_deployment", "", "frames");
@@ -119,9 +119,9 @@ test("timing_deployment's keyed assemblies: fast/outer's TIMING selected as a bl
   await expect(pane(page)).toHaveAttribute("data-kind", "assembly");
   await openSection(page, "timing");
   const outer = [
-    ["scope", "scope fast | K = 2 | φ = 1 | ticks of fast"],
-    ["anchor", "anchor A₂ (fast) | m = 2 | c = 1 | ticks of A₂"],
-    ["base grid", "base grid | D = 12 | Φ = 6 | base ticks"],
+    ["scope", "scope fast | Dₛ = 2 | Φₛ = 1 | ticks of fast"],
+    ["anchor", "anchor A₂ (fast) | Dₐ = 2 | Φₐ = 1 | ticks of A₂"],
+    ["base grid", "base grid | D₀ = 12 | Φ₀ = 6 | base ticks"],
     ["seconds", "seconds | Δt = 1/25 s | τ = 1/50 s"],
   ];
   expect(await frames(timing(page))).toEqual(outer);
@@ -135,15 +135,15 @@ test("timing_deployment's keyed assemblies: fast/outer's TIMING selected as a bl
   await expect(timing(page).locator("p.chain")).toHaveCount(0);
   await openPathFrom(page, "fast/outer/deep");
   expect(await frames(timing(page))).toEqual([
-    ["scope", "scope fast/outer | K = 2 | φ = 1 | ticks of fast/outer"],
-    ["anchor", "anchor A₂ (fast) | m = 4 | c = 3 | ticks of A₂"],
-    ["base grid", "base grid | D = 24 | Φ = 18 | base ticks"],
+    ["scope", "scope fast/outer | Dₛ = 2 | Φₛ = 1 | ticks of fast/outer"],
+    ["anchor", "anchor A₂ (fast) | Dₐ = 4 | Φₐ = 3 | ticks of A₂"],
+    ["base grid", "base grid | D₀ = 24 | Φ₀ = 18 | base ticks"],
     ["seconds", "seconds | Δt = 2/25 s | τ = 3/50 s"],
   ]);
   await shot(page, "timing_deployment", "fast/outer/deep", "frames");
   // the nested component's own table derives against deep, its nearest scope
   await selectBlock(page, "fast/outer/deep/hold");
-  expect((await frames(timing(page)))[0]).toEqual(["scope", "scope fast/outer/deep | K = 1 | φ = 0 | ticks of fast/outer/deep"]);
+  expect((await frames(timing(page)))[0]).toEqual(["scope", "scope fast/outer/deep | Dₛ = 1 | Φₛ = 0 | ticks of fast/outer/deep"]);
   // the default pane is narrow (360 px): the longest names still fit without a sideways scroll
   expect(await over(page)).toBeLessThanOrEqual(0);
   await page.locator('nav.breadcrumb a[data-path=""]').click();
