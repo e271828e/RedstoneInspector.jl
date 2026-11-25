@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keyName, pressPrefix, releasePrefix, type Prefix } from "./prefix";
+import { endsHold, keyName, pressPrefix, releasePrefix, type Prefix } from "./prefix";
 
 const z: Prefix = { key: "z", held: true, used: false };
 const tapped: Prefix = { key: "z", held: false, used: false };
@@ -45,6 +45,25 @@ describe("pressPrefix", () => {
 
   it("leaves a modifier alone, so Shift reaches the T of gT", () => {
     for (const k of ["Shift", "Alt", "AltGraph", "CapsLock"]) expect(pressPrefix(g, k), k).toBeUndefined();
+  });
+
+  it("ends a hold of z at an Alt key, used or not, and leaves a tapped z waiting", () => {
+    for (const k of ["Alt", "AltGraph"]) {
+      expect(pressPrefix(z, k), k).toEqual({ next: undefined });
+      expect(pressPrefix({ ...z, used: true }, k), k).toEqual({ next: undefined });
+      expect(pressPrefix(tapped, k), k).toBeUndefined();
+    }
+    for (const k of ["Shift", "CapsLock"]) expect(pressPrefix(z, k), k).toBeUndefined();
+  });
+});
+
+describe("endsHold", () => {
+  it("is true for an Alt key under a held z alone", () => {
+    expect(endsHold(z, "Alt")).toBe(true);
+    expect(endsHold(z, "AltGraph")).toBe(true);
+    expect(endsHold(tapped, "Alt")).toBe(false);
+    expect(endsHold(undefined, "Alt")).toBe(false);
+    expect(endsHold(z, "Shift")).toBe(false);
   });
 });
 

@@ -19,12 +19,13 @@
   import StatusBar from "./frame/StatusBar.svelte";
   import Tree from "./frame/Tree.svelte";
   import { parsePortId } from "./lib/level";
+  import { dragged } from "./frame/tabs/rowClick";
   import { connect, sendOpenLocation } from "./live/socket";
   import { fromFile, parseDescriptor, type Loaded, type Refusal } from "./lib/loader";
   import { loadModel } from "./lib/model";
   import { nearest, stopStep, walkOf, type Direction, type Stop } from "./lib/navigate";
   import { outlineRows, rowSelection, treeStep } from "./lib/outline";
-  import { keyName, pressPrefix, releasePrefix, type Prefix } from "./lib/prefix";
+  import { endsHold, keyName, pressPrefix, releasePrefix, type Prefix } from "./lib/prefix";
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import { legendLit, legendMarks } from "./lib/focus";
   import { diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./lib/diagnostics";
@@ -135,16 +136,21 @@
     if (!r.ok) {
       load(undefined);
       refusal = r.reason;
+      prefix = undefined;
       return;
     }
     refusal = undefined;
     pushed = fromSocket;
-    // A replaced canvas takes the focus with it; the region that held it gets it back.
+    // A replaced canvas takes the focus with it, and a moved stop loses it; the stop gets it back while it stands, else
+    // the region that held it.
     const held = session.model ? session.focus : undefined;
+    const stop = paneFocus();
     load(loadModel(r));
     if (held) {
       tick().then(() => {
-        if (!document.activeElement || document.activeElement === document.body) rootOf(held)?.focus();
+        if (document.activeElement && document.activeElement !== document.body) return;
+        if (stop?.isConnected) stop.focus({ preventScroll: true });
+        else rootOf(held)?.focus();
       });
     }
   }
@@ -206,6 +212,18 @@
     });
   });
 
+  // A pane's keyed rows move a stop when the selection, the level or the model changes, and the browser blurs a moved
+  // focused element; the stop gets the focus back while it stands (answer 11). A removed one is the removal rule's.
+  $effect.pre(() => {
+    void session.selection;
+    void session.level;
+    void session.model;
+    const stop = paneFocus();
+    if (stop) tick().then(() => {
+      if (stop.isConnected && document.activeElement === document.body) stop.focus({ preventScroll: true });
+    });
+  });
+
   /** A location click: sent to the editor while connected, else false and the pane copies it. */
   const onlocation = (file: string, line: number) => sendOpenLocation(file, line);
 
@@ -215,6 +233,11 @@
 
   const regionOf = (t: Element | null): Region | undefined => REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
   const rootOf = (region: Region) => document.querySelector<HTMLElement>(REGIONS.find(([r]) => r === region)![1]);
+  /** The focused element inside the detail pane or the drawer, its root apart. */
+  function paneFocus(): HTMLElement | undefined {
+    const a = document.activeElement;
+    return a instanceof HTMLElement && !a.matches("aside.detail, section.drawer") && a.closest("aside.detail, section.drawer") ? a : undefined;
+  }
 
   /** Tab and Shift-Tab: the next or previous region root present, wrapping; false when there is none. */
   function cycle(back: boolean): boolean {
@@ -356,6 +379,8 @@
     if (region === "tree" && model?.tree) {
       const rows = outlineRows(model.tree, model.label, session.expanded);
       select(rowSelection(model.tree, session.level, rows[last ? rows.length - 1 : 0]));
+      // the tree scrolls on a change of selection, and the row may already be the selected one
+      tick().then(() => document.querySelector("nav.tree .row.selected")?.scrollIntoView({ block: "nearest" }));
     } else if (region === "detail" || region === "drawer") {
       const all = stopsOf(region);
       const walk = walkOf(all.map(asStop));
@@ -434,7 +459,10 @@
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
     }
-    if (typing(e.target)) return;
+    if (typing(e.target)) {
+      if (endsHold(prefix, name)) prefix = undefined;
+      return;
+    }
     const p = session.model && !modified && (prefix || !e.altKey) ? pressPrefix(prefix, name, e.repeat) : undefined;
     if (p) {
       e.preventDefault();
@@ -485,7 +513,7 @@
     else if (e.key === "0") canvasView?.fit();
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
-    else if (e.key === "n" || e.key === "N") stepSearch(e.key === "N" ? -1 : 1);
+    else if (name === "n" || name === "N") stepSearch(name === "N" ? -1 : 1);
     else if (name === "x" || name === "X") canvasView?.undrag(name === "X");
     else if (e.key === "/") focusFilter() || focusSearch();
     else if (name === "c") setMode(prefs.mode === "tier" ? "rate" : "tier");
@@ -498,13 +526,17 @@
 
   /**
    * A click on a stop, or on a row elsewhere than on its button, puts the cursor on it, before the click acts: WebKit
-   * focuses no button and no link, and no browser a row.
+   * focuses no button and no link, and no browser a row. A click that only left a text selection on the row moves
+   * nothing, since WebKit's `focus()` would clear it before the row reads it (answer 6).
    */
   function onclick(e: MouseEvent) {
     const t = e.target instanceof Element ? e.target : null;
     const region = regionOf(t);
     if (!t || (region !== "detail" && region !== "drawer")) return;
-    const at = t.closest("summary, button, a[href]") ?? t.closest("tr, .line, li.edge")?.querySelector("button.row");
+    const stop = t.closest("summary, button, a[href]");
+    const row = t.closest("tr, .line, li.edge");
+    if (!stop && row && dragged(e, row)) return;
+    const at = stop ?? row?.querySelector("button.row");
     stopsOf(region).find((s) => s === at)?.focus({ preventScroll: true });
   }
 

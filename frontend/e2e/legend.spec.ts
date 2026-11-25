@@ -5,7 +5,7 @@
 // leaves it clear, taking the larger of two candidates, its height free at the bottom or its width free at the left: a
 // rule each check recomputes from the DOM. Lines from increment 10's oracle ("legend lines").
 import { test, type Page } from "@playwright/test";
-import { drop, expect, press, shot, viewBox } from "./fixtures";
+import { drop, expect, press, pressAll, shot, viewBox } from "./fixtures";
 
 const lines = (page: Page) => page.locator(".viewport .legend li");
 /** Each line's step, its cells joined by a bar, and its tooltip. */
@@ -110,6 +110,26 @@ test("library_deployment in a low window: a chart swatch's press scrolls its lin
   await swatch.dispatchEvent("click");
   await expect(last).toHaveAttribute("aria-pressed", "true");
   expect(await inView()).toBe(true);
+});
+
+test("library_deployment under a canvas narrower than the legend: a chart swatch's press scrolls nothing outside the legend", async ({ page }) => {
+  await page.setViewportSize({ width: 760, height: 700 });
+  await drop(page, "library_deployment");
+  await press(page, "c");
+  // the strip's buttons lie past the narrow window's edge
+  await pressAll(page, "g", "t", "g", "t", "g", "t");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-tab", "timing");
+  const widths = () => page.evaluate(() => [document.querySelector(".viewport")!.clientWidth, document.querySelector<HTMLElement>(".viewport .legend")!.offsetWidth]);
+  const [canvas, legend] = await widths();
+  expect(canvas).toBeLessThan(legend);
+  await page.locator("section.drawer button.swatch").last().dispatchEvent("click");
+  await expect(page.locator('.viewport .legend button.line[aria-pressed="true"]')).toHaveCount(1);
+  const scrolled = await page.evaluate(() => {
+    const out: string[] = [];
+    for (let e = document.querySelector(".viewport .legend")!.parentElement; e; e = e.parentElement) if (e.scrollTop || e.scrollLeft) out.push(e.className);
+    return out;
+  });
+  expect(scrolled).toEqual([]);
 });
 
 /**

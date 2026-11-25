@@ -50,7 +50,7 @@ export const TERMS: Term[] = [
   { key: "hue", term: "reserved hue", sample: "hue", line: "Red for errors, amber for warnings, blue for highlight, all absent from the rate palette." },
   {
     key: "legend", term: "legend", sample: "legend",
-    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock: a deployment's by `D₀ · Φ₀`, `Δt` and its anchor, a build's by `Δt · τ` and its anchor. Its tooltip adds the anchor's key and scope, `Dₐ` and `Φₐ`. A click on a line dims what does not run on it.",
+    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock: a deployment's by `D₀ · Φ₀`, `Δt` and its anchor, a build's by `Δt · τ` and its anchor. Its tooltip adds the anchor's key and scope, `Dₐ` and `Φₐ`, and a deployment's `τ`. A click on a line dims what does not run on it.",
   },
   {
     key: "pin", term: "pin", sample: "pin",
@@ -127,11 +127,11 @@ export const KEYS: [string[], string][] = [
   [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the drawer, `j` and `k` move between the rows, `h` and `l` along a row's controls"],
   [["←", "↓", "↑", "→"], "on the canvas or with nothing focused, pan the canvas"],
   [["Enter"], "press the focused control of the detail pane or the drawer; with none, open the selected assembly"],
-  [["Shift-h", "Shift-l"], "back and forward between the levels opened since the page loaded; nothing before the first"],
+  [["Shift-h", "Shift-l"], "back and forward between the levels opened since the page loaded; nothing before the first or past the last"],
   [["Shift-j"], "open the selected assembly"],
   [["Shift-k", "Backspace", "Alt-↑"], "go to the parent, the child left selected"],
   [["zh", "zj", "zk", "zl"], "pan the canvas, or scroll the focused pane"],
-  [["zz"], "bring the selected component, the selected row or the focused control to the middle"],
+  [["zz"], "bring the selection drawn on the canvas, the selected row or the focused control to the middle"],
   [["d", "u"], "half a page down, up: a pane scrolls, the canvas pans"],
   [["0"], "fit the level"],
   [["+", "=", "zi"], "zoom in"],

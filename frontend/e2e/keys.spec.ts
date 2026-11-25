@@ -10,7 +10,7 @@
 // help.spec.ts's, the cursor in the panes is cursor.spec.ts's, the tree's keys tree.spec.ts's. The geometric pins are recomputed here from the
 // DOM, by the brief's rules.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, clickWire, drop, expect, hash, press, pressAll, readyLevel, shot, viewBox } from "./fixtures";
+import { blockBoxes, clickWire, cursor, drop, dropOver, expect, hash, press, pressAll, readyLevel, shot, viewBox } from "./fixtures";
 
 type Box = { id: string; x: number; y: number; width: number; height: number };
 type Dir = "h" | "j" | "k" | "l";
@@ -509,11 +509,13 @@ test("a held z acts on every h j k l i o under it, its own repeats doing nothing
   await expect(prefix(page)).toHaveCount(0);
 });
 
-test("the window losing the focus or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur (ruling 27)", async ({ page }) => {
+test("the window losing the focus, an Alt key or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur and an Alt key (ruling 27)", async ({ page }) => {
   const ends: Record<string, () => Promise<unknown>> = {
     blur: () => page.evaluate(() => window.dispatchEvent(new Event("blur"))),
     Control: () => page.keyboard.press("Control+b"),
     Meta: () => page.keyboard.press("Meta"),
+    // macOS may report z's keyup under Alt as another character
+    Alt: () => page.keyboard.press("Alt"),
   };
   for (const [what, end] of Object.entries(ends)) {
     await page.locator('g.block[data-id="plant"]').click();
@@ -530,6 +532,65 @@ test("the window losing the focus or a key with Cmd or Ctrl ends a hold of z who
   }
   await press(page, "z");
   await ends.blur();
+  await ends.Alt();
+  await expect(prefix(page)).toHaveCount(1);
+  await press(page, "Escape");
+  // an Alt key in the search field ends a hold too
+  await page.keyboard.down("z");
+  await press(page, "l");
+  await page.locator("input.query").click();
+  await ends.Alt();
+  await expect(prefix(page)).toHaveCount(0);
+  await page.keyboard.up("z");
+});
+
+test("a refusal unloading the model drops a pending prefix, which the next model does not show", async ({ page }) => {
+  await press(page, "z");
+  await expect(prefix(page)).toHaveCount(1);
+  await dropOver(page, "bad", "{}");
+  await expect(page.locator("pre.outcome")).toHaveCount(1);
+  await dropOver(page, "closed_loop");
+  await expect(page.locator("footer.status")).toHaveCount(1);
+  await expect(prefix(page)).toHaveCount(0);
+});
+
+test("Alt with z or g starts no prefix, a key with Alt under a pending one is dropped with it, and Alt with an arrow stays the browser's", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  for (const k of ["Alt+z", "Alt+g"]) {
+    await press(page, k);
+    await expect(prefix(page), k).toHaveCount(0);
+  }
+  await page.locator('g.block[data-id="sensing"]').dblclick();
+  await page.locator(readyLevel("sensing")).waitFor();
+  await press(page, "g");
+  await press(page, "Alt+ArrowUp");
+  await expect(prefix(page)).toHaveCount(0);
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "sensing");
+  // Alt-Left and Alt-Right are the browser's back and forward: not prevented, and neither pans nor moves a cursor
+  await page.evaluate(() => {
+    (window as any).__prevented = [];
+    window.addEventListener("keydown", (e) => {
+      if (!e.key.startsWith("Arrow")) return;
+      (window as any).__prevented.push(e.defaultPrevented);
+      e.preventDefault();
+    });
+  });
+  const view = await viewBox(page);
+  await pressAll(page, "Alt+ArrowLeft", "Alt+ArrowRight");
+  expect(await viewBox(page)).toEqual(view);
+  await page.locator("aside.detail").focus();
+  await press(page, "j");
+  const at = await cursor(page);
+  await pressAll(page, "Alt+ArrowLeft", "Alt+ArrowRight", "Alt+ArrowDown");
+  expect(await cursor(page)).toBe(at);
+  expect(await page.evaluate(() => (window as any).__prevented)).toEqual([false, false, false, false, false]);
+});
+
+test("Tab in the search field with a prefix pending moves to the next region, the prefix left waiting", async ({ page }) => {
+  await press(page, "z");
+  await page.locator("input.query").click();
+  await press(page, "Tab");
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
   await expect(prefix(page)).toHaveCount(1);
 });
 

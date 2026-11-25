@@ -349,9 +349,16 @@
     if (r) setView(centreOn(view, { width, height }, r));
   }
 
-  // The focused line scrolls into view in a legend taller than its box, a chart swatch's press included.
+  // The focused line scrolls into view in a legend taller than its box, a chart swatch's press included, the nearest
+  // way; the legend's own scroll alone, where `scrollIntoView` would also scroll the viewport under a narrow canvas.
   $effect(() => {
-    if (legendFocus !== undefined) legendBox?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ block: "nearest" });
+    const box = legendBox;
+    const line = legendFocus !== undefined ? box?.querySelector('[aria-pressed="true"]') : undefined;
+    if (!box || !line) return;
+    const top = line.getBoundingClientRect().top - box.getBoundingClientRect().top - box.clientTop + box.scrollTop;
+    const bottom = top + line.getBoundingClientRect().height;
+    if (top < box.scrollTop) box.scrollTop = top;
+    else if (bottom > box.scrollTop + box.clientHeight) box.scrollTop = bottom - box.clientHeight;
   });
 
   const viewBox = $derived.by(() => {
@@ -630,6 +637,15 @@
   function menuPress(e: PointerEvent) {
     if (menu && !(e.target instanceof Element && e.target.closest(".viewport .menu"))) menu = undefined;
   }
+  /**
+   * The menu closes when its entry loses the focus to another element, `q` or Tab among them, the focus left there. The
+   * window's own blur leaves the entry focused, so the menu stays and Escape still gives the focus back.
+   */
+  function menuBlur() {
+    queueMicrotask(() => {
+      if (menu && document.activeElement !== menuEntry) menu = undefined;
+    });
+  }
   /** Escape closes the open menu alone, before the shell's Escape chain sees it, and gives the focus back. */
   function menuKey(e: KeyboardEvent) {
     if (menu && e.key === "Escape") {
@@ -906,8 +922,9 @@
     <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
   </div>
   {#if menu}
-    <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px">
-      <button class="trace" role="menuitem" bind:this={menuEntry} onclick={traceMenu}>Trace</button>
+    <!-- svelte-ignore a11y_interactive_supports_focus (its press keeps the entry's focus, which WebKit would give the viewport, closing the menu) -->
+    <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px" onmousedown={(e) => e.preventDefault()}>
+      <button class="trace" role="menuitem" bind:this={menuEntry} onclick={traceMenu} onblur={menuBlur}>Trace</button>
     </div>
   {/if}
   {#if lines.length}

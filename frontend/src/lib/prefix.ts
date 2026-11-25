@@ -15,12 +15,16 @@ const SECOND: Record<Prefix["key"], readonly string[]> = { z: ["z", "h", "j", "k
 export const keyName = (e: { key: string; shiftKey: boolean }): string =>
   e.key.length > 1 ? e.key : e.shiftKey ? e.key.toUpperCase() : e.key.toLowerCase();
 
+/** An Alt key under a held `z` ends the hold: macOS may report `z`'s release under Alt as another character. */
+export const endsHold = (p: Prefix | undefined, name: string): boolean => !!p?.held && (name === "Alt" || name === "AltGraph");
+
 /**
  * One key under the standing prefix: the prefix after it, and the command when the key completes one; a key the
  * prefix does not know is dropped, and Escape cancels it. Undefined when the key is none of the prefixes' business.
  */
 export function pressPrefix(p: Prefix | undefined, name: string, repeat = false): { next: Prefix | undefined; command?: string } | undefined {
   if (name === "z" && repeat) return { next: p };
+  if (endsHold(p, name)) return { next: undefined };
   if (["Shift", "Alt", "AltGraph", "CapsLock"].includes(name)) return undefined;
   if (!p) return name === "z" || name === "g" ? { next: { key: name, held: name === "z", used: false } } : undefined;
   if (name === "Escape") return { next: undefined };

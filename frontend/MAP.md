@@ -361,7 +361,7 @@ What the records do not fix, or where the page differs:
 - **The legend** is an HTML `div.legend` 8 px from the bottom-left corner, at
   most the viewport's height less 16, scrolling inside, its cells columns across
   the lines (a subgrid); a deployment's lines go by `D₀`, `Φ₀` (`legend`,
-  `basePair`). The focused line scrolls into view. A line's
+  `basePair`). The focused line scrolls into view by the legend's own `scrollTop`. A line's
   click calls `onlegend(key)`, and the shell passes `legendLit`'s set and
   `focus` `legend` while no route or diagnostic focus stands.
 - **Wires.** CSS by class: `scalar` thin, `flag` dashed `4 3`, `vector` 3
@@ -431,8 +431,8 @@ What the records do not fix, or where the page differs:
 - **The right-click menu.** `contextmenu` on a pin, a `rect.port` or a
   `path.wire-hit` opens `div.menu` at the pointer and selects nothing;
   elsewhere the browser's menu stays. A capture-phase `pointerdown` outside,
-  the wheel and a level change close it; a capture-phase Escape closes it,
-  gives back the focus its entry took on opening and stops the event.
+  the wheel, a level change and its entry's focus leaving close it; a capture-phase
+  Escape closes it, gives back the focus its entry took and stops the event.
 
 **The DOM contract**, which the harness and the reviewer select on:
 
@@ -568,15 +568,15 @@ What the records do not fix, or where the page differs:
   same rule; a focused root is never watched. A row's
   click focuses `nav.tree`. The ring, 2 px inset in the highlight hue, is on
   the focused pane's box, mouse or key, and on `.viewport` for
-  `:focus-visible` alone. A push or a drop refocuses the noted region's root
-  if focus fell to the body; `Q`, `E` or `R` hiding it focus `.viewport`.
+  `:focus-visible` alone. A push or a drop refocuses the noted stop, else the
+  region's root, if focus fell to the body; `Q`, `E` or `R` hiding it focus `.viewport`.
 - **The cursor in a pane** is the focus on a stop: in `aside.detail` and `.tab-body`,
   every `summary`, `button` and `a[href]` not inside a closed section. A face's links,
   a diagnostic's and a chart row's swatches past its first are its row's further
   controls (`Stop` depth 2). The ring is on `:focus`, 1 px out, a swatch's 3 px, past
   the pressed one's. A click's capture phase focuses the stop, or the row's
-  `button.row`. The open level and a block share one branch of `Detail.svelte`, so a
-  stop in both keeps the cursor.
+  `button.row`, unless it left a text selection on the row (`dragged`). The open level
+  and a block share one branch of `Detail.svelte`; a stop a keyed `each` moves is refocused.
 
 **The frame's DOM contract**, which the harness and the reviewer select on:
 
@@ -618,15 +618,15 @@ from the search field too, cycling only with a model; every other key is
 ignored in a text field, where the search field has its own Down, Up, Enter
 and Escape and the filter its Escape. Ctrl or Meta leaves a key to the browser but Cmd-K, Ctrl-K, Cmd-O
 and Ctrl-O; with Alt only Alt-Up and Alt-Backspace act, climbing. `keyName`
-names a letter by Shift, `N` read from `e.key`. `?` and Cmd-O act with or
-without a model, every other row only with one. `help.spec.ts` counts this
-table's rows against `table.keys` (`KEYS` in `help.ts`): change both.
+names every letter by Shift, Caps Lock aside. `?`, Cmd-O and the help page's
+keys act without a model, every other row only with one. `help.spec.ts` counts
+this table's rows against `table.keys` (`KEYS` in `help.ts`): change both.
 
 `z` and `g` are prefixes (`pressPrefix`), shown by `span.prefix`. A pending one
 comes before the keys below, Tab outside a text field included, and drops a
 second key it does not know. A `z` is held to its `keyup`, heard wherever the
-focus is; a window `blur` ends a hold, and a key with Ctrl or Meta, and the help
-page opening or closing, any prefix.
+focus is; a window `blur` and an Alt key (`endsHold`) end a hold, and a key with
+Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 
 | key | does |
 |---|---|
@@ -634,10 +634,10 @@ page opening or closing, any prefix.
 | `Q` `E` `R` | collapse or expand the tree, the detail pane (`toggleCollapsed`), kept per browser; toggle the drawer on its current tab |
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
 | `h` `j` `k` `l`, on the canvas or nothing focused | select the nearest block or pin in that direction on the drawn level (`nearest` over `boxes()`: among the boxes whose center lies beyond the origin's far edge, the least gap between facing edges, clamped at zero, plus twice the perpendicular offset between centers, ties by the lower id), from the selected block or pin, a selected port's block or a selected wire's consumer block; with nothing selected on the level, its first block; then `follow` |
-| `h` `j` `k` `l` and the arrows, focus in the tree | the tree's row keys (`treeStep`), `j` or `k` with no row selected taking the first; ← as `h`, ↓ `j`, ↑ `k`, → `l` |
+| `h` `j` `k` `l` and the arrows, focus in the tree | the tree's row keys (`treeStep`), `j` or `k` with no row selected taking the first; ← as `h`, ↓ `j`, ↑ `k`, → `l`, with Shift too |
 | the same, focus in the detail pane | the stops as an outline (`stopStep`), the stop scrolled into view; a heading toggled by a click on its `summary` |
 | the same, focus in the drawer | `stopStep` over the open tab's stops: `j` and `k` the rows, `h` and `l` a row's controls; a closed drawer nothing |
-| the arrows, on the canvas or nothing focused | pan by 48 screen pixels; Right shows what lies right |
+| the arrows, on the canvas or nothing focused | pan by 48 screen pixels, with Shift too; Right shows what lies right |
 | Enter | left to the browser on a focused stop or the menu's entry, which it presses; else open the selected closed assembly; with nothing to open the browser's |
 | Shift-`h`, Shift-`l` | `history.back()` and `history.forward()` within this page load's level entries; nothing at the first or the last (`back`, `forward`) |
 | Shift-`j` | open the selected closed assembly |
@@ -648,7 +648,7 @@ page opening or closing, any prefix.
 | `0` | fit, every time |
 | `+`, `=`, `zi` | zoom in by 1.25 about the viewport's center |
 | `-`, `zo` | zoom out by 1.25 |
-| `gg`, `G` | in the tree select the first, last visible row; in a pane focus the first, last stop `j` and `k` walk; nothing on the canvas |
+| `gg`, `G` | in the tree select the first, last visible row; in a pane focus the first, last stop `j` and `k` walk; either scrolled into view; nothing on the canvas |
 | `gt`, `gT` | the drawer's next, previous tab, wrapping, the focus left; a closed drawer opens on its current tab |
 | `j` `k` `d` `u` `gg` `G`, the help page shown | scroll `article.help` by 40 px, by half its height, to its ends; the arrows and Space stay the browser's |
 | `/`, Cmd-K, Ctrl-K | focus the search field with its text selected, expanding a collapsed tree pane first; `/` with the drawer focused and `input.filter` shown, that filter |

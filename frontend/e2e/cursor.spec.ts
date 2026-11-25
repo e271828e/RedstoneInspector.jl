@@ -192,6 +192,32 @@ test("the cursor stays on its heading, the very element, through Shift-j, Shift-
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });
 
+test("a face's row keeps the cursor through n to a node holding the face in another order, and through a push that reorders the faces; the focus stays in the pane", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "/");
+  await page.keyboard.type("path:_controller type:group");
+  await press(page, "Enter");
+  await expect(pane(page)).toHaveAttribute("data-id", "pid_controller");
+  await press(page, "e");
+  for (let i = 0; i < 30 && (await cursor(page)) !== "button.row h_ref"; i++) await press(page, "j");
+  expect(await cursor(page)).toBe("button.row h_ref");
+  const order = () => pane(page).locator("td.face-name button.row").allTextContents();
+  const before = await order();
+  await press(page, "n");
+  await expect(pane(page)).toHaveAttribute("data-id", "lqr_controller");
+  expect((await order()).indexOf("h_ref"), "the face moved").not.toBe(before.indexOf("h_ref"));
+  expect(await cursor(page)).toBe("button.row h_ref");
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+  // a push with lqr_controller's inputs reversed
+  const d = JSON.parse(fixtureText("closed_loop"));
+  d.build.structure.nodes.find((n: { path: string }) => n.path === "lqr_controller").inputs.reverse();
+  const reordered = await order();
+  await dropOver(page, "closed_loop", JSON.stringify(d));
+  await expect.poll(async () => (await order()).indexOf("h_ref")).not.toBe(reordered.indexOf("h_ref"));
+  expect(await cursor(page)).toBe("button.row h_ref");
+  await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+});
+
 test("the drawer's stops: j and k walk the rows, h and l the controls on one, a diagnostic's location and a chart row's swatches among them; the sort button is a row of its own, the filter and the tabs no stops, a timing row with no target none", async ({ page }) => {
   await drop(page, "failure_probe");
   await drawer(page).focus();
@@ -268,6 +294,22 @@ test("a click puts the cursor on the stop, and on a row's stop when it lands els
   await page.locator("section.order-group li.step li.port").first().click();
   const first = await page.locator("section.order-group li.step button.row").first().evaluate((e) => e.textContent!.trim());
   expect(await cursor(page)).toBe(`button.row ${first}`);
+  // an edge's row, off its button
+  const edge = page.locator("section.order-group li.edge").first();
+  await edge.dispatchEvent("click");
+  expect(await cursor(page)).toBe(`button.row ${(await edge.locator("button.row").textContent())!.trim().replace(/\s+/g, " ")}`);
+  // a row cut at the body's top edge: the click's focus scrolls nothing
+  const line = page.locator("section.order-group li.step .line").nth(6);
+  await body(page, "drawer").evaluate((b, y) => { b.scrollTop += y; }, await line.evaluate((l) => {
+    const b = l.closest(".tab-body")!.getBoundingClientRect();
+    return l.getBoundingClientRect().top - b.top + 6;
+  }));
+  const scrolled = await top(page, "drawer");
+  // by the pointer, since a locator's click scrolls its target whole first
+  const port = (await line.locator("li.port").first().boundingBox())!;
+  await page.mouse.click(port.x + port.width / 2, port.y + port.height - 3);
+  expect(await cursor(page)).toContain("button.row ");
+  expect(await top(page, "drawer")).toBe(scrolled);
   // the diagnostics tab's location link, the row left unfocused
   await drop(page, "failure_probe");
   await page.locator("li.diagnostic a.location").first().click();
@@ -378,6 +420,26 @@ test("gg and G reach the tree's first and last visible row, a pane's first and l
   await drop(page, "failure_probe");
   await drawer(page).focus();
   expect((await walk(page, "Shift+G"))[0]).toContain("button.row EmptyFaceSelection");
+});
+
+test("gg and G scroll the tree's first and last row into view when it is already selected, as they do a pane's stop", async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 360 });
+  await drop(page, "large");
+  await press(page, "q");
+  const inView = () => page.evaluate(() => {
+    const r = document.querySelector("nav.tree .row.selected")!.getBoundingClientRect();
+    const b = document.querySelector('.pane[data-pane="tree"] .body')!.getBoundingClientRect();
+    return r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+  });
+  expect(await body(page, "tree").evaluate((e) => e.scrollHeight > e.clientHeight + 60)).toBe(true);
+  for (const [keys, away] of [[["g", "g"], "bottom"], [["Shift+G"], "top"]] as const) {
+    await pressAll(page, ...keys);
+    expect(await inView(), keys.join("")).toBe(true);
+    await body(page, "tree").evaluate((e, away) => e.scrollTo(0, away === "top" ? 0 : e.scrollHeight), away);
+    expect(await inView(), `${keys.join("")} scrolled away`).toBe(false);
+    await pressAll(page, ...keys);
+    expect(await inView(), `${keys.join("")} again`).toBe(true);
+  }
 });
 
 test("gt and gT step the drawer's tabs, wrapping, from any region, the focus staying; a closed drawer opens on its current tab; a stop the switch removes gives the focus to the drawer", async ({ page }) => {
@@ -512,7 +574,7 @@ test("a push keeps a drawer's row that survives under the cursor", async ({ page
   await expect(page.locator("section.drawer.focused")).toHaveCount(1);
 });
 
-test("the right-click menu's entry takes the focus when the menu opens, Enter presses it, and Escape gives the focus back", async ({ page }) => {
+test("the right-click menu's entry takes the focus when the menu opens, Enter presses it, and Escape gives the focus back; the entry's focus leaving for another element closes it, the window's blur does not", async ({ page }) => {
   await drop(page, "closed_loop");
   const entry = ".viewport div.menu button.trace";
   const on = () => page.locator(entry).evaluate((e) => e === document.activeElement);
@@ -538,6 +600,26 @@ test("the right-click menu's entry takes the focus when the menu opens, Enter pr
   await expect.poll(on).toBe(true);
   await press(page, "Escape");
   expect(await cursor(page)).toBe(at);
+  // q takes the focus from the entry: the menu closes, and Escape then leaves the focus where q put it
+  await page.locator('rect.port[data-port="plant|out|V"]').dispatchEvent("contextmenu");
+  await expect.poll(on).toBe(true);
+  await press(page, "q");
+  await expect(page.locator(entry)).toHaveCount(0);
+  expect(await cursor(page)).toBe("tree");
+  await press(page, "Escape");
+  expect(await cursor(page)).toBe("tree");
+  // the window's blur leaves the entry focused and the menu open, so Escape still gives the focus back
+  await page.locator('rect.port[data-port="plant|out|V"]').dispatchEvent("contextmenu");
+  await expect.poll(on).toBe(true);
+  await page.locator(entry).evaluate((e) => {
+    e.dispatchEvent(new FocusEvent("blur"));
+    e.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    window.dispatchEvent(new FocusEvent("blur"));
+  });
+  await page.evaluate(() => new Promise((r) => setTimeout(r, 50)));
+  await expect(page.locator(entry)).toHaveCount(1);
+  await press(page, "Escape");
+  expect(await cursor(page)).toBe("tree");
 });
 
 test("the keys of the level and of go act from a stop as from anywhere: Shift-h back while the cursor stays in the drawer (ruling 13)", async ({ page }) => {
