@@ -223,6 +223,103 @@ and differ by their anchor alone, whose subscript is small at 11 px. And
 ruling 23 says the README documents the moved keys, but it names `?` alone,
 so it needs no change.
 
+## Readings, stage 2
+
+The prototyper's, kept by the coordinator with the user away, for their
+review. Stage 2 landed on the branch at `bd53f23`.
+
+35. **Cmd or Ctrl drops any prefix, a blur only a hold.** A tapped `z`
+    waits through a blur. *Rejected:* a blur dropping everything, a timeout
+    of a kind; Cmd sparing a tapped prefix, where `z`, Cmd-K and Enter
+    leave `z` waiting.
+36. **An unknown second key is dropped whole**, Tab outside a text field,
+    Enter, `?`, `/`, the arrows and Shift with a letter among them. Shift,
+    Alt and Caps Lock alone leave the prefix standing. Under a held `z` the
+    key is dropped and the hold goes on.
+37. **The second `z` of `zz` starts no hold**, so `zz` then `j` moves the
+    cursor. `g` repeats under the keyboard's own repeat, as in Vim, so a
+    held `g` runs `gg` again and can leave a `g` pending. `z` tapped and
+    `j` held scrolls once and then moves the cursor. Vim does the same.
+38. **`q w e r` keep a cursor already in the region**, and from another
+    control in it, a tab button or Fit, they go to the root. No stop is
+    remembered for a region left. *Rejected:* always the root.
+39. **`gg` and `G` take the first and last stop that `j` and `k` walk**, so
+    `G` never lands on a row's last link.
+40. **From a row's link, `j` and `k` go on from its row.** *Rejected:* `k`
+    to the link's own row.
+41. **A chart row's first swatch is its row**, the others its further
+    controls, and "by Δt" is a row of the drawer. The filter and the tab
+    buttons are no stops. A pressed swatch's ring is now a shadow, and its
+    cursor ring sits 3 px out, since the two were pixel-identical.
+42. **The wire's, pin's, port's and folder's panes are flat**: `j` and `k`
+    walk their links, and `h` and `l` do nothing.
+43. **`gt` and `gT` wrap**, as in Vim.
+44. **A focused stop has an 8 px scroll margin**, so its ring stays whole.
+45. **`/` selects the filter's text**, and Escape goes to the drawer's root,
+    not the stop held before, since the rows may have changed.
+46. **The menu gives the focus back to what held it at its opening**, the
+    canvas after a right press, since the press itself moves the focus.
+47. **The help page runs the same machine for `g`.** Opening or closing it
+    drops a prefix. `z` is none of its keys.
+48. **The status bar shows `z …`** after its other texts, unshrinking.
+49. **Enter on a control that is no stop**, a tab button or Fit, keeps the
+    old rule: it opens the selected assembly, else the browser presses.
+50. **A click that only left a text selection still moves the cursor** to
+    its row's button. The row does not act.
+
+**For the user to rule.** *Cmd-K in a text field.* It is dead there, the
+diagnostics filter included, as before. Answer 11 excepts Cmd-O and Ctrl-O
+alone from "outside text fields", and answer 5 says Cmd-K is the model's
+search "from everywhere". The build took "everywhere" for every region. The
+change would move one check ahead of the text-field check.
+
+Known limits, which the rulings cause. A face's name is a button, so a drag
+selects none of its text. `gg` or `G` in the tree with that row already
+selected scrolls nothing, the tree scrolling on a change of selection. The
+panes' stops are told by `checkVisibility()`, believed to need Safari 17.4.
+The trap "Enter on a drawer button" in `design/rules.md` is stale, and the
+closing docs commit drops it.
+
+## The shape built
+
+- `src/lib/timing.ts`, `rates.ts`, `Canvas.svelte`: the legend's line, its
+  order, its cells and its scroll. `Chart.svelte` composes its tooltip.
+- `src/lib/prefix.ts`, new: the prefixes' state machine. `navigate.ts`:
+  `stopStep`, the outline's `h j k l`, and `walkOf`.
+- `src/App.svelte`: the prefix state, the `keyup`, the blur and the click
+  that places the cursor, `stopsOf`, and the dispatch by `keyName`.
+- `Detail.svelte`: the open level's pane and a block's are one branch, and a
+  face's name is a button. `Drawer.svelte`, `Frame.svelte`, `StatusBar`,
+  `Search`, `Help.svelte`, `help.ts`, `Canvas.svelte`'s menu.
+- Checks: `cursor.spec.ts`, new, with 22 in each browser; `keys.spec.ts`
+  gains 6, `help.spec.ts` 2. Every check of an old key moved to its new
+  one, none deleted. `frontend/MAP.md` stands at 786 lines.
+
+## Measurements
+
+The gate at `bd53f23`: 627 unit tests, 613 at the baseline; the checker
+clean; 684 browser checks passed and 4 skipped, 620 and 4 at the baseline.
+Playwright's WebKit, outside the config, passes 60 of the 61 checks of
+`cursor`, `keys` and `help`. Its failure, the help page's second `?` at
+`help.spec.ts:246`, also fails on stage 1's build, and nobody looked into it.
+
+## What the tests pin
+
+100 mutants, all red: 18 on the legend and 82 on the keyboard, the runners
+in `tools/`, run with `FRONTEND` naming a worktree's `frontend/`. Three
+survived at first and their checks were tightened. The rules on keys and on
+the outline are unit-tested in `prefix.test.ts` and `navigate.test.ts`, and
+those on the DOM are in `cursor.spec.ts` and `keys.spec.ts`.
+
+## The cold review's charter
+
+An independent agent reads the records' answers, then the code and the
+page. It runs the gate and reverts each rule alone. It drives what the
+builders did not: long sequences of prefixes across regions, pushes and
+drops with a cursor standing, hidden and narrow panes, the removal rule in
+Firefox, and a fixture of each kind. It reads the screenshots against the
+answers.
+
 ## Out of scope
 
 - Hints, Vimium's `f`, kept free (`pending.md`). They are the only path

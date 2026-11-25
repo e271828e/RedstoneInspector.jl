@@ -15,8 +15,9 @@ landed (`roadmap.md`).
   the release and the tall legend from the unordered items. Its notes are
   `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. The
   probes ran on 2026-11-25 and the notes hold them, with the user's rulings
-  on them; `probes/hand.html` there waits for the user's keyboard. Next:
-  the prototype, on the branch `keyboard-legend-proto`.
+  on them; `probes/hand.html` there waits for the user's keyboard. Both
+  stages are built on the branch `keyboard-legend-proto`. Next: the cold
+  review, then the user's review, look and merge.
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
