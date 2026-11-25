@@ -10,6 +10,11 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 In working order, the first one next. Increments 1 to 10 and 8b have
 landed (`roadmap.md`).
 
+- **The keyboard by family and the legend's line** (`roadmap.md`), by the
+  user's rulings of 2026-11-25, which took the keyboard sweep from after
+  the release and the tall legend from the unordered items. Its notes are
+  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. Next:
+  the probes the notes list, then the prototype.
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
@@ -43,17 +48,6 @@ landed (`roadmap.md`).
     can cross the port's label after a drag, as `actuators`' `δt` after
     dragging `plant` on `closed_loop`'s root.
 - **Increment 11, the release** (`roadmap.md`).
-- **The keyboard sweep**, after the release, by the user's ruling of
-  2026-11-17, the timing tab included. It needs a ruling on whether Tab
-  enters a region or each region gets a row cursor.
-  - The pane's face rows have no keyboard path. The drawer's rows and
-    filter are outside Tab's cycle of the four region roots, and its keys
-    scroll without reaching a row. A tree row is no button and takes no
-    focus, the selection being the tree's cursor (increment 8b).
-  - The right-click menu has no keyboard path but `t` for the trace, and
-    its button takes no focus on opening.
-  - Enter with a closed assembly selected opens it whatever button or
-    section heading holds the focus, where Space presses it.
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The first pin
   bump to the registered core turns the root's `[sources]` revision into a
@@ -97,9 +91,10 @@ landed (`roadmap.md`).
   (`deployment_overlay.md` answer 14). Its tag on the canvas and its pin's
   pane show no mark, where a primitive's pinned face has one in both.
   Whether they take one is the user's to rule.
-- **The legend taller than the canvas** (increment 10's review). At 1100
-  by 700, `large`'s legend, 714 px tall, is cut at the top and does not
-  scroll.
+- **Hints** (the keyboard session of 2026-11-25). Vimium's `f`, kept
+  free: a label on every clickable thing, typed to press it. Wires, port
+  squares and the legend's lines have no keyboard path, and on a build no
+  key sets the legend's focus.
 - **The scopes' empty note on a model with no `sample_times`**
   (increment 10's review). The timing tab's "No assembly is keyed in
   `sample_times`; every key names a primitive." shows there too.

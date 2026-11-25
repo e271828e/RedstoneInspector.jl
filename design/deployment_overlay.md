@@ -695,19 +695,30 @@ the user away): both stood open in the core's `pending.md`.*
     the release waits for 10b.
 
 13. **The legend: a short line, room in the fit, the peach as step 0.**
-    A line keeps what a color needs, which clock it is and how fast it
-    runs:
+    A line keeps what a color needs, how fast its clock runs and which
+    clock it is. A build's line gives the seconds pair and the anchor, a
+    deployment's the base grid's pair, `Δt` and the anchor:
 
     ```
-    ■ A₀ (base)  · Dₐ 1 · Φₐ 0     Δt_base
-    ■ A₀ (base)  · Dₐ 2 · Φₐ 1     2·Δt_base
-    ■ A₂ (dss)   · Dₐ 1 · Φₐ 0     1/50 s
-    ■ A₁ (noise) · Dₐ 1 · Φₐ 0     1/10 s
+    build                                deployment, Δt_base = 1/100 s
+    ■ continuous                         ■ continuous
+    ■ Δt_base   · τ 0          A₀        ■ D₀ 1  · Φ₀ 0    1/100 s   A₀
+    ■ 2·Δt_base · τ 0          A₀        ■ D₀ 2  · Φ₀ 0    1/50 s    A₀
+    ■ 2·Δt_base · τ Δt_base    A₀        ■ D₀ 2  · Φ₀ 0    1/50 s    A₂
+    ■ 1/50 s    · τ 0          A₂        ■ D₀ 2  · Φ₀ 1    1/50 s    A₀
+    ■ 1/10 s    · τ 0          A₁        ■ D₀ 10 · Φ₀ 0    1/10 s    A₁
     ```
 
-    A deployment changes only the `Δt` of the `A₀` lines, from symbolic
-    to concrete. `D₀`, `Φ₀` and `τ` go to the line's tooltip, before the
-    declaring scope it held already. The fit
+    A deployment's line reads as its chart row's label does (answer 11).
+    The anchor stays on the line, bare, because two triples can land on
+    one `(D₀, Φ₀)` and are still two colors. The tooltip gives the
+    anchor's key and declaring scope, `Dₐ`, `Φₐ` and, on a deployment,
+    `τ`. The continuous line comes first. A build's lines follow in the
+    palette's order, and a deployment's by `D₀` and then `Φ₀`, ties in
+    the palette's order, so an extra's number can stand out of order
+    there. The legend is no taller than the viewport less its insets and
+    scrolls inside past that, and a line focused from elsewhere scrolls
+    into view. The fit
     avoids the legend's box: it computes two candidates, one leaving the
     legend's height free at the bottom and one leaving its width free at
     the left, and takes the larger scale, the bottom one on a tie and
@@ -718,8 +729,7 @@ the user away): both stood open in the core's `pending.md`.*
     and the palette order stays a function of the build alone, so a
     model keeps its colors when it is deployed. The palette's comment,
     which calls the peach the base grid's color, is corrected. This
-    amends `visual_grammar.md` answer 6 and the roadmap's ruling that a
-    line gains the concrete `Δt` and `(D, Φ)`.
+    amends `visual_grammar.md` answer 6 and `workspace.md` answer 7.
     *Amended 2026-11-23 (the implementation, the user away): the
     tooltip's scope, the tie, the fallback and when the fit applies
     were unstated. Of the 16 fixtures' roots the fit costs `large`
@@ -727,7 +737,17 @@ the user away): both stood open in the core's `pending.md`.*
     then put `D`, `Φ` and `τ` after the declaring scope, the reverse of
     the page as built (the cold review's finding 6). Amended 2026-11-24
     (the pin bump to the core's `fcd3660`, the user away): a line read
-    `m` and `c`, and its tooltip `D` and `Φ` (the core's D-478).*
+    `m` and `c`, and its tooltip `D` and `Φ` (the core's D-478). Amended
+    2026-11-25 (the keyboard session,
+    `increments/20261125_keyboard_legend/notes_keyboard_legend.md`): a
+    line read its anchor with its key, `Dₐ` and `Φₐ`, then `Δt`, as
+    `A₂ (dss) · Dₐ 1 · Φₐ 0` and `1/50 s`, on a build and a deployment
+    alike, a deployment changing the `Δt` of the `A₀` lines alone; `D₀`,
+    `Φ₀` and `τ` stood in the tooltip; a deployment's lines kept the
+    palette's order; the answer amended the roadmap's ruling that a line
+    gains the concrete pair, which a deployment's line now follows; and a
+    legend taller than the canvas was cut at its top, `large`'s at 714 px
+    in a viewport of 1100 by 700 (increment 10's review).*
     *Why:* the full line, `A₁ (fast) · m 2 · c 0 · D 8 · Φ 0 · Δt 1/25 s
     · τ 0`, is too long for a canvas corner, and `closed_loop` has ten
     lines. The timing tab and the chart show `D`, `Φ` and `τ` in full,

@@ -542,6 +542,23 @@ timing under the old keys. The gate stands at 128 Julia tests, 613 unit
 tests, and 620 browser checks passed and 4 skipped, and the 21 fixtures
 hold 1,379,218 bytes.*
 
+**The keyboard by family and the legend's line.** Added 2026-11-25 by the
+user's rulings of that day, before increment 10b. It takes the keyboard
+sweep, which the ruling of 2026-11-17 had put after the release, because
+it moves keys that the help page and the README document. Two stages, a
+commit each. The first is the legend: a build's line gives `Δt`, `τ` and
+the anchor, a deployment's `D₀`, `Φ₀`, `Δt` and the anchor in the order
+of `(D₀, Φ₀)`, and a tall legend scrolls. The second is the keyboard:
+every region has a cursor, the detail pane's and the drawer's a focused
+stop; the keys fall in four families, the cursor's, the level's, the
+view's under `z` and go's under `g`; `q w e r` focus the regions and fold
+them with Shift; and the help page lists the search's prefixes. It
+displaces `z`, `d`, `u`, `U`, `m`, `i` and `r`. Visible: a page one can
+drive from the home row, and a deployment's legend that reads as its
+chart does. Draws on `workspace.md` answers 5, 7, 9 and 11,
+`deployment_overlay.md` answer 13 and `visual_grammar.md` answer 6; its
+notes are `increments/20261125_keyboard_legend/notes_keyboard_legend.md`.
+
 **Increment 10b: the events.** After a short design session of its own,
 and before the look pass (the record's answers 7 and 12, the user's
 ruling of 2026-11-20). The session decides how a state event is drawn, a

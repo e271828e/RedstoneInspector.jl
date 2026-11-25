@@ -202,11 +202,18 @@ Open items live in `pending.md`.
    of the level dimming; tree rows take the dashed marker with the count
    propagating up collapsed subtrees; the tree never filters. Docstrings
    and parameter summaries are not searched in stage 1; a `doc:` prefix can
-   join later. Diagnostics have the drawer's own filter.
+   join later. Diagnostics have the drawer's own filter. With the drawer
+   focused on its diagnostics tab and the filter showing, `/` goes to that
+   filter, where Escape gives the focus back to the drawer and keeps the
+   text; Cmd-K is the model's search from everywhere.
    *Amended 2026-11-01 (increment 5's look pass): Enter's return of focus
    to the canvas, `n` and `N`, and the empty prefix's rule joined. Amended
    2026-11-04 (the records' pass, to the page increment 5 built): the
-   results replaced the outline whenever a query was active.*
+   results replaced the outline whenever a query was active. Amended
+   2026-11-25 (the keyboard session,
+   `increments/20261125_keyboard_legend/notes_keyboard_legend.md`): `/`
+   went to the model's search from the drawer too, and the filter had no
+   key.*
    *Why:* a face named `q` matches half a model without a prefix; the block
    searched for is usually on a level the user cannot see. *Rejected:* a
    fuzzy matcher, which ranks guesses where the user typed a name they
@@ -293,8 +300,9 @@ Open items live in `pending.md`.
    positions beneath it, "3–5, 8"; a primitive with stage 1 outputs alone
    carries none; the badges use the text color, and the overlay's pills on
    that edge draw over a badge they meet. A
-   deployment descriptor makes the `Δt` of the legend's `A₀` lines
-   concrete and adds the hyperperiod chart to the drawer's timing tab: a
+   deployment descriptor turns the legend's lines to the base grid's
+   pair, in its order, and adds the hyperperiod chart to the drawer's
+   timing tab: a
    row per distinct `(D₀, Φ₀)` with the swatch of every triple on it and a
    mark per tick, the timeline whole or omitted, and the frame tops over
    the joint period (`deployment_overlay.md` answers 11 and 13).
@@ -308,7 +316,10 @@ Open items live in `pending.md`.
    and the chart was a timeline over one hyperperiod with a row per
    triple, both waiting on a bump of the format.
    Amended 2026-11-24 (`deployment_overlay.md` answer 3, the pin bump to
-   the core's `fcd3660`, the user away): the pair was written `(D, Φ)`.*
+   the core's `fcd3660`, the user away): the pair was written `(D, Φ)`. Amended 2026-11-25
+   (`deployment_overlay.md` answer 13, the keyboard session): a
+   deployment made the `Δt` of the legend's `A₀` lines concrete and
+   changed nothing else of a line.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.
@@ -360,9 +371,9 @@ Open items live in `pending.md`.
    steering and no position hints, and a dragged block or pin keeps its
    dragged place: ELK honors hints only with the model-order steering off,
    and then moves blocks nobody dragged (probed 2026-10-30, increment 5's
-   reading 1). A drag lasts until it is undone or the page reloads: `u`
+   reading 1). A drag lasts until it is undone or the page reloads: `x`
    puts the last dragged block or pin of the open level back in its
-   computed place, the one dragged before it on the next press, and `U`,
+   computed place, the one dragged before it on the next press, and `X`,
    or the button beside Fit that shows while the level holds a drag, puts
    back every one. The undo is the push's relayout with a shorter list of
    dragged ids, and the view stays. A surviving level keeps its view only
@@ -379,7 +390,9 @@ Open items live in `pending.md`.
    joined. Amended 2026-11-12 (increment 8b, the user's ruling, with the
    rejected undo per gesture in `roadmap.md`'s entry): only a reload undid
    a drag. Amended 2026-11-24 (increment 10's look, 8.1): the pane's two
-   sections that collapsed kept no state.*
+   sections that collapsed kept no state. Amended 2026-11-25 (the keyboard
+   session, `increments/20261125_keyboard_legend/notes_keyboard_legend.md`):
+   the two keys were `u` and `U`.*
    *Why:* a renamed block is a different node to the format, so losing its
    selection is the honest outcome. *Rejected:* persisting session state
    across reloads, which resurrects a selection into a descriptor that may
@@ -434,7 +447,7 @@ Open items live in `pending.md`.
       with its drawing and one line;
     - timing and root inputs, the notation of `deployment_overlay.md`
       answer 3 with its equations, and answer 14's type rule;
-    - the keyboard;
+    - the keyboard, with the search's prefixes in a table under the keys;
     - coming from Simulink, the vocabulary map as a table, Simulink's term
       first: block and primitive, subsystem and assembly, block port and
       face, signal and port, signal line and wire, the Inport and Outport
@@ -450,28 +463,58 @@ Open items live in `pending.md`.
     - about, with the privacy statement, the bundle and format versions
       and the links.
 
-    The keys, single and outside text fields but for Cmd-O and Ctrl-O.
-    `h j k l` and the arrows follow the region that holds the focus:
+    The keys, single or in pairs and outside text fields but for Cmd-O and
+    Ctrl-O. They fall in families, and a family means the same in every
+    region. Each region has a cursor. The canvas and the tree share one,
+    the selection. The detail pane and the drawer each have their own, the
+    browser's focus on a stop. A stop is a control the cursor can rest on:
+    in the detail pane the header's buttons, each section's heading and,
+    in an open section, its rows with their links and a docstring's
+    links; in the drawer the current tab's rows and the further controls
+    on a row, a chart row's swatches among them.
 
     | key | action |
     |---|---|
-    | `h` `j` `k` `l` | on the canvas or with nothing focused, move the selection to the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, scroll, `h` and `l` sideways; on the help page, `j` and `k` scroll |
-    | arrows | on the canvas or with nothing focused, pan the canvas; in the tree, the detail pane and the drawer, what `h j k l` do there; with Shift, the same |
+    | `q` `w` `e` `r` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
+    | `Q` `E` `R` | collapse or expand the tree, the detail pane, the drawer |
+    | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
+    | `h` `j` `k` `l` | the cursor: on the canvas or with nothing focused, the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, the stops, as below |
+    | arrows | on the canvas or with nothing focused, pan the canvas; elsewhere what `h j k l` do; with Shift, the same |
+    | Enter | press the focused stop; with none, open the selected assembly |
     | Shift with `h`, `l` | back, forward between the levels opened since the page loaded; nothing before the first or past the last |
-    | Shift with `j`, Enter | open the selected assembly |
+    | Shift with `j` | open the selected assembly |
     | Shift with `k`, Backspace or Alt-Up | go to the parent |
-    | `0` `+` `-` | fit, zoom in, zoom out |
-    | `z` | centre the selection at the current zoom |
-    | `/`, Cmd-K | focus search |
+    | `z`, then `h` `j` `k` `l` | the view: pan the canvas, or scroll the focused pane, the cursor staying |
+    | `zz` | bring the cursor to the middle of its region: the selected block at the current zoom, the selected row, the focused stop |
+    | `d`, `u` | half the region's height down, up: a pane scrolls, the canvas pans |
+    | `0`, `+` or `zi`, `-` or `zo` | fit, zoom in, zoom out, the canvas's from every region |
+    | `gg`, `G` | the region's first, last stop; in the tree the first, last visible row; nothing on the canvas |
+    | `gt`, `gT` | the drawer's next, previous tab from any region, the focus staying; a closed drawer opens on its current tab |
+    | `/`, Cmd-K | focus search; `/` with the drawer focused on a tab that shows a filter, that filter |
     | `n` `N` | the next, the previous search hit |
     | `t` | trace the selected face or wire |
-    | `r` `y` `o` | rate mode, type labels, order badges |
-    | `d`, `?` | toggle the drawer, the help page |
-    | `m`, `i` | toggle the model tree, the detail pane |
+    | `c` `y` `o` | the color mode, type labels, order badges |
+    | `?` | the help page |
     | Cmd-O, Ctrl-O | open a file |
-    | `u`, `U` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
-    | Escape | clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
-    | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
+    | `x`, `X` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
+    | Escape | cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
+
+    The detail pane's stops form an outline, as the tree's rows do. `j`
+    and `k` walk every visible stop, a row's links apart. `l` opens a
+    closed heading, steps from an open one to its first row, and from a
+    row along its links. `h` steps back along the links to the row, from a
+    row to its heading, and collapses an open heading. In the drawer `j`
+    and `k` walk the rows, and `h` and `l` the controls on one. With no
+    stop focused, `j` and `k` take the first. A click on a stop puts the
+    cursor there, the page setting the focus itself. Enter presses the
+    focused stop as a click does. The right-click menu's entry takes the
+    focus when the menu opens, and Escape gives it back.
+
+    `z` and `g` are prefixes. The status bar shows one while it waits for
+    its second key, a key it does not know is dropped, and there is no
+    timeout and no count. While `z` stays held, every `h`, `j`, `k`, `l`,
+    `i` and `o` acts under it. On the help page `j`, `k`, `d`, `u`, `gg`
+    and `G` scroll, beside `?` and Escape.
 
     Focus shows as a ring in the halo's hue. The tree, the detail pane and
     the drawer show it on the pane's box whenever they hold the focus, the
@@ -516,7 +559,17 @@ Open items live in `pending.md`.
     bound, where the page stops it at the deepest level the load opened.
     Amended 2026-11-24 (increment 10's look, 7.1): the page had no section
     on timing and root inputs, and the Simulink one stood before the
-    keyboard's.*
+    keyboard's. Amended 2026-11-25 (the keyboard session,
+    `increments/20261125_keyboard_legend/notes_keyboard_legend.md`):
+    `h j k l` and the arrows scrolled the detail pane and the drawer,
+    which had no cursor, and Enter opened the selected assembly whatever
+    held the focus; `z` alone centred the selection on the canvas from
+    every region; `d` toggled the drawer, `m` and `i` the side panes and
+    `r` the color mode, and `u` and `U` put drags back; Tab alone moved
+    between the regions; the view had no keys but the arrows, `0`, `+`
+    and `-`; `/` went to the model's search from the drawer too; the
+    menu's entry took no focus; and the help page listed no search
+    prefixes and scrolled by `j` and `k` alone.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

@@ -62,6 +62,9 @@ no entry here.
 - **Control message.** A text frame carrying a JSON object with a `type`
   field: `hello` and `open_location` in stage 1, stage 2's verbs later
   (`live_session.md` answer 5).
+- **Cursor.** What a region's motion keys move: the selection on the
+  canvas and in the tree, the focused stop in the detail pane and the
+  drawer (`workspace.md` answer 11).
 - **Cycle section.** The `cycle` object an `AlgebraicCycle` diagnostic
   carries: members, wires as terminal pairs, the classification, the dead
   hops and the tracing modes (`failure_descriptor.md` answer 2).
@@ -168,6 +171,9 @@ no entry here.
   the frame tops repeat: the least common multiple of the hyperperiod and
   `Δt_frame`, taken in time. It is the span of the chart's timeline when
   the frame tops are drawn (`deployment_overlay.md` answer 11).
+- **Key family.** The keys that share one meaning in every region: the
+  cursor's `h j k l`, the level's with Shift, the view's under `z` with
+  `d` and `u`, and go's under `g` (`workspace.md` answer 11).
 - **`kind`.** Three senses in the format, told apart by where the field
   sits. The envelope's `kind` names its body: `build`, `deployment` or
   `failure`. A primitive face's `kind` holds its kind marker, whose own
@@ -181,8 +187,8 @@ no entry here.
   (`workspace.md` answer 10).
 - **Legend.** The canvas-corner list in rate mode: a line for the
   continuous color when anything continuous is visible, then every triple
-  visible on the open level's blocks and wires, each as its anchor, `Dₐ`,
-  `Φₐ` and `Δt`, which a deployment makes concrete on the `A₀` lines. A
+  visible on the open level's blocks and wires, a build's as its `Δt`, `τ`
+  and anchor and a deployment's as its `D₀`, `Φ₀`, `Δt` and anchor. A
   click on a line focuses it (`visual_grammar.md` answer 6,
   `deployment_overlay.md` answer 13).
 - **Level.** What the canvas draws at a time: an assembly's children as
@@ -290,6 +296,8 @@ no entry here.
 - **Spawned task.** A task created with `Threads.@spawn`, free to run on
   any thread, against an `@async` task pinned to the thread that made it
   (`live_session.md` answer 3).
+- **Stop.** A control a pane's cursor can rest on: a heading, a row, a
+  link or a button (`workspace.md` answer 11).
 - **Subscription.** A client's declaration of the paths it displays and
   the rate it wants them at, so bandwidth scales with the screen, not the
   model (`initial_design.md` stage 2).

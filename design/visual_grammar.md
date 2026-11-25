@@ -201,10 +201,11 @@ Open items live in `pending.md`.
    legend in a canvas corner lists first a line for the continuous color
    when a continuous primitive, an assembly with no discrete primitive or a
    continuous producer's wire is visible, then every triple visible on the
-   open level, on a block or a wire, each a short line, `A₁ (noise) ·
-   Dₐ 2 · Φₐ 1` and its `Δt`, symbolic on `A₀` for a build and concrete for a
-   deployment, with `D₀`, `Φ₀` and `τ` in the line's tooltip; the fit leaves
-   the legend's box free (`deployment_overlay.md` answers 3 and 13). A
+   open level, on a block or a wire, each a short line, a build's its
+   `Δt`, `τ` and anchor and a deployment's its `D₀`, `Φ₀`, `Δt` and
+   anchor, the rest in the line's tooltip; the fit leaves the legend's
+   box free, and a legend taller than the viewport scrolls
+   (`deployment_overlay.md` answers 3 and 13). A
    click on a legend line focuses its triple, the continuous line
    its color: the blocks on it, the closed assemblies with a primitive of it
    beneath and the wires it tints are lit, the rest dimmed as for a
@@ -232,7 +233,10 @@ Open items live in `pending.md`.
    was taken for the base grid's color. Amended 2026-11-24
    (`deployment_overlay.md` answer 3, the pin bump to the core's
    `fcd3660`, the user away): a line read `m` and `c`, and its tooltip `D`
-   and `Φ`.*
+   and `Φ`. Amended 2026-11-25 (`deployment_overlay.md` answer 13, the
+   keyboard session): a line read `A₁ (noise) · Dₐ 2 · Φₐ 1` and its `Δt`
+   on a build and a deployment alike, with `D₀`, `Φ₀` and `τ` in its
+   tooltip, and a tall legend did not scroll.*
    *Why:* two blocks under different anchors are two clocks by design, and
    a color keyed on the deployment's `(D, Φ)` would merge or split them per
    deployment. An assembly ticks on nothing, so its scope row is a frame,
