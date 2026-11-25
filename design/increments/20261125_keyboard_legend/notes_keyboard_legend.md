@@ -128,17 +128,69 @@ was rejected, and the probes that precede the prototype.
     that the help page and the README document, so it lands before the
     release fixes them. This reverses the ruling of 2026-11-17.
 
-## Probes before the prototype
+## The probes
 
-`design/rules.md` asks that a rule on a gesture be probed event by event
-before a prototype builds on it. Each runs in Chromium and Firefox.
+Run on 2026-11-25 on the page built from `b366e09`, in Playwright's
+Chromium, Firefox and WebKit, by the specs in `probes/` beside this file.
+Every line agreed in the three but where a browser is named. Playwright's
+WebKit stands in for Safari, which was not driven.
 
-- The held `z`: its `keyup`, the repeat of a direction under it, and a
-  blur of the window while it is down.
-- The cursor across a redraw: whether a heading's element survives a new
-  selection. If it does, the cursor stays on it. If not, it falls to the
-  pane.
-- The focus a click leaves on a stop, and in Safari where it can be run.
+- **The held `z`.** Its repeats come as `keydown` marked `repeat`. A
+  direction pressed under it sends its own `keydown`, repeats and `keyup`,
+  and `z`'s `keyup` comes last. That `keyup` goes to whatever holds the
+  focus, the search field after `z` and `/`, and reads `Z` while Shift is
+  down. So the page ignores a repeated `z`, and listens for the `keyup`
+  ahead of its check for a text field, in lower case.
+- **Not probed**, synthetic keys sending none of it: a real window's blur,
+  the system's own key repeat, and whether macOS withholds `z`'s `keyup`
+  while Cmd is down. A headless tab brought to the back keeps
+  `document.hasFocus()` and fires no blur. `probes/hand.html` logs all
+  three from a real keyboard, Safari's click focus too; the user has yet to
+  run it. Ruling 27 does not wait on it.
+- **The cursor across a redraw.** A heading's element survives a change
+  between two blocks, assembly or primitive, and a push. It is replaced
+  between the open level's pane and a block's, which `Detail.svelte` draws
+  in two branches, and between a block's pane and a pin's, so Shift with
+  `j` and Escape lose it. A face link pressed shows a port's pane, so it
+  loses it too. A replaced stop gives the focus to `aside.detail` in the
+  three browsers, by the removal rule already there.
+- **The focus a click leaves.** Chromium and Firefox focus the pressed
+  heading, button or link. WebKit focuses a heading and gives a button's or
+  a link's press to the region's root. A face row, a bare `tr`, takes no
+  focus in any. A `focus()` from the page works in the three. The
+  diagnostics tab's location link was absent from the fixture used and is
+  untested.
+- **The ring.** `:focus-visible` is false on a stop after a click, whether
+  the browser or the page focused it. The next key turns it on in Chromium
+  and WebKit even when it moves nothing, and in Firefox only once a key
+  moves the focus.
+- **Enter and Space.** Both press a heading and a button, and Enter presses
+  a link, where Space does nothing. Today's Enter on a focused heading
+  opens the selected assembly, as the sweep said.
+
+## Rulings on what the probes found
+
+The user's, of 2026-11-25, on the probes' report.
+
+24. **A stop's ring is on `:focus`**, not `:focus-visible`, in the detail
+    pane and the drawer, so a click shows it as a key does. Ruling 8's
+    "real focus brings the ring for free" holds for the keyboard alone.
+25. **The open level's pane and a block's are one branch**, so the cursor
+    stays on its heading through Shift with `j`, Shift with `k`, Escape and
+    a new selection. A pin's, a wire's and a folder's panes stay apart, and
+    the cursor falls to the pane there, as the probe's rule says.
+26. **A row with no action is no stop**, PARAMETERS' and TIMING's rows
+    among them. Answer 11 said every row and the glossary a control. `d`
+    and `u` scroll through them.
+27. **A hold of `z` ends at its `keyup`, at a blur of the window and at a
+    key with Cmd or Ctrl.** The last two cover a `keyup` that never comes.
+28. **A face row's control is a `button.row` on the face's name**, as the
+    drawer's rows have. Space stays the browser's: it presses a heading or
+    a button, and Enter presses every stop.
+
+The user then left and asked for the rest to go on without them, with the
+findings and the decisions recorded for their review. The branch
+`keyboard-legend-proto` stays unmerged and nothing is pushed.
 
 ## Out of scope
 

@@ -13,8 +13,10 @@ landed (`roadmap.md`).
 - **The keyboard by family and the legend's line** (`roadmap.md`), by the
   user's rulings of 2026-11-25, which took the keyboard sweep from after
   the release and the tall legend from the unordered items. Its notes are
-  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. Next:
-  the probes the notes list, then the prototype.
+  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. The
+  probes ran on 2026-11-25 and the notes hold them, with the user's rulings
+  on them; `probes/hand.html` there waits for the user's keyboard. Next:
+  the prototype, on the branch `keyboard-legend-proto`.
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of

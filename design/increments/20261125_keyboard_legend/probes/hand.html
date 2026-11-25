@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Held z, by hand</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; max-width: 860px; margin: 24px auto; padding: 0 16px; }
+  kbd { font: 12px ui-monospace, monospace; border: 1px solid #999; border-radius: 3px; padding: 0 4px; }
+  pre { background: #f2f2f2; padding: 8px; min-height: 120px; max-height: 340px; overflow: auto; white-space: pre-wrap; }
+  :focus { outline: 2px solid #2a6fdb; }
+</style>
+<h1>Held z, by hand</h1>
+<p>Run the steps in order, then press Copy. Do it once in each browser you use. Leave the mouse alone until step 6.</p>
+<ol>
+  <li>Hold <kbd>z</kbd> for two seconds and release it.</li>
+  <li>Hold <kbd>z</kbd>. While it is down, hold <kbd>l</kbd> for two seconds, release it, hold <kbd>i</kbd> for two seconds, release it. Release <kbd>z</kbd>.</li>
+  <li>Hold <kbd>z</kbd>, press <kbd>Cmd</kbd>, release <kbd>z</kbd>, release <kbd>Cmd</kbd>. Press <kbd>j</kbd>.</li>
+  <li>Hold <kbd>z</kbd>, switch to another app with <kbd>Cmd</kbd>-<kbd>Tab</kbd>, release <kbd>z</kbd> there, come back. Press <kbd>j</kbd>.</li>
+  <li>Press <kbd>z</kbd> and release it at once, wait five seconds, press <kbd>j</kbd>.</li>
+  <li>Click each of these, in order: <button>button</button> <a href="#" onclick="return false">link</a> <span tabindex="-1" style="text-decoration: underline">span with tabindex -1</span> <details style="display:inline-block"><summary>heading</summary>open</details></li>
+</ol>
+<p><button id="copy">Copy</button> <button id="clear">Clear</button> <span id="done"></span></p>
+<pre id="log"></pre>
+<script>
+  const out = document.getElementById("log"), lines = [navigator.userAgent];
+  const start = performance.now();
+  let last = "", n = 0;
+  const say = (s) => {
+    // A run of the same repeat is one line with its count.
+    if (s === last && / R/.test(s)) { n++; lines[lines.length - 1] = `${lines[lines.length - 1].replace(/ x\d+$/, "")} x${n}`; }
+    else { last = s; n = 1; lines.push(`${Math.round(performance.now() - start)} ${s}`); }
+    out.textContent = lines.join("\n"); out.scrollTop = out.scrollHeight;
+  };
+  const who = () => document.activeElement ? document.activeElement.tagName.toLowerCase() : "none";
+  for (const t of ["keydown", "keyup"]) window.addEventListener(t, (e) => {
+    say(`${t} ${e.key}${e.repeat ? " R" : ""}${e.metaKey ? " Cmd" : ""}`);
+    if (!e.metaKey && e.key.length === 1) e.preventDefault();
+  }, true);
+  window.addEventListener("blur", (e) => e.target === window && say("window blur"));
+  window.addEventListener("focus", (e) => e.target === window && say("window focus"));
+  document.addEventListener("visibilitychange", () => say(`visibility ${document.visibilityState}`));
+  document.addEventListener("click", (e) => { if (e.target.closest("ol")) say(`click on ${e.target.tagName.toLowerCase()}, focus on ${who()}`); });
+  document.getElementById("copy").onclick = async () => { await navigator.clipboard.writeText(lines.join("\n")); document.getElementById("done").textContent = "copied"; };
+  document.getElementById("clear").onclick = () => { lines.length = 1; last = ""; out.textContent = lines[0]; };
+  say("ready");
+</script>
+</html>
