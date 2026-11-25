@@ -50,7 +50,7 @@ export const TERMS: Term[] = [
   { key: "hue", term: "reserved hue", sample: "hue", line: "Red for errors, amber for warnings, blue for highlight, all absent from the rate palette." },
   {
     key: "legend", term: "legend", sample: "legend",
-    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock, `A₁ (key) · Dₐ · Φₐ`, and its `Δt`; its tooltip adds `D₀`, `Φ₀` and `τ`. A click on a line dims what does not run on it.",
+    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock: a deployment's by `D₀ · Φ₀`, `Δt` and its anchor, a build's by `Δt · τ` and its anchor. Its tooltip adds the anchor's key and scope, `Dₐ` and `Φₐ`. A click on a line dims what does not run on it.",
   },
   {
     key: "pin", term: "pin", sample: "pin",

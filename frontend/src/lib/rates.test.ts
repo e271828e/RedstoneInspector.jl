@@ -11,12 +11,13 @@ import { legendText } from "./timing";
 
 const cl = fixtureModel("closed_loop");
 const rates = fixtureModel("rates");
-/** A level's legend lines as the canvas prints them: the step and `legendText`'s short form, or the continuous line's word. */
-const texts = (m: Model, level: string) => legend(m, level).map((l) => [l.step, l.triple ? legendText(m, l.triple).text : CONTINUOUS]);
-/** closed_loop's anchor keys, `A₁` to `A₁₀`. */
-const CL = ["noise", "h_ctl", "θ_ctl", "q_ctl", "V_ctl", "tracker", "command_δe", "command_δt", "δe_limiter", "δt_limiter"];
-const sub = (k: number) => [...String(k)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("");
-const clLine = (a: number) => `A${sub(a)} (${CL[a - 1]}) · Dₐ 1 · Φₐ 0`;
+/** A level's legend lines as the canvas prints them: the step and the pair with the anchor, or the continuous line's word. */
+const line = (m: Model, t: Triple) => {
+  const { period, phase, anchor } = legendText(m, t);
+  return `${period} · ${phase} ${anchor}`;
+};
+const texts = (m: Model, level: string) => legend(m, level).map((l) => [l.step, l.triple ? line(m, l.triple) : CONTINUOUS]);
+const clLine = (a: number) => `1/50 s · τ 0 A${[...String(a)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("")}`;
 const step = (m: Model, path: string) => stepsOf(m).get(tripleKey(blockTriple(m, path)!));
 const wire = (m: Model, level: string, id: string) => levelOf(m.tree!, m.resolution!, level).wires.find((w) => w.id === id)!;
 
@@ -35,8 +36,8 @@ describe("tripleOrder", () => {
     const lib = fixtureModel("library");
     expect(tripleOrder(lib)).toEqual([[0, 1, 0], [0, 2, 0], [0, 2, 1], [2, 1, 0], [1, 1, 0]]);
     expect(texts(lib, "")).toEqual([
-      [undefined, "continuous"], [0, "A₀ (base) · Dₐ 1 · Φₐ 0"], [1, "A₀ (base) · Dₐ 2 · Φₐ 0"], [2, "A₀ (base) · Dₐ 2 · Φₐ 1"], [3, "A₂ (dss) · Dₐ 1 · Φₐ 0"],
-      [4, "A₁ (noise) · Dₐ 1 · Φₐ 0"],
+      [undefined, "continuous"], [0, "Δt_base · τ 0 A₀"], [1, "2·Δt_base · τ 0 A₀"], [2, "2·Δt_base · τ Δt_base A₀"], [3, "1/50 s · τ 0 A₂"],
+      [4, "1/10 s · τ 0 A₁"],
     ]);
   });
 
@@ -57,7 +58,7 @@ describe("tripleOrder", () => {
     const k = fixtureModel("kinds");
     expect(tripleOrder(k)).toEqual([[0, 1, 0]]);
     expect(step(k, "s")).toBe(0);
-    expect(texts(k, "")).toEqual([[undefined, "continuous"], [0, "A₀ (base) · Dₐ 1 · Φₐ 0"]]);
+    expect(texts(k, "")).toEqual([[undefined, "continuous"], [0, "Δt_base · τ 0 A₀"]]);
     expect(tripleOrder(fixtureModel("aircraft"))).toEqual([]);
     expect(tripleOrder(fixtureModel("containers"))).toEqual([]);
   });
@@ -80,7 +81,7 @@ describe("blockTriple and the badge", () => {
 
   it("reads closed_loop's root legend as the continuous line, then the two colored assemblies' steps and those its wires carry", () => {
     expect(legend(cl, "")[1]).toEqual({ key: "1,1,0", triple: [1, 1, 0], step: 0 });
-    expect(legendText(cl, [1, 1, 0])).toEqual({ text: "A₁ (noise) · Dₐ 1 · Φₐ 0", dt: "1/50 s", title: "τ 0; noise at sensing" });
+    expect(legendText(cl, [1, 1, 0])).toEqual({ period: "1/50 s", phase: "τ 0", dt: "1/50 s", anchor: "A₁", title: "noise at sensing; Dₐ 1 · Φₐ 0" });
     expect(texts(cl, "")).toEqual([[undefined, "continuous"], ...[1, 4, 5, 6, 7, 8].map((a) => [a - 1, clLine(a)])]);
   });
 
@@ -97,12 +98,12 @@ describe("blockTriple and the badge", () => {
   });
 
   it("leaves rates' fast without a triple and counts two clocks, slow on its primitive's with one, their wires giving each level its lines", () => {
-    expect(texts(rates, "")).toEqual([[undefined, "continuous"], [0, "A₁ (fast) · Dₐ 1 · Φₐ 0"], [1, "A₁ (fast) · Dₐ 2 · Φₐ 0"], [2, "A₂ (slow) · Dₐ 1 · Φₐ 0"]]);
-    expect(legendText(rates, legend(rates, "")[1].triple!).title).toBe("τ 0; fast at the root");
+    expect(texts(rates, "")).toEqual([[undefined, "continuous"], [0, "1/50 s · τ 0 A₁"], [1, "1/25 s · τ 0 A₁"], [2, "1/10 s · τ 0 A₂"]]);
+    expect(legendText(rates, legend(rates, "")[1].triple!).title).toBe("fast at the root; Dₐ 1 · Φₐ 0");
     expect([blockTriple(rates, "fast"), mixed(rates, "fast"), clockCount(rates, "fast")]).toEqual([undefined, true, 2]);
     expect([blockTriple(rates, "slow"), mixed(rates, "slow"), clockCount(rates, "slow")]).toEqual([[2, 1, 0], false, 1]);
-    expect(texts(rates, "fast")).toEqual([[undefined, "continuous"], [0, "A₁ (fast) · Dₐ 1 · Φₐ 0"], [1, "A₁ (fast) · Dₐ 2 · Φₐ 0"]]);
-    expect(texts(rates, "fast/outer")).toEqual([[undefined, "continuous"], [1, "A₁ (fast) · Dₐ 2 · Φₐ 0"]]);
+    expect(texts(rates, "fast")).toEqual([[undefined, "continuous"], [0, "1/50 s · τ 0 A₁"], [1, "1/25 s · τ 0 A₁"]]);
+    expect(texts(rates, "fast/outer")).toEqual([[undefined, "continuous"], [1, "1/25 s · τ 0 A₁"]]);
   });
 
   it("reads no scopes row: fast's row names its inner clock, slow's a clock its primitive does not tick on", () => {
@@ -150,18 +151,25 @@ describe("the continuous line", () => {
   }
 
   it("is absent when every block has a triple and every other wire leaves a root input", () => {
-    expect(texts(inline(false), "")).toEqual([[0, "A₀ (base) · Dₐ 1 · Φₐ 0"]]);
+    expect(texts(inline(false), "")).toEqual([[0, "Δt_base · τ 0 A₀"]]);
   });
 
   it("is absent when the one block without a triple is a mixed assembly, which takes the assembly gray", () => {
     const m = mixedOnly();
     expect([blockTriple(m, "A"), mixed(m, "A")]).toEqual([undefined, true]);
-    expect(texts(m, "")).toEqual([[1, "A₀ (base) · Dₐ 2 · Φₐ 0"]]);
+    expect(texts(m, "")).toEqual([[1, "2·Δt_base · τ 0 A₀"]]);
+  });
+
+  it("comes first on a deployment too, its lines then by D₀ and Φ₀, ties in palette order, the steps the build's (answer 13)", () => {
+    expect(texts(fixtureModel("library_deployment"), "")).toEqual([
+      [undefined, "continuous"], [0, "D₀ 1 · Φ₀ 0 A₀"], [1, "D₀ 2 · Φ₀ 0 A₀"], [3, "D₀ 2 · Φ₀ 0 A₂"], [2, "D₀ 2 · Φ₀ 1 A₀"], [4, "D₀ 10 · Φ₀ 0 A₁"],
+    ]);
+    expect(texts(fixtureModel("library"), "").map((l) => l[0])).toEqual([undefined, 0, 1, 2, 3, 4]);
   });
 
   it("comes first, unnumbered, for a continuous primitive on the level", () => {
     expect(legend(inline(true), "")[0]).toEqual({ key: CONTINUOUS });
-    expect(texts(inline(true), "")).toEqual([[undefined, "continuous"], [0, "A₀ (base) · Dₐ 1 · Φₐ 0"]]);
+    expect(texts(inline(true), "")).toEqual([[undefined, "continuous"], [0, "Δt_base · τ 0 A₀"]]);
   });
 
   it("comes from a continuous producer's wires alone on rates' fast, fast/outer and slow, which draw no continuous block", () => {

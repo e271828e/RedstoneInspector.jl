@@ -375,7 +375,7 @@ export function chartRows(model: Model): ChartRow[] {
     const k = `${r.D},${r.phi}`;
     if (!rows.has(k)) {
       const D = BigInt(r.D), phi = BigInt(r.phi);
-      rows.set(k, { D: r.D, phi: r.phi, label: `D₀ ${r.D} · Φ₀ ${r.phi}`, swatches: [], count: 0, countText: "", splits: splitsFrames(r.D, r.phi, bound), due: (n) => n % D === phi });
+      rows.set(k, { D: r.D, phi: r.phi, label: pairText(r).join(" · "), swatches: [], count: 0, countText: "", splits: splitsFrames(r.D, r.phi, bound), due: (n) => n % D === phi });
     }
     const row = rows.get(k)!;
     row.count++;
@@ -531,24 +531,31 @@ export function chainLine(model: Model, path: string): string | undefined {
 // --- the legend's line (answer 13) -------------------------------------------------
 
 export interface LegendText {
-  /** `A₂ (dss) · Dₐ 1 · Φₐ 0`. */
-  text: string;
-  /** `Δt_base`, `2·Δt_base`, `1/50 s`; a deployment's `A₀` lines concrete. */
+  /** The line's pair: a deployment's `D₀ 2` and `Φ₀ 1`, as its chart row's label; a build's `Δt`, bare, and `τ 0`. */
+  period: string;
+  phase: string;
+  /** `Δt_base`, `2·Δt_base`, `1/50 s`; a deployment's concrete. A build's is its `period`. */
   dt: string;
-  /** The tooltip: a deployment's `D₀ 2 · Φ₀ 0 · τ 0`, a build's `τ 0`; then the declaring scope. */
+  /** The bare anchor, `A₂`: two triples can land on one pair. */
+  anchor: string;
+  /** The tooltip: the anchor's key and declaring scope, `Dₐ` and `Φₐ`, a deployment's `τ`. */
   title: string;
 }
 
+/** A triple's `(D₀, Φ₀)`, a deployment's: the law's base-tick line; undefined for a build. */
+export function basePair(model: Model, [anchor, D, phi]: Triple): { D: number; phi: number } | undefined {
+  const A = boundOf(model)?.anchors[anchor];
+  return A && { D: D * A.D, phi: A.phi + phi * A.D };
+}
+const pairText = (c: { D: number; phi: number }): [string, string] => [`D₀ ${c.D}`, `Φ₀ ${c.phi}`];
+
 export function legendText(model: Model, t: Triple): LegendText {
-  const s = model.structure!, bound = boundOf(model);
+  const s = model.structure!, counts = basePair(model, t);
   const [anchor, D, phi] = t;
-  const where = anchorTitle(s, anchor), text = `${anchorLabel(s, anchor)} · Dₐ ${D} · Φₐ ${phi}`;
-  const timing = { anchor, D, phi };
-  if (bound) {
-    const A = bound.anchors[anchor], counts = { D: D * A.D, phi: A.phi + phi * A.D };
-    const pair = secondsPair(s, timing, bound, counts);
-    return { text, dt: pair.dt, title: `D₀ ${counts.D} · Φ₀ ${counts.phi} · τ ${pair.tau}; ${where}` };
-  }
-  const pair = secondsPair(s, timing);
-  return { text, dt: pair.dt, title: `τ ${pair.tau}; ${where}` };
+  const { dt, tau } = secondsPair(s, { anchor, D, phi }, boundOf(model), counts);
+  const [period, phase] = counts ? pairText(counts) : [dt, `τ ${tau}`];
+  return {
+    period, phase, dt, anchor: anchorName(anchor),
+    title: `${anchorTitle(s, anchor)}; Dₐ ${D} · Φₐ ${phi}${counts ? ` · τ ${tau}` : ""}`,
+  };
 }

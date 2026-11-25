@@ -85,7 +85,7 @@ test("before a drop: the landing's link opens five sections over the inert landi
   const legend = h.locator('svg.sample[data-sample="legend"]');
   await expect(legend.locator("rect.legend")).toHaveCount(1);
   expect(new Set(await legend.locator("rect:not(.legend)").evaluateAll((r) => r.map((e) => e.getAttribute("fill")))).size).toBe(2);
-  await expect(legend.locator("text")).toHaveText(["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"]);
+  await expect(legend.locator("text")).toHaveText(["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 1"]);
   // the legend's sample keeps inside its frame, scaled to it
   const box = await legend.evaluate((svg) => {
     const s = svg.getBoundingClientRect(), g = svg.querySelector("g")!.getBoundingClientRect();

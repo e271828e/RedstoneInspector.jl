@@ -94,7 +94,7 @@
   } = $props();
 
   const FIT_PADDING = 24;
-  /** The legend's inset from the viewport's bottom-left corner, its CSS's `bottom` and `left`. */
+  /** The legend's inset from the viewport's bottom-left corner, its CSS's `bottom` and `left`; its height stops at the viewport's less two. */
   const LEGEND_INSET = 8;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
@@ -136,6 +136,7 @@
   });
   /** A pill's width around its text: the order badge's and the rate pill's. */
   const pillWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+  const deployed = $derived(model.descriptor.kind === "deployment");
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
   /** Each wire's class by wire id, the drawn level's. */
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
@@ -344,6 +345,11 @@
     const r = ready ? extent(t) : undefined;
     if (r) setView(centreOn(view, { width, height }, r));
   }
+
+  // The focused line scrolls into view in a legend taller than its box, a chart swatch's press included.
+  $effect(() => {
+    if (legendFocus !== undefined) legendBox?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ block: "nearest" });
+  });
 
   const viewBox = $derived.by(() => {
     const r = viewRect(view, { width, height });
@@ -899,7 +905,7 @@
     </div>
   {/if}
   {#if lines.length}
-    <div class="legend" aria-label="the rates on this level" bind:this={legendBox}>
+    <div class="legend" class:deployed aria-label="the rates on this level" bind:this={legendBox}>
       <ul>
         {#each lines as l (l.key)}
           {@const t = l.triple && legendText(model, l.triple)}
@@ -917,8 +923,14 @@
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
             {/if}
             </span>
-            <span class="text">{t ? t.text : "continuous"}</span>
-            <span class="dt">{t?.dt ?? ""}</span>
+            {#if t}
+              <span class="period">{t.period}</span>
+              <span class="phase">· {t.phase}</span>
+              {#if deployed}<span class="dt">{t.dt}</span>{/if}
+              <span class="anchor">{t.anchor}</span>
+            {:else}
+              <span class="word">continuous</span>
+            {/if}
             </button>
           </li>
         {/each}
@@ -956,10 +968,15 @@
   .menu button:hover, .menu button:focus-visible { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
   .legend {
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
+    box-sizing: border-box; max-height: calc(100% - 16px); overflow: auto;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
   }
-  /* The short line (deployment_overlay.md answer 13): the marks, the anchor with Dₐ and Φₐ, and Δt, each a column across the lines. */
-  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto auto auto; column-gap: 6px; }
+  /* The line (deployment_overlay.md answer 13): the marks, the pair, a deployment's Δt and the anchor, each a column
+     across the lines; the continuous line's word spans them. */
+  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, auto); column-gap: 6px; }
+  .legend.deployed ul { grid-template-columns: repeat(5, auto); }
+  .legend .word { grid-column: 2 / -1; }
+  .legend .dt, .legend .anchor { margin-left: 6px; }
   .legend li { line-height: 16px; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
   .legend .line {
     all: unset; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; box-sizing: border-box; padding: 0 4px;

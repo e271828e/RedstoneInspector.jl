@@ -38,7 +38,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/regions.ts` | a level's keyed containers, `regionsOf`, and a block's canvas label, `label`, the model's label on a primitive root's |
 | `src/lib/protocol.ts` | the live session's messages: `MAJOR`, read from the `__FORMAT_MAJOR__` define, `helloMessage`, `openLocationMessage`, `classifyFrame`, `backoff`, `downloadName` |
 | `src/lib/analysis.ts` | the drawer's analysis tabs and the order badges: `orderGroups`, the stage 1 rows and the numbered stage 2 rows with each one's feedthrough `edges`, `ranges`, `orderBadge` over the stage 2 positions, `rootInputRows` with each pinning consumer's cause (`pinCause`, `PinCause`); `rowTarget`, the selection a row's click makes; the row types, each tagged by `kind` (`Stage1Row`, `Stage2Row`, `OrderRow`, `OrderGroups`, `EdgeRow`, `RootInputRow`, `TimingTarget`, `Row`) |
-| `src/lib/timing.ts` | a deployment's timing as exact fractions (`Q` over BigInt, `seconds`, `baseMultiple`, `julia`); the names `anchorName`, `anchorLabel`, `anchorTitle`, `scopeName`; `boundOf` and the schedule's rows; the timing tab's `anchorTable`, `scopeTable`, `componentTable` by Δt, `coarsestLine`, `gridReport`, `headList`, `stepsPerFrame`; the chart's `hyperperiod`, `jointPeriod`, `frameLines`, `chartRows`, `chartFit`, `hyperperiodLine`, `jointLine`, `tickX`, `frameTopX`, `dueTicks`, `CHART_THRESHOLD`, `CHART_PITCH`, `CHART_PAD`; the pane's `framesTable`, `scopeFramesTable`, `FRAME_TITLES`, `chainLine`, `linkText`; the legend's `legendText` |
+| `src/lib/timing.ts` | a deployment's timing as exact fractions (`Q` over BigInt, `seconds`, `baseMultiple`, `julia`); the names `anchorName`, `anchorLabel`, `anchorTitle`, `scopeName`; `boundOf` and the schedule's rows; the timing tab's `anchorTable`, `scopeTable`, `componentTable` by Δt, `coarsestLine`, `gridReport`, `headList`, `stepsPerFrame`; the chart's `hyperperiod`, `jointPeriod`, `frameLines`, `chartRows`, `chartFit`, `hyperperiodLine`, `jointLine`, `tickX`, `frameTopX`, `dueTicks`, `CHART_THRESHOLD`, `CHART_PITCH`, `CHART_PAD`; the pane's `framesTable`, `scopeFramesTable`, `FRAME_TITLES`, `chainLine`, `linkText`; the legend's `legendText`, a triple's `basePair` |
 | `src/lib/docstring.ts` | `DOCS_URL`, the core's docs address, the one constant naming it; `refLink`, an `@ref` link's URL or none, read off its target, a bare link joined to the type's module (`joinBare`); `rewriteRefs`, the links rewritten before parsing; `renderDocstring`, `marked` with GFM and its own renderer (raw HTML as text, an image as its text in `code`, a link kept only with an `http` scheme, opened in a new tab) |
 | `src/lib/help.ts` | the help page's text as data: `LEAD`, the paragraph above the legend, `TERMS` (the legend's fifteen, `sample` naming each one's drawing), `NOTATION` (each timing symbol once), `NOTATION_LEAD`, `LAW_LEAD`, `EQUATIONS`, the law, `TYPE_RULE`, `VOCABULARY` (the nineteen Simulink rows, each with a note or none), `KEYS` (this map's keyboard table, its rows in its order) and `KEYS_NOTE`, `HOSTED_URL`, `VIMIUM_PATTERNS` and the `VIMIUM` sentence, `PRIVACY` (the landing's too), `LINKS`; with `docstring.ts` the only file naming a URL |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
@@ -137,8 +137,8 @@ them to the stores. The code imports the generated types by name from
 - A **triple** is a timing `[anchor, D, phi]`, the core's `(a, Dₐ, Φₐ)`; in palette order each gets a
   **step**, 0 to 7 colored, 8 to 11 (`#9` to `#12`) the colored **extras**,
   12 on the shared neutral (`stepPair`). A legend line's **key** is
-  `tripleKey`'s `"4,1,0"`, or `continuous`; its text is `legendText`'s short
-  form, `A₂ (dss) · Dₐ 1 · Φₐ 0` and the `Δt`. A **frames table** is a discrete
+  `tripleKey`'s `"4,1,0"`, or `continuous`; its text is `legendText`'s, a
+  deployment's `D₀ 2 · Φ₀ 1`, `1/50 s`, `A₀`, a build's `1/50 s · τ 0`, `A₂`. A **frames table** is a discrete
   primitive's or a rate scope's timing in the four frames of
   `deployment_overlay.md` answer 3, a row each (`FramesRow`). A wire's **class** is `scalar`,
   `flag`, `vector`, `struct` or `opaque`, from its terminal producer's kind.
@@ -355,8 +355,10 @@ What the records do not fix, or where the page differs:
   `BADGE_INSET` 4 in (`BADGE_TOP` -7, `BADGE_HEIGHT` 12), whatever the toggles:
   `#<n>` for an extra, `<k> clock(s)` on a closed assembly with a discrete
   primitive beneath (`clockCount`), joined by ` · `.
-- **The legend** is an HTML `div.legend` 8 px from the bottom-left corner, its
-  marks, texts and `Δt`s three columns across the lines (a subgrid); a line's
+- **The legend** is an HTML `div.legend` 8 px from the bottom-left corner, at
+  most the viewport's height less 16, scrolling inside, its cells columns across
+  the lines (a subgrid); a deployment's lines go by `D₀`, `Φ₀` (`legend`,
+  `basePair`). The focused line scrolls into view. A line's
   click calls `onlegend(key)`, and the shell passes `legendLit`'s set and
   `focus` `legend` while no route or diagnostic focus stands.
 - **Wires.** CSS by class: `scalar` thin, `flag` dashed `4 3`, `vector` 3
@@ -464,7 +466,7 @@ What the records do not fix, or where the page differs:
 | a mark | `path.mark-wire[data-wire]`, `rect.mark-port[data-port]`, `rect.mark-halo[data-id]`, each `[data-severity]`, `error` or `warning` | a diagnostic's attribution; a `path` mark halo on a root tag |
 | a dead hop | `path.chord[data-id][data-from][data-to][data-severity]`, `path.cross[data-id]` | a dead hop's member |
 | an overlay badge | `g.badge[data-id][data-role]`, the role `diagnostic`, `continues` or `route`, `[data-severity]` on the first two, holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing in a child or leaving by a pin (`data-id` the pin's), a route entering or leaving |
-| the legend | `div.legend` in `.viewport`: `li.continuous`, then `li[data-step]`, each `[title]` and holding `button.line[aria-pressed]` with `span.marks` (`span.swatch`, `span.number` or both), `span.text`, `span.dt` | rate mode with a line; `aria-pressed` on the focused line; the title `legendText`'s `D₀`, `Φ₀`, `τ` and declaring scope |
+| the legend | `div.legend` in `.viewport`: `li.continuous`, then `li[data-step]`, each `[title]` and holding `button.line[aria-pressed]` with `span.marks` (`span.swatch`, `span.number` or both), then `span.word` on the continuous line, else `span.period`, `span.phase`, `span.dt`, `span.anchor`; `.deployed` | rate mode with a line; `.deployed` and `span.dt` on a deployment; `aria-pressed` on the focused line; the title `legendText`'s key, declaring scope, `Dₐ`, `Φₐ` and a deployment's `τ` |
 | the menu | `div.menu` in `.viewport` holding `button.trace` | while a right-click menu is open |
 
 ## The frame
@@ -703,8 +705,8 @@ One line per file: its concern; the fixtures.
   `containers`, `aircraft`, `kinds`, `library`, `timing_deployment`, a copy of `primitive`.
 - `frames.spec.ts`: TIMING's heading, frames tables and chain line, the
   narrowest pane; `timing`, `library`, their deployments, `closed_loop`.
-- `legend.spec.ts`: the short line, the fit around it; `library`, the
-  deployments, `large`.
+- `legend.spec.ts`: the line, its order, the scroll, the fit around it;
+  `library`, the deployments, `large`.
 - `frame.spec.ts`: the status bar, the drawer's counts, splitters and
   collapse kept, `m` and `i`, the ring's box; `closed_loop`, the deployment,
   `failure_cycle`, `descent`, `large`.

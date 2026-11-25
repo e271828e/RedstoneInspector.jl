@@ -36,9 +36,9 @@
   /** The badge sample's assembly, the clock pill straddling its top edge at the left as the canvas draws it. */
   const BADGE_BOX = { x: 8, y: 12, width: 104, height: 32 };
   const pillTop = BADGE_BOX.y + BADGE_TOP;
-  /** The legend sample's two lines in the canvas's short form, without their `Δt`, its box in the legend's CSS sizes, scaled to the frame. */
+  /** The legend sample's two lines, a deployment's, their pair alone, its box in the legend's CSS sizes, scaled to the frame. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
-  const legendLines = ["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"];
+  const legendLines = ["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 1"];
   const legendWidth = Math.ceil(Math.max(...legendLines.map((t) => textWidth(t, LEGEND_FONT)))) + 38;
   const legendScale = Math.min(1, (W - 1) / legendWidth);
   const wires = [["number", ""], ["flag", "flag"], ["vector", "vector"], ["struct", "struct"]];

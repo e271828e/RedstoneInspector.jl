@@ -12,9 +12,8 @@ const block = (page: Page, id: string) => page.locator(`g.block[data-id="${id}"]
 const shape = (page: Page, id: string) => block(page, id).locator(".shape");
 const badge = (page: Page, id: string) => block(page, id).locator("text.badge");
 const badgeTitle = (page: Page, id: string) => block(page, id).locator("g.badge-pill > title");
-/** closed_loop's anchors' keys, `A₁` to `A₁₀`, for the legend's short line (deployment_overlay.md answer 13). */
-const CL = ["noise", "h_ctl", "θ_ctl", "q_ctl", "V_ctl", "tracker", "command_δe", "command_δt", "δe_limiter", "δt_limiter"];
-const clLine = (a: number) => `A${[...String(a)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("")} (${CL[a - 1]}) · Dₐ 1 · Φₐ 0`;
+/** A legend line's anchor, bare (deployment_overlay.md answer 13); each of closed_loop's triples has its own. */
+const anchorOf = (a: number) => `A${[...String(a)].map((c) => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("")}`;
 /** The computed fill and stroke of a block's shape. */
 const look = (page: Page, id: string) => shape(page, id).evaluate((e) => [getComputedStyle(e).fill, getComputedStyle(e).stroke]);
 const legendLines = (page: Page) => page.locator(".viewport .legend li");
@@ -68,13 +67,13 @@ test("closed_loop: tier at load, r to rate mode with two assemblies on their pri
   const first = legendLines(page).first();
   await expect(first).toHaveClass(/\bcontinuous\b/);
   await expect(first).not.toHaveAttribute("data-step");
-  await expect(first.locator(".text")).toHaveText("continuous");
+  await expect(first.locator(".word")).toHaveText("continuous");
   await expect(page.locator(".legend li.continuous")).toHaveCount(1);
   const swatch = await first.locator(".swatch").evaluate((e) => [getComputedStyle(e).backgroundColor, getComputedStyle(e).borderTopColor]);
   expect(swatch).toEqual(await look(page, "plant"));
   for (const [i, a] of [1, 4, 5, 6, 7, 8].entries()) {
     await expect(legendLines(page).nth(i + 1)).toHaveAttribute("data-step", String(a - 1));
-    await expect(legendLines(page).nth(i + 1).locator(".text")).toHaveText(clLine(a));
+    await expect(legendLines(page).nth(i + 1).locator(".anchor")).toHaveText(anchorOf(a));
   }
   await expect(page.locator(".legend li .number")).toHaveCount(0);
   // the tree's dot follows the canvas: a colored assembly's stroke, a mixed one's gray
@@ -100,10 +99,10 @@ test("closed_loop: pid_controller's four steps and seven lines, actuators' extra
   }
   expect(fills.size).toBe(4);
   await expect(legendLines(page)).toHaveCount(7);
-  await expect(legendLines(page).first().locator(".text")).toHaveText("continuous");
+  await expect(legendLines(page).first().locator(".word")).toHaveText("continuous");
   for (const [i, a] of [2, 3, 4, 5, 7, 8].entries()) {
     await expect(legendLines(page).nth(i + 1)).toHaveAttribute("data-step", String(a - 1));
-    await expect(legendLines(page).nth(i + 1).locator(".text")).toHaveText(clLine(a));
+    await expect(legendLines(page).nth(i + 1).locator(".anchor")).toHaveText(anchorOf(a));
   }
   // the tree's dot follows the mode
   const colorsOf = (id: string) => page.evaluate((id) => ({
@@ -176,14 +175,14 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its primi
   await expect(badge(page, "slow")).toHaveText("1 clock");
   await expect(badgeTitle(page, "slow")).toHaveText("Every discrete primitive inside ticks on this one clock.");
   await expect(badgeTitle(page, "fast")).toHaveText(/^Multi-rate: .*2 clocks/);
-  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 0", "A₂ (slow) · Dₐ 1 · Φₐ 0"]);
+  await expect(legendLines(page).locator("button.line")).toHaveText(["continuous", "1/50 s · τ 0 A₁", "1/25 s · τ 0 A₁", "1/10 s · τ 0 A₂"]);
   await openPath(page, "fast");
   const inner = await shape(page, "fast/inner").getAttribute("data-step");
   const outer = await shape(page, "fast/outer").getAttribute("data-step");
   expect([inner, outer]).toEqual(["0", "1"]);
   // no continuous block on fast: its line comes from the wires out of src
   await expect(page.locator("g.block:not(.pin) .shape:not([data-step])")).toHaveCount(0);
-  await expect(legendLines(page).locator(".text")).toHaveText(["continuous", "A₁ (fast) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 0"]);
+  await expect(legendLines(page).locator("button.line")).toHaveText(["continuous", "1/50 s · τ 0 A₁", "1/25 s · τ 0 A₁"]);
 });
 
 test("nothing yields: failure_nested's ctl shows its clock pill with its loop pill; rates' fast and slow keep their clock pills and order badges under a route; the overlay drawn after the blocks", async ({ page }) => {

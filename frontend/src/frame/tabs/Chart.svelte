@@ -7,7 +7,7 @@
   import { stepPair } from "../../canvas/palette";
   import type { Model } from "../../lib/model";
   import {
-    CHART_PAD, chartFit, chartRows, dueTicks, frameLines, frameTopX, hyperperiodLine, jointLine, legendText, tickX, type JointPeriod,
+    anchorLabel, CHART_PAD, chartFit, chartRows, dueTicks, frameLines, frameTopX, hyperperiodLine, jointLine, legendText, tickX, type JointPeriod,
   } from "../../lib/timing";
 
   let { model, joint, legendFocus, onlegend }: {
@@ -55,9 +55,10 @@
             {#each r.swatches as w (w.key)}
               {@const pair = stepPair(w.step)}
               {@const t = legendText(model, w.triple)}
+              {@const [a, D, phi] = w.triple}
               <button
                 class="swatch" data-key={w.key} data-step={w.step} aria-pressed={legendFocus === w.key}
-                title="{t.text} · Δt {t.dt}; focus this rate on the canvas" style:background={pair.fill} style:border-color={pair.stroke}
+                title="{anchorLabel(model.structure!, a)} · Dₐ {D} · Φₐ {phi} · Δt {t.dt}; focus this rate on the canvas" style:background={pair.fill} style:border-color={pair.stroke}
                 onclick={() => onlegend(w.key)}
               ></button>
             {/each}
