@@ -3,7 +3,7 @@
   // kind word, the model's totals, the loader's note, the push's fallback note,
   // the standing route with its clear control (workspace.md answer 8); in the
   // live tab the connection's state and the descriptor's download; the help
-  // link at its right end. Under the landing panel it shows the connection
+  // link at its right end. A prefix waiting for its second key shows (answer 11). Under the landing panel it shows the connection
   // and the link. The one-off notice and the focus note join; each text ends in
   // an ellipsis when long, titled whole, the route's clear control kept beside it.
   import type { Model } from "../lib/model";
@@ -11,7 +11,7 @@
   import type { LiveState } from "../state/live.svelte";
   import type { Mode } from "../state/prefs.svelte";
 
-  let { model, mode = "tier", fallback, notice, route, focusNote, connection, received = false, download, onclear }: {
+  let { model, mode = "tier", fallback, notice, route, focusNote, prefix, connection, received = false, download, onclear }: {
     model?: Model;
     /** The canvas's color mode, shown after the counts. */
     mode?: Mode;
@@ -22,6 +22,8 @@
     route?: string;
     /** Why the open level does not dim under the standing focus. */
     focusNote?: string;
+    /** The `z` or `g` waiting for its second key. */
+    prefix?: string;
     /** The live connection's state; nothing shows in the hosted copy or before the handshake resolves. */
     connection?: LiveState;
     /** A descriptor has arrived over the socket. */
@@ -76,6 +78,7 @@
       <span class="route"><span class="line" title={plain(route)}>{@render coded(route)}</span><button class="clear-route" title="Clear the route" onclick={() => onclear?.()}>clear</button></span>
     {/if}
     {#if focusNote}<span class="focus-note line" title={focusNote}>{focusNote}</span>{/if}
+    {#if prefix}<span class="prefix" title="Waiting for a second key; Escape cancels it"><kbd>{prefix}</kbd> …</span>{/if}
   {/if}
   {#if connection === "connected" || connection === "lost"}
     <span class="connection" data-state={connection}>
@@ -107,6 +110,8 @@
   .route { display: contents; color: var(--highlight); }
   .line { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .clear-route { flex: none; margin-left: -10px; }
+  .prefix { flex: none; font-weight: 600; }
+  .prefix kbd { font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   .notice, .focus-note { color: var(--text-light); }
   .line code { font-size: 11px; }
 </style>

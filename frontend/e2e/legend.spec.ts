@@ -21,7 +21,7 @@ const MAX_SCALE = 2;
 
 test("library and library_deployment: a build's line Δt · τ and the anchor, a deployment's D₀ · Φ₀, Δt and the anchor by D₀ then Φ₀, the steps the build's, the key, scope, Dₐ, Φₐ and a deployment's τ in the tooltip (answer 13)", async ({ page }) => {
   await drop(page, "library");
-  await press(page, "r");
+  await press(page, "c");
   expect(await read(page)).toEqual([
     ["", "continuous", expect.stringMatching(/^No rate/)],
     ["0", "Δt_base | · τ 0 | A₀", "the base grid; Dₐ 1 · Φₐ 0"],
@@ -46,7 +46,7 @@ test("library and library_deployment: a build's line Δt · τ and the anchor, a
 
 test("timing_deployment: no word of the line names a quantity, the pair's, Δt's and the anchor's columns aligned across the lines", async ({ page }) => {
   await drop(page, "timing_deployment");
-  await press(page, "r");
+  await press(page, "c");
   expect((await read(page)).map((l) => l[1])).toEqual([
     "continuous", "D₀ 6 | · Φ₀ 0 | 1/50 s | A₂", "D₀ 12 | · Φ₀ 6 | 1/25 s | A₂", "D₀ 24 | · Φ₀ 18 | 2/25 s | A₂",
     "D₀ 30 | · Φ₀ 1 | 1/10 s | A₁", "D₀ 36 | · Φ₀ 18 | 3/25 s | A₂",
@@ -75,7 +75,7 @@ const box = (page: Page) => page.evaluate(() => {
 test("large at 1100 by 700: the legend stops at the viewport's height less its insets, a wheel over it scrolls it and zooms nothing, and the fit leaves its box free at the left (answer 13)", async ({ page }) => {
   await page.setViewportSize({ width: 1100, height: 700 });
   await drop(page, "large");
-  await press(page, "r");
+  await press(page, "c");
   const b = await box(page);
   expect([b.top, b.bottom]).toEqual([INSET, INSET]);
   expect(b.over).toBeGreaterThan(0);
@@ -93,7 +93,7 @@ test("large at 1100 by 700: the legend stops at the viewport's height less its i
 test("library_deployment in a low window: a chart swatch's press scrolls its line into the legend's view (answer 13)", async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 330 });
   await drop(page, "library_deployment");
-  await press(page, "r");
+  await press(page, "c");
   await page.locator('section.drawer button.tab[data-tab="timing"]').click();
   // the canvas is lower than the six lines now
   await expect.poll(async () => (await box(page)).over).toBeGreaterThan(0);
@@ -141,7 +141,7 @@ async function expectFit(page: Page): Promise<"bottom" | "left"> {
 
 test("large in rate mode: the fit leaves the legend's tall box free at the left, the drawing right of it and too tall for the bottom's room", async ({ page }) => {
   await drop(page, "large");
-  await press(page, "r");
+  await press(page, "c");
   await press(page, "0");
   expect(await expectFit(page)).toBe("left");
   await shot(page, "large", "", "legend-fit");
@@ -149,7 +149,7 @@ test("large in rate mode: the fit leaves the legend's tall box free at the left,
 
 test("library_deployment in rate mode: the fit leaves the legend's wide box free at the bottom, the drawing above it and too wide for the left's room", async ({ page }) => {
   await drop(page, "library_deployment");
-  await press(page, "r");
+  await press(page, "c");
   await press(page, "0");
   expect(await expectFit(page)).toBe("bottom");
   await shot(page, "library_deployment", "", "legend-fit");

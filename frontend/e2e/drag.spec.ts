@@ -208,14 +208,14 @@ test("closed_loop: Shift keeps a drag to its axis of greater travel, pressed at 
 });
 
 /** A key pressed, then the level drawn again: an undo clears `data-ready` while ELK runs. */
-async function undo(page: Page, key: "u" | "Shift+U") {
+async function undo(page: Page, key: "x" | "Shift+X") {
   await pressKey(page, key);
   await page.locator(readyLevel("")).waitFor();
 }
 const lastDrawn = (page: Page) => page.locator("svg.canvas g.blocks > g.block").last().getAttribute("data-id");
 const undoButton = (page: Page) => page.locator(".viewport .tools button.undo-drags");
 
-test("closed_loop: u puts the last dragged block back in its place at load, the other drag, the view and the selection kept; u again the one before; with no drag u and U lay nothing out", async ({ page }) => {
+test("closed_loop: x puts the last dragged block back in its place at load, the other drag, the view and the selection kept; x again the one before; with no drag x and X lay nothing out", async ({ page }) => {
   await drop(page, "closed_loop");
   const elk = await blockBoxes(page);
   const at = (id: string) => elk.find((b) => b.id === id)!;
@@ -229,14 +229,14 @@ test("closed_loop: u puts the last dragged block back in its place at load, the 
   await pressKey(page, "+");
   const view = await viewBox(page);
 
-  await undo(page, "u");
+  await undo(page, "x");
   for (const b of await blockBoxes(page)) expect(b, b.id).toEqual(b.id === "plant" ? plant : at(b.id));
   expect(await viewBox(page)).toEqual(view);
   await expect(page.locator("svg.canvas g.block.selected")).toHaveAttribute("data-id", "lqr_controller");
   expect(await lastDrawn(page)).toBe("plant");
   await expect(undoButton(page)).toHaveCount(1);
 
-  await undo(page, "u");
+  await undo(page, "x");
   expect(await blockBoxes(page)).toEqual(elk);
   expect(await wires(page)).toEqual(wiresAtLoad);
   expect(await viewBox(page)).toEqual(view);
@@ -249,14 +249,14 @@ test("closed_loop: u puts the last dragged block back in its place at load, the 
     new MutationObserver(() => { if (!svg.hasAttribute("data-ready")) (window as any).__cleared++; })
       .observe(svg, { attributes: true, attributeFilter: ["data-ready"] });
   });
-  await pressKey(page, "u");
-  await pressKey(page, "Shift+U");
+  await pressKey(page, "x");
+  await pressKey(page, "Shift+X");
   await pressKey(page, "0");
   expect(await page.evaluate(() => (window as any).__cleared)).toBe(0);
   expect(await blockBoxes(page)).toEqual(elk);
 });
 
-test("closed_loop: a block dragged twice counts once and is the last; a drag after an undo joins the list; U puts every one back", async ({ page }) => {
+test("closed_loop: a block dragged twice counts once and is the last; a drag after an undo joins the list; X puts every one back", async ({ page }) => {
   await drop(page, "closed_loop");
   const elk = await blockBoxes(page);
   const at = (id: string) => elk.find((b) => b.id === id)!;
@@ -265,23 +265,23 @@ test("closed_loop: a block dragged twice counts once and is the last; a drag aft
   await dragBlock(page, "sensing", 80, 0);
   await dragBlock(page, "plant", 40, 0);
   const sensing = await boxOf(page, "sensing");
-  await undo(page, "u");
+  await undo(page, "x");
   expect(await boxOf(page, "plant")).toEqual(at("plant"));
   expect(await boxOf(page, "sensing")).toEqual(sensing);
   expect(await lastDrawn(page)).toBe("sensing");
 
   await dragBlock(page, "lqr_controller", 0, 80);
-  await undo(page, "u");
+  await undo(page, "x");
   expect(await boxOf(page, "lqr_controller")).toEqual(at("lqr_controller"));
   expect(await boxOf(page, "sensing")).toEqual(sensing);
 
   await dragBlock(page, "plant", 0, 120);
-  await undo(page, "Shift+U");
+  await undo(page, "Shift+X");
   expect(await blockBoxes(page)).toEqual(elk);
   expect(await wires(page)).toEqual(wiresAtLoad);
 });
 
-test("closed_loop: u during a drag does nothing, the drag landing where released", async ({ page }) => {
+test("closed_loop: x during a drag does nothing, the drag landing where released", async ({ page }) => {
   await drop(page, "closed_loop");
   const elk = await blockBoxes(page);
   const scale = await scaleOf(page);
@@ -290,30 +290,30 @@ test("closed_loop: u during a drag does nothing, the drag landing where released
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
   await page.mouse.move(from.x, from.y + 60, { steps: 4 });
-  await pressKey(page, "u");
-  await pressKey(page, "Shift+U");
+  await pressKey(page, "x");
+  await pressKey(page, "Shift+X");
   await page.mouse.move(from.x, from.y + 120, { steps: 4 });
   await page.mouse.up();
   const was = elk.find((b) => b.id === "plant")!;
   expect(Math.abs((await boxOf(page, "plant")).y - (was.y + 120 / scale))).toBeLessThan(1);
   await expect(page.locator(readyLevel(""))).toHaveCount(1);
-  await undo(page, "u");
+  await undo(page, "x");
   expect(await boxOf(page, "plant")).toEqual(was);
 });
 
-test("closed_loop: after an undo a push keeps the remaining drag in its place, and u then puts it back", async ({ page }) => {
+test("closed_loop: after an undo a push keeps the remaining drag in its place, and x then puts it back", async ({ page }) => {
   await drop(page, "closed_loop");
   const elk = await blockBoxes(page);
   const at = (id: string) => elk.find((b) => b.id === id)!;
   await dragBlock(page, "plant", 0, 120);
   await dragBlock(page, "sensing", 80, 0);
   const plant = await boxOf(page, "plant");
-  await undo(page, "u");
+  await undo(page, "x");
   await dropOver(page, "closed_loop_deployment");
   expect(await boxOf(page, "plant")).toEqual(plant);
   expect(await boxOf(page, "sensing")).toEqual(at("sensing"));
   await expect(undoButton(page)).toHaveCount(1);
-  await undo(page, "u");
+  await undo(page, "x");
   expect(await boxOf(page, "plant")).toEqual(at("plant"));
   await expect(undoButton(page)).toHaveCount(0);
 });
@@ -356,14 +356,14 @@ test("closed_loop: the undo button's click, which unmounts it, leaves the focus 
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });
 
-test("closed_loop: u pressed while another level lays out leaves that level to draw, the root's drag kept", async ({ page }) => {
+test("closed_loop: x pressed while another level lays out leaves that level to draw, the root's drag kept", async ({ page }) => {
   await drop(page, "closed_loop");
   await dragBlock(page, "plant", 0, 120);
   const plant = await boxOf(page, "plant");
   // the double-click starts sensing's layout; the key comes one task later, while the canvas still shows the root
   await page.evaluate(() => {
     document.querySelector('svg.canvas g.block[data-id="sensing"]')!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
-    setTimeout(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "u", bubbles: true })), 0);
+    setTimeout(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "x", bubbles: true })), 0);
   });
   await page.locator(readyLevel("sensing")).waitFor({ timeout: 5000 });
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "sensing");

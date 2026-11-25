@@ -97,9 +97,10 @@
   .dphi { font: 12px ui-monospace, monospace; }
   .swatches { display: inline-flex; gap: 2px; }
   button.swatch {
-    width: 12px; height: 10px; padding: 0; border: 1px solid; border-radius: 2px; cursor: pointer;
+    width: 12px; height: 10px; padding: 0; border: 1px solid; border-radius: 2px; cursor: pointer; --ring-offset: 3px;
   }
-  button.swatch[aria-pressed="true"] { outline: 2px solid var(--highlight); outline-offset: 1px; }
+  /* The pressed swatch's ring is a shadow, inside the cursor's, so both show on one swatch. */
+  button.swatch[aria-pressed="true"] { box-shadow: 0 0 0 1px var(--bg), 0 0 0 3px var(--highlight); }
   .count, .frames { color: var(--text-light); }
   .lanes { display: flex; flex-direction: column; }
   svg.lane { display: block; }

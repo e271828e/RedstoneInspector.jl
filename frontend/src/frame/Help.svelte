@@ -3,12 +3,12 @@
   // landing, which the shell keeps mounted and inert beneath it: the lead paragraph
   // and the legend of the diagram's terms with small static drawings in the canvas's
   // shapes and colors, the timing notation and the root inputs' type rule, the
-  // keyboard, the Simulink vocabulary, and the about section.
+  // keyboard with the search's prefixes, the Simulink vocabulary, and the about section.
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
   import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
-  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
+  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, SEARCH_LEAD, SEARCH_PREFIXES, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
   let { onclose }: { onclose: () => void } = $props();
@@ -195,14 +195,22 @@
 
     <section data-section="keyboard">
       <h2>The keyboard</h2>
-      <p>{KEYS_NOTE}</p>
+      <p>{@render text(KEYS_NOTE)}</p>
       <table class="keys">
         <tbody>
           {#each KEYS as [keys, action], i (i)}
             <tr>
               <td class="keys">{#each keys as k, j (j)}{#if j > 0}{" "}{/if}<kbd>{k}</kbd>{/each}</td>
-              <td>{action}</td>
+              <td>{@render text(action)}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+      <p>{SEARCH_LEAD}</p>
+      <table class="prefixes">
+        <tbody>
+          {#each SEARCH_PREFIXES as [prefix, field] (prefix)}
+            <tr><th scope="row"><code>{prefix}</code></th><td>{field}</td></tr>
           {/each}
         </tbody>
       </table>
@@ -265,7 +273,7 @@
   th { font-weight: 600; }
   td.note { color: var(--text-light); }
   td.keys { white-space: nowrap; width: 1%; }
-  .notation th, .law th { font-weight: 400; white-space: nowrap; width: 1%; }
+  .notation th, .law th, .prefixes th { font-weight: 400; white-space: nowrap; width: 1%; }
   .law th { color: var(--text-light); }
   dl.about { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
   dt { color: var(--text-light); }

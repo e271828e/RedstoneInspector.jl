@@ -116,7 +116,7 @@ test("a minor 1 copy of descent shows the note in the status bar", async ({ page
   await expect(status(page).locator(".note")).toContainText("format 1.1");
 });
 
-test("closed_loop: m and i collapse and expand the tree and the detail pane, kept across a reload; collapsing the pane holding the focus moves it to the canvas; Shift-m and Shift-i do nothing", async ({ page }) => {
+test("closed_loop: Shift-q and Shift-e collapse and expand the tree and the detail pane, kept across a reload; collapsing the pane holding the focus moves it to the canvas; the retired m and i do nothing", async ({ page }) => {
   await drop(page, "closed_loop");
   const collapsed = /\bcollapsed\b/;
   const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem("redstone-inspector/prefs") ?? "null")?.collapsed);
@@ -124,21 +124,21 @@ test("closed_loop: m and i collapse and expand the tree and the detail pane, kep
     await expect(page.locator(".viewport.focused"), what).toHaveCount(1);
     expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport")), what).toBe(true);
   };
-  await press(page, "Shift+M");
-  await press(page, "Shift+I");
+  await press(page, "m");
+  await press(page, "i");
   await expect(treePane(page)).not.toHaveClass(collapsed);
   await expect(detailPane(page)).not.toHaveClass(collapsed);
 
   await page.locator('nav.tree .row[data-path="plant"] .segment').click();
-  await press(page, "m");
+  await press(page, "Shift+Q");
   await expect(treePane(page)).toHaveClass(collapsed);
   await expect(page.locator("nav.tree")).toHaveCount(0);
-  await onCanvas("m with the tree focused");
+  await onCanvas("Shift-q with the tree focused");
   await page.locator("aside.detail h2").click();
-  await press(page, "i");
+  await press(page, "Shift+E");
   await expect(detailPane(page)).toHaveClass(collapsed);
   await expect(page.locator("aside.detail")).toHaveCount(0);
-  await onCanvas("i with the detail pane focused");
+  await onCanvas("Shift-e with the detail pane focused");
   expect(await stored()).toEqual({ tree: true, detail: true });
   await shot(page, "closed_loop", "", "frame-collapsed-keys");
 
@@ -149,15 +149,15 @@ test("closed_loop: m and i collapse and expand the tree and the detail pane, kep
   // expanding leaves the focus where it was
   await press(page, "Tab");
   await onCanvas("Tab");
-  await press(page, "m");
+  await press(page, "Shift+Q");
   await expect(treePane(page)).not.toHaveClass(collapsed);
-  await press(page, "i");
+  await press(page, "Shift+E");
   await expect(detailPane(page)).not.toHaveClass(collapsed);
-  await onCanvas("after m and i expanded the panes");
+  await onCanvas("after the two expanded the panes");
   expect(await stored()).toEqual({ tree: false, detail: false });
   // collapsing a pane that does not hold the focus leaves it too
   await page.locator("aside.detail h2").click();
-  await press(page, "m");
+  await press(page, "Shift+Q");
   await expect(treePane(page)).toHaveClass(collapsed);
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });

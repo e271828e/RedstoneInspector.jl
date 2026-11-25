@@ -92,7 +92,7 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await page.keyboard.press("Escape");
 
   // in rate mode each assembly's rate pill straddles the top edge at the left and its order badge the bottom edge
-  await press(page, "r");
+  await press(page, "c");
   const withPills = (await boxes(page)).filter((b) => b.pill);
   expect(withPills.map((b) => b.id).sort()).toEqual(["actuators", "lqr_controller", "pid_controller", "selection", "sensing"]);
   for (const b of withPills) expect(overlaps(b.order, b.pill!), b.id).toBe(false);
@@ -112,7 +112,7 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
     expect([block, pill, order], id).toEqual([on[id].block, on[id].pill, undefined]);
   }
   await press(page, "o");
-  await press(page, "r");
+  await press(page, "c");
 
   await openPath(page, "pid_controller");
   await expect(svg(page)).toHaveAttribute("data-order", "");

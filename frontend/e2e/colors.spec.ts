@@ -38,7 +38,7 @@ test("closed_loop: tier at load, r to rate mode with two assemblies on their pri
   const mixed = ["pid_controller", "selection", "actuators"];
   const tierLook = await look(page, "pid_controller");
 
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
   await expect(status(page).locator(".mode")).toHaveText("rate colors");
   await expect(modeButton(page, "rate")).toHaveAttribute("aria-pressed", "true");
@@ -87,7 +87,7 @@ test("closed_loop: tier at load, r to rate mode with two assemblies on their pri
 test("closed_loop: pid_controller's four steps and seven lines, actuators' extras and wires in their producers' fills, the tree's dot, the mode kept across a reload", async ({ page }) => {
   await drop(page, "closed_loop");
   const gray = await wireStroke(page, "sensing|in|h");
-  await press(page, "r");
+  await press(page, "c");
   // a root input's wires stay gray in rate mode
   for (const id of ["pid_controller|in|V_ref", "lqr_controller|in|V_ref"]) expect(await wireStroke(page, id), id).toBe(gray);
   await openPath(page, "pid_controller");
@@ -115,10 +115,10 @@ test("closed_loop: pid_controller's four steps and seven lines, actuators' extra
   // an icon's color never follows the mode
   const iconColor = () => page.locator("g.icon").first().evaluate((e) => getComputedStyle(e).color);
   const inRate = await iconColor();
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).toHaveAttribute("data-mode", "tier");
   expect(await iconColor()).toBe(inRate);
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
 
   await page.locator('nav.breadcrumb a[data-path=""]').click();
@@ -188,7 +188,7 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its primi
 test("nothing yields: failure_nested's ctl shows its clock pill with its loop pill; rates' fast and slow keep their clock pills and order badges under a route; the overlay drawn after the blocks", async ({ page }) => {
   // failure_nested: ctl, 60 wide, carries "1 clock" on its top edge and the loop's pill on its bottom edge
   await drop(page, "failure_nested");
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).toHaveAttribute("data-mode", "rate");
   await expect(page.locator('g.overlay g.badge[data-id="ctl"][data-role="continues"]')).toHaveCount(1);
   await expect(badge(page, "ctl")).toHaveText("1 clock");

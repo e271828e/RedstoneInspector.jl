@@ -3,8 +3,8 @@
   // before a model, the frame over the session once one loads; the window's
   // title, the hash and back and forward, the help page over either, which stays
   // mounted and inert beneath it, and
-  // the keyboard table outside text fields (workspace.md answer 11), its `h j k l`
-  // and arrows by the focused region, Cmd-O's file input of its own; the live
+  // the keyboard table outside text fields (workspace.md answer 11), its families
+  // by the focused region and the cursor on a pane's stops, Cmd-O's file input of its own; the live
   // tab's socket, its descriptors fed
   // to the loader a dropped file goes through (live_session.md answer 5).
   import Canvas, { type Target } from "./canvas/Canvas.svelte";
@@ -22,8 +22,9 @@
   import { connect, sendOpenLocation } from "./live/socket";
   import { fromFile, parseDescriptor, type Loaded, type Refusal } from "./lib/loader";
   import { loadModel } from "./lib/model";
-  import { nearest, type Direction } from "./lib/navigate";
+  import { nearest, stopStep, walkOf, type Direction, type Stop } from "./lib/navigate";
   import { outlineRows, rowSelection, treeStep } from "./lib/outline";
+  import { keyName, pressPrefix, releasePrefix, type Prefix } from "./lib/prefix";
   import { beneath, levelHits, marked, parseQuery, searchModel, stepHit } from "./lib/search";
   import { legendLit, legendMarks } from "./lib/focus";
   import { diagnosticsOf, diagnosticTarget, litBy, overlayOf, treeMarks } from "./lib/diagnostics";
@@ -31,7 +32,7 @@
   import { faceText, originOf, routeDrawing, routeLevels, routeLit, routeOf, routeStatus, sameFace } from "./lib/routes";
   import {
     back, clearLegendFocus, clearRoute, climb, closeHelp, escape, forward, load, open, openDrawer, openFromHistory, select, session, setFocus,
-    say, setLayout, setQuery, setSection, setView, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
+    say, setLayout, setQuery, setSection, setView, TABS, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
   import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
@@ -41,6 +42,8 @@
   let dragging = $state(false);
   let canvasView = $state<ReturnType<typeof Canvas>>();
   let listing = $state(false);
+  /** The `z` or `g` waiting for its second key. */
+  let prefix = $state.raw<Prefix | undefined>();
   /** The shell's own file input, outside the frame, for Cmd-O and Ctrl-O wherever the page shows. */
   let picker = $state<HTMLInputElement>();
   /** The model came over the socket, so `live.text` holds its bytes for the download. */
@@ -52,6 +55,9 @@
   const SCROLL_STEP = 40;
   /** The zoom keys' factor, about the viewport's center. */
   const ZOOM_STEP = 1.25;
+  /** The directions as `[dx, dy]`, and the arrows as directions. */
+  const STEPS: Record<Direction, [number, number]> = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] };
+  const ARROWS: Record<string, Direction> = { ArrowLeft: "h", ArrowDown: "j", ArrowUp: "k", ArrowRight: "l" };
   /** The four regions in Tab's order, by their roots. */
   const REGIONS: [Region, string][] = [["tree", "nav.tree"], ["canvas", ".viewport"], ["detail", "aside.detail"], ["drawer", "section.drawer"]];
 
@@ -185,6 +191,7 @@
   $effect.pre(() => {
     const shown = session.help;
     untrack(() => {
+      prefix = undefined;
       if (shown) {
         const a = document.activeElement;
         before = a instanceof HTMLElement && a !== document.body ? { element: a, region: session.focus } : undefined;
@@ -206,6 +213,7 @@
     t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement
     || (t instanceof HTMLElement && t.isContentEditable);
 
+  const regionOf = (t: Element | null): Region | undefined => REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
   const rootOf = (region: Region) => document.querySelector<HTMLElement>(REGIONS.find(([r]) => r === region)![1]);
 
   /** Tab and Shift-Tab: the next or previous region root present, wrapping; false when there is none. */
@@ -216,6 +224,23 @@
     const next = i < 0 ? (back ? roots.length - 1 : 0) : (i + (back ? -1 : 1) + roots.length) % roots.length;
     roots[next].focus();
     return true;
+  }
+
+  /** `q w e r`: a region focused, a collapsed pane expanded and a closed drawer opened first; a cursor already in it stays. */
+  async function focusRegion(region: Region) {
+    if (session.focus === region && focusedStop()) return;
+    if (region === "drawer") openDrawer(session.drawer.tab);
+    else if (region !== "canvas" && prefs.collapsed[region]) toggleCollapsed(region);
+    await tick();
+    rootOf(region)?.focus();
+  }
+
+  /** `/` with the drawer focused on its diagnostics tab: the filter focused with its text selected; false while none shows. */
+  function focusFilter(): boolean {
+    const input = session.focus === "drawer" ? document.querySelector<HTMLInputElement>("section.drawer input.filter") : null;
+    input?.focus();
+    input?.select();
+    return !!input;
   }
 
   /** `/`, Cmd-K and Ctrl-K: the search field focused with its text selected, the tree pane expanded first if collapsed. */
@@ -230,7 +255,7 @@
   }
   const focusCanvas = () => document.querySelector<HTMLElement>(".viewport")?.focus();
 
-  /** `m` and `i`: a side pane collapsed or expanded; the focus a collapsing pane held moves to the canvas. */
+  /** `Q` and `E`: a side pane collapsed or expanded; the focus a collapsing pane held moves to the canvas. */
   async function togglePane(side: Side) {
     const held = session.focus === side;
     toggleCollapsed(side);
@@ -239,7 +264,7 @@
     focusCanvas();
   }
 
-  /** `d`: the drawer toggled on its tab; the focus the closing drawer held moves to the canvas. */
+  /** `R`: the drawer toggled on its tab; the focus the closing drawer held moves to the canvas. */
   async function toggleDrawerKey() {
     const held = session.focus === "drawer" && session.drawer.open;
     toggleDrawer(session.drawer.tab);
@@ -248,9 +273,25 @@
     focusCanvas();
   }
 
-  /** What the detail pane's and the drawer's keys scroll: the side pane's body, the drawer's open tab body. */
-  const scrollerOf = (region: "detail" | "drawer") =>
-    document.querySelector<HTMLElement>(region === "detail" ? '.pane[data-pane="detail"] .body' : "section.drawer .tab-body");
+  /** `gt` and `gT`: the drawer's next or previous tab, wrapping; a closed drawer opens on its current one. */
+  function stepTab(step: 1 | -1) {
+    const { open, tab } = session.drawer;
+    openDrawer(open ? TABS[(TABS.indexOf(tab) + step + TABS.length) % TABS.length] : tab);
+  }
+
+  /** What a pane's view keys scroll: a side pane's body, the drawer's open tab body. */
+  const scrollerOf = (region: Exclude<Region, "canvas">) =>
+    document.querySelector<HTMLElement>(region === "drawer" ? "section.drawer .tab-body" : `.pane[data-pane="${region}"] .body`);
+
+  /** `z` with `h j k l`, a step, and `d` and `u`, half the region's height: a pane scrolled, the canvas panned, nothing focused included. */
+  function viewBy([dx, dy]: [number, number], half = false) {
+    const region = session.focus ?? "canvas";
+    const box = region === "canvas" ? rootOf(region) : scrollerOf(region);
+    if (!box) return;
+    const step = half ? box.clientHeight / 2 : region === "canvas" ? PAN_STEP : SCROLL_STEP;
+    if (region === "canvas") canvasView?.panBy(dx * step, dy * step);
+    else box.scrollBy(dx * step, dy * step);
+  }
 
   /** The block a direction key starts from: the selected block or pin, a port's block, a wire's consumer. */
   function origin(): string | undefined {
@@ -283,6 +324,65 @@
     else select(rowSelection(tree, session.level, step.select));
   }
 
+  /** A pane's stops in the page's order, those in a closed section left out: the detail pane's, or the open tab's. */
+  const stopsOf = (region: "detail" | "drawer"): HTMLElement[] =>
+    [...document.querySelectorAll<HTMLElement>(`${region === "detail" ? "aside.detail" : "section.drawer .tab-body"} :is(summary, button, a[href])`)]
+      .filter((e) => e.checkVisibility());
+  const asStop = (e: HTMLElement): Stop =>
+    e.localName === "summary" ? { depth: 0, open: (e.parentElement as HTMLDetailsElement).open }
+    : { depth: e.matches("td.links a, li.diagnostic a, .swatch ~ .swatch") ? 2 : e.closest("details") ? 1 : 0 };
+  /** The focused stop, the cursor of the pane holding the focus. */
+  function focusedStop(): HTMLElement | undefined {
+    const region = session.focus;
+    return region === "detail" || region === "drawer" ? stopsOf(region).find((e) => e === document.activeElement) : undefined;
+  }
+  function focusStop(e: HTMLElement | undefined) {
+    e?.focus({ preventScroll: true });
+    e?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+
+  /** A pane's `h j k l`: the cursor to another stop, or a section opened or closed. */
+  function stopMove(region: "detail" | "drawer", key: Direction) {
+    const all = stopsOf(region);
+    const step = stopStep(all.map(asStop), all.findIndex((e) => e === document.activeElement), key);
+    if (!step) return;
+    if ("toggle" in step) all[step.toggle].click();
+    else focusStop(all[step.focus]);
+  }
+
+  /** `gg` and `G`: the region's first or last stop, in the tree its first or last visible row; nothing on the canvas. */
+  function toEnd(last: boolean) {
+    const region = session.focus;
+    if (region === "tree" && model?.tree) {
+      const rows = outlineRows(model.tree, model.label, session.expanded);
+      select(rowSelection(model.tree, session.level, rows[last ? rows.length - 1 : 0]));
+    } else if (region === "detail" || region === "drawer") {
+      const all = stopsOf(region);
+      const walk = walkOf(all.map(asStop));
+      focusStop(all[walk[last ? walk.length - 1 : 0]]);
+    }
+  }
+
+  /** `zz`: the cursor brought to the middle of its region: the selection on the canvas, the selected row, the focused stop. */
+  function centreCursor() {
+    const region = session.focus ?? "canvas";
+    if (region !== "canvas") {
+      const at = region === "tree" ? document.querySelector("nav.tree .row.selected") : focusedStop();
+      at?.scrollIntoView({ block: "center", inline: "nearest" });
+    } else if (drawn) canvasView?.centre(drawn);
+  }
+
+  /** A prefix's second key. */
+  function run(command: string) {
+    const second = command[1];
+    if (second in STEPS) viewBy(STEPS[second as Direction]);
+    else if (command === "zz") centreCursor();
+    else if (command === "zi") canvasView?.zoomBy(ZOOM_STEP);
+    else if (command === "zo") canvasView?.zoomBy(1 / ZOOM_STEP);
+    else if (command === "gg") toEnd(false);
+    else stepTab(command === "gt" ? 1 : -1);
+  }
+
   /** `n` and `N`: the next or previous search hit selected as a pick selects it, its level opened, the view following. */
   async function stepSearch(step: 1 | -1) {
     const tree = model?.tree;
@@ -294,7 +394,7 @@
     if (t.kind !== "folder") canvasView?.follow(t.kind === "block" ? t.id : parsePortId(t.id).block);
   }
 
-  /** Enter and Shift-j: the selected closed assembly opened; false when the selection is none. */
+  /** Shift-j, and Enter with no stop focused: the selected closed assembly opened; false when the selection is none. */
   function openSelected(): boolean {
     const t = session.selection?.target;
     if (t?.kind !== "block" || model?.tree?.byPath.get(t.id)?.class !== "assembly") return false;
@@ -303,83 +403,115 @@
   }
 
   function onkeydown(e: KeyboardEvent) {
+    const name = keyName(e);
+    const modified = e.ctrlKey || e.metaKey;
+    // A key with Cmd or Ctrl is the browser's or acts on its own, so no prefix waits past it.
+    if (modified) prefix = undefined;
     // Cmd-O and Ctrl-O pick a file wherever the page shows: a text field, the landing, under the help page.
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "o") {
+    if (modified && !e.shiftKey && !e.altKey && name === "o") {
       e.preventDefault();
       picker?.click();
       return;
     }
-    // The help page takes `?`, Escape, `j` and `k`; Tab and every other key are the browser's, so the page scrolls.
+    // The help page takes `?`, Escape, `j k d u gg G`; Tab and every other key are the browser's, so the page scrolls.
     if (session.help) {
-      if (e.ctrlKey || e.metaKey) return;
-      if (e.key === "?") toggleHelp();
+      const page = document.querySelector("article.help");
+      if (modified || !page || (e.altKey && e.key !== "Escape" && e.key !== "?")) return;
+      const p = prefix || name === "g" ? pressPrefix(prefix, name, e.repeat) : undefined;
+      if (p) {
+        prefix = p.next;
+        if (p.command === "gg") page.scrollTo(0, 0);
+      } else if (e.key === "?") toggleHelp();
       else if (e.key === "Escape") escape();
-      else if ((e.key === "j" || e.key === "k") && !e.altKey) {
-        document.querySelector("article.help")?.scrollBy(0, e.key === "j" ? SCROLL_STEP : -SCROLL_STEP);
-      } else return;
+      else if (name === "j" || name === "k") page.scrollBy(0, name === "j" ? SCROLL_STEP : -SCROLL_STEP);
+      else if (name === "d" || name === "u") page.scrollBy(0, ((name === "d" ? 1 : -1) * page.clientHeight) / 2);
+      else if (name === "G") page.scrollTo(0, page.scrollHeight);
+      else return;
       e.preventDefault();
       return;
     }
-    if (e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (e.key === "Tab" && !modified && !e.altKey && (!prefix || typing(e.target))) {
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
     }
     if (typing(e.target)) return;
-    if (e.key === "?" && !e.ctrlKey && !e.metaKey) {
+    const p = session.model && !modified && (prefix || !e.altKey) ? pressPrefix(prefix, name, e.repeat) : undefined;
+    if (p) {
+      e.preventDefault();
+      prefix = p.next;
+      if (p.command) run(p.command);
+      return;
+    }
+    if (e.key === "?" && !modified) {
       e.preventDefault();
       toggleHelp();
       return;
     }
     if (!session.model) return;
-    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === "k") {
+    if (modified && !e.altKey && !e.shiftKey && name === "k") {
       e.preventDefault();
       focusSearch();
       return;
     }
-    if (e.ctrlKey || e.metaKey) return;
-    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-    // `h j k l` and the arrows follow the focused region: the tree's rows, the detail pane's or the drawer's
-    // scrolling, else the canvas's cursor and pan.
-    const arrows: Record<string, Direction> = { ArrowLeft: "h", ArrowDown: "j", ArrowUp: "k", ArrowRight: "l" };
-    const steps: Record<Direction, [number, number]> = { h: [-1, 0], j: [0, 1], k: [0, -1], l: [1, 0] };
-    const vim = key in steps ? (key as Direction) : undefined;
+    if (modified) return;
+    // `h j k l` and the arrows follow the focused region: the tree's rows, the detail pane's or the drawer's stops,
+    // else the canvas's cursor and pan.
+    const vim = name in STEPS ? (name as Direction) : undefined;
+    const arrow: Direction | undefined = ARROWS[e.key];
+    const dir = vim ?? arrow;
     const region = session.focus;
     let handled = true;
-    if (e.key === "Backspace" || (e.key === "ArrowUp" && e.altKey) || (key === "k" && e.shiftKey && !e.altKey)) climb();
+    if (e.key === "Backspace" || (e.key === "ArrowUp" && e.altKey) || (name === "K" && !e.altKey)) climb();
     else if (e.altKey) handled = false;
-    else if (e.key === "Enter") handled = openSelected();
-    else if (key === "j" && e.shiftKey) openSelected();
+    // Enter on a stop or the menu's entry is the browser's press
+    else if (e.key === "Enter") handled = !focusedStop() && !document.activeElement?.closest(".menu") && openSelected();
+    else if (name === "J") openSelected();
     else if (e.key === "Escape") escape();
-    else if (key === "h" && e.shiftKey) back();
-    else if (key === "l" && e.shiftKey) forward();
-    else if ((vim || e.key in arrows) && region === "tree") treeMove(vim ?? arrows[e.key]);
-    else if ((vim || e.key in arrows) && (region === "detail" || region === "drawer")) {
-      const [dx, dy] = steps[vim ?? arrows[e.key]];
-      scrollerOf(region)?.scrollBy(dx * SCROLL_STEP, dy * SCROLL_STEP);
-    } else if (vim) move(vim);
-    else if (e.key in arrows) canvasView?.panBy(steps[arrows[e.key]][0] * PAN_STEP, steps[arrows[e.key]][1] * PAN_STEP);
+    else if (name === "H") back();
+    else if (name === "L") forward();
+    else if (dir && region === "tree") treeMove(dir);
+    else if (dir && (region === "detail" || region === "drawer")) stopMove(region, dir);
+    else if (vim) move(vim);
+    else if (arrow) canvasView?.panBy(STEPS[arrow][0] * PAN_STEP, STEPS[arrow][1] * PAN_STEP);
+    else if (name === "q") focusRegion("tree");
+    else if (name === "w") focusRegion("canvas");
+    else if (name === "e") focusRegion("detail");
+    else if (name === "r") focusRegion("drawer");
+    else if (name === "Q") togglePane("tree");
+    else if (name === "E") togglePane("detail");
+    else if (name === "R") toggleDrawerKey();
+    else if (name === "d" || name === "u") viewBy(STEPS[name === "d" ? "j" : "k"], true);
+    else if (name === "G") toEnd(true);
     else if (e.key === "0") canvasView?.fit();
-    else if (key === "z" && !e.shiftKey) { if (drawn) canvasView?.centre(drawn); }
-    else if (key === "n") stepSearch(e.key === "N" ? -1 : 1);
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
-    else if (key === "d" && !e.shiftKey) toggleDrawerKey();
-    else if (key === "m" && !e.shiftKey) togglePane("tree");
-    else if (key === "i" && !e.shiftKey) togglePane("detail");
-    else if (key === "u") canvasView?.undrag(e.shiftKey);
-    else if (e.key === "/") focusSearch();
-    else if (key === "r" && !e.shiftKey) setMode(prefs.mode === "tier" ? "rate" : "tier");
-    else if (key === "y" && !e.shiftKey) toggleLabels();
-    else if (key === "o" && !e.shiftKey) toggleOrder();
-    else if (e.key === "t") traceFrom(model?.tree ? originOf(model, session.selection) : undefined);
+    else if (e.key === "n" || e.key === "N") stepSearch(e.key === "N" ? -1 : 1);
+    else if (name === "x" || name === "X") canvasView?.undrag(name === "X");
+    else if (e.key === "/") focusFilter() || focusSearch();
+    else if (name === "c") setMode(prefs.mode === "tier" ? "rate" : "tier");
+    else if (name === "y") toggleLabels();
+    else if (name === "o") toggleOrder();
+    else if (name === "t") traceFrom(model?.tree ? originOf(model, session.selection) : undefined);
     else handled = false;
     if (handled) e.preventDefault();
+  }
+
+  /**
+   * A click on a stop, or on a row elsewhere than on its button, puts the cursor on it, before the click acts: WebKit
+   * focuses no button and no link, and no browser a row.
+   */
+  function onclick(e: MouseEvent) {
+    const t = e.target instanceof Element ? e.target : null;
+    const region = regionOf(t);
+    if (!t || (region !== "detail" && region !== "drawer")) return;
+    const at = t.closest("summary, button, a[href]") ?? t.closest("tr, .line, li.edge")?.querySelector("button.row");
+    stopsOf(region).find((s) => s === at)?.focus({ preventScroll: true });
   }
 
   /** The region a focus change lands in, from the focused element's nearest region root. */
   function focusin(e: FocusEvent) {
     const t = e.target instanceof Element ? e.target : null;
-    const region = REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
+    const region = regionOf(t);
     setFocus(region);
     watchRemoval(region, t);
   }
@@ -392,7 +524,7 @@
     setFocus(undefined);
     watchRemoval(undefined, null);
     const t = e.target instanceof Element ? e.target : null;
-    const region = REGIONS.find(([, sel]) => t?.closest(sel))?.[0];
+    const region = regionOf(t);
     if (!t || !region) return;
     queueMicrotask(() => {
       const a = document.activeElement;
@@ -429,6 +561,9 @@
   ondragleave={() => (dragging = false)}
   ondrop={drop}
   {onkeydown}
+  onkeyup={(e) => (prefix = releasePrefix(prefix, e.key))}
+  onblur={() => { if (prefix?.held) prefix = undefined; }}
+  onclickcapture={onclick}
   onfocusin={focusin}
   onfocusout={focusout}
   onpopstate={(e) => openFromHistory(location.hash, e.state)}
@@ -502,7 +637,7 @@
       {#snippet status()}
         <StatusBar
           {model} mode={prefs.mode} fallback={session.note} notice={session.notice} connection={live.state} received={live.text !== undefined}
-          download={pushed ? live.text : undefined} route={traced && routeStatus(traced.origin, traced)} {focusNote} onclear={clearRoute}
+          download={pushed ? live.text : undefined} route={traced && routeStatus(traced.origin, traced)} {focusNote} prefix={prefix?.key} onclear={clearRoute}
         />
       {/snippet}
     </Frame>

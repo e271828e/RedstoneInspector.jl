@@ -86,7 +86,7 @@
 
 <div class="search">
   <input
-    class="query" type="text" placeholder="Search  /" aria-label="Search the model" spellcheck="false" autocomplete="off"
+    class="query" type="text" placeholder="Search  /" aria-label="Search the model" title="Search paths, types and face names; path:, type: or face: before a term narrows it to one of them" spellcheck="false" autocomplete="off"
     value={query}
     oninput={(e) => { active = 0; onquery(e.currentTarget.value); }}
     onfocus={() => (focused = true)} onblur={() => (focused = false)} onkeydown={keydown}

@@ -16,7 +16,7 @@
   // (workspace.md answer 7).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
-  // (initial_design.md answer 12); `u`, `U` and the undo button put drags back.
+  // (initial_design.md answer 12); `x`, `X` and the undo button put drags back.
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
@@ -116,6 +116,9 @@
   let hovered = $state<Target | undefined>();
   /** The right-click menu: where it opened in the viewport and the target it traces. */
   let menu = $state<{ x: number; y: number; target: Target } | undefined>();
+  let menuEntry = $state<HTMLElement>();
+  /** What held the focus when the menu opened. */
+  let beforeMenu: Element | null = null;
   /** A block `follow` was asked for while the level was being laid out, followed once it is drawn. */
   let pending: string | undefined;
 
@@ -267,7 +270,7 @@
   });
 
   /**
-   * `u` and `U`: the last dragged block, or every one, back in its computed place, the level laid out again with the
+   * `x` and `X`: the last dragged block, or every one, back in its computed place, the level laid out again with the
    * other drags put back, as a push does, the view kept; false with no drag on the drawn level or one under way.
    */
   export function undrag(all: boolean): boolean {
@@ -614,7 +617,9 @@
   function contextmenu(e: MouseEvent, target: Target) {
     e.preventDefault();
     e.stopPropagation();
+    beforeMenu = document.activeElement;
     menu = { ...local(e), target };
+    tick().then(() => menuEntry?.focus());
   }
   function traceMenu() {
     const face = menu && shown ? originOf(model, { level: shown.level.path, target: menu.target }) : undefined;
@@ -625,10 +630,11 @@
   function menuPress(e: PointerEvent) {
     if (menu && !(e.target instanceof Element && e.target.closest(".viewport .menu"))) menu = undefined;
   }
-  /** Escape closes the open menu alone, before the shell's Escape chain sees it. */
+  /** Escape closes the open menu alone, before the shell's Escape chain sees it, and gives the focus back. */
   function menuKey(e: KeyboardEvent) {
     if (menu && e.key === "Escape") {
       menu = undefined;
+      if (beforeMenu instanceof HTMLElement) beforeMenu.focus();
       e.stopPropagation();
       e.preventDefault();
     }
@@ -895,13 +901,13 @@
   </svg>
   <div class="tools">
     {#if dragged.size}
-      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (U)">Undo drags</button>
+      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (X)">Undo drags</button>
     {/if}
     <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
   </div>
   {#if menu}
     <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px">
-      <button class="trace" role="menuitem" onclick={traceMenu}>Trace</button>
+      <button class="trace" role="menuitem" bind:this={menuEntry} onclick={traceMenu}>Trace</button>
     </div>
   {/if}
   {#if lines.length}
@@ -965,7 +971,7 @@
     background: var(--bg); border: 1px solid var(--wire); border-radius: 4px; box-shadow: 0 2px 6px color-mix(in srgb, var(--text) 20%, transparent);
   }
   .menu button { all: unset; padding: 2px 12px; border-radius: 3px; cursor: pointer; }
-  .menu button:hover, .menu button:focus-visible { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
+  .menu button:hover, .menu button:focus { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
   .legend {
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
     box-sizing: border-box; max-height: calc(100% - 16px); overflow: auto;

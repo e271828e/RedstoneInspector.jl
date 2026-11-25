@@ -92,10 +92,10 @@
 {#snippet faceRows(faces: FaceFacts[], side: "in" | "out", stage: boolean, links_: boolean)}
   {#each faces as f (f.name)}
     {@const sel = rowSelection(f.face)}
-    <!-- svelte-ignore a11y_click_events_have_key_events (the keyboard table is increment 5's) -->
+    <!-- svelte-ignore a11y_click_events_have_key_events (the face's name is a button, its click the row's) -->
     <tr class={side} data-port={portId(f.face.path, side, f.name)} title={`Select ${f.name}`} onclick={() => onselect(sel)}>
       <td class="side">{side}</td>
-      <td class="face-name">{f.name}</td>
+      <td class="face-name"><button class="row">{f.name}</button></td>
       <td class="face-type">{f.type ?? "?"}</td>
       <td class="face-kind">{f.phrase ?? ""}</td>
       <td class="pinned" title={f.pinned ? "pinned" : undefined}>{f.pinned ? "◆" : ""}</td>
@@ -212,11 +212,9 @@
 {:else}
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
   <aside class="detail" class:focused data-kind={facts.kind} data-id={dataId} tabindex="0">
-    {#if facts.kind === "level"}
-      {@render header(facts.segment, facts.displayName, facts.path, false, false, true)}
-      {@render node(facts)}
-    {:else if "signature" in facts}
-      <!-- a primitive root's level is the primitive itself, so its pane carries the open level's mark -->
+    {#if "signature" in facts}
+      <!-- the open level and a block share the branch, so a stop keeps the cursor between them; a primitive root's level
+        is the primitive itself, so its pane carries the open level's mark -->
       {@render header(facts.segment, facts.displayName, facts.path, facts.kind === "assembly", false, facts.path === level)}
       {@render node(facts)}
     {:else if facts.kind === "folder"}
@@ -317,6 +315,7 @@
   .faces .links { overflow-wrap: anywhere; }
   .faces .side { color: var(--text-light); font-size: 11px; }
   .faces .face-name { font-weight: 600; }
+  .faces .row { padding: 0; border: 0; background: none; font: inherit; color: inherit; overflow-wrap: anywhere; text-align: left; cursor: pointer; }
   .faces .face-type { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; min-width: 8ch; }
   .face-kind { color: var(--text-light); }
   /* A narrow pane (workspace.md answer 4 as amended): each parameter's summary under its name, each face a small block. */

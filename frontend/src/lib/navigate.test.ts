@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { follow, nearest, type Box } from "./navigate";
+import { follow, nearest, stopStep, walkOf, type Box, type Stop } from "./navigate";
 
 /** A three-by-three grid of 40 px boxes at 100 px pitch, ids `r<row>c<col>`. */
 const grid: Box[] = [0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => ({ id: `r${r}c${c}`, x: 100 * c, y: 100 * r, width: 40, height: 40 })));
@@ -91,5 +91,58 @@ describe("follow", () => {
   it("aligns the near edge of a box larger than the viewport", () => {
     const v = follow(view, viewport, { x: 300, y: 20, width: 500, height: 30 }, 0);
     expect(v).toEqual({ x: 300, y: 0, scale: 2 });
+  });
+});
+
+/** A pane: a button; a closed heading; an open one with a row of two links and a row with none; an open one with no row. */
+const pane: Stop[] = [
+  { depth: 0 }, { depth: 0, open: false }, { depth: 0, open: true }, { depth: 1 }, { depth: 2 }, { depth: 2 }, { depth: 1 }, { depth: 0, open: true },
+];
+/** A drawer: a row with a control, then a bare row. */
+const drawer: Stop[] = [{ depth: 0 }, { depth: 2 }, { depth: 0 }];
+
+describe("stopStep", () => {
+  it("j and k walk every stop but a row's links, and stop at the ends", () => {
+    expect(walkOf(pane)).toEqual([0, 1, 2, 3, 6, 7]);
+    const walk = walkOf(pane);
+    for (let i = 0; i < walk.length; i++) {
+      expect(stopStep(pane, walk[i], "j")).toEqual(i + 1 < walk.length ? { focus: walk[i + 1] } : undefined);
+      expect(stopStep(pane, walk[i], "k")).toEqual(i > 0 ? { focus: walk[i - 1] } : undefined);
+    }
+  });
+
+  it("j and k from a link go on from its row", () => {
+    for (const at of [4, 5]) {
+      expect(stopStep(pane, at, "j")).toEqual({ focus: 6 });
+      expect(stopStep(pane, at, "k")).toEqual({ focus: 2 });
+    }
+    expect(stopStep(drawer, 1, "k")).toBeUndefined();
+    expect(stopStep(drawer, 1, "j")).toEqual({ focus: 2 });
+  });
+
+  it("with no stop focused j and k take the first, h and l nothing; an empty pane has none", () => {
+    for (const k of ["j", "k"] as const) {
+      expect(stopStep(pane, -1, k)).toEqual({ focus: 0 });
+      expect(stopStep([], -1, k)).toBeUndefined();
+    }
+    for (const k of ["h", "l"] as const) expect(stopStep(pane, -1, k)).toBeUndefined();
+  });
+
+  it("l opens a closed heading, steps from an open one to its first row, along a row's links, and no further", () => {
+    expect(stopStep(pane, 1, "l")).toEqual({ toggle: 1 });
+    expect(stopStep(pane, 2, "l")).toEqual({ focus: 3 });
+    expect(stopStep(pane, 3, "l")).toEqual({ focus: 4 });
+    expect(stopStep(pane, 4, "l")).toEqual({ focus: 5 });
+    for (const at of [0, 5, 6, 7]) expect(stopStep(pane, at, "l"), String(at)).toBeUndefined();
+    expect(stopStep(drawer, 0, "l")).toEqual({ focus: 1 });
+  });
+
+  it("h steps back along the links to the row, from any row to its heading, and collapses an open heading alone", () => {
+    expect(stopStep(pane, 5, "h")).toEqual({ focus: 4 });
+    expect(stopStep(pane, 4, "h")).toEqual({ focus: 3 });
+    for (const at of [3, 6]) expect(stopStep(pane, at, "h")).toEqual({ focus: 2 });
+    for (const at of [2, 7]) expect(stopStep(pane, at, "h")).toEqual({ toggle: at });
+    for (const at of [0, 1]) expect(stopStep(pane, at, "h")).toBeUndefined();
+    expect(stopStep(drawer, 1, "h")).toEqual({ focus: 0 });
   });
 });
