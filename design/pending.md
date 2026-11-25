@@ -16,8 +16,9 @@ landed (`roadmap.md`).
   `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. The
   probes ran on 2026-11-25 and the notes hold them, with the user's rulings
   on them; `probes/hand.html` there waits for the user's keyboard. Both
-  stages are built on the branch `keyboard-legend-proto`. Next: the cold
-  review, then the user's review, look and merge.
+  stages, the cold review and its fixes are on the branch
+  `keyboard-legend-proto`, unmerged. Next: the user's review, look and
+  merge, by the notes' section "For the user's review".
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
@@ -101,7 +102,7 @@ landed (`roadmap.md`).
 - **The scopes' empty note on a model with no `sample_times`**
   (increment 10's review). The timing tab's "No assembly is keyed in
   `sample_times`; every key names a primitive." shows there too.
-- **`frontend/MAP.md` past its size.** It is 759 lines against
+- **`frontend/MAP.md` past its size.** It is 786 lines against
   `design/rules.md`'s "about 700". A trim outside any increment's text
   brings it back.
 - **An integer past `2^53`** (the core's

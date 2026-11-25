@@ -1,0 +1,17 @@
+F1 n: the effect | RED | 2 failed
+F1 push: accept | RED | 2 failed
+F2 the click's guard | RED | 2 failed
+F3 refusal | RED | Error: expect(locator).toHaveCount(expected) failed Error: expect(locator).toHaveCount(expected) failed 2 failed
+F4 legend scroll | RED | 2 failed 4 passed (4.5s)
+F5 menu blur | RED | Error: expect(locator).toHaveCount(expected) failed Error: expect(locator).toHaveCount(expected) failed 2 failed
+F7 n by name | RED | expect(locator).toHaveCount(expected) failed expect(locator).toHaveCount(expected) failed 2 failed
+F8 Alt ends a hold | RED | expect(locator).toHaveCount(expected) failed expect(locator).toHaveCount(expected) failed 2 failed
+F8 Alt in a field | RED | Error: expect(locator).toHaveCount(expected) failed Error: expect(locator).toHaveCount(expected) failed 2 failed
+tree gg G | RED | 2 failed
+17 Tab in a field | RED | 2 failed
+19 Alt starts no prefix | RED | expect(locator).toHaveCount(expected) failed expect(locator).toHaveCount(expected) failed 2 failed
+20 Alt key under a prefix | RED | Error: expect(locator).toHaveCount(expected) failed Error: expect(locator).toHaveCount(expected) failed 2 failed
+25 li.edge | RED | 2 failed
+26 preventScroll | RED | 1 failed 1 passed (3.6s)
+72 Alt arrows | RED | 2 failed
+restored

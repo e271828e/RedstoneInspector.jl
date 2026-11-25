@@ -515,7 +515,8 @@ Open items live in `pending.md`.
     its second key, a key it does not know is dropped, and there is no
     timeout and no count. While `z` stays held, every `h`, `j`, `k`, `l`,
     `i` and `o` acts under it; a held `z`'s own repeats do nothing, and the
-    window losing the focus or a key with Cmd or Ctrl ends the hold. On the help page `j`, `k`, `d`, `u`, `gg`
+    window losing the focus, an Alt key or a key with Cmd or Ctrl ends the
+    hold. On the help page `j`, `k`, `d`, `u`, `gg`
     and `G` scroll, beside `?` and Escape.
 
     Focus shows as a ring in the halo's hue. The tree, the detail pane and
@@ -578,7 +579,8 @@ Open items live in `pending.md`.
     increment's probes, the notes' rulings 24 to 28): every row of an open
     section was a stop, a stop's ring was unstated, the open level's pane
     and a block's shared no cursor, and the end of a held `z` was
-    unstated.*
+    unstated. Amended 2026-11-25 (the cold review's F8, the coordinator
+    with the user away): an Alt key did not end a hold.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

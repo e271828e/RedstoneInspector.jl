@@ -1,0 +1,437 @@
+none h :: sel: lqr_controller→sensing
+none j :: sel: lqr_controller→pid_controller; view: -52,-323→-52,-253
+none k :: -
+none l :: sel: lqr_controller→selection
+none ArrowLeft :: view: -52,-323→-156,-323
+none ArrowDown :: view: -52,-323→-52,-219
+none ArrowUp :: view: -52,-323→-52,-427
+none ArrowRight :: view: -52,-323→52,-323
+none Shift+ArrowDown :: view: -52,-323→-52,-219
+none Shift+ArrowRight :: view: -52,-323→52,-323
+none Enter :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+none Shift+H :: -
+none Shift+L :: -
+none Shift+J :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+none Shift+K :: -
+none Backspace :: -
+none Alt+ArrowUp :: -
+none zh :: view: -52,-323→-156,-323
+none zj :: view: -52,-323→-52,-219
+none zk :: view: -52,-323→-52,-427
+none zl :: view: -52,-323→52,-323
+none zz :: view: -52,-323→5,-231
+none zi :: view: -52,-323→68,-244; zoom: 1205→964
+none zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+none d :: view: -52,-323→-52,71
+none u :: view: -52,-323→-52,-717
+none 0 :: view: -52,-323→-52,-134
+none + :: view: -52,-323→68,-244; zoom: 1205→964
+none - :: view: -52,-323→-203,-422; zoom: 1205→1506
+none gg :: -
+none Shift+G :: -
+none gt :: tab: timing→order
+none gShift+T :: tab: timing→root-inputs
+none / :: cur: BODY→input.query
+none Control+k :: cur: BODY→input.query
+none Meta+k :: cur: BODY→input.query
+none n :: -
+none Shift+N :: -
+none t :: -
+none c :: mode: tier→rate
+none y :: lab: false→true
+none o :: ord: false→true
+none ? :: cur: BODY→article.helpRedstone inspect; help: false→true
+none x :: -
+none Shift+X :: -
+none Escape :: sel: lqr_controller→
+none Shift+Q :: zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+none Shift+E :: zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+none Shift+R :: dr: 0→closed
+none q :: cur: BODY→treenav
+none w :: cur: BODY→viewportdiv
+none e :: cur: BODY→detailaside
+none r :: cur: BODY→drawersection
+none Tab :: cur: BODY→treenav
+none Shift+Tab :: cur: BODY→drawersection
+none m :: -
+none i :: -
+none s :: -
+none f :: -
+none a :: -
+none b :: -
+none v :: -
+none p :: -
+none Shift+U :: -
+none Shift+D :: -
+none Shift+Z :: -
+none Shift+W :: -
+none Shift+C :: -
+none Shift+Y :: -
+none Shift+O :: -
+none zx :: -
+none gx :: -
+none Space :: -
+tree h :: sel: lqr_controller→
+tree j :: sel: lqr_controller→selection
+tree k :: sel: lqr_controller→pid_controller
+tree l :: rows: 7→15
+tree ArrowLeft :: sel: lqr_controller→
+tree ArrowDown :: sel: lqr_controller→selection
+tree ArrowUp :: sel: lqr_controller→pid_controller
+tree ArrowRight :: rows: 7→15
+tree Shift+ArrowDown :: sel: lqr_controller→selection
+tree Shift+ArrowRight :: rows: 7→15
+tree Enter :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+tree Shift+H :: -
+tree Shift+L :: -
+tree Shift+J :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+tree Shift+K :: -
+tree Backspace :: -
+tree Alt+ArrowUp :: -
+tree zh :: -
+tree zj :: -
+tree zk :: -
+tree zl :: -
+tree zz :: -
+tree zi :: view: -52,-323→68,-244; zoom: 1205→964
+tree zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+tree d :: -
+tree u :: -
+tree 0 :: view: -52,-323→-52,-134
+tree + :: view: -52,-323→68,-244; zoom: 1205→964
+tree - :: view: -52,-323→-203,-422; zoom: 1205→1506
+tree gg :: sel: lqr_controller→
+tree Shift+G :: sel: lqr_controller→actuators
+tree gt :: tab: timing→order
+tree gShift+T :: tab: timing→root-inputs
+tree / :: cur: treenav→input.query
+tree Control+k :: cur: treenav→input.query
+tree Meta+k :: cur: treenav→input.query
+tree n :: -
+tree Shift+N :: -
+tree t :: -
+tree c :: mode: tier→rate
+tree y :: lab: false→true
+tree o :: ord: false→true
+tree ? :: cur: treenav→article.helpRedstone inspect; help: false→true
+tree x :: -
+tree Shift+X :: -
+tree Escape :: sel: lqr_controller→
+tree Shift+Q :: cur: treenav→viewportdiv; zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+tree Shift+E :: zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+tree Shift+R :: dr: 0→closed
+tree q :: -
+tree w :: cur: treenav→viewportdiv
+tree e :: cur: treenav→detailaside
+tree r :: cur: treenav→drawersection
+tree Tab :: cur: treenav→viewportdiv
+tree Shift+Tab :: cur: treenav→drawersection
+tree m :: -
+tree i :: -
+tree s :: -
+tree f :: -
+tree a :: -
+tree b :: -
+tree v :: -
+tree p :: -
+tree Shift+U :: -
+tree Shift+D :: -
+tree Shift+Z :: -
+tree Shift+W :: -
+tree Shift+C :: -
+tree Shift+Y :: -
+tree Shift+O :: -
+tree zx :: -
+tree gx :: -
+tree Space :: -
+canvas h :: sel: lqr_controller→sensing
+canvas j :: sel: lqr_controller→pid_controller; view: -52,-323→-52,-253
+canvas k :: -
+canvas l :: sel: lqr_controller→selection
+canvas ArrowLeft :: view: -52,-323→-156,-323
+canvas ArrowDown :: view: -52,-323→-52,-219
+canvas ArrowUp :: view: -52,-323→-52,-427
+canvas ArrowRight :: view: -52,-323→52,-323
+canvas Shift+ArrowDown :: view: -52,-323→-52,-219
+canvas Shift+ArrowRight :: view: -52,-323→52,-323
+canvas Enter :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+canvas Shift+H :: -
+canvas Shift+L :: -
+canvas Shift+J :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+canvas Shift+K :: -
+canvas Backspace :: -
+canvas Alt+ArrowUp :: -
+canvas zh :: view: -52,-323→-156,-323
+canvas zj :: view: -52,-323→-52,-219
+canvas zk :: view: -52,-323→-52,-427
+canvas zl :: view: -52,-323→52,-323
+canvas zz :: view: -52,-323→5,-231
+canvas zi :: view: -52,-323→68,-244; zoom: 1205→964
+canvas zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+canvas d :: view: -52,-323→-52,71
+canvas u :: view: -52,-323→-52,-717
+canvas 0 :: view: -52,-323→-52,-134
+canvas + :: view: -52,-323→68,-244; zoom: 1205→964
+canvas - :: view: -52,-323→-203,-422; zoom: 1205→1506
+canvas gg :: -
+canvas Shift+G :: -
+canvas gt :: tab: timing→order
+canvas gShift+T :: tab: timing→root-inputs
+canvas / :: cur: viewportdiv→input.query
+canvas Control+k :: cur: viewportdiv→input.query
+canvas Meta+k :: cur: viewportdiv→input.query
+canvas n :: -
+canvas Shift+N :: -
+canvas t :: -
+canvas c :: mode: tier→rate
+canvas y :: lab: false→true
+canvas o :: ord: false→true
+canvas ? :: cur: viewportdiv→article.helpRedstone inspect; help: false→true
+canvas x :: -
+canvas Shift+X :: -
+canvas Escape :: sel: lqr_controller→
+canvas Shift+Q :: zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+canvas Shift+E :: zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+canvas Shift+R :: dr: 0→closed
+canvas q :: cur: viewportdiv→treenav
+canvas w :: -
+canvas e :: cur: viewportdiv→detailaside
+canvas r :: cur: viewportdiv→drawersection
+canvas Tab :: cur: viewportdiv→detailaside
+canvas Shift+Tab :: cur: viewportdiv→treenav
+canvas m :: -
+canvas i :: -
+canvas s :: -
+canvas f :: -
+canvas a :: -
+canvas b :: -
+canvas v :: -
+canvas p :: -
+canvas Shift+U :: -
+canvas Shift+D :: -
+canvas Shift+Z :: -
+canvas Shift+W :: -
+canvas Shift+C :: -
+canvas Shift+Y :: -
+canvas Shift+O :: -
+canvas zx :: -
+canvas gx :: -
+canvas Space :: -
+detRoot h :: -
+detRoot j :: cur: detailaside→button.copyCopy
+detRoot k :: cur: detailaside→button.copyCopy
+detRoot l :: -
+detRoot ArrowLeft :: -
+detRoot ArrowDown :: cur: detailaside→button.copyCopy
+detRoot ArrowUp :: cur: detailaside→button.copyCopy
+detRoot ArrowRight :: -
+detRoot Shift+ArrowDown :: cur: detailaside→button.copyCopy
+detRoot Shift+ArrowRight :: -
+detRoot Enter :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+detRoot Shift+H :: -
+detRoot Shift+L :: -
+detRoot Shift+J :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+detRoot Shift+K :: -
+detRoot Backspace :: -
+detRoot Alt+ArrowUp :: -
+detRoot zh :: -
+detRoot zj :: det: 0→40
+detRoot zk :: -
+detRoot zl :: -
+detRoot zz :: -
+detRoot zi :: view: -52,-323→68,-244; zoom: 1205→964
+detRoot zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+detRoot d :: det: 0→297
+detRoot u :: -
+detRoot 0 :: view: -52,-323→-52,-134
+detRoot + :: view: -52,-323→68,-244; zoom: 1205→964
+detRoot - :: view: -52,-323→-203,-422; zoom: 1205→1506
+detRoot gg :: cur: detailaside→button.copyCopy
+detRoot Shift+G :: cur: detailaside→button.rowδt; det: 0→580
+detRoot gt :: tab: timing→order
+detRoot gShift+T :: tab: timing→root-inputs
+detRoot / :: cur: detailaside→input.query
+detRoot Control+k :: cur: detailaside→input.query
+detRoot Meta+k :: cur: detailaside→input.query
+detRoot n :: -
+detRoot Shift+N :: -
+detRoot t :: -
+detRoot c :: mode: tier→rate
+detRoot y :: lab: false→true
+detRoot o :: ord: false→true
+detRoot ? :: cur: detailaside→article.helpRedstone inspect; help: false→true
+detRoot x :: -
+detRoot Shift+X :: -
+detRoot Escape :: sel: lqr_controller→
+detRoot Shift+Q :: zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+detRoot Shift+E :: cur: detailaside→viewportdiv; zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+detRoot Shift+R :: dr: 0→closed
+detRoot q :: cur: detailaside→treenav
+detRoot w :: cur: detailaside→viewportdiv
+detRoot e :: -
+detRoot r :: cur: detailaside→drawersection
+detRoot Tab :: cur: detailaside→drawersection
+detRoot Shift+Tab :: cur: detailaside→viewportdiv
+detRoot m :: -
+detRoot i :: -
+detRoot s :: -
+detRoot f :: -
+detRoot a :: -
+detRoot b :: -
+detRoot v :: -
+detRoot p :: -
+detRoot Shift+U :: -
+detRoot Shift+D :: -
+detRoot Shift+Z :: -
+detRoot Shift+W :: -
+detRoot Shift+C :: -
+detRoot Shift+Y :: -
+detRoot Shift+O :: -
+detRoot zx :: -
+detRoot gx :: -
+detRoot Space :: det: 0→116
+detStop h :: -
+detStop j :: cur: button.open-levelOpen→summary.svelte-zixhn4signature
+detStop k :: cur: button.open-levelOpen→button.copyCopy
+detStop l :: -
+detStop ArrowLeft :: -
+detStop ArrowDown :: cur: button.open-levelOpen→summary.svelte-zixhn4signature
+detStop ArrowUp :: cur: button.open-levelOpen→button.copyCopy
+detStop ArrowRight :: -
+detStop Shift+ArrowDown :: cur: button.open-levelOpen→summary.svelte-zixhn4signature
+detStop Shift+ArrowRight :: -
+detStop Enter :: cur: button.open-levelOpen→detailaside; sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+detStop Shift+H :: -
+detStop Shift+L :: -
+detStop Shift+J :: cur: button.open-levelOpen→detailaside; sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+detStop Shift+K :: -
+detStop Backspace :: -
+detStop Alt+ArrowUp :: -
+detStop zh :: -
+detStop zj :: det: 0→40
+detStop zk :: -
+detStop zl :: -
+detStop zz :: -
+detStop zi :: view: -52,-323→68,-244; zoom: 1205→964
+detStop zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+detStop d :: det: 0→297
+detStop u :: -
+detStop 0 :: view: -52,-323→-52,-134
+detStop + :: view: -52,-323→68,-244; zoom: 1205→964
+detStop - :: view: -52,-323→-203,-422; zoom: 1205→1506
+detStop gg :: cur: button.open-levelOpen→button.copyCopy
+detStop Shift+G :: cur: button.open-levelOpen→button.rowδt; det: 0→580
+detStop gt :: tab: timing→order
+detStop gShift+T :: tab: timing→root-inputs
+detStop / :: cur: button.open-levelOpen→input.query
+detStop Control+k :: cur: button.open-levelOpen→input.query
+detStop Meta+k :: cur: button.open-levelOpen→input.query
+detStop n :: -
+detStop Shift+N :: -
+detStop t :: -
+detStop c :: mode: tier→rate
+detStop y :: lab: false→true
+detStop o :: ord: false→true
+detStop ? :: cur: button.open-levelOpen→article.helpRedstone inspect; help: false→true
+detStop x :: -
+detStop Shift+X :: -
+detStop Escape :: cur: button.open-levelOpen→detailaside; sel: lqr_controller→
+detStop Shift+Q :: zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+detStop Shift+E :: cur: button.open-levelOpen→viewportdiv; zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+detStop Shift+R :: dr: 0→closed
+detStop q :: cur: button.open-levelOpen→treenav
+detStop w :: cur: button.open-levelOpen→viewportdiv
+detStop e :: -
+detStop r :: cur: button.open-levelOpen→drawersection
+detStop Tab :: cur: button.open-levelOpen→drawersection
+detStop Shift+Tab :: cur: button.open-levelOpen→viewportdiv
+detStop m :: -
+detStop i :: -
+detStop s :: -
+detStop f :: -
+detStop a :: -
+detStop b :: -
+detStop v :: -
+detStop p :: -
+detStop Shift+U :: -
+detStop Shift+D :: -
+detStop Shift+Z :: -
+detStop Shift+W :: -
+detStop Shift+C :: -
+detStop Shift+Y :: -
+detStop Shift+O :: -
+detStop zx :: -
+detStop gx :: -
+detStop Space :: cur: button.open-levelOpen→detailaside; sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+drRoot h :: -
+drRoot j :: cur: drawersection→button.rowsensing
+drRoot k :: cur: drawersection→button.rowsensing
+drRoot l :: -
+drRoot ArrowLeft :: -
+drRoot ArrowDown :: cur: drawersection→button.rowsensing
+drRoot ArrowUp :: cur: drawersection→button.rowsensing
+drRoot ArrowRight :: -
+drRoot Shift+ArrowDown :: cur: drawersection→button.rowsensing
+drRoot Shift+ArrowRight :: -
+drRoot Enter :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+drRoot Shift+H :: -
+drRoot Shift+L :: -
+drRoot Shift+J :: sel: lqr_controller→; lvl: →lqr_controller; view: -52,-323→-178,-52; zoom: 1205→1207; rows: 7→15
+drRoot Shift+K :: -
+drRoot Backspace :: -
+drRoot Alt+ArrowUp :: -
+drRoot zh :: -
+drRoot zj :: dr: 0→40
+drRoot zk :: -
+drRoot zl :: -
+drRoot zz :: -
+drRoot zi :: view: -52,-323→68,-244; zoom: 1205→964
+drRoot zo :: view: -52,-323→-203,-422; zoom: 1205→1506
+drRoot d :: dr: 0→87
+drRoot u :: -
+drRoot 0 :: view: -52,-323→-52,-134
+drRoot + :: view: -52,-323→68,-244; zoom: 1205→964
+drRoot - :: view: -52,-323→-203,-422; zoom: 1205→1506
+drRoot gg :: cur: drawersection→button.rowsensing
+drRoot Shift+G :: cur: drawersection→button.rowactuators/δt_lim; dr: 0→526
+drRoot gt :: tab: timing→order
+drRoot gShift+T :: tab: timing→root-inputs
+drRoot / :: cur: drawersection→input.query
+drRoot Control+k :: cur: drawersection→input.query
+drRoot Meta+k :: cur: drawersection→input.query
+drRoot n :: -
+drRoot Shift+N :: -
+drRoot t :: -
+drRoot c :: mode: tier→rate
+drRoot y :: lab: false→true
+drRoot o :: ord: false→true
+drRoot ? :: cur: drawersection→article.helpRedstone inspect; help: false→true
+drRoot x :: -
+drRoot Shift+X :: -
+drRoot Escape :: sel: lqr_controller→
+drRoot Shift+Q :: zoom: 1205→1760; tree: 0→undefined; tc: false→true; rows: 7→0
+drRoot Shift+E :: zoom: 1205→1933; det: 0→undefined; dc: false→true; det2: 00011→
+drRoot Shift+R :: cur: drawersection→viewportdiv; dr: 0→closed
+drRoot q :: cur: drawersection→treenav
+drRoot w :: cur: drawersection→viewportdiv
+drRoot e :: cur: drawersection→detailaside
+drRoot r :: -
+drRoot Tab :: cur: drawersection→treenav
+drRoot Shift+Tab :: cur: drawersection→detailaside
+drRoot m :: -
+drRoot i :: -
+drRoot s :: -
+drRoot f :: -
+drRoot a :: -
+drRoot b :: -
+drRoot v :: -
+drRoot p :: -
+drRoot Shift+U :: -
+drRoot Shift+D :: -
+drRoot Shift+Z :: -
+drRoot Shift+W :: -
+drRoot Shift+C :: -
+drRoot Shift+Y :: -
+drRoot Shift+O :: -
+drRoot zx :: -
+chromium THREW page.evaluate: Target page, context or browser has been closed

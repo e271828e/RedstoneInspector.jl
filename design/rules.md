@@ -195,8 +195,9 @@ full text stays.
 - **`:focus-visible` and a press.** Chromium keeps `:focus-visible` on an
   element that stays focused, so a press on a Tab-focused canvas keeps the
   ring; `focus()` from a key handler matches `:focus-visible`.
-- **`N` in Playwright.** `page.keyboard.press("N")` sends no `shiftKey`; the
-  shell reads `N` from `e.key`, and checks press `Shift+N`.
+- **`N` in Playwright.** `page.keyboard.press("N")` sends no `shiftKey`, as
+  Caps Lock does not; the shell names a letter by Shift (`keyName`), so a
+  check presses `Shift+N`.
 - **`boundingBox()` of an SVG group.** Playwright's box for a `g.block` reads
   far larger than its client rect; in-view checks read a `.shape`'s client
   rect through `evaluate`.
@@ -331,7 +332,7 @@ full text stays.
   look in Firefox shows neither fault.
 - **A key under the help page.** The frame stays mounted and `inert` under
   the page, and `inert` does not stop the window's `keydown`: the shell's
-  own guard keeps every key but `?` and Escape from the frame.
+  own guard keeps every key but its own from the frame.
 - **An exact pin by `npm install`.** `npm install pkg@x.y.z` writes a caret;
   remove it and install again so the lock and `package.json` agree.
 - **`marked`'s instance and its type.** The renderer is one module-level
@@ -371,7 +372,7 @@ full text stays.
   polls until the `viewBox`'s aspect matches `.viewport`'s, the svg's own
   client size being no sync point.
 - **The undo's sync point.** An undo clears `data-ready` while ELK runs, so
-  a check waits for it after `u`; a `MutationObserver` on the attribute
+  a check waits for it after `x`; a `MutationObserver` on the attribute
   shows that no layout ran.
 - **A focused node removed.** Chromium fires the same `focusout` for a
   focused node's removal and for a click on a non-focusable place: a null
@@ -383,10 +384,6 @@ full text stays.
 - **A mutant runner in place.** A runner that swaps source files in place
   shows a mutant in any diff read meanwhile; nothing reads or edits `src/`
   until it has restored the last one.
-- **Enter on a drawer button.** The shell's Enter opens a selected closed
-  assembly before the browser presses the focused button, so Enter on a chart
-  swatch or a row's button then opens the assembly; Space presses it. Found
-  2026-11-23.
 - **A sticky column beside a wide timeline.** The chart's labels are one
   sticky element in a `width: max-content` flex row, so they stay while the
   tab's body scrolls sideways; the fit measures the labels' `offsetWidth`,
@@ -403,7 +400,7 @@ full text stays.
   a fit run in the same turn as the new level measures no legend; a first fit
   waits a `tick()`, and `data-ready` waits for it.
 - **The mode across two drops.** The color mode is kept per browser, so a
-  check's second drop opens in rate mode already, and `r` then turns it off.
+  check's second drop opens in rate mode already, and `c` then turns it off.
 - **A table in the narrow pane.** The frames table beside its `dt` overflowed
   the 240 px pane by 6 px; it stands in a section of the pane's whole
   width, a path takes a `<wbr>`
@@ -431,6 +428,19 @@ full text stays.
 - **Uppercase on Greek.** `text-transform: uppercase` draws `Δt` as `ΔT` and
   `τ` as `Τ`, so a symbol beside a heading stands outside the `h3`. Found
   2026-11-24.
+- **A focused row moved by a keyed `each`.** A browser blurs a focused
+  element that the DOM moves, though it stays connected, so the removal
+  rule misses it. The shell notes the focused stop before an update and
+  focuses it again after. Found 2026-11-25.
+- **`focus()` and a text selection in WebKit.** WebKit clears the selection
+  when a button takes the focus, and gives a pressed button's focus to the
+  region's root. So a click that left a selection focuses nothing, and the
+  menu prevents its `mousedown`. CI runs no WebKit, so no check shows
+  either. Found 2026-11-25.
+- **Backspace in Playwright's WebKit** goes back in history outside a text
+  field, which closes the help page, so `help.spec.ts`'s check of the keys
+  under the help page fails there. Safari stopped doing so in version 13.
+  Found 2026-11-25.
 
 ## Amending a record
 
