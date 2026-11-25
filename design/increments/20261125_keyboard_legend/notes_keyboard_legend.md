@@ -192,6 +192,37 @@ The user then left and asked for the rest to go on without them, with the
 findings and the decisions recorded for their review. The branch
 `keyboard-legend-proto` stays unmerged and nothing is pushed.
 
+## Readings, stage 1
+
+The prototyper's, kept by the coordinator with the user away, for their
+review. Stage 1 landed on the branch at `f328827`.
+
+29. **The tooltip reads in answer 13's order**, `dss at the root; Dₐ 1 ·
+    Φₐ 0 · τ 0`, with `τ` on a deployment alone and no `A₂`, which the line
+    has. *Rejected:* the counts first, as before.
+30. **A chart swatch's tooltip keeps its words**, `A₁ (noise) · Dₐ 1 · Φₐ 0
+    · Δt 1/10 s; focus this rate on the canvas`. It was built from the old
+    line. *Rejected:* the new line, which repeats the row's own label.
+31. **The legend's cells align in columns**, the dot at the head of the
+    phase's cell, where the chart's label is one string. *Rejected:* one
+    cell, where `D₀ 10` pushes its phase out of line.
+32. **A focused line scrolls into view when the focus changes and when the
+    legend appears**, `nearest`, and not when the level changes under a
+    standing focus. A press on the legend's own line runs it too, moving
+    the list only for a line cut at an edge. *Rejected:* on every change of
+    the lines, which a block's drag makes on each move, so the list would
+    jump back under a scrolling user.
+33. **The capped box is plain `overflow: auto`.** With classic scrollbars in
+    Chromium it grows from 157 to 172 px and overflows nothing. Firefox with
+    a classic scrollbar is unprobed.
+34. **The help page's sample shows the pair alone**, `D₀ 1 · Φ₀ 0` and
+    `D₀ 2 · Φ₀ 1`, the whole line shrinking in its 120 px.
+
+Two points for the user's look. `large`'s 43 lines all read `1/50 s · τ 0`
+and differ by their anchor alone, whose subscript is small at 11 px. And
+ruling 23 says the README documents the moved keys, but it names `?` alone,
+so it needs no change.
+
 ## Out of scope
 
 - Hints, Vimium's `f`, kept free (`pending.md`). They are the only path
