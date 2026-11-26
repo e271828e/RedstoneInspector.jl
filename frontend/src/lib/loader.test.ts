@@ -78,6 +78,30 @@ describe("the header check", () => {
     expect(r.note).toBe("format 1.1, newer than this page's 1.0; unknown fields ignored");
   });
 
+  // the core's exact-arithmetic report, section 2.8: JSON.parse reads an integer into a float
+  const ROUNDED = "an integer past 2⁵³; timing values may show rounded";
+  // the digits go in as text, since JSON.stringify would write the float's
+  const period = (den: string, minor = 0): string =>
+    edit("rates", (d) => {
+      d.format_version.minor = minor;
+      d.build.structure.anchors[0].dt.den = "DEN";
+    }).replace('"DEN"', den);
+  it("loads an integer JSON.parse may round, 2^53 and up or its negative, with a note", () => {
+    expect(period("2305843009213693951")).toContain('"den":2305843009213693951}');
+    expect(loaded(period("2305843009213693951")).note).toBe(ROUNDED);
+    expect(loaded(period("9007199254740992")).note).toBe(ROUNDED);
+    expect(loaded(period("-9007199254740992")).note).toBe(ROUNDED);
+  });
+
+  it("loads 2^53 - 1, the last integer every neighbor of which is exact, with no note", () => {
+    expect(loaded(period("9007199254740991")).note).toBeUndefined();
+    expect(loaded(period("-9007199254740991")).note).toBeUndefined();
+  });
+
+  it("joins the newer minor version's note and the rounded integer's", () => {
+    expect(loaded(period("2305843009213693951", 1)).note).toBe(`format 1.1, newer than this page's 1.0; unknown fields ignored · ${ROUNDED}`);
+  });
+
   it("refuses text that is not JSON", () => {
     expect(refusal("{ not json")).toMatch(/not JSON/);
   });

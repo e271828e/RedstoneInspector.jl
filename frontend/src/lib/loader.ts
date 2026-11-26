@@ -9,7 +9,7 @@ export interface Loaded {
   ok: true;
   descriptor: RedstoneDescriptor;
   label: string;
-  /** Set when the file's minor version is newer than the page's. */
+  /** Set when the file's minor version is newer than the page's, or when it holds an integer `JSON.parse` may round. */
   note?: string;
 }
 export interface Refusal {
@@ -22,8 +22,13 @@ const KINDS = ["build", "deployment", "failure"];
 export function parseDescriptor(text: string, fileName?: string): Loaded | Refusal {
   const refuse = (reason: string): Refusal => ({ ok: false, reason });
   let d: any;
+  // JSON.parse reads an integer into a float, exact only below 2^53 (Redstone.jl/design/reports/20261113_exact_arithmetic/report.md section 2.8).
+  let rounded = false;
   try {
-    d = JSON.parse(text);
+    d = JSON.parse(text, (_key, value) => {
+      if (Number.isInteger(value) && !Number.isSafeInteger(value)) rounded = true;
+      return value;
+    });
   } catch (e) {
     return refuse(`This file is not JSON: ${(e as Error).message}.`);
   }
@@ -56,7 +61,10 @@ export function parseDescriptor(text: string, fileName?: string): Loaded | Refus
   if (structure?.nodes.some((n: any) => n.class === "primitive" && n.timing?.D === undefined)) return older(`${at}.nodes[].timing.D`);
   const descriptor = d as RedstoneDescriptor;
   const loaded: Loaded = { ok: true, descriptor, label: labelOf(descriptor, fileName) };
-  if (minor > 0) loaded.note = `format ${MAJOR}.${minor}, newer than this page's ${MAJOR}.0; unknown fields ignored`;
+  const notes: string[] = [];
+  if (minor > 0) notes.push(`format ${MAJOR}.${minor}, newer than this page's ${MAJOR}.0; unknown fields ignored`);
+  if (rounded) notes.push("an integer past 2⁵³; timing values may show rounded");
+  if (notes.length > 0) loaded.note = notes.join(" · ");
   return loaded;
 }
 
