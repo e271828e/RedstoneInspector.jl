@@ -19,7 +19,7 @@ const row = (page: Page, path: string) => page.locator(`nav.tree .row[data-path=
 
 test("closed_loop: anchor 4's line lights the gray pid_controller and its wire, dims the rest, marks the tree; a second click clears it", async ({ page }) => {
   await drop(page, "closed_loop");
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).not.toHaveClass(/legend-focus/);
   await line(page, '[data-step="3"]').click();
   await expect(svg(page)).toHaveClass(/\blegend-focus\b/);
@@ -58,7 +58,7 @@ test("closed_loop: anchor 4's line lights the gray pid_controller and its wire, 
 
 test("closed_loop: sensing's line held onto pid_controller, which has none of it, dims nothing there, the status bar saying why", async ({ page }) => {
   await drop(page, "closed_loop");
-  await press(page, "r");
+  await press(page, "c");
   await openPath(page, "sensing");
   await line(page, "[data-step]").first().click();
   await expect(svg(page)).toHaveAttribute("data-focus", "1,1,0");
@@ -80,7 +80,7 @@ test("closed_loop: sensing's line held onto pid_controller, which has none of it
 
 test("closed_loop: the continuous line lights plant, the assemblies with a continuous primitive beneath and plant's 17 wires", async ({ page }) => {
   await drop(page, "closed_loop");
-  await press(page, "r");
+  await press(page, "c");
   await line(page, ".continuous").click();
   await expect(svg(page)).toHaveAttribute("data-focus", "continuous");
   expect(await litBlocks(page)).toEqual(["actuators", "lqr_controller", "pid_controller", "plant", "selection", "sensing"]);
@@ -96,7 +96,7 @@ test("closed_loop: the continuous line lights plant, the assemblies with a conti
 
 test("closed_loop: Escape clears the focus before the query, tier mode clears it, a push keeps or drops it", async ({ page }) => {
   await drop(page, "closed_loop");
-  await press(page, "r");
+  await press(page, "c");
   // with a query standing the canvas shows the focus, the tree the query's marks
   await press(page, "/");
   await page.keyboard.type("h");
@@ -118,10 +118,10 @@ test("closed_loop: Escape clears the focus before the query, tier mode clears it
   // tier mode clears it; back in rate mode nothing is focused
   await line(page, '[data-step="0"]').click();
   await expect(svg(page)).toHaveAttribute("data-focus", "1,1,0");
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).toHaveAttribute("data-mode", "tier");
   await expect(svg(page)).not.toHaveClass(/legend-focus/);
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg(page)).not.toHaveClass(/legend-focus/);
   await expect(line(page, '[data-step="0"]')).toHaveAttribute("aria-pressed", "false");
 

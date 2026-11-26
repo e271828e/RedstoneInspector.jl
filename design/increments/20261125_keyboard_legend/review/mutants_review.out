@@ -1,0 +1,77 @@
+0 enter presses the stop | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:126:1 › Enter presses the focused stop and never opens the selected assembly, which Shift-j does; with no stop focused Enter opens it  | red
+1 enter presses the menu entry | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:515:1 › the right-click menu's entry takes the focus when the menu opens, Enter presses it, and Escape gives the focus back  | red
+2 qwer keeps a cursor there | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:324:1 › q w e r focus the tree, the canvas, the detail pane and the drawer from any region, a collapsed pane expanding and a closed drawer opening first; a cursor alrea | red
+3 r opens a closed drawer | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:324:1 › q w e r focus the tree, the canvas, the detail pane and the drawer from any region, a collapsed pane expanding and a closed drawer opening first; a cursor alrea | red
+4 q e expand a collapsed pane | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:324:1 › q w e r focus the tree, the canvas, the detail pane and the drawer from any region, a collapsed pane expanding and a closed drawer opening first; a cursor alrea | red
+5 / filter | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:456:1 › / in the drawer on its diagnostics tab goes to the filter, its text selected; Escape gives the focus back to the drawer and keeps the text; with no filter shown | red
+6 / filter only with the drawer focused | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:456:1 › / in the drawer on its diagnostics tab goes to the filter, its text selected; Escape gives the focus back to the drawer and keeps the text; with no filter shown | red
+7 filter's text selected | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:456:1 › / in the drawer on its diagnostics tab goes to the filter, its text selected; Escape gives the focus back to the drawer and keeps the text; with no filter shown | red
+8 gt opens a closed drawer on its tab | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:383:1 › gt and gT step the drawer's tabs, wrapping, from any region, the focus staying; a closed drawer opens on its current tab; a stop the switch removes gives the fo | red
+9 gt wraps | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:383:1 › gt and gT step the drawer's tabs, wrapping, from any region, the focus staying; a closed drawer opens on its current tab; a stop the switch removes gives the fo | red
+10 d u half | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:399:1 › z with h j k l pans the canvas by a step with no region focused or the canvas, the selection staying; zi and zo zoom; d and u pan by half its height  | red
+11 view acts on canvas with nothing focused | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:399:1 › z with h j k l pans the canvas by a step with no region focused or the canvas, the selection staying; zi and zo zoom; d and u pan by half its height  | red
+12 zz centres in the pane | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:433:1 › zz brings the selected row or the focused stop to the middle of its pane, and nothing on the canvas moves; zi and zo zoom it from a pane  | red
+13 zz in the tree takes the row | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:433:1 › zz brings the selected row or the focused stop to the middle of its pane, and nothing on the canvas moves; zi and zo zoom it from a pane  | red
+14 help toggling drops a prefix | unit - | e2e RED: [chromium] › e2e/help.spec.ts:456:1 › a prefix pending as the help page opens by its link does not outlive the opening  | red
+15 cmd drops a prefix | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:512:1 › the window losing the focus or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur (ruling 27)  | red
+16 a pending prefix takes Tab | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:424:1 › a pending z or g shows in the status bar and waits without a timeout; a second key it does not know is dropped with it, Escape cancels it before anything else, an | red
+17 Tab leaves a field with a prefix pending | unit - | e2e green both | SURVIVES
+18 no prefix without a model | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:536:1 › with no model a z or a g waits for nothing ────────────── | red
+19 no new prefix with Alt | unit - | e2e green both | SURVIVES
+20 a pending prefix drops an Alt key | unit - | e2e green both | SURVIVES
+21 blur ends a hold alone | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:512:1 › the window losing the focus or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur (ruling 27)  | red
+22 blur ends a hold | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:512:1 › the window losing the focus or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur (ruling 27)  | red
+23 keyup ends a hold | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:409:1 › z with h j k l scrolls the focused pane by the step, the tree's selection and a pane's cursor staying; d and u scroll it by half its height  | red
+24 click on the row elsewhere | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:235:1 › a click puts the cursor on the stop, and on a row's stop when it lands elsewhere on the row; the stop then shows the ring, as it does for a key (ruling 24)  | red
+25 click on an edge's row | unit - | e2e green both | SURVIVES
+26 click focus moves no scroll | unit - | e2e green both | SURVIVES
+27 the stop scrolls into view | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:308:1 › a stop scrolled to by the cursor lies whole in its pane, its ring included  | red
+28 closed sections hold no stops | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:35:1 › the detail pane's stops are an outline: j and k walk them, the first taken when none is focused; l opens a heading, steps in and along a row's links; h comes bac | red
+29 face links depth 2 | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:35:1 › the detail pane's stops are an outline: j and k walk them, the first taken when none is focused; l opens a heading, steps in and along a row's links; h comes bac | red
+30 diagnostic links depth 2 | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:195:1 › the drawer's stops: j and k walk the rows, h and l the controls on one, a diagnostic's location and a chart row's swatches among them; the sort button is a row  | red
+31 swatches depth 2 | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:195:1 › the drawer's stops: j and k walk the rows, h and l the controls on one, a diagnostic's location and a chart row's swatches among them; the sort button is a row  | red
+32 drawer stops of the tab body alone | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:126:1 › Enter presses the focused stop and never opens the selected assembly, which Shift-j does; with no stop focused Enter opens it  | red
+33 G takes the last walked | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:355:1 › gg and G reach the tree's first and last visible row, a pane's first and last stop, and nothing on the canvas  | red
+34 gg G nothing on the canvas | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:355:1 › gg and G reach the tree's first and last visible row, a pane's first and last stop, and nothing on the canvas  | red
+35 held z's repeat | unit: src/lib/prefix.test.ts > pressPrefix > ignores a repeat of z, with no prefix too, so the second z of zz held starts noth | red
+36 modifiers leave a prefix | unit: src/lib/prefix.test.ts > pressPrefix > leaves a modifier alone, so Shift reaches the T of gT | red
+37 Escape cancels a prefix | unit: src/lib/prefix.test.ts > pressPrefix > goes on under a held z, dropping what it does not know, until Escape | red
+38 an unused hold waits | unit: src/lib/prefix.test.ts > releasePrefix > a z's release ends a hold a key came under, Shift down or not, and leaves one p | red
+39 a used hold ends | unit: src/lib/prefix.test.ts > releasePrefix > a z's release ends a hold a key came under, Shift down or not, and leaves one p | red
+40 keyup in either case | unit: src/lib/prefix.test.ts > releasePrefix > a z's release ends a hold a key came under, Shift down or not, and leaves one p | red
+41 unknown second key dropped | unit: src/lib/prefix.test.ts > pressPrefix > completes each prefix with the keys it knows and drops any other, the prefix gone | red
+42 caps lock | unit: src/lib/prefix.test.ts > keyName > names a letter in lower case, in upper case with Shift, whatever Caps Lock says; a lo | red
+43 j from a link goes on from its row | unit: src/lib/navigate.test.ts > stopStep > j and k from a link go on from its row | red
+44 l along links | unit: src/lib/navigate.test.ts > stopStep > l opens a closed heading, steps from an open one to its first row, along a row's l | red
+40 keyup in either case | unit: src/lib/prefix.test.ts > releasePrefix > a z's release ends a hold a key came under, Shift down or not, and leaves one p | e2e green both | red
+41 unknown second key dropped | unit: src/lib/prefix.test.ts > pressPrefix > completes each prefix with the keys it knows and drops any other, the prefix gone | e2e RED: [chromium] › e2e/help.spec.ts:425:1 › closed_loop: on the help page j and k scroll it by the step, d and u by half its height, gg and G to its ends; Escape cancels a pending g first, z waits for nothi | red
+45 h collapses an open heading | unit: src/lib/navigate.test.ts > stopStep > h steps back along the links to the row, from any row to its heading, and collapse | red
+46 h from a row to its heading | unit: src/lib/navigate.test.ts > stopStep > h steps back along the links to the row, from any row to its heading, and collapse | red
+47 menu entry takes focus | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:515:1 › the right-click menu's entry takes the focus when the menu opens, Enter presses it, and Escape gives the focus back  | red
+48 menu gives focus back | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:515:1 › the right-click menu's entry takes the focus when the menu opens, Enter presses it, and Escape gives the focus back  | red
+49 legend line scrolls into view | unit - | e2e RED: [chromium] › e2e/legend.spec.ts:93:1 › library_deployment in a low window: a chart swatch's press scrolls its line into the legend's view (answer 13)  | red
+50 legend capped | unit - | e2e RED: [chromium] › e2e/legend.spec.ts:75:1 › large at 1100 by 700: the legend stops at the viewport's height less its insets, a wheel over it scrolls it and zooms nothing, and the fit leaves its box free at | red
+51 legend dt on a deployment alone | unit - | e2e RED: [chromium] › e2e/legend.spec.ts:22:1 › library and library_deployment: a build's line Δt · τ and the anchor, a deployment's D₀ · Φ₀, Δt and the anchor by D₀ then Φ₀, the steps the build's, the key, sc | red
+52 deployment order | unit: src/lib/rates.test.ts > the continuous line > comes first on a deployment too, its lines then by D₀ and Φ₀, ties in pale | red
+53 order by phi | unit: src/lib/rates.test.ts > the continuous line > comes first on a deployment too, its lines then by D₀ and Φ₀, ties in pale | red
+54 tooltip tau on a deployment alone | unit: src/lib/rates.test.ts > blockTriple and the badge > reads closed_loop's root legend as the continuous line, then the two | red
+55 tooltip anchor title first | unit: src/lib/rates.test.ts > blockTriple and the badge > reads closed_loop's root legend as the continuous line, then the two | red
+56 basePair phi law | unit: src/lib/timing.test.ts > the legend's line (answer 13) > a deployment's D₀ and Φ₀ through the anchor's pair, Δt concrete | red
+57 filter Escape keeps text | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:456:1 › / in the drawer on its diagnostics tab goes to the filter, its text selected; Escape gives the focus back to the drawer and keeps the text; with no filter shown | red
+58 filter Escape to the drawer | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:456:1 › / in the drawer on its diagnostics tab goes to the filter, its text selected; Escape gives the focus back to the drawer and keeps the text; with no filter shown | red
+59 ring on :focus | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:235:1 › a click puts the cursor on the stop, and on a row's stop when it lands elsewhere on the row; the stop then shows the ring, as it does for a key (ruling 24)  | red
+60 scroll margin | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:308:1 › a stop scrolled to by the cursor lies whole in its pane, its ring included  | red
+61 prefix shown | unit - | e2e RED: [chromium] › e2e/help.spec.ts:456:1 › a prefix pending as the help page opens by its link does not outlive the opening  | red
+62 open level and block one branch | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:164:1 › the cursor stays on its heading, the very element, through Shift-j, Shift-k, Escape, a new selection and a push (ruling 25), and falls to the pane where the new | red
+63 face name button | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:35:1 › the detail pane's stops are an outline: j and k walk them, the first taken when none is focused; l opens a heading, steps in and along a row's links; h comes bac | red
+64 pressed swatch ring apart | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:293:1 › a chart swatch's ring lies outside the pressed swatch's, so both show  | red
+65 pressed swatch shadow | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:293:1 › a chart swatch's ring lies outside the pressed swatch's, so both show  | red
+66 x undrags | unit - | e2e RED: [chromium] › e2e/drag.spec.ts:218:1 › closed_loop: x puts the last dragged block back in its place at load, the other drag, the view and the selection kept; x again the one before; with no drag x and  | red
+67 R toggles on its tab | unit - | e2e RED: [chromium] › e2e/keys.spec.ts:233:1 › Shift-r opens the drawer on its tab and closes it ─────── | red
+68 help d u | unit - | e2e RED: [chromium] › e2e/help.spec.ts:425:1 › closed_loop: on the help page j and k scroll it by the step, d and u by half its height, gg and G to its ends; Escape cancels a pending g first, z waits for nothi | red
+69 help gg by the machine's repeat arg | unit - | e2e green both | SURVIVES
+70 help takes no z | unit - | e2e RED: [chromium] › e2e/help.spec.ts:425:1 › closed_loop: on the help page j and k scroll it by the step, d and u by half its height, gg and G to its ends; Escape cancels a pending g first, z waits for nothi | red
+71 shift-arrow as arrow | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:35:1 › the detail pane's stops are an outline: j and k walk them, the first taken when none is focused; l opens a heading, steps in and along a row's links; h comes bac | red
+72 Alt-arrow no cursor | unit - | e2e green both | SURVIVES
+73 search title | unit - | e2e RED: [chromium] › e2e/help.spec.ts:469:1 › closed_loop: the search field's title names the prefixes  | red
+74 zz on canvas nothing from a pane | unit - | e2e RED: [chromium] › e2e/cursor.spec.ts:433:1 › zz brings the selected row or the focused stop to the middle of its pane, and nothing on the canvas moves; zi and zo zoom it from a pane  | red

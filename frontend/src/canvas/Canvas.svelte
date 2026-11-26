@@ -16,7 +16,7 @@
   // (workspace.md answer 7).
   // The view and the layout are the session's: restored on a revisit, reported
   // on every change. A block or a pin drags, its wires re-routed locally
-  // (initial_design.md answer 12); `u`, `U` and the undo button put drags back.
+  // (initial_design.md answer 12); `x`, `X` and the undo button put drags back.
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
@@ -94,7 +94,7 @@
   } = $props();
 
   const FIT_PADDING = 24;
-  /** The legend's inset from the viewport's bottom-left corner, its CSS's `bottom` and `left`. */
+  /** The legend's inset from the viewport's bottom-left corner, its CSS's `bottom` and `left`; its height stops at the viewport's less two. */
   const LEGEND_INSET = 8;
   /** A fitted small level stops at twice its natural size. */
   const FIT_MAX_SCALE = 2;
@@ -116,6 +116,9 @@
   let hovered = $state<Target | undefined>();
   /** The right-click menu: where it opened in the viewport and the target it traces. */
   let menu = $state<{ x: number; y: number; target: Target } | undefined>();
+  let menuEntry = $state<HTMLElement>();
+  /** What held the focus when the menu opened. */
+  let beforeMenu: Element | null = null;
   /** A block `follow` was asked for while the level was being laid out, followed once it is drawn. */
   let pending: string | undefined;
 
@@ -136,6 +139,7 @@
   });
   /** A pill's width around its text: the order badge's and the rate pill's. */
   const pillWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+  const deployed = $derived(model.descriptor.kind === "deployment");
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
   /** Each wire's class by wire id, the drawn level's. */
   const classes = $derived(shown ? levelWireClasses(model, shown.level) : new Map<string, string>());
@@ -266,7 +270,7 @@
   });
 
   /**
-   * `u` and `U`: the last dragged block, or every one, back in its computed place, the level laid out again with the
+   * `x` and `X`: the last dragged block, or every one, back in its computed place, the level laid out again with the
    * other drags put back, as a push does, the view kept; false with no drag on the drawn level or one under way.
    */
   export function undrag(all: boolean): boolean {
@@ -344,6 +348,18 @@
     const r = ready ? extent(t) : undefined;
     if (r) setView(centreOn(view, { width, height }, r));
   }
+
+  // The focused line scrolls into view in a legend taller than its box, a chart swatch's press included, the nearest
+  // way; the legend's own scroll alone, where `scrollIntoView` would also scroll the viewport under a narrow canvas.
+  $effect(() => {
+    const box = legendBox;
+    const line = legendFocus !== undefined ? box?.querySelector('[aria-pressed="true"]') : undefined;
+    if (!box || !line) return;
+    const top = line.getBoundingClientRect().top - box.getBoundingClientRect().top - box.clientTop + box.scrollTop;
+    const bottom = top + line.getBoundingClientRect().height;
+    if (top < box.scrollTop) box.scrollTop = top;
+    else if (bottom > box.scrollTop + box.clientHeight) box.scrollTop = bottom - box.clientHeight;
+  });
 
   const viewBox = $derived.by(() => {
     const r = viewRect(view, { width, height });
@@ -608,7 +624,9 @@
   function contextmenu(e: MouseEvent, target: Target) {
     e.preventDefault();
     e.stopPropagation();
+    beforeMenu = document.activeElement;
     menu = { ...local(e), target };
+    tick().then(() => menuEntry?.focus());
   }
   function traceMenu() {
     const face = menu && shown ? originOf(model, { level: shown.level.path, target: menu.target }) : undefined;
@@ -619,10 +637,20 @@
   function menuPress(e: PointerEvent) {
     if (menu && !(e.target instanceof Element && e.target.closest(".viewport .menu"))) menu = undefined;
   }
-  /** Escape closes the open menu alone, before the shell's Escape chain sees it. */
+  /**
+   * The menu closes when its entry loses the focus to another element, `q` or Tab among them, the focus left there. The
+   * window's own blur leaves the entry focused, so the menu stays and Escape still gives the focus back.
+   */
+  function menuBlur() {
+    queueMicrotask(() => {
+      if (menu && document.activeElement !== menuEntry) menu = undefined;
+    });
+  }
+  /** Escape closes the open menu alone, before the shell's Escape chain sees it, and gives the focus back. */
   function menuKey(e: KeyboardEvent) {
     if (menu && e.key === "Escape") {
       menu = undefined;
+      if (beforeMenu instanceof HTMLElement) beforeMenu.focus();
       e.stopPropagation();
       e.preventDefault();
     }
@@ -889,17 +917,18 @@
   </svg>
   <div class="tools">
     {#if dragged.size}
-      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (U)">Undo drags</button>
+      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (X)">Undo drags</button>
     {/if}
     <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
   </div>
   {#if menu}
-    <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px">
-      <button class="trace" role="menuitem" onclick={traceMenu}>Trace</button>
+    <!-- svelte-ignore a11y_interactive_supports_focus (its press keeps the entry's focus, which WebKit would give the viewport, closing the menu) -->
+    <div class="menu" role="menu" style:left="{menu.x}px" style:top="{menu.y}px" onmousedown={(e) => e.preventDefault()}>
+      <button class="trace" role="menuitem" bind:this={menuEntry} onclick={traceMenu} onblur={menuBlur}>Trace</button>
     </div>
   {/if}
   {#if lines.length}
-    <div class="legend" aria-label="the rates on this level" bind:this={legendBox}>
+    <div class="legend" class:deployed aria-label="the rates on this level" bind:this={legendBox}>
       <ul>
         {#each lines as l (l.key)}
           {@const t = l.triple && legendText(model, l.triple)}
@@ -917,8 +946,14 @@
               <span class="number" style:background={palette.extra.fill} style:border-color={palette.extra.stroke}>#{l.step + 1}</span>
             {/if}
             </span>
-            <span class="text">{t ? t.text : "continuous"}</span>
-            <span class="dt">{t?.dt ?? ""}</span>
+            {#if t}
+              <span class="period">{t.period}</span>
+              <span class="phase">· {t.phase}</span>
+              {#if deployed}<span class="dt">{t.dt}</span>{/if}
+              <span class="anchor">{t.anchor}</span>
+            {:else}
+              <span class="word">continuous</span>
+            {/if}
             </button>
           </li>
         {/each}
@@ -953,13 +988,18 @@
     background: var(--bg); border: 1px solid var(--wire); border-radius: 4px; box-shadow: 0 2px 6px color-mix(in srgb, var(--text) 20%, transparent);
   }
   .menu button { all: unset; padding: 2px 12px; border-radius: 3px; cursor: pointer; }
-  .menu button:hover, .menu button:focus-visible { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
+  .menu button:hover, .menu button:focus { background: color-mix(in srgb, var(--highlight) 15%, transparent); }
   .legend {
     position: absolute; bottom: 8px; left: 8px; padding: 4px; font: 11px system-ui, sans-serif;
+    box-sizing: border-box; max-height: calc(100% - 16px); overflow: auto;
     background: color-mix(in srgb, var(--bg) 90%, transparent); border: 1px solid var(--wire); border-radius: 4px; pointer-events: auto;
   }
-  /* The short line (deployment_overlay.md answer 13): the marks, the anchor with Dₐ and Φₐ, and Δt, each a column across the lines. */
-  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: auto auto auto; column-gap: 6px; }
+  /* The line (deployment_overlay.md answer 13): the marks, the pair, a deployment's Δt and the anchor, each a column
+     across the lines; the continuous line's word spans them. */
+  .legend ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, auto); column-gap: 6px; }
+  .legend.deployed ul { grid-template-columns: repeat(5, auto); }
+  .legend .word { grid-column: 2 / -1; }
+  .legend .dt, .legend .anchor { margin-left: 6px; }
   .legend li { line-height: 16px; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
   .legend .line {
     all: unset; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; box-sizing: border-box; padding: 0 4px;

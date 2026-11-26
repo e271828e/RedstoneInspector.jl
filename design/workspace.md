@@ -463,20 +463,21 @@ Open items live in `pending.md`.
     - about, with the privacy statement, the bundle and format versions
       and the links.
 
-    The keys, single or in pairs and outside text fields but for Cmd-O and
-    Ctrl-O. They fall in families, and a family means the same in every
+    The keys, single or in pairs and outside text fields but for Cmd-O,
+    Ctrl-O, Cmd-K and Ctrl-K. They fall in families, and a family means the same in every
     region. Each region has a cursor. The canvas and the tree share one,
     the selection. The detail pane and the drawer each have their own, the
     browser's focus on a stop. A stop is a control the cursor can rest on:
     in the detail pane the header's buttons, each section's heading and,
-    in an open section, its rows with their links and a docstring's
-    links; in the drawer the current tab's rows and the further controls
+    in an open section, its rows that act when pressed with their links,
+    and a docstring's links, so a parameter's row and a timing row are
+    none; in the drawer the current tab's rows and the further controls
     on a row, a chart row's swatches among them.
 
     | key | action |
     |---|---|
-    | `q` `w` `e` `r` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
-    | `Q` `E` `R` | collapse or expand the tree, the detail pane, the drawer |
+    | `q` `w` `e` `s` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
+    | `Q` `E` `S` | collapse or expand the tree, the detail pane, the drawer |
     | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
     | `h` `j` `k` `l` | the cursor: on the canvas or with nothing focused, the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, the stops, as below |
     | arrows | on the canvas or with nothing focused, pan the canvas; elsewhere what `h j k l` do; with Shift, the same |
@@ -497,7 +498,7 @@ Open items live in `pending.md`.
     | `?` | the help page |
     | Cmd-O, Ctrl-O | open a file |
     | `x`, `X` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
-    | Escape | cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
+    | Escape | close the right-click menu, else cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
 
     The detail pane's stops form an outline, as the tree's rows do. `j`
     and `k` walk every visible stop, a row's links apart. `l` opens a
@@ -513,7 +514,9 @@ Open items live in `pending.md`.
     `z` and `g` are prefixes. The status bar shows one while it waits for
     its second key, a key it does not know is dropped, and there is no
     timeout and no count. While `z` stays held, every `h`, `j`, `k`, `l`,
-    `i` and `o` acts under it. On the help page `j`, `k`, `d`, `u`, `gg`
+    `i` and `o` acts under it; a held `z`'s own repeats do nothing, and the
+    window losing the focus, an Alt key or a key with Cmd or Ctrl ends the
+    hold. On the help page `j`, `k`, `d`, `u`, `gg`
     and `G` scroll, beside `?` and Escape.
 
     Focus shows as a ring in the halo's hue. The tree, the detail pane and
@@ -522,13 +525,17 @@ Open items live in `pending.md`.
     there; the canvas shows it for the keyboard only, its keys meaning what
     they mean with nothing focused. A click leaves the canvas without it,
     and the first key after the click turns it on, the keyboard then
-    driving the canvas. Every control is a real button or link;
+    driving the canvas. A focused stop shows the ring on itself too, the
+    mouse's or the keyboard's. A stop keeps the cursor when the pane shows
+    another node or the open level, while the new pane has it; else the
+    cursor falls to the pane. Every control is a real button or link;
     a push keeps focus in the region that held it. Cmd-O and Ctrl-O take
     the browser's own binding on purpose and wherever the page shows, in
     the search field, on the landing panel and under the help page, where
     the model loads beneath as a drop's does: the browser's would open the
-    file in place of the page. Every other key with Ctrl or Cmd but Cmd-K
-    and Ctrl-K stays the browser's.
+    file in place of the page. Cmd-K and Ctrl-K reach the model's search
+    from a text field too. Every other key with Ctrl or Cmd stays the
+    browser's.
     Dragging has no keyboard form in stage 1. The keyboard section says
     that Vimium owns many of these keys by default and that the user
     excludes the inspector's origins, `localhost` on the server's port and
@@ -569,7 +576,15 @@ Open items live in `pending.md`.
     between the regions; the view had no keys but the arrows, `0`, `+`
     and `-`; `/` went to the model's search from the drawer too; the
     menu's entry took no focus; and the help page listed no search
-    prefixes and scrolled by `j` and `k` alone.*
+    prefixes and scrolled by `j` and `k` alone. Amended 2026-11-25 (that
+    increment's probes, the notes' rulings 24 to 28): every row of an open
+    section was a stop, a stop's ring was unstated, the open level's pane
+    and a block's shared no cursor, and the end of a held `z` was
+    unstated. Amended 2026-11-25 (the cold review's F8, the coordinator
+    with the user away): an Alt key did not end a hold. Amended 2026-11-26
+    (the user's review of that increment): `r` and `R` took the drawer,
+    Cmd-K and Ctrl-K did nothing in a text field, and Escape's chain did
+    not name the menu.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

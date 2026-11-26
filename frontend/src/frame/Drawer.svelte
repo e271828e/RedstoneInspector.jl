@@ -82,6 +82,13 @@
     tick().then(() => body?.querySelector(`li.diagnostic[data-index="${i}"]`)?.scrollIntoView({ block: "nearest" }));
   });
 
+  /** Escape in the filter gives the focus back to the drawer; Chromium's own would clear the text. */
+  function filterKey(e: KeyboardEvent & { currentTarget: HTMLInputElement }) {
+    if (e.key !== "Escape") return;
+    e.preventDefault();
+    e.currentTarget.closest<HTMLElement>("section.drawer")?.focus();
+  }
+
   let copied = $state<string | undefined>();
   async function copy(text: string) {
     try {
@@ -124,7 +131,7 @@
       {#if tab === "diagnostics"}
         <div class="diagnostics">
           {#if diagnostics.length}
-            <input class="filter" type="search" placeholder="Filter by kind, path or message" aria-label="filter the diagnostics" bind:value={filter} />
+            <input class="filter" type="search" placeholder="Filter by kind, path or message" aria-label="filter the diagnostics" bind:value={filter} onkeydown={filterKey} />
             <ul class="diagnostics">
               {#each shown as d (d.index)}
                 {@const loc = locationOf(d)}

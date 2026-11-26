@@ -455,16 +455,23 @@ describe("the pane's frames table and the chain line (answer 10)", () => {
 });
 
 describe("the legend's line (answer 13)", () => {
-  it("library: which clock and how fast, the A₀ lines symbolic in a build and concrete in a deployment", () => {
+  it("library: a build's Δt and τ with the bare anchor, the A₀ lines in Δt_base; the tooltip the key, the scope, Dₐ and Φₐ", () => {
     const lib = fixtureModel("library");
-    expect(legendText(lib, [0, 1, 0])).toEqual({ text: "A₀ (base) · Dₐ 1 · Φₐ 0", dt: "Δt_base", title: "τ 0; the base grid" });
-    expect(legendText(lib, [0, 2, 1])).toEqual({ text: "A₀ (base) · Dₐ 2 · Φₐ 1", dt: "2·Δt_base", title: "τ Δt_base; the base grid" });
-    expect(legendText(lib, [2, 1, 0])).toEqual({ text: "A₂ (dss) · Dₐ 1 · Φₐ 0", dt: "1/50 s", title: "τ 0; dss at the root" });
-    expect(legendText(libDep, [0, 2, 1])).toEqual({ text: "A₀ (base) · Dₐ 2 · Φₐ 1", dt: "1/50 s", title: "D₀ 2 · Φ₀ 1 · τ 1/100 s; the base grid" });
-    expect(legendText(libDep, [1, 1, 0]).dt).toBe("1/10 s");
+    expect(legendText(lib, [0, 1, 0])).toEqual({ period: "Δt_base", phase: "τ 0", dt: "Δt_base", anchor: "A₀", title: "the base grid; Dₐ 1 · Φₐ 0" });
+    expect(legendText(lib, [0, 2, 1])).toEqual({ period: "2·Δt_base", phase: "τ Δt_base", dt: "2·Δt_base", anchor: "A₀", title: "the base grid; Dₐ 2 · Φₐ 1" });
+    expect(legendText(lib, [2, 1, 0])).toEqual({ period: "1/50 s", phase: "τ 0", dt: "1/50 s", anchor: "A₂", title: "dss at the root; Dₐ 1 · Φₐ 0" });
   });
-  it("timing_deployment: the tooltip's D₀, Φ₀ and τ through the anchor's Φ₀", () => {
-    expect(legendText(timingDep, [1, 1, 0])).toEqual({ text: "A₁ (staggered) · Dₐ 1 · Φₐ 0", dt: "1/10 s", title: "D₀ 30 · Φ₀ 1 · τ 1/300 s; staggered at the root" });
-    expect(legendText(timingDep, [2, 6, 3])).toEqual({ text: "A₂ (fast) · Dₐ 6 · Φₐ 3", dt: "3/25 s", title: "D₀ 36 · Φ₀ 18 · τ 3/50 s; fast at the root" });
+  it("a deployment's D₀ and Φ₀ through the anchor's pair, Δt concrete, τ in the tooltip", () => {
+    expect(legendText(libDep, [0, 2, 1])).toEqual({ period: "D₀ 2", phase: "Φ₀ 1", dt: "1/50 s", anchor: "A₀", title: "the base grid; Dₐ 2 · Φₐ 1 · τ 1/100 s" });
+    expect(legendText(timingDep, [1, 1, 0])).toEqual({ period: "D₀ 30", phase: "Φ₀ 1", dt: "1/10 s", anchor: "A₁", title: "staggered at the root; Dₐ 1 · Φₐ 0 · τ 1/300 s" });
+    expect(legendText(timingDep, [2, 6, 3])).toEqual({ period: "D₀ 36", phase: "Φ₀ 18", dt: "3/25 s", anchor: "A₂", title: "fast at the root; Dₐ 6 · Φₐ 3 · τ 3/50 s" });
+  });
+  it("a deployment's pair is its chart row's label, for every swatch of every deployment fixture (answer 11)", () => {
+    for (const m of [libDep, timingDep, fixtureModel("rates_deployment"), fixtureModel("closed_loop_deployment")]) {
+      for (const r of chartRows(m)) for (const w of r.swatches) {
+        const t = legendText(m, w.triple);
+        expect(`${t.period} · ${t.phase}`).toBe(r.label);
+      }
+    }
   });
 });

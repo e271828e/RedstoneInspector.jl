@@ -98,24 +98,27 @@ export async function press(page: Page, key: string): Promise<void> {
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r(undefined))));
 }
 
-/** The detail pane's, the drawer's and the help page's scrolling step, the shell's `SCROLL_STEP`. */
+/** Keys pressed one after another, a prefix and its second key among them. */
+export async function pressAll(page: Page, ...keys: string[]): Promise<void> {
+  for (const key of keys) await press(page, key);
+}
+
+/** A pane's and the help page's scrolling step, the shell's `SCROLL_STEP`. */
 export const SCROLL_STEP = 40;
 
 /**
- * Presses the eight scrolling keys from the scroller's top-left corner, `j` and ↓ down then `k` and ↑ back, `l` and →
- * right then `h` and ← back, each moving it by one step along its axis.
+ * Presses `z` with `h j k l` from the scroller's top-left corner, `j` down then `k` back, `l` right then `h` back,
+ * each moving it by one step along its axis.
  */
 export async function expectScrollKeys(page: Page, scroller: Locator): Promise<void> {
   await scroller.evaluate((e) => e.scrollTo(0, 0));
-  const keys: [string, number, number][] = [
-    ["j", 0, 1], ["ArrowDown", 0, 1], ["k", 0, -1], ["ArrowUp", 0, -1], ["l", 1, 0], ["ArrowRight", 1, 0], ["h", -1, 0], ["ArrowLeft", -1, 0],
-  ];
+  const keys: [string, number, number][] = [["j", 0, 1], ["k", 0, -1], ["l", 1, 0], ["h", -1, 0]];
   let x = 0, y = 0;
   for (const [key, dx, dy] of keys) {
-    await press(page, key);
+    await pressAll(page, "z", key);
     x += dx * SCROLL_STEP;
     y += dy * SCROLL_STEP;
-    expect(await scroller.evaluate((e) => [e.scrollLeft, e.scrollTop]), key).toEqual([x, y]);
+    expect(await scroller.evaluate((e) => [e.scrollLeft, e.scrollTop]), `z ${key}`).toEqual([x, y]);
   }
 }
 
@@ -124,6 +127,15 @@ export const widen = (el: Locator) => el.evaluate((e) => {
   const d = document.createElement("div");
   d.style.cssText = "width: 3000px; height: 1px";
   e.append(d);
+});
+
+/** The focused element in short: its tag and what names it among the panes' stops. */
+export const cursor = (page: Page) => page.evaluate(() => {
+  const a = document.activeElement as HTMLElement;
+  if (a.matches("nav.tree, .viewport, aside.detail, section.drawer")) return a.matches(".viewport") ? "canvas" : a.matches("aside.detail") ? "detail" : a.matches("nav.tree") ? "tree" : "drawer";
+  if (a.localName === "summary") return a.textContent!.trim();
+  if (a.matches(".swatch")) return `swatch ${a.dataset.key}`;
+  return `${a.localName}.${a.classList[0]} ${a.textContent!.trim().replace(/\s+/g, " ")}`;
 });
 
 /** Whether a pane, `tree`, `detail` or `drawer`, draws the focus ring on its box. */

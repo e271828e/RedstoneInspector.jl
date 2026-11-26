@@ -7,7 +7,7 @@
 // nothing (the second look's 1.8); the empty states. Counts from the oracles
 // (`analysis.py`, `stage2.py`).
 import { test, type Locator, type Page } from "@playwright/test";
-import { drop, dropOver, expect, readyLevel, shot } from "./fixtures";
+import { cursor as focused, drop, dropOver, expect, readyLevel, shot } from "./fixtures";
 
 const drawer = (page: Page) => page.locator("section.drawer");
 const body = (page: Page) => page.locator("section.drawer .tab-body");
@@ -183,12 +183,14 @@ async function dragAcross(page: Page, cell: Locator, from = 0, to?: number): Pro
   return page.evaluate(() => window.getSelection()?.toString() ?? "");
 }
 
-test("closed_loop: a drag that makes or changes a text selection in a row selects nothing, a plain click and the row's button under a selection then select; on the root inputs, order and timing tabs", async ({ page }) => {
+test("closed_loop: a drag that makes or changes a text selection in a row selects nothing and puts the cursor on no row, a plain click and the row's button under a selection then select; on the root inputs, order and timing tabs", async ({ page }) => {
   await drop(page, "closed_loop");
   await openTab(page, "root-inputs");
   const type = body(page).locator('tr.root-input[data-name="mode"] td.type code');
   expect(await dragAcross(page, type)).toBe("Bool");
   await expect(page.locator("svg.canvas .selected")).toHaveCount(0);
+  // the press focuses the drawer, as the browser does, and the click no row's button (reading 50)
+  expect(await focused(page)).toBe("drawer");
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "level");
   await type.click();
   await expect(page.locator('g.block.selected[data-id="⟨in⟩mode"]')).toHaveCount(1);

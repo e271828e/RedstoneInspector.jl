@@ -16,13 +16,16 @@ if (typeof document !== "undefined") {
 const same = (a: Range, b: Range | undefined) => !!b && a.startContainer === b.startContainer && a.startOffset === b.startOffset
   && a.endContainer === b.endContainer && a.endOffset === b.endOffset;
 
+/** A pointer's click that finds a selection on the row other than its press's: the drag made or changed it. */
+export function dragged(e: MouseEvent, row: Node): boolean {
+  const s = window.getSelection();
+  const now = e.detail > 0 && s && !s.isCollapsed && s.rangeCount > 0 ? s.getRangeAt(0) : undefined;
+  return !!now?.intersectsNode(row) && !same(now, pressed);
+}
+
 /** The row's click handler, `act` run unless the pointer's drag left a text selection on the row. */
 export function rowClick(act: () => void): (e: MouseEvent) => void {
   return (e) => {
-    const s = window.getSelection();
-    const row = e.currentTarget as Node;
-    const now = e.detail > 0 && s && !s.isCollapsed && s.rangeCount > 0 ? s.getRangeAt(0) : undefined;
-    if (now?.intersectsNode(row) && !same(now, pressed)) return;
-    act();
+    if (!dragged(e, e.currentTarget as Node)) act();
   };
 }

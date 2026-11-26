@@ -1,14 +1,16 @@
 // The keyboard table (workspace.md answers 11 and 3) on closed_loop's root: h j k l
 // move the selection by quadrant and center distance with the view following,
 // the arrows pan, Shift-h and Shift-l walk the levels back and forward, Shift-j and
-// Shift-k open and climb, z centres the selection, 0 + - fit and zoom, d toggles
-// the drawer, Tab cycles the four regions, the ring on a focused pane's box for the
+// Shift-k open and climb, zz centres the selection, z with h j k l pans and zi zo zoom,
+// d and u pan by half a page, 0 + - fit and zoom, Shift-s toggles the drawer, the
+// prefixes z and g wait in the status bar and a held z keeps acting, the retired keys
+// do nothing, Tab cycles the four regions, the ring on a focused pane's box for the
 // mouse and the keyboard and on the canvas for the keyboard only, t with nothing
 // selected does nothing, Escape clears the query before the selection; ? is
-// help.spec.ts's, the keys of the other regions the tree's, the pane's and the drawer's files. The geometric pins are recomputed here from the
+// help.spec.ts's, the cursor in the panes is cursor.spec.ts's, the tree's keys tree.spec.ts's. The geometric pins are recomputed here from the
 // DOM, by the brief's rules.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, clickWire, drop, expect, hash, press, readyLevel, shot, viewBox } from "./fixtures";
+import { blockBoxes, clickWire, cursor, drop, dropOver, expect, hash, press, pressAll, readyLevel, shot, viewBox } from "./fixtures";
 
 type Box = { id: string; x: number; y: number; width: number; height: number };
 type Dir = "h" | "j" | "k" | "l";
@@ -160,14 +162,14 @@ test("Shift-j opens the selected assembly as Enter does, Shift-k climbs as Backs
   await expect(level).toHaveAttribute("data-level-path", "actuators");
 });
 
-test("z centres the selected block, port or wire at the current zoom; with nothing selected it does nothing", async ({ page }) => {
+test("zz centres the selected block, port or wire at the current zoom; with nothing selected it does nothing", async ({ page }) => {
   const centreOf = (sel: string) => page.locator(sel).evaluate((el) => {
     const r = el.getBoundingClientRect();
     return [r.x + r.width / 2, r.y + r.height / 2];
   });
   for (let i = 0; i < 3; i++) await press(page, "+");
   const zoomed = await viewBox(page);
-  await press(page, "z");
+  await pressAll(page, "z", "z");
   expect(await viewBox(page)).toEqual(zoomed);
   for (const [select, sel] of [
     ['g.block[data-id="plant"]', 'g.block[data-id="plant"] > .shape'],
@@ -177,7 +179,7 @@ test("z centres the selected block, port or wire at the current zoom; with nothi
     await page.locator(select).click();
     for (let i = 0; i < 3; i++) await press(page, "+");
     for (let i = 0; i < 6; i++) await press(page, "ArrowRight");
-    await press(page, "z");
+    await pressAll(page, "z", "z");
     const [cx, cy] = await centreOf("svg.canvas");
     const [x, y] = await centreOf(sel);
     expect(Math.abs(x - cx), `${sel} x`).toBeLessThan(0.5);
@@ -189,7 +191,7 @@ test("z centres the selected block, port or wire at the current zoom; with nothi
   for (let i = 0; i < 3; i++) await press(page, "+");
   for (let i = 0; i < 6; i++) await press(page, "ArrowDown");
   const before = await viewBox(page);
-  await press(page, "z");
+  await pressAll(page, "z", "z");
   const [cx, cy] = await centreOf("svg.canvas");
   const [x, y] = await centreOf('path.wire[data-wire="sensing|in|h"]');
   expect(Math.abs(x - cx), "wire x").toBeLessThan(0.5);
@@ -228,14 +230,14 @@ test("+ and - zoom by 1.25 about the center, = is +, 0 restores the fit", async 
   for (const k of ["x", "y", "width", "height"] as const) expect(Math.abs(again[k] - fitted[k]), k).toBeLessThan(0.01);
 });
 
-test("d opens the drawer on its tab and closes it", async ({ page }) => {
+test("Shift-s opens the drawer on its tab and closes it", async ({ page }) => {
   const drawer = page.locator("section.drawer");
   await expect(drawer).toHaveAttribute("data-open", "false");
-  await press(page, "d");
+  await press(page, "Shift+S");
   await expect(drawer).toHaveAttribute("data-open", "true");
   await expect(drawer).toHaveAttribute("data-tab", "diagnostics");
   await shot(page, "closed_loop", "", "keys");
-  await press(page, "d");
+  await press(page, "Shift+S");
   await expect(drawer).toHaveAttribute("data-open", "false");
 });
 
@@ -282,12 +284,12 @@ test("t with nothing selected leaves the view and the drawer as they were", asyn
   await expect(page.locator("nav.breadcrumb")).toHaveAttribute("data-level-path", "");
 });
 
-test("r toggles the color mode and y the type labels, each alone, leaving the selection and the view", async ({ page }) => {
+test("c toggles the color mode and y the type labels, each alone, leaving the selection and the view", async ({ page }) => {
   const svg = page.locator("svg.canvas");
   await page.locator('g.block[data-id="plant"]').click();
   const before = await viewBox(page);
   await expect(svg).toHaveAttribute("data-mode", "tier");
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg).toHaveAttribute("data-mode", "rate");
   await expect(svg).not.toHaveAttribute("data-labels");
   await press(page, "y");
@@ -295,7 +297,7 @@ test("r toggles the color mode and y the type labels, each alone, leaving the se
   await expect(svg).toHaveAttribute("data-mode", "rate");
   await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
   expect(await viewBox(page)).toEqual(before);
-  await press(page, "r");
+  await press(page, "c");
   await expect(svg).toHaveAttribute("data-mode", "tier");
   await expect(svg).toHaveAttribute("data-labels", "");
   await press(page, "y");
@@ -329,7 +331,7 @@ const ringOn = (where?: "tree" | "detail" | "drawer" | "canvas") =>
   ({ tree: where === "tree", detail: where === "detail", drawer: where === "drawer", canvas: where === "canvas", roots: 0 });
 
 test("the ring outlines the tree's, the detail pane's and the drawer's box after a click and after Tab, the canvas only after Tab", async ({ page }) => {
-  await press(page, "d");
+  await press(page, "Shift+S");
   await page.locator('nav.tree .row[data-path="plant"] .segment').click();
   expect(await rings(page), "a row's click").toEqual(ringOn("tree"));
   await shot(page, "closed_loop", "", "ring-tree");
@@ -385,4 +387,252 @@ test("a click on a non-focusable place outside every region, the status bar's te
     await press(page, "j");
     await expect(selectedBlock(page), what).toHaveAttribute("data-id", below);
   }
+});
+
+const prefix = (page: Page) => page.locator("footer.status span.prefix");
+/** The view's travel in screen pixels from `start`. */
+async function travel(page: Page, start: { x: number; y: number }): Promise<[number, number]> {
+  const v = await viewBox(page), k = await scaleOf(page);
+  return [Math.round((v.x - start.x) * k), Math.round((v.y - start.y) * k)];
+}
+
+test("z with h j k l pans the canvas by a step with no region focused or the canvas, the selection staying; zi and zo zoom; d and u pan by half its height", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  for (const focus of ["w", undefined]) {
+    if (focus) await press(page, focus);
+    else await page.locator("footer.status .counts").click();
+    const start = await viewBox(page);
+    for (const [key, at] of [["l", [48, 0]], ["j", [48, 48]], ["h", [0, 48]], ["k", [0, 0]]] as const) {
+      await pressAll(page, "z", key);
+      expect(await travel(page, start), `z ${key}`).toEqual(at);
+      await expect(prefix(page)).toHaveCount(0);
+    }
+    const half = (await page.locator(".viewport").evaluate((e) => e.clientHeight)) / 2;
+    await press(page, "d");
+    expect(Math.abs((await travel(page, start))[1] - half)).toBeLessThanOrEqual(1);
+    await press(page, "u");
+    expect(await travel(page, start)).toEqual([0, 0]);
+    await pressAll(page, "z", "i");
+    expect((await viewBox(page)).width).toBeCloseTo(start.width / 1.25, 3);
+    await pressAll(page, "z", "o");
+    expect((await viewBox(page)).width).toBeCloseTo(start.width, 3);
+    await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+    await press(page, "0");
+  }
+});
+
+test("a pending z or g shows in the status bar and waits without a timeout; a second key it does not know is dropped with it, Escape cancels it before anything else, and a modifier alone leaves it", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  await page.clock.install();
+  for (const key of ["z", "g"]) {
+    await press(page, key);
+    await expect(prefix(page)).toHaveText(`${key} …`);
+    await page.clock.runFor(60_000);
+    await expect(prefix(page), "no timeout").toHaveCount(1);
+    if (key === "z") await shot(page, "closed_loop", "", "prefix");
+    // dropped: none of these acts
+    for (const [dropped, unmoved] of [["y", "data-labels"], ["c", ""], ["Tab", ""], ["/", ""], ["?", ""], ["Shift+J", ""], ["Backspace", ""], ["Enter", ""], ["ArrowDown", ""]]) {
+      if (!(await prefix(page).count())) await press(page, key);
+      const view = await viewBox(page);
+      await press(page, dropped);
+      await expect(prefix(page), `${key} ${dropped}`).toHaveCount(0);
+      if (unmoved) await expect(page.locator("svg.canvas")).not.toHaveAttribute(unmoved);
+      expect(await viewBox(page), `${key} ${dropped}`).toEqual(view);
+    }
+    await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+    await expect(page.locator("article.help")).toHaveCount(0);
+    expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
+    await press(page, key);
+    await press(page, "Escape");
+    await expect(prefix(page)).toHaveCount(0);
+    await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+  }
+  // Shift is down before the T of gT
+  await press(page, "g");
+  await page.keyboard.down("Shift");
+  await expect(prefix(page)).toHaveCount(1);
+  await page.keyboard.press("T");
+  await page.keyboard.up("Shift");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");
+  await press(page, "Escape");
+  await expect(selectedBlock(page)).toHaveCount(0);
+});
+
+test("a held z acts on every h j k l i o under it, its own repeats doing nothing, until its keyup, Shift down or the search field focused (rulings 14 and 27)", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  const start = await viewBox(page);
+  await page.keyboard.down("z");
+  for (let i = 0; i < 4; i++) await page.keyboard.down("z");
+  await expect(prefix(page)).toHaveCount(1);
+  expect(await viewBox(page), "the repeats centre nothing").toEqual(start);
+  for (const k of ["l", "l", "j"]) await press(page, k);
+  // a direction held under it repeats, as a held arrow does
+  await page.keyboard.down("l");
+  await page.keyboard.down("l");
+  await page.keyboard.up("l");
+  await page.keyboard.down("z");
+  expect(await travel(page, start)).toEqual([4 * 48, 48]);
+  await press(page, "i");
+  await press(page, "o");
+  // a key it does not know is dropped and the hold goes on
+  await press(page, "y");
+  await expect(page.locator("svg.canvas")).not.toHaveAttribute("data-labels");
+  await press(page, "h");
+  expect(await travel(page, start)).toEqual([3 * 48, 48]);
+  await expect(selectedBlock(page)).toHaveAttribute("data-id", "plant");
+  await page.keyboard.up("z");
+  await expect(prefix(page)).toHaveCount(0);
+  await press(page, "l");
+  await expect(selectedBlock(page)).not.toHaveAttribute("data-id", "plant");
+
+  // its keyup reads Z while Shift is down
+  await page.keyboard.down("z");
+  await press(page, "l");
+  await page.keyboard.down("Shift");
+  await page.keyboard.up("z");
+  await page.keyboard.up("Shift");
+  await expect(prefix(page)).toHaveCount(0);
+  // and goes to the search field once that is clicked
+  await page.keyboard.down("z");
+  await press(page, "l");
+  await page.locator("input.query").click();
+  await page.keyboard.up("z");
+  await expect(prefix(page)).toHaveCount(0);
+  // a z released before any second key is one press, which waits
+  await page.locator(".viewport").focus();
+  await page.keyboard.down("z");
+  await page.keyboard.up("z");
+  await expect(prefix(page)).toHaveCount(1);
+  const before = await viewBox(page);
+  await press(page, "l");
+  expect(await travel(page, before)).toEqual([48, 0]);
+  await expect(prefix(page)).toHaveCount(0);
+});
+
+test("the window losing the focus, an Alt key or a key with Cmd or Ctrl ends a hold of z whose keyup never comes; a z that is only pending waits through the blur and an Alt key (ruling 27)", async ({ page }) => {
+  const ends: Record<string, () => Promise<unknown>> = {
+    blur: () => page.evaluate(() => window.dispatchEvent(new Event("blur"))),
+    Control: () => page.keyboard.press("Control+b"),
+    Meta: () => page.keyboard.press("Meta"),
+    // macOS may report z's keyup under Alt as another character
+    Alt: () => page.keyboard.press("Alt"),
+  };
+  for (const [what, end] of Object.entries(ends)) {
+    await page.locator('g.block[data-id="plant"]').click();
+    const view = await viewBox(page);
+    await page.keyboard.down("z");
+    await expect(prefix(page), what).toHaveCount(1);
+    await end();
+    await expect(prefix(page), what).toHaveCount(0);
+    await press(page, "l");
+    await expect(selectedBlock(page), what).not.toHaveAttribute("data-id", "plant");
+    expect(await viewBox(page), what).toEqual(view);
+    await page.keyboard.up("z");
+    await expect(prefix(page), what).toHaveCount(0);
+  }
+  await press(page, "z");
+  await ends.blur();
+  await ends.Alt();
+  await expect(prefix(page)).toHaveCount(1);
+  await press(page, "Escape");
+  // an Alt key in the search field ends a hold too
+  await page.keyboard.down("z");
+  await press(page, "l");
+  await page.locator("input.query").click();
+  await ends.Alt();
+  await expect(prefix(page)).toHaveCount(0);
+  await page.keyboard.up("z");
+});
+
+test("a refusal unloading the model drops a pending prefix, which the next model does not show", async ({ page }) => {
+  await press(page, "z");
+  await expect(prefix(page)).toHaveCount(1);
+  await dropOver(page, "bad", "{}");
+  await expect(page.locator("pre.outcome")).toHaveCount(1);
+  await dropOver(page, "closed_loop");
+  await expect(page.locator("footer.status")).toHaveCount(1);
+  await expect(prefix(page)).toHaveCount(0);
+});
+
+test("Alt with z or g starts no prefix, a key with Alt under a pending one is dropped with it, and Alt with an arrow stays the browser's", async ({ page }) => {
+  await page.locator('g.block[data-id="plant"]').click();
+  for (const k of ["Alt+z", "Alt+g"]) {
+    await press(page, k);
+    await expect(prefix(page), k).toHaveCount(0);
+  }
+  await page.locator('g.block[data-id="sensing"]').dblclick();
+  await page.locator(readyLevel("sensing")).waitFor();
+  await press(page, "g");
+  await press(page, "Alt+ArrowUp");
+  await expect(prefix(page)).toHaveCount(0);
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "sensing");
+  // Alt-Left and Alt-Right are the browser's back and forward: not prevented, and neither pans nor moves a cursor
+  await page.evaluate(() => {
+    (window as any).__prevented = [];
+    window.addEventListener("keydown", (e) => {
+      if (!e.key.startsWith("Arrow")) return;
+      (window as any).__prevented.push(e.defaultPrevented);
+      e.preventDefault();
+    });
+  });
+  const view = await viewBox(page);
+  await pressAll(page, "Alt+ArrowLeft", "Alt+ArrowRight");
+  expect(await viewBox(page)).toEqual(view);
+  await page.locator("aside.detail").focus();
+  await press(page, "j");
+  const at = await cursor(page);
+  await pressAll(page, "Alt+ArrowLeft", "Alt+ArrowRight", "Alt+ArrowDown");
+  expect(await cursor(page)).toBe(at);
+  expect(await page.evaluate(() => (window as any).__prevented)).toEqual([false, false, false, false, false]);
+});
+
+test("Tab in the search field with a prefix pending moves to the next region, the prefix left waiting", async ({ page }) => {
+  await press(page, "z");
+  await page.locator("input.query").click();
+  await press(page, "Tab");
+  expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
+  await expect(prefix(page)).toHaveCount(1);
+});
+
+test("with no model a z or a g waits for nothing", async ({ page }) => {
+  await page.goto("/");
+  for (const key of ["z", "g"]) {
+    await pressAll(page, key, "?");
+    await expect(page.locator("article.help"), key).toHaveCount(1);
+    await press(page, "?");
+    await expect(page.locator("article.help"), key).toHaveCount(0);
+  }
+});
+
+test("the retired keys act no more: z alone centres nothing, d, m and i toggle no pane, u and Shift-u put no drag back, r leaves the colors, r and Shift-r leave the drawer", async ({ page }) => {
+  const at = () => page.locator('g.block[data-id="plant"]').getAttribute("transform");
+  const box = (await page.locator('g.block[data-id="plant"] > .shape').boundingBox())!;
+  await page.mouse.move(box.x + 20, box.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 20, box.y + 70, { steps: 4 });
+  await page.mouse.up();
+  const placed = await at();
+  await expect(page.locator("button.undo-drags")).toHaveAttribute("title", "Put every dragged component and pin back in its computed place (X)");
+  await press(page, "+");
+  const view = await viewBox(page);
+  await pressAll(page, "z", "Escape", "m", "i", "d", "u", "Shift+U", "Shift+D", "Shift+M", "Shift+I", "Shift+Z");
+  expect(await viewBox(page)).toEqual(view);
+  await expect(page.locator(".pane.side.collapsed")).toHaveCount(0);
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
+  await press(page, "r");
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+  await press(page, "Shift+R");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
+  expect(await cursor(page)).not.toBe("drawer");
+  expect(await at()).toBe(placed);
+  await expect(page.locator("button.undo-drags")).toHaveCount(1);
+  await press(page, "x");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await at()).not.toBe(placed);
+  // s took the drawer from r: open and focused, neither r nor Shift-r closes it or moves the focus
+  await press(page, "s");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");
+  await pressAll(page, "r", "Shift+R");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");
+  expect(await cursor(page)).toBe("drawer");
 });

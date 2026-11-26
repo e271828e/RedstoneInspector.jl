@@ -13,8 +13,13 @@ landed (`roadmap.md`).
 - **The keyboard by family and the legend's line** (`roadmap.md`), by the
   user's rulings of 2026-11-25, which took the keyboard sweep from after
   the release and the tall legend from the unordered items. Its notes are
-  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. Next:
-  the probes the notes list, then the prototype.
+  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. The
+  probes ran on 2026-11-25 and the notes hold them, with the user's rulings
+  on them; `probes/hand.html` there waits for the user's keyboard. Both
+  stages, the cold review and its fixes are on the branch
+  `keyboard-legend-proto`, unmerged, with the user's review and look done
+  on 2026-11-26. Next: the merge, the roadmap's entry and the cleanup, by
+  the notes' section "For the user's review".
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
@@ -65,6 +70,10 @@ landed (`roadmap.md`).
 
 ## Unordered
 
+- **Keys that resize the panes** (the user's review of 2026-11-26): the
+  tree, the detail pane and the drawer, by key, as the splitters do by
+  drag. For a session of its own.
+
 - **`signature` in a live session** (the pin bump of 2026-11-23). The
   descriptor prints a type as the session's `Main` sees it (the core's
   D-433), so an imported name prints bare and the pane then shows the
@@ -98,7 +107,7 @@ landed (`roadmap.md`).
 - **The scopes' empty note on a model with no `sample_times`**
   (increment 10's review). The timing tab's "No assembly is keyed in
   `sample_times`; every key names a primitive." shows there too.
-- **`frontend/MAP.md` past its size.** It is 759 lines against
+- **`frontend/MAP.md` past its size.** It is 786 lines against
   `design/rules.md`'s "about 700". A trim outside any increment's text
   brings it back.
 - **An integer past `2^53`** (the core's

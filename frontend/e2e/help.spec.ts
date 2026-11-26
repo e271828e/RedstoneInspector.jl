@@ -3,16 +3,16 @@
 // status bar's link; its five sections with the lead paragraph, the legend's fifteen
 // drawn terms, the timing notation and the root inputs' type rule (deployment_overlay.md
 // answers 3 and 14), the vocabulary of look_inspector_08.md's 7.2, the keyboard table as
-// long as the map's, both Vimium patterns, the privacy statement and the versions;
+// long as the map's with the search's prefixes under it, both Vimium patterns, the privacy statement and the versions;
 // shown over the frame or the landing, kept mounted and inert, the focus, the tree's
 // scroll and the drawer's sort surviving it; a history entry `#help` over the
 // level's, closed by its button, Escape, `?` and back, a link-opened page too; a
-// load under it read when it closes; the keys the browser's while it shows but `j`
-// and `k`, which scroll it, and Cmd-O, landing.spec.ts's; a typed
+// load under it read when it closes; the keys the browser's while it shows but `j k d
+// u gg G`, which scroll it, and Cmd-O, landing.spec.ts's; a typed
 // level hash this load's entry; no text a reader sees saying "block" or "leaf".
 import { readFileSync } from "node:fs";
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, hash, openPath, press, readyLevel, SCROLL_STEP, selected, shot, status } from "./fixtures";
+import { drop, expect, fixtureText, hash, openPath, press, pressAll, readyLevel, SCROLL_STEP, selected, shot, status } from "./fixtures";
 
 /** The inspector's version, read from the package's `Project.toml` as the build reads it. */
 const VERSION = /^version\s*=\s*"([^"]+)"/m.exec(readFileSync(new URL("../../Project.toml", import.meta.url), "utf8"))![1];
@@ -63,7 +63,7 @@ test("before a drop: the landing's link opens five sections over the inert landi
   const lead = h.locator('section[data-section="reading"] > h2 + p.lead + ul.terms');
   await expect(lead).toHaveCount(1);
   await expect(h.locator("p.lead")).toContainText("Double-click a closed assembly to open its level.");
-  await expect(h.locator("p.lead")).toContainText("A dragged component keeps its place for the session only: u puts the last one dragged back in its computed place, and U or the Undo drags button every one.");
+  await expect(h.locator("p.lead")).toContainText("A dragged component keeps its place for the session only: x puts the last one dragged back in its computed place, and X or the Undo drags button every one.");
   // fifteen terms in their order, each with its drawing
   expect(await h.locator("ul.terms li[data-term]").evaluateAll((l) => l.map((e) => (e as HTMLElement).dataset.term))).toEqual(TERM_KEYS);
   await expect(h.locator("ul.terms li[data-term] > svg.sample")).toHaveCount(15);
@@ -85,7 +85,7 @@ test("before a drop: the landing's link opens five sections over the inert landi
   const legend = h.locator('svg.sample[data-sample="legend"]');
   await expect(legend.locator("rect.legend")).toHaveCount(1);
   expect(new Set(await legend.locator("rect:not(.legend)").evaluateAll((r) => r.map((e) => e.getAttribute("fill")))).size).toBe(2);
-  await expect(legend.locator("text")).toHaveText(["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"]);
+  await expect(legend.locator("text")).toHaveText(["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 1"]);
   // the legend's sample keeps inside its frame, scaled to it
   const box = await legend.evaluate((svg) => {
     const s = svg.getBoundingClientRect(), g = svg.querySelector("g")!.getBoundingClientRect();
@@ -102,6 +102,13 @@ test("before a drop: the landing's link opens five sections over the inert landi
   await expect(h.locator("table.keys tr").nth(3)).toContainText("select the nearest component or pin in that direction");
   await expect(h.locator('table.keys kbd:text-is("?")')).toHaveCount(1);
   await expect(h.locator('table.keys kbd:text-is("o")')).toHaveCount(1);
+  // the retired keys' rows are gone, and the search's prefixes stand in a table under the keys
+  const rowOf = (key: string) => h.locator("table.keys tr").filter({ has: page.locator(`kbd:text-is("${key}")`) });
+  for (const [key, action] of [["s", "focus the tree"], ["d", "half a page"], ["u", "half a page"], ["c", "tier and rate colors"], ["x", "computed place"], ["Escape", "close the right-click menu, else cancel a pending z or g, else"]]) {
+    await expect(rowOf(key).first(), key).toContainText(action);
+  }
+  for (const gone of ["m", "i", "z", "U", "r", "R"]) await expect(rowOf(gone), gone).toHaveCount(0);
+  await expect(h.locator("table.keys ~ table.prefixes th code")).toHaveText(["path:", "type:", "face:"]);
   await expect(h.locator("p.vimium code")).toHaveText([
     "http://localhost:8601/*", "https://e271828e.github.io/RedstoneInspector.jl/*",
   ]);
@@ -115,6 +122,11 @@ test("before a drop: the landing's link opens five sections over the inert landi
   await expect(about.locator("a").nth(1)).toHaveAttribute("href", "https://e271828e.github.io/RedstoneInspector.jl/");
   await expect(about.locator("a").nth(2)).toHaveAttribute("href", "https://e271828e.github.io/Redstone.jl/dev/");
   await shot(page, "none", "", "help");
+  await h.locator('nav a[href="#help-keyboard"]').click();
+  await expect.poll(() => h.locator('section[data-section="keyboard"]').evaluate((e) => e.getBoundingClientRect().top)).toBeLessThan(40);
+  await shot(page, "none", "", "help-keyboard");
+  await h.locator("table.prefixes").scrollIntoViewIfNeeded();
+  await shot(page, "none", "", "help-prefixes");
   await h.locator('nav a[href="#help-simulink"]').click();
   await expect.poll(() => h.locator('section[data-section="simulink"]').evaluate((e) => e.getBoundingClientRect().top)).toBeLessThan(40);
   await shot(page, "none", "", "help-simulink");
@@ -261,7 +273,7 @@ test("closed_loop, at pid_controller with a primitive selected and at the root w
     expect([before.selection, before.level]).toEqual([id, level]);
     await press(page, "?");
     await expect(help(page)).toHaveCount(1);
-    for (const key of ["j", "k", "h", "l", "d", "r", "o", "y", "t", "0", "m", "i", "u", "Shift+U", "Enter", "Backspace"]) await press(page, key);
+    for (const key of ["j", "k", "h", "l", "d", "u", "g", "g", "Shift+G", "s", "e", "Shift+Q", "Shift+E", "Shift+S", "c", "o", "y", "t", "0", "x", "Shift+X", "g", "t", "z", "h", "Enter", "Backspace"]) await press(page, key);
     await press(page, "?");
     await expect(help(page)).toHaveCount(0);
     await page.locator(readyLevel(level)).waitFor();
@@ -388,7 +400,7 @@ const readerTexts = (page: Page) => page.evaluate(() => {
 
 test("closed_loop: no text a reader sees says block or leaf, over each drawer tab, rate mode, the badges, a primitive's pane and the help page", async ({ page }) => {
   await drop(page, "closed_loop");
-  await press(page, "r");
+  await press(page, "c");
   await press(page, "o");
   await press(page, "y");
   const seen: string[] = [];
@@ -410,7 +422,7 @@ test("closed_loop: no text a reader sees says block or leaf, over each drawer ta
   expect(seen.filter((t) => RETIRED.test(t))).toEqual([]);
 });
 
-test("closed_loop: on the help page j and k scroll it by the step, down and back", async ({ page }) => {
+test("closed_loop: on the help page j and k scroll it by the step, d and u by half its height, gg and G to its ends; Escape cancels a pending g first, z waits for nothing", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "?");
   await expect(help(page)).toHaveCount(1);
@@ -420,4 +432,41 @@ test("closed_loop: on the help page j and k scroll it by the step, down and back
     await press(page, key);
     expect(await top(), key).toBe(at * SCROLL_STEP);
   }
+  const { half, end } = await help(page).evaluate((e) => ({ half: e.clientHeight / 2, end: e.scrollHeight - e.clientHeight }));
+  for (const [key, at] of [["d", half], ["d", 2 * half], ["u", half], ["Shift+G", end]] as const) {
+    await press(page, key);
+    expect(Math.abs((await top()) - at), key).toBeLessThanOrEqual(1);
+  }
+  await press(page, "g");
+  expect(Math.abs((await top()) - end)).toBeLessThanOrEqual(1);
+  await press(page, "g");
+  expect(await top()).toBe(0);
+  // z is none of the page's keys, so the j after it scrolls
+  await pressAll(page, "z", "j");
+  expect(await top()).toBe(SCROLL_STEP);
+  // a pending g drops a key it does not know and Escape cancels it before it closes the page
+  await pressAll(page, "g", "j");
+  expect(await top()).toBe(SCROLL_STEP);
+  await pressAll(page, "g", "Escape");
+  await expect(help(page)).toHaveCount(1);
+  await press(page, "Escape");
+  await expect(help(page)).toHaveCount(0);
+});
+
+test("a prefix pending as the help page opens by its link does not outlive the opening", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "z");
+  await expect(status(page).locator("span.prefix")).toHaveCount(1);
+  await status(page).locator("a.help").click();
+  await expect(help(page)).toHaveCount(1);
+  await press(page, "j");
+  expect(await help(page).evaluate((e) => e.scrollTop)).toBe(SCROLL_STEP);
+  await press(page, "Escape");
+  await expect(help(page)).toHaveCount(0);
+  await expect(status(page).locator("span.prefix")).toHaveCount(0);
+});
+
+test("closed_loop: the search field's title names the prefixes", async ({ page }) => {
+  await drop(page, "closed_loop");
+  for (const prefix of ["path:", "type:", "face:"]) await expect(page.locator("input.query")).toHaveAttribute("title", new RegExp(prefix));
 });

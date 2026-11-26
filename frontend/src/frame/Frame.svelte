@@ -127,4 +127,8 @@
   .pane:has(:global(.focused[tabindex="0"])), .frame :global(.viewport.focused:focus-visible) {
     outline: 2px solid var(--highlight); outline-offset: -2px;
   }
+  /* A focused stop shows the ring on itself, the mouse's or the keyboard's (answer 11). */
+  .frame :global(:is(aside.detail, section.drawer .tab-body) :is(summary, button, a):focus) {
+    outline: 2px solid var(--highlight); outline-offset: var(--ring-offset, 1px); scroll-margin: 8px;
+  }
 </style>

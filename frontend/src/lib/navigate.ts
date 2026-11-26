@@ -1,5 +1,6 @@
-// The keyboard's cursor on the diagram (workspace.md answer 11): the nearest box
-// in a direction, and the least pan that brings a box into view.
+// The keyboard's cursor (workspace.md answer 11): on the diagram the nearest box
+// in a direction, and the least pan that brings a box into view; in the detail
+// pane and the drawer the next stop.
 import { viewRect, type Rect, type Size, type View } from "./view";
 
 export interface Box extends Rect {
@@ -62,3 +63,41 @@ export function follow(view: View, viewport: Size, box: Rect, padding: number): 
   const dy = shift(r.y, r.height, box.y - p, box.y + box.height + p);
   return dx === 0 && dy === 0 ? view : { x: view.x + dx, y: view.y + dy, scale: view.scale };
 }
+
+/** A pane's stop: a heading, a header's control or a row outside a section at depth 0, a section's row at 1, a row's further control at 2. */
+export interface Stop {
+  depth: 0 | 1 | 2;
+  /** A heading's state; undefined on every other stop. */
+  open?: boolean;
+}
+
+/**
+ * A pane's `h j k l` from the focused stop, -1 for none (workspace.md answer 11): `j` and `k` the next and previous
+ * stop but a row's further controls, the first when none is focused; `l` opens a closed heading, steps from an open
+ * one to its first row and along a row's controls; `h` steps back along them, from a section's row to its heading,
+ * and collapses an open heading. Nothing when no stop fits.
+ */
+export function stopStep(stops: readonly Stop[], at: number, key: Direction): { focus: number } | { toggle: number } | undefined {
+  if (key === "j" || key === "k") {
+    const walk = walkOf(stops);
+    // from a row's further control, the walk goes on from the row
+    const from = walk.filter((i) => i <= at).length - 1;
+    const to = walk[from < 0 ? 0 : key === "j" ? from + 1 : from - 1];
+    return to === undefined ? undefined : { focus: to };
+  }
+  const s = stops[at];
+  if (!s) return undefined;
+  if (key === "l") {
+    if (s.open === false) return { toggle: at };
+    const next = stops[at + 1];
+    return next && (next.depth > s.depth || next.depth === 2) ? { focus: at + 1 } : undefined;
+  }
+  if (s.open) return { toggle: at };
+  if (s.depth === 0) return undefined;
+  let to = at - 1;
+  while (s.depth === 1 && stops[to].depth > 0) to--;
+  return { focus: to };
+}
+
+/** The stops `j` and `k` walk, by index: all but a row's further controls. */
+export const walkOf = (stops: readonly Stop[]): number[] => stops.flatMap((s, i) => (s.depth < 2 ? [i] : []));

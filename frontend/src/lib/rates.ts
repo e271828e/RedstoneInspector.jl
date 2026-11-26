@@ -4,7 +4,7 @@ import type { Node } from "./descriptor";
 import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
 import { terminalProducer } from "./resolve";
-import { fromRational, lt, mul, q, type Q } from "./timing";
+import { basePair, fromRational, lt, mul, q, type Q } from "./timing";
 
 /** A timing triple `(a, Dₐ, Φₐ)`: the anchor's index (0 the base grid), then `Dₐ` and `Φₐ` in that anchor's ticks. */
 export type Triple = [anchor: number, D: number, phi: number];
@@ -97,7 +97,8 @@ function drawnPaths(model: Model, level: string): string[] {
 /**
  * The continuous line first (visual_grammar.md answer 6, amended 2026-11-02), when a block takes the continuous
  * color or a wire the continuous wire color, a root input's wires being neutral; then the triples visible on the
- * level, each drawn block's and each wire's, in palette order.
+ * level, each drawn block's and each wire's: a build's in palette order, a deployment's by `D₀` and then `Φ₀`, ties in
+ * palette order (deployment_overlay.md answer 13).
  */
 export function legend(model: Model, level: string, steps = stepsOf(model)): LegendLine[] {
   const visible = new Map<string, Triple>();
@@ -114,7 +115,9 @@ export function legend(model: Model, level: string, steps = stepsOf(model)): Leg
   }
   const lines: LegendLine[] = [...visible.values()]
     .map((t) => ({ key: tripleKey(t), triple: t, step: steps.get(tripleKey(t))! }))
-    .sort((a, b) => a.step! - b.step!);
+    .map((l) => ({ l, at: basePair(model, l.triple) }))
+    .sort((a, b) => (a.at && b.at ? a.at.D - b.at.D || a.at.phi - b.at.phi : 0) || a.l.step - b.l.step)
+    .map((x) => x.l);
   if (continuous) lines.unshift({ key: CONTINUOUS });
   return lines;
 }

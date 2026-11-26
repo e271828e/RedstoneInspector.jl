@@ -13,7 +13,7 @@
 // the pane's own keys, h j k l and the arrows scrolling it (increment 8b); a primitive
 // root's "open level" mark (answer 4 as amended by the polish batch).
 import { test, type Page } from "@playwright/test";
-import { clickWire, drop, dropOver, expect, expectScrollKeys, fixtureText, live, openPath, openSection, paneRing, press, readyLevel, SCROLL_STEP, section, shot, viewBox, widen } from "./fixtures";
+import { clickWire, cursor, drop, dropOver, expect, expectScrollKeys, fixtureText, live, openPath, openSection, paneRing, press, pressAll, readyLevel, SCROLL_STEP, section, shot, viewBox, widen } from "./fixtures";
 
 /** The docs constant of `src/lib/docstring.ts`, read back by the check. */
 const DOCS_URL = "https://e271828e.github.io/Redstone.jl/dev/";
@@ -439,7 +439,7 @@ test("a live tab: the sections' state stands across a push, and a reload resets 
   await expectOpen(page, FIRST);
 });
 
-test("the keyboard on a section's heading: Space and Enter open and close it on a primitive; with a closed assembly selected Enter opens the assembly and Space the section; j scrolls the pane, Escape clears the selection, Tab leaves for the next region", async ({ page }) => {
+test("the keyboard on a section's heading: Space and Enter open and close it on a primitive; with a closed assembly selected both still press the heading and Shift-j opens the assembly; z j scrolls the pane, Escape clears the selection, Tab leaves for the next region", async ({ page }) => {
   await drop(page, "timing_deployment");
   await openPath(page, "fast");
   await page.locator('g.block[data-id="fast/inner"]').click();
@@ -462,17 +462,22 @@ test("the keyboard on a section's heading: Space and Enter open and close it on 
   await expect(section(page, "timing").locator("table.frames")).toBeVisible();
   await press(page, " ");
   await expect(section(page, "timing").locator("table.frames")).toBeHidden();
-  // the shell's own keys: j scrolls the pane's body by the step
+  await press(page, "Enter");
+  await expect(section(page, "timing").locator("table.frames")).toBeVisible();
+  await press(page, "Enter");
+  await expect(section(page, "timing").locator("table.frames")).toBeHidden();
+  await expect(page.locator("svg.canvas")).toHaveAttribute("data-level", "fast");
+  // the shell's own keys: z j scrolls the pane's body by the step
   await openSection(page, "docstring");
   await summary.focus();
   const body = page.locator('.pane[data-pane="detail"] .body');
   await body.evaluate((e) => e.scrollTo(0, 0));
-  await press(page, "j");
+  await pressAll(page, "z", "j");
   expect(await body.evaluate((e) => e.scrollTop)).toBe(SCROLL_STEP);
-  await press(page, "k");
+  await pressAll(page, "z", "k");
   expect(await body.evaluate((e) => e.scrollTop)).toBe(0);
-  // Enter opens the selected assembly, the section left as it stands, and the region keeps the focus
-  await press(page, "Enter");
+  // Shift-j opens the selected assembly, the section left as it stands, and the region keeps the focus
+  await press(page, "Shift+J");
   await page.locator(readyLevel("fast/outer")).waitFor();
   await expect(pane(page)).toHaveAttribute("data-kind", "level");
   await expect(section(page, "timing").locator("table.frames")).toBeHidden();
@@ -658,7 +663,7 @@ test("a hostile docstring: raw HTML shown as text, the image as its text, the sc
   for (const tag of ["b", "img", "script", "a"]) await expect(body.locator(tag), tag).toHaveCount(0);
 });
 
-test("large: with the detail pane focused, j k and the vertical arrows scroll its body by the step, h l and the horizontal ones sideways; the view and the selection stay", async ({ page }) => {
+test("large: with the detail pane focused, z with j k scrolls its body by the step, with h l sideways; the view and the selection stay", async ({ page }) => {
   await drop(page, "large");
   const body = page.locator('.pane[data-pane="detail"] .body');
   await widen(pane(page));
@@ -670,7 +675,7 @@ test("large: with the detail pane focused, j k and the vertical arrows scroll it
   expect(await state()).toEqual(before);
 });
 
-test("closed_loop: a producer link's click re-renders the pane, which keeps the focus and its ring; j then scrolls it, the selection unchanged", async ({ page }) => {
+test("closed_loop: a producer link's click re-renders the pane, which keeps the focus and its ring; j then takes its first stop, the selection unchanged", async ({ page }) => {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').click();
   await pane(page).locator("table.faces a.producer").first().click();
@@ -681,6 +686,7 @@ test("closed_loop: a producer link's click re-renders the pane, which keeps the 
   expect(await paneRing(page, "detail")).toBe(true);
   const level = await page.locator("svg.canvas").getAttribute("data-level");
   await press(page, "j");
+  expect(await cursor(page)).toBe("button.copy Copy");
   await expect(pane(page)).toHaveAttribute("data-id", id!);
   await expect(page.locator(`svg.canvas[data-level="${level}"] g.block.selected`)).toHaveCount(0);
 });

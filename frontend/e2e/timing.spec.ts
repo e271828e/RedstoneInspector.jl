@@ -4,7 +4,7 @@
 // scrolled under the labels or omitted, the frame tops drawn at their exact places. Figures from increment 10's
 // oracle (`oracle/<fixture>.txt`); the geometry is a rule each check recomputes from the DOM.
 import { test, type Page } from "@playwright/test";
-import { drop, expect, fixtureText, press, shot } from "./fixtures";
+import { drop, expect, fixtureText, press, pressAll, shot } from "./fixtures";
 
 const drawer = (page: Page) => page.locator("section.drawer");
 const body = (page: Page) => page.locator("section.drawer .tab-body");
@@ -291,7 +291,7 @@ test("a frame of one and a half base ticks (an inline copy of rates_deployment):
   await shot(page, "rates_deployment_frame_3_400", "", "timing-tab");
 });
 
-test("timing_deployment: the timeline at the minimum pitch scrolls the tab's body sideways under the labels, which stay; l and h from the drawer scroll it by the step; staggered's row splits frames", async ({ page }) => {
+test("timing_deployment: the timeline at the minimum pitch scrolls the tab's body sideways under the labels, which stay; z with l and h from the drawer scroll it by the step; staggered's row splits frames", async ({ page }) => {
   await timingOf(page, "timing_deployment");
   await expect(rows(page).locator(".dphi")).toHaveText(["D₀ 6 · Φ₀ 0", "D₀ 12 · Φ₀ 6", "D₀ 24 · Φ₀ 18", "D₀ 30 · Φ₀ 1", "D₀ 36 · Φ₀ 18"]);
   await expect(body(page).locator('.chart-row[data-d="30"] .frames')).toHaveText("splits frames");
@@ -309,13 +309,12 @@ test("timing_deployment: the timeline at the minimum pitch scrolls the tab's bod
   const start = await place();
   expect(start.over).toBe(true);
   await body(page).locator("h3").first().click();
-  await press(page, "l");
-  await press(page, "l");
+  await pressAll(page, "z", "l", "z", "l");
   const moved = await place();
   expect(moved.left).toBe(80);
   expect(moved.labels).toBeCloseTo(start.labels, 0);
   expect(moved.lane).toBeCloseTo(start.lane - 80, 0);
-  await press(page, "h");
+  await pressAll(page, "z", "h");
   expect((await place()).left).toBe(40);
   await body(page).evaluate((b) => (b.scrollLeft = 0));
   await shot(page, "timing_deployment", "", "timing-tab");

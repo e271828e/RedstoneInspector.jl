@@ -218,6 +218,9 @@ test("closed_loop: n and N walk every hit in the list's order, opening its level
   await expectAt(12);
   await press(page, "Shift+N");
   await expectAt(11);
+  // Caps Lock sends N without Shift, which is n
+  await press(page, "N");
+  await expectAt(12);
 });
 
 test("closed_loop: a face hit found by a type: term shows its owner's type with the match marked; one found by its name alone shows none", async ({ page }) => {

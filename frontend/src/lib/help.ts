@@ -13,7 +13,7 @@ export interface Term {
 }
 
 /** The paragraph above the legend: the level, the zoom's text order and the computed layout. */
-export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only: `u` puts the last one dragged back in its computed place, and `U` or the Undo drags button every one.";
+export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only: `x` puts the last one dragged back in its computed place, and `X` or the Undo drags button every one.";
 
 /** Component, face and wire, then the glossary's drawn terms in its order, each with its drawing. */
 export const TERMS: Term[] = [
@@ -50,7 +50,7 @@ export const TERMS: Term[] = [
   { key: "hue", term: "reserved hue", sample: "hue", line: "Red for errors, amber for warnings, blue for highlight, all absent from the rate palette." },
   {
     key: "legend", term: "legend", sample: "legend",
-    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock, `A₁ (key) · Dₐ · Φₐ`, and its `Δt`; its tooltip adds `D₀`, `Φ₀` and `τ`. A click on a line dims what does not run on it.",
+    line: "The canvas-corner list of the rates visible on the open level in rate mode. Each line names a color's clock: a deployment's by `D₀ · Φ₀`, `Δt` and its anchor, a build's by `Δt · τ` and its anchor. Its tooltip adds the anchor's key and scope, `Dₐ` and `Φₐ`, and a deployment's `τ`. A click on a line dims what does not run on it.",
   },
   {
     key: "pin", term: "pin", sample: "pin",
@@ -118,35 +118,49 @@ export const VOCABULARY: [string, string, string][] = [
 
 /** The keyboard table, the map's rows in the map's order (frontend/MAP.md, "The keyboard"), each `[keys, action]`. */
 export const KEYS: [string[], string][] = [
-  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the tree, the next and previous row, expand or collapse, or the child's or the parent's row"],
-  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the detail pane or the drawer, scroll it"],
-  [["j", "k"], "on this page, scroll it"],
+  [["q", "w", "e", "s"], "focus the tree, the canvas, the detail pane, the drawer; a collapsed pane expands and a closed drawer opens first"],
+  [["Q", "E", "S"], "collapse or expand the tree, the detail pane, the drawer"],
+  [["Tab", "Shift-Tab"], "move focus between the tree, the canvas, the detail pane and the drawer"],
   [["h", "j", "k", "l"], "on the canvas or with nothing focused, select the nearest component or pin in that direction, the view following"],
+  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the tree, the next and previous row, expand or collapse, or the child's or the parent's row"],
+  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the detail pane, `j` and `k` move between its headings, rows and buttons; `l` opens a section, steps into it and along a row's links; `h` goes back and closes a section from its heading"],
+  [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the drawer, `j` and `k` move between the rows, `h` and `l` along a row's controls"],
   [["←", "↓", "↑", "→"], "on the canvas or with nothing focused, pan the canvas"],
-  [["Shift-h", "Shift-l"], "back and forward between the levels opened since the page loaded; nothing before the first"],
-  [["Shift-j", "Enter"], "open the selected assembly"],
+  [["Enter"], "press the focused control of the detail pane or the drawer; with none, open the selected assembly"],
+  [["Shift-h", "Shift-l"], "back and forward between the levels opened since the page loaded; nothing before the first or past the last"],
+  [["Shift-j"], "open the selected assembly"],
   [["Shift-k", "Backspace", "Alt-↑"], "go to the parent, the child left selected"],
-  [["z"], "centre the selection at the current zoom"],
-  [["n", "N"], "the next, the previous search hit"],
-  [["Escape"], "close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
-  [["t"], "trace the selected pin, port or wire, or clear its route"],
+  [["zh", "zj", "zk", "zl"], "pan the canvas, or scroll the focused pane"],
+  [["zz"], "bring the selection drawn on the canvas, the selected row or the focused control to the middle"],
+  [["d", "u"], "half a page down, up: a pane scrolls, the canvas pans"],
   [["0"], "fit the level"],
-  [["+", "="], "zoom in"],
-  [["-"], "zoom out"],
-  [["u", "U"], "put the last dragged component or pin back in its computed place, or every one"],
-  [["/", "Cmd-K", "Ctrl-K"], "focus the search"],
-  [["Cmd-O", "Ctrl-O"], "open a descriptor"],
-  [["d"], "toggle the drawer"],
-  [["m", "i"], "collapse or expand the model tree, the detail pane"],
-  [["r"], "switch between tier and rate colors"],
+  [["+", "=", "zi"], "zoom in"],
+  [["-", "zo"], "zoom out"],
+  [["gg", "G"], "the first, the last row of the tree, or control of the detail pane or the drawer"],
+  [["gt", "gT"], "the drawer's next, previous tab; a closed drawer opens"],
+  [["j", "k", "d", "u", "gg", "G"], "on this page, scroll it"],
+  [["/", "Cmd-K", "Ctrl-K"], "focus the search; `/` in the drawer's diagnostics tab, its filter, where Escape gives the focus back"],
+  [["n", "N"], "the next, the previous search hit"],
+  [["t"], "trace the selected pin, port or wire, or clear its route"],
+  [["c"], "switch between tier and rate colors"],
   [["y"], "type labels on or off"],
   [["o"], "execution-order badges on or off"],
   [["?"], "the help page, open or closed"],
-  [["Tab", "Shift-Tab"], "move focus between the tree, the canvas, the detail pane and the drawer"],
+  [["Cmd-O", "Ctrl-O"], "open a descriptor"],
+  [["x", "X"], "put the last dragged component or pin back in its computed place, or every one"],
+  [["Escape"], "close the right-click menu, else cancel a pending `z` or `g`, else close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
 ];
 
-/** The keys apply outside text fields; colors, labels and badges are kept per browser. */
-export const KEYS_NOTE = "Single keys, outside text fields, where Tab, Cmd-O and Ctrl-O still act. The color mode, the type labels, the order badges and the collapsed panes are kept per browser.";
+/** The keys apply outside text fields; two take a second key; colors, labels and badges are kept per browser. */
+export const KEYS_NOTE = "Single keys or pairs, outside text fields, where Tab, Cmd-K, Ctrl-K, Cmd-O and Ctrl-O still act. `z` and `g` wait for a second key, shown in the status bar; while `z` is held, every `h`, `j`, `k`, `l`, `i` and `o` acts under it. The color mode, the type labels, the order badges and the collapsed panes are kept per browser.";
+
+/** The search's prefixes (workspace.md answer 5), each with the field it narrows a term to. */
+export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, and several terms must all match.";
+export const SEARCH_PREFIXES: [string, string][] = [
+  ["path:", "the path of a component"],
+  ["type:", "its type or its type's alias"],
+  ["face:", "the name of a face"],
+];
 
 /** The hosted copy's address (build_release.md answer 7). */
 export const HOSTED_URL = "https://e271828e.github.io/RedstoneInspector.jl/";

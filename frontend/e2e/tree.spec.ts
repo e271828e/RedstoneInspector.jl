@@ -123,10 +123,10 @@ test("containers: the folder taps under scale expands with scale, by the chevron
 
 test("large: a selection made while the tree pane is collapsed scrolls its row into view when the pane expands", async ({ page }) => {
   await drop(page, "large");
-  await press(page, "m");
+  await press(page, "Shift+Q");
   await expect(page.locator('.pane[data-pane="tree"]')).toHaveClass(/\bcollapsed\b/);
   await page.locator('g.block[data-id="b150"]').click();
-  await press(page, "m");
+  await press(page, "Shift+Q");
   const body = page.locator('.pane[data-pane="tree"] .body');
   await expect(row(page, "b150")).toHaveClass(/\bselected\b/);
   await expect.poll(() => body.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);

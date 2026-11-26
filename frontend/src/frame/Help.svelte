@@ -3,12 +3,12 @@
   // landing, which the shell keeps mounted and inert beneath it: the lead paragraph
   // and the legend of the diagram's terms with small static drawings in the canvas's
   // shapes and colors, the timing notation and the root inputs' type rule, the
-  // keyboard, the Simulink vocabulary, and the about section.
+  // keyboard with the search's prefixes, the Simulink vocabulary, and the about section.
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
   import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
-  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
+  import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, SEARCH_LEAD, SEARCH_PREFIXES, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
   let { onclose }: { onclose: () => void } = $props();
@@ -36,9 +36,9 @@
   /** The badge sample's assembly, the clock pill straddling its top edge at the left as the canvas draws it. */
   const BADGE_BOX = { x: 8, y: 12, width: 104, height: 32 };
   const pillTop = BADGE_BOX.y + BADGE_TOP;
-  /** The legend sample's two lines in the canvas's short form, without their `Δt`, its box in the legend's CSS sizes, scaled to the frame. */
+  /** The legend sample's two lines, a deployment's, their pair alone, its box in the legend's CSS sizes, scaled to the frame. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
-  const legendLines = ["A₀ (base) · Dₐ 1 · Φₐ 0", "A₁ (fast) · Dₐ 2 · Φₐ 1"];
+  const legendLines = ["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 1"];
   const legendWidth = Math.ceil(Math.max(...legendLines.map((t) => textWidth(t, LEGEND_FONT)))) + 38;
   const legendScale = Math.min(1, (W - 1) / legendWidth);
   const wires = [["number", ""], ["flag", "flag"], ["vector", "vector"], ["struct", "struct"]];
@@ -195,14 +195,22 @@
 
     <section data-section="keyboard">
       <h2>The keyboard</h2>
-      <p>{KEYS_NOTE}</p>
+      <p>{@render text(KEYS_NOTE)}</p>
       <table class="keys">
         <tbody>
           {#each KEYS as [keys, action], i (i)}
             <tr>
               <td class="keys">{#each keys as k, j (j)}{#if j > 0}{" "}{/if}<kbd>{k}</kbd>{/each}</td>
-              <td>{action}</td>
+              <td>{@render text(action)}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+      <p>{SEARCH_LEAD}</p>
+      <table class="prefixes">
+        <tbody>
+          {#each SEARCH_PREFIXES as [prefix, field] (prefix)}
+            <tr><th scope="row"><code>{prefix}</code></th><td>{field}</td></tr>
           {/each}
         </tbody>
       </table>
@@ -265,7 +273,7 @@
   th { font-weight: 600; }
   td.note { color: var(--text-light); }
   td.keys { white-space: nowrap; width: 1%; }
-  .notation th, .law th { font-weight: 400; white-space: nowrap; width: 1%; }
+  .notation th, .law th, .prefixes th { font-weight: 400; white-space: nowrap; width: 1%; }
   .law th { color: var(--text-light); }
   dl.about { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
   dt { color: var(--text-light); }

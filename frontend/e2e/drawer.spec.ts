@@ -2,8 +2,8 @@
 // diagnostic and warning, errors first, with kind, path, message and the type's
 // location; the filter; a row's click focusing it and selecting what it names
 // on its level; the empty states; the tree's propagated marks; a push dropping
-// the focus. Counts from the oracle (`overlay.py`). The drawer's own keys, h j k l
-// and the arrows scrolling its body, and `d` closing it with the focus (increment 8b).
+// the focus. Counts from the oracle (`overlay.py`). The drawer's view keys,
+// z with h j k l, and Shift-s closing it with the focus; its cursor is cursor.spec.ts's.
 // The polish batch: the location under the message, a loop's wires linked to their
 // declarations and its presumed members (the oracle `loop_row.py`), and a focused
 // diagnostic with nothing on the level dimming nothing.
@@ -68,7 +68,7 @@ test("failure_probe: two rows, error first, the filter, a click focusing and sel
   await expect(page.locator('g.block.selected[data-id="s/g"]')).toHaveCount(1);
 
   // Escape clears the focus before a standing query
-  await press(page, "/");
+  await press(page, "ControlOrMeta+k");
   await page.keyboard.type("h");
   await press(page, "Tab");
   await row(page, 0).locator(".kind").click();
@@ -236,7 +236,7 @@ test("a push drops the focused diagnostic and keeps the drawer open on diagnosti
   await expect(drawer(page).locator("p.empty")).toHaveText("No diagnostics or warnings.");
 });
 
-test("large: with the drawer focused, j k and the vertical arrows scroll its body by the step, h l and the horizontal ones sideways; closed, the eight do nothing; d closing it moves the focus to the canvas", async ({ page }) => {
+test("large: with the drawer focused, z with j k scrolls its body by the step, with h l sideways; closed, h j k l, the arrows and z with them do nothing; Shift-s closing it moves the focus to the canvas", async ({ page }) => {
   await drop(page, "large");
   const state = async () => ({ view: await viewBox(page), selected: await page.locator("svg.canvas .selected").count(), id: await page.locator("aside.detail").getAttribute("data-id") });
   const tab = page.locator('button.tab[data-tab="order"]');
@@ -261,20 +261,20 @@ test("large: with the drawer focused, j k and the vertical arrows scroll its bod
     return Math.abs(v.width / v.height - box.clientWidth / box.clientHeight) < 1e-6;
   })).toBe(true);
   const closed = await state();
-  for (const key of ["j", "k", "h", "l", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"]) await press(page, key);
+  for (const key of ["j", "k", "h", "l", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "z", "j", "z", "l", "z", "z", "d", "u", "g", "g", "Shift+G"]) await press(page, key);
   expect(await state(), "closed").toEqual(closed);
-  // d opens it, the focus kept; d closing it while it holds the focus moves the focus to the canvas
-  await press(page, "d");
+  // Shift-s opens it, the focus kept; closing it while it holds the focus moves the focus to the canvas
+  await press(page, "Shift+S");
   await expect(drawer(page)).toHaveAttribute("data-open", "true");
   await expect(page.locator("section.drawer.focused")).toHaveCount(1);
-  await press(page, "d");
+  await press(page, "Shift+S");
   await expect(drawer(page)).toHaveAttribute("data-open", "false");
   await expect(page.locator(".viewport.focused")).toHaveCount(1);
   expect(await page.evaluate(() => document.activeElement?.classList.contains("viewport"))).toBe(true);
-  // d with the focus elsewhere leaves it there
+  // with the focus elsewhere it stays there
   await page.locator("aside.detail h2").click();
-  await press(page, "d");
-  await press(page, "d");
+  await press(page, "Shift+S");
+  await press(page, "Shift+S");
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
 });
 

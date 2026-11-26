@@ -7,7 +7,7 @@
   import { stepPair } from "../../canvas/palette";
   import type { Model } from "../../lib/model";
   import {
-    CHART_PAD, chartFit, chartRows, dueTicks, frameLines, frameTopX, hyperperiodLine, jointLine, legendText, tickX, type JointPeriod,
+    anchorLabel, CHART_PAD, chartFit, chartRows, dueTicks, frameLines, frameTopX, hyperperiodLine, jointLine, legendText, tickX, type JointPeriod,
   } from "../../lib/timing";
 
   let { model, joint, legendFocus, onlegend }: {
@@ -55,9 +55,10 @@
             {#each r.swatches as w (w.key)}
               {@const pair = stepPair(w.step)}
               {@const t = legendText(model, w.triple)}
+              {@const [a, D, phi] = w.triple}
               <button
                 class="swatch" data-key={w.key} data-step={w.step} aria-pressed={legendFocus === w.key}
-                title="{t.text} · Δt {t.dt}; focus this rate on the canvas" style:background={pair.fill} style:border-color={pair.stroke}
+                title="{anchorLabel(model.structure!, a)} · Dₐ {D} · Φₐ {phi} · Δt {t.dt}; focus this rate on the canvas" style:background={pair.fill} style:border-color={pair.stroke}
                 onclick={() => onlegend(w.key)}
               ></button>
             {/each}
@@ -96,9 +97,10 @@
   .dphi { font: 12px ui-monospace, monospace; }
   .swatches { display: inline-flex; gap: 2px; }
   button.swatch {
-    width: 12px; height: 10px; padding: 0; border: 1px solid; border-radius: 2px; cursor: pointer;
+    width: 12px; height: 10px; padding: 0; border: 1px solid; border-radius: 2px; cursor: pointer; --ring-offset: 3px;
   }
-  button.swatch[aria-pressed="true"] { outline: 2px solid var(--highlight); outline-offset: 1px; }
+  /* The pressed swatch's ring is a shadow, inside the cursor's, so both show on one swatch. */
+  button.swatch[aria-pressed="true"] { box-shadow: 0 0 0 1px var(--bg), 0 0 0 3px var(--highlight); }
   .count, .frames { color: var(--text-light); }
   .lanes { display: flex; flex-direction: column; }
   svg.lane { display: block; }
