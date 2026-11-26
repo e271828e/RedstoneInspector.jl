@@ -8,7 +8,7 @@ import { loadModel, type Model } from "./model";
 import {
   anchorTable, anchorTitle, baseMultiple, CHART_PAD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks,
   frameLines, frameTopX, framesTable, gridReport, headList, hyperperiod, hyperperiodLine, jointLine, jointPeriod, julia,
-  lcmQ, legendText, q, scopeFramesTable, scopeTable, seconds, stepsPerFrame, tickX, type DrawnFit,
+  lcmQ, legendText, q, sampleTimesKeyed, scopeFramesTable, scopeTable, seconds, stepsPerFrame, tickX, type DrawnFit,
 } from "./timing";
 
 /** A fixture's JSON edited, then loaded: an inline copy. */
@@ -185,6 +185,10 @@ describe("the components and scopes tables (answers 3, 5 and 9)", () => {
     });
     expect(componentTable(reversed)).toEqual(componentTable(timingDep));
     expect(scopeTable(reversed)).toEqual(scopeTable(timingDep));
+  });
+  it("sample_times keys something where a primitive's chain holds a link: closed_loop's primitive keys, rates' scopes; not kinds' bare discrete primitive, aircraft or a structureless failure", () => {
+    expect(["closed_loop", "rates", "timing_deployment", "kinds", "aircraft", "failure_structure"].map((f) => sampleTimesKeyed(fixtureModel(f))))
+      .toEqual([true, true, true, false, false, false]);
   });
 });
 

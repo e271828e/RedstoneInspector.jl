@@ -60,9 +60,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **The scopes' empty note on a model with no `sample_times`**
-  (increment 10's review). The timing tab's "No assembly is keyed in
-  `sample_times`; every key names a primitive." shows there too.
 - **Vite's dev server proxying the socket** (`live_session.md` answer 8):
   a preference listing extra allowed origins and a forwarding entry in the
   Vite configuration, taken up when the rebuild-and-reload loop chafes.

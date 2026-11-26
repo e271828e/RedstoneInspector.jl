@@ -301,13 +301,14 @@ test("containers and large: an empty first group, then an empty second group", a
   await expect(group(page, 1).locator("p.empty")).toHaveCount(0);
 });
 
-test("kinds: no root inputs, one component", async ({ page }) => {
+test("kinds: no root inputs, one component, and the scopes' note says nothing is keyed in sample_times", async ({ page }) => {
   await drop(page, "kinds");
   await openTab(page, "root-inputs");
   await expect(body(page).locator("p.empty")).toHaveText("No root inputs.");
   await expect(body(page).locator("table.root-inputs")).toHaveCount(0);
   await openTab(page, "timing");
   await expect(body(page).locator("table.components tr.component")).toHaveCount(1);
+  await expect(body(page).locator("p.empty")).toHaveText(["Nothing is keyed in sample_times."]);
 });
 
 test("failure_cycle: no execution order, two anchor rows", async ({ page }) => {

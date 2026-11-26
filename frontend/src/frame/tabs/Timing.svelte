@@ -9,7 +9,8 @@
   import type { Model } from "../../lib/model";
   import { stepsOf, tripleKey } from "../../lib/rates";
   import {
-    anchorTable, anchorTitle, coarsestLine, componentTable, gridReport, headList, jointPeriod, scopeTable, type TimingRow,
+    anchorTable, anchorTitle, coarsestLine, componentTable, gridReport, headList, jointPeriod, sampleTimesKeyed, scopeTable,
+    type TimingRow,
   } from "../../lib/timing";
   import Chart from "./Chart.svelte";
   import { rowClick } from "./rowClick";
@@ -124,7 +125,11 @@
       </tbody>
     </table>
   {:else}
-    <p class="empty">No assembly is keyed in <code>sample_times</code>; every key names a primitive.</p>
+    {#if sampleTimesKeyed(model)}
+      <p class="empty">No assembly is keyed in <code>sample_times</code>; every key names a primitive.</p>
+    {:else}
+      <p class="empty">Nothing is keyed in <code>sample_times</code>.</p>
+    {/if}
   {/if}
 
   <h3>Components</h3>

@@ -189,6 +189,10 @@ export function scopeTable(model: Model): TimingRow[] {
   return s.scopes.map((x) => timingRow(s, x.path, x.timing, bound, rows.get(scopeKey(x.path, x.key)), x.key));
 }
 
+/** Whether `sample_times` keys anything: some primitive's chain holds a link. */
+export const sampleTimesKeyed = (model: Model): boolean =>
+  !!model.structure?.nodes.some((n) => n.class === "primitive" && n.rates.length > 0);
+
 // --- the grid report (answers 6 and 9) ------------------------------------------
 
 /** The base grid section's first line: a build's coarsest admissible tick, or a deployment's `Δt_base` beside it. */
