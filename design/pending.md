@@ -60,9 +60,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **`frontend/MAP.md` past its size.** It is 786 lines against
-  `design/rules.md`'s "about 700". A trim outside any increment's text
-  brings it back.
 - **The scopes' empty note on a model with no `sample_times`**
   (increment 10's review). The timing tab's "No assembly is keyed in
   `sample_times`; every key names a primitive." shows there too.

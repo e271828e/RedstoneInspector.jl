@@ -255,69 +255,9 @@ The three lifetimes of `workspace.md` answer 9.
 
 Vitest, `npm test`. Each file sits beside its module, under `src/lib/` unless
 named with its folder, and loads fixtures by name through `fixtures.ts`; its
-test names state the pins. One line per file: its concern; the fixtures.
-"Every fixture" is a table over the fixtures that apply; the oracles are the
-reviewer's Python scripts (`design/rules.md`).
-
-- `fixtures.test.ts`: the fixtures against the schema copy (ajv at default
-  strictness) and their wire and type invariants; every fixture.
-- `loader.test.ts`: the header check, refusals, an older core's file, labels;
-  every fixture, edited copies.
-- `tree.test.ts`: the parent rule, memberships, display names; every fixture.
-- `resolve.test.ts`: the resolution, `faceInfo`, route totals and levels;
-  every fixture, `closed_loop`, `rates`, `large`, `containers`, `primitive`.
-- `feedthrough.test.ts`: the edges; every fixture, `closed_loop`, `containers`.
-- `level.test.ts`: the level builder, `elkGraph` with its options, regions and
-  labels, `parsePortId`; every fixture, `closed_loop`, `containers`, `large`.
-- `model.test.ts`: what `loadModel` builds; the deployment and two failures.
-- `view.test.ts`: `zoomAt`, `fitView`, `fitBeside`, `pan`, `centreOn`;
-  synthetic extents.
-- `outline.test.ts`: the tree's rows, folders, `treeStep`, `rowSelection`;
-  every fixture, `containers`, `rates`, `closed_loop`.
-- `detail.test.ts`: the pane's facts, the timing, wire counts, pinning;
-  `closed_loop`, `kinds`, `rates`, `containers`, `primitive`, `timing`,
-  `library`, inline structures.
-- `rates.test.ts`: palette order, a deployment's kept, an assembly's triple,
-  clocks, legend lines, `wireTriple`; `closed_loop`, `rates`, `library`,
-  `kinds`, the deployments, inline structures (`grammar.py`, `continuous.py`).
-- `timing.test.ts`: the fractions, the timing tab's tables and lines, the
-  chart's geometry, the frames tables, the legend's text; increment 10's
-  fixtures and the deployments' builds (the oracle's).
-- `focus.test.ts`: `legendLit`, `legendMarks`, `rekeyFocus`; `closed_loop`,
-  the deployment, `rates` and a copy, an inline structure.
-- `diagnostics.test.ts`: chains, the overlay, the tree's marks, targets,
-  `litBy`, a deployment's own warnings; the failures, `warning`,
-  `timing_deployment`, a synthetic copy (`overlay.py`).
-- `routes.test.ts`: `originOf`, routes, `routeLit`, `rekeyRoute`;
-  `closed_loop`, `rates`, `large`, `primitive` (`overlay.py`'s `routes`).
-- `wires.test.ts`: wire classes, labelled ports, fan-outs, `shortType`;
-  `kinds`, `closed_loop`, `descent`.
-- `icons.test.ts`: `iconOf`'s roster and keys, Constants, `Delay`'s `K`;
-  inline nodes, `closed_loop`, `library`, `kinds`, `descent`.
-- `regions.test.ts`: `regionsOf`, `label`; `containers`, `closed_loop`, inline.
-- `navigate.test.ts`: `nearest`, `follow`, `stopStep`; a grid and `closed_loop`'s
-  boxes, inline stops.
-- `prefix.test.ts`: the prefixes, the held `z`; literals.
-- `search.test.ts`: queries, hits, `beneath`, `levelHits`, `stepHit`;
-  `closed_loop`, `large`, `rates` (the oracle's table).
-- `rekey.test.ts`: `rekey`, `sameBlocks`; `closed_loop` against the
-  deployment, `rates` and edited copies, `descent` over `aircraft`.
-- `analysis.test.ts`: the order and root-input rows, `orderBadge`, `rowTarget`;
-  `closed_loop`, `library`, `rates`, `kinds`, `primitive` (`analysis.py`).
-- `docstring.test.ts`: `refLink` by target, `rewriteRefs`, `renderDocstring`;
-  `library`'s and `closed_loop`'s rows, a hostile source.
-- `protocol.test.ts`: the messages, `classifyFrame`, `backoff`; literals.
-- `src/canvas/router.test.ts`: `orthoRoute`, `rerouteTouching`; `descent`,
-  `closed_loop`.
-- `src/canvas/layout.test.ts`: region and label boxes; `containers`,
-  `closed_loop`, `descent`.
-- `src/canvas/size.test.ts`: `detailAt`, `sizeLabels` under a stubbed
-  `document`; `kinds`.
-- `src/canvas/palette.test.ts`: `stepPair`, the colors kept apart; `large`.
-- `src/state/session.test.ts`: `load`, `escape`, the focuses, the route,
-  climbing, the hash, the help page, the sections; `closed_loop`, the deployment,
-  `rates`, `failure_cycle`, `failure_probe`, a `descent` with a warning.
-- `src/state/prefs.test.ts`: `parsePrefs`; literals.
+test names state the pins, so this map lists none (`design/rules.md`). A
+table over every fixture that applies stands for "every fixture"; the oracles
+are the reviewer's Python scripts.
 
 ## The canvas
 
@@ -698,75 +638,8 @@ dispatches a `drop` carrying the fixture on the window and waits for
 `svg.canvas[data-ready]` or the outcome; `dropOver` drops on the page as it
 stands; `press` presses a key and waits a frame; `live` mocks the socket.
 Without the mock the socket fails against `vite preview`, so every other
-check runs the hosted copy. Each file's header comment names its records.
-One line per file: its concern; the fixtures.
-
-- `draw.spec.ts`: every level of the oracle's table, its blocks, wires,
-  pins, squares and marks; every structure, `failure_structure`.
-- `open.spec.ts`: opening, climbing, the breadcrumb, declared order, the
-  child left selected; `closed_loop`, `rates`.
-- `select.spec.ts`: selection, hover, casings, marks, titles; `closed_loop`.
-- `view.spec.ts`: fit, wheel, pan, the fit button; `closed_loop`.
-- `keys.spec.ts`: the canvas's keys, the prefixes, the held `z`, the retired keys,
-  the rings, Tab; `closed_loop`.
-- `cursor.spec.ts`: the panes' stops, Enter, a click, the ring, what keeps the cursor, the regions'
-  keys, the filter's `/`, the menu's entry; `closed_loop`, the deployments, `containers`, `large`, failures.
-- `state.spec.ts`: the hash, history, views per level, the push's rekeying;
-  `closed_loop`, the deployment, `rates`, `aircraft`, `descent`.
-- `drag.spec.ts`: drags, the router's forms, places kept, Shift's axis, the
-  undo; `closed_loop`, the deployment, `descent`.
-- `search.spec.ts`: results, markers, dimming, the cap, empty prefixes, `n`
-  and `N`; `closed_loop`, `large`, `rates`.
-- `live.spec.ts`: the hello, pushes, the download, `open_location`, the
-  reconnect, dropped frames, the hosted copy; `closed_loop`, `descent`.
-- `header.spec.ts`: the major refusal, the minor note; copies of `descent`.
-- `landing.spec.ts`: the landing, a refusal, an older core's file, the pick,
-  Cmd-O, a structureless failure's frame; `closed_loop`, `descent`,
-  `failure_structure`, copies of `timing_deployment` and `failure_cycle`.
-- `tree.spec.ts`: rows, selection, opening, folders, scrolling, the tree's
-  keys; `closed_loop`, `containers`, `rates`, `primitive`, `aircraft`, `large`.
-- `detail.spec.ts`: each pane layout, the open level's, the sections, links, copying,
-  the narrow pane, docstrings and code blocks, its keys; `closed_loop`, `rates`,
-  `containers`, `aircraft`, `kinds`, `library`, `timing_deployment`, a copy of `primitive`.
-- `frames.spec.ts`: TIMING's heading, frames tables and chain line, the
-  narrowest pane; `timing`, `library`, their deployments, `closed_loop`.
-- `legend.spec.ts`: the line, its order, the scroll, the fit around it;
-  `library`, the deployments, `large`.
-- `frame.spec.ts`: the status bar, the drawer's counts, splitters and
-  collapse kept, `Q` and `E`, the ring's box; `closed_loop`, the deployment,
-  `failure_cycle`, `descent`, `large`.
-- `leave.spec.ts`: the leave prompt, dropped against pushed; `closed_loop`.
-- `colors.spec.ts`: rate mode's fills, the pill beside the overlay's, legend, wires,
-  the tree's dots, the mode kept; `closed_loop`, `rates`, `failure_nested`.
-- `focus.spec.ts`: the legend's focus, Escape, tier mode, a push;
-  `closed_loop`, the deployment, `rates`.
-- `wires.spec.ts`: wire classes, type labels, trunk dots, a drag;
-  `kinds`, `closed_loop`.
-- `icons.spec.ts`: icons drawn and sized; `closed_loop`, `kinds`, `descent`,
-  `library`.
-- `regions.spec.ts`: regions, the folder selected, a frame following a drag;
-  `containers`, `closed_loop`.
-- `zoom.spec.ts`: the text levels at each floor; `closed_loop`.
-- `overlay.spec.ts`: halos, marks, chords, badges, the diagnostic focus; the
-  failures, `warning`, a synthetic copy of `failure_cycle`.
-- `drawer.spec.ts`: the diagnostics tab, a deployment's own warning, the
-  tree's marks, a push, its keys; the failures, `warning`, `closed_loop`,
-  `large`, `timing_deployment`.
-- `routes.spec.ts`: tracing, casings, badges, the status line, the marks, the
-  menu, a push; `closed_loop`, the deployment, `rates`, `primitive`.
-- `network.spec.ts`: every request to the preview origin, one socket
-  attempt, the favicon; `closed_loop`.
-- `analysis.spec.ts`: the analysis tabs, the two order groups, whole rows
-  selecting, the sort, the pins, a push; `closed_loop`, the deployment,
-  `rates`, `library`, `kinds`, `containers`, `large`, `timing`, failures.
-- `timing.spec.ts`: the timing tab and the chart, its fit, scroll and frame
-  tops, the swatch's focus; `timing`, `library`, `rates`, `closed_loop`, `kinds`,
-  the deployments, inline copies.
-- `order.spec.ts`: the order badges, place, dimming, toggle; `closed_loop`, the
-  deployment, `primitive`, `rates`, `large`, `failure_cycle`.
-- `help.spec.ts`: sections, samples, the notation, history, keys, a load
-  under it, the inert frame, the retired words; `closed_loop`, the
-  deployment, `large`.
+check runs the hosted copy. Each file's header comment names its records,
+its test names what they pin.
 
 **Screenshots** go to `e2e/screenshots/`, ignored, and CI uploads them with
 `dist/`: `<fixture>__<level>.png` from the drawing check, the root as `root`
