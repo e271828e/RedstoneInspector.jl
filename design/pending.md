@@ -62,15 +62,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **An integer past `2^53`** (the core's
-  `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
-  2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into
-  JavaScript numbers, so a period of `1//(2^61 - 1)` prints rounded.
-  Display only. The cure is a reader that keeps them exact, or a format
-  change ruled in the core first (D-433).
-- **ELK on the main thread** (increments 3 and 4). `large`'s root takes
-  about 460 ms from drop to drawn on an M4 at thoroughness 20. A web worker
-  would move the sizing and the layout off.
 - **A bare docstring link's joining** (`deployment_overlay.md` answer 15).
   The page joins one to its type's module, which sends 4 of `library`'s
   101 to a dead anchor. The pin bump that follows the core's export audit
