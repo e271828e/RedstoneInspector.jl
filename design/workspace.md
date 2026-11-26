@@ -147,8 +147,9 @@ Open items live in `pending.md`.
    or a port shows its face's facts, what feeds it, the `root_inputs` row
    and later the claim for a root input, and a trace button starting the
    route of question 8. Its facts name an output's stage and whether the
-   face is pinned on a primitive's own face alone: an assembly's face
-   declares neither, and the header already says pin or port.
+   face is pinned, on a primitive's own face and on a root input, whose
+   flag is the meet of `deployment_overlay.md` answer 14: an assembly's
+   face declares neither, and the header already says pin or port.
    *Amended 2026-11-01 (increment 5's look pass): the header had the copy
    button alone; the facts were one line with the timing read out, the
    alias and qualified type below it; the signature was collapsed with no
@@ -176,7 +177,9 @@ Open items live in `pending.md`.
    section after the locations, where a keyed assembly selected as a
    block showed no timing. The signature and the docstring alone
    collapsed, under lowercase titles, and collapsed again at each
-   selection. The faces table's stage column was headed "st.".*
+   selection. The faces table's stage column was headed "st.". Amended
+   2026-11-26 (the user's ruling): a root input's face showed no pinned
+   flag.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following

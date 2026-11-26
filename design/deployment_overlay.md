@@ -783,9 +783,10 @@ the user away): both stood open in the core's `pending.md`.*
     terminal consumers, with the cause. The mark is a column of the tab
     with the cause in its title, and each pinning consumer is followed
     by `show`'s words, "pinned by tier" or "pinned by declaration".
-    In increment 10 the mark is the
-    tab's alone: a root input's tag on the canvas and its pin's pane
-    show none. The page states no verdict on
+    The mark shows on the root input's tag too, a diamond after its
+    name as a primitive's pinned face has, and its pin's and port's pane
+    say "pinned" or "not pinned", the root's faces table marking it with
+    ◆. The page states no verdict on
     seedability. §14.10's type rule,
     a `Float64` leaf reached by at most one index step, shows in the
     type and kind columns, and the help page states it once. This amends
@@ -801,7 +802,8 @@ the user away): both stood open in the core's `pending.md`.*
     section 4). Amended 2026-11-23 (the implementation, the user away):
     the form of the mark and of the cause was unstated, and the answer
     did not say that it amends `descriptor_design.md` answer 7, whose
-    note cites it.*
+    note cites it. Amended 2026-11-26 (the user's ruling): the mark,
+    the tab's alone in increment 10, shows on the tag and in the pane.*
     *Why:* the field was `false` in every file, the writer reading the
     type the wire pass had stripped of its marker, so the ruling corrects
     a field. §8.2 gives the word: "the root input pins at every

@@ -781,7 +781,15 @@
               {#if tag}
                 <path class={["halo", { dashed: dashed(b) }]} d={tagD(box.width, 3)} />
                 <path class="shape" d={tagD(box.width)} fill={palette.rootTag.fill} stroke={palette.rootTag.stroke} />
-                <text x={SLOT + (box.width - SLOT - POINT) / 2} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
+                {@const mark = b.role === "in" && b.pinned ? MARK : 0}
+                {@const cx = SLOT + (box.width - SLOT - POINT - mark) / 2}
+                <text x={cx} y={15} text-anchor="middle" style="font:{PIN_FONT}">{b.name}</text>
+                {#if mark}
+                  <!-- a pinned root input's mark after its name, the tag widened by it (deployment_overlay.md answer 14) -->
+                  <path class="pinned" data-port={pid} d={markD(cx + textWidth(b.name, PIN_FONT) / 2 + MARK / 2, p.y)}>
+                    <title>{b.name} pinned</title>
+                  </path>
+                {/if}
               {:else}
                 <rect class={["halo", { dashed: dashed(b) }]} x="-3" y="-3" width={box.width + 6} height={box.height + 6} rx={PIN_HEIGHT / 2 + 3} />
                 <rect class="shape" width={box.width} height={box.height} rx={PIN_HEIGHT / 2}

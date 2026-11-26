@@ -91,7 +91,7 @@ export const EQUATIONS: { frame: string; period: string; phase: string }[] = [
   { frame: "linked by", period: "Δt(a) = D₀(a) · Δt_base", phase: "τ(a) = Φ₀(a) · Δt_base" },
   { frame: "hence", period: "Δt(i) = D₀(i) · Δt_base", phase: "τ(i) = Φ₀(i) · Δt_base" },
 ];
-export const TYPE_RULE = "The root inputs tab marks with ◆ an input that some consumer pins, and names each pinning consumer with its cause: by tier for a discrete consumer, by declaration for a continuous one. A pinned input is frozen at every activation, so `linearize` cannot seed it. `linearize` seeds a root input only at a `Float64` reached by at most one index step: the input itself when it is a `Float64`, or one element of an array of `Float64`, never a field. The tab's type and kind columns show which.";
+export const TYPE_RULE = "A root input that some consumer pins carries ◆ on its tag, in the detail pane and in the root inputs tab, which names each pinning consumer with its cause: by tier for a discrete consumer, by declaration for a continuous one. A pinned input is frozen at every activation, so `linearize` cannot seed it. `linearize` seeds a root input only at a `Float64` reached by at most one index step: the input itself when it is a `Float64`, or one element of an array of `Float64`, never a field. The tab's type and kind columns show which.";
 
 /** The Simulink vocabulary (look_inspector_08.md 7.2), `[simulink, redstone, note]`, an empty note where it has none. */
 export const VOCABULARY: [string, string, string][] = [

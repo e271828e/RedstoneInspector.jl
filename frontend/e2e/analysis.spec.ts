@@ -364,10 +364,12 @@ test("timing: u pinned by tier through five consumers, ref by declaration throug
   await shot(page, "timing", "", "analysis-root-inputs");
 });
 
-test("timing: the mark is the tab's alone, the root tags and the pin's pane showing none", async ({ page }) => {
+test("timing: both root tags carry the mark and the pin's pane says pinned; the cause is the tab's alone", async ({ page }) => {
   await drop(page, "timing");
+  await expect(page.locator('g.block.root-input .pinned')).toHaveCount(2);
   await page.locator('g.block[data-id="⟨in⟩ref"]').click();
   await expect(page.locator("aside.detail")).toHaveAttribute("data-kind", "pin");
+  await expect(page.locator("aside.detail p.facts")).toHaveText("pinned");
   await expect(page.locator("aside.detail")).not.toContainText("pinned by");
-  await expect(page.locator('g.block[data-id="⟨in⟩ref"] .pinned')).toHaveCount(0);
+  await expect(page.locator('g.block[data-id="⟨in⟩ref"] .pinned')).toHaveCount(1);
 });

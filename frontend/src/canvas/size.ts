@@ -103,7 +103,7 @@ export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: st
 export function sizeBlock(b: Block, tree: Tree, rootLabel: string): BlockSize {
   if (b.role === "in" || b.role === "out") {
     const tag = b.role === "in" && b.rootInput;
-    const width = Math.ceil(textWidth(b.name, PIN_FONT)) + 2 * PAD + (tag ? POINT + SLOT : 0);
+    const width = Math.ceil(textWidth(b.name, PIN_FONT)) + 2 * PAD + (tag ? POINT + SLOT : 0) + (tag && b.pinned ? MARK : 0);
     const port: PortPosition = { side: b.role === "in" ? "out" : "in", name: b.name, x: b.role === "in" ? width : 0, y: PIN_HEIGHT / 2 };
     return { width, height: PIN_HEIGHT, ports: [port] };
   }

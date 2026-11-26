@@ -167,20 +167,21 @@ describe("closed_loop's elements", () => {
     expect(w.producer).toEqual(face("plant", "out", "h"));
   });
 
-  it("the root input h_ref as a pin and as its port: type, phrase, no pinned flag, its consumers, its root_inputs row, no producer", () => {
+  it("the root input h_ref as a pin and as its port: type, phrase, pinned, its consumers, its root_inputs row, no producer", () => {
     const p = pinFacts(cl, "", "⟨in⟩h_ref")!;
-    expect([p.kind, p.name, p.type, p.phrase, p.pinned]).toEqual(["pin", "h_ref", "Float64", "float", undefined]);
+    expect([p.kind, p.name, p.type, p.phrase, p.pinned]).toEqual(["pin", "h_ref", "Float64", "float", true]);
     expect(p.consumers).toEqual([face("pid_controller/h_ctl", "in", "r"), face("lqr_controller/z_ref_pack", "in", "in1")]);
     expect(p.rootInput?.name).toBe("h_ref");
     expect(p.producer).toBeUndefined();
     const q = portFacts(cl, "", "⟨in⟩h_ref|out|h_ref")!;
-    expect([q.kind, q.consumers?.length, q.rootInput?.type, q.pinned]).toEqual(["port", 2, "Float64", undefined]);
+    expect([q.kind, q.consumers?.length, q.rootInput?.type, q.pinned]).toEqual(["port", 2, "Float64", true]);
   });
 
-  it("the pinned flag on a primitive's own face alone: none on a root input, a primitive root's inputs included, none on any assembly face", () => {
+  it("the pinned flag on a primitive's own face and a root input, the root_inputs row's at a primitive root too; none on any assembly face", () => {
     const prim = fixtureModel("primitive");
-    expect(levelFacts(prim, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined]);
-    expect(levelFacts(cl, "").inputs.map((f) => f.pinned)).toEqual([undefined, undefined, undefined]);
+    expect(levelFacts(prim, "").inputs.map((f) => f.pinned)).toEqual([false, false]);
+    expect(levelFacts(cl, "").inputs.map((f) => f.pinned)).toEqual([true, true, false]);
+    expect(pinFacts(cl, "", "⟨in⟩mode")!.pinned).toBe(false);
     expect(portFacts(cl, "pid_controller", "pid_controller/free|out|y")!.pinned).toBe(true);
     expect(portFacts(cl, "", "plant|out|V")!.pinned).toBe(false);
     // an assembly's faces: a closed one's port, a level's pin, whether a root input or a pinned or unpinned output feeds it

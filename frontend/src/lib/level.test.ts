@@ -30,11 +30,13 @@ describe("the root level", () => {
     expect(level("descent").blocks.map((b) => b.role)).toEqual(["in", "in", "primitive", "primitive", "primitive"]);
   });
 
-  it("flags the root's input pins, and no inner level's", () => {
+  it("flags the root's input pins, and no inner level's; a root input pinned as its root_inputs row says, an inner pin fed by one never", () => {
     const pins = level("closed_loop").blocks.filter((b) => b.role === "in");
-    expect(pins.map((b) => b.role === "in" && b.rootInput)).toEqual([true, true, true]);
+    expect(pins.map((b) => b.role === "in" && [b.name, b.rootInput, b.pinned])).toEqual([["h_ref", true, true], ["V_ref", true, true], ["mode", true, false]]);
     const inner = level("closed_loop", "sensing").blocks.filter((b) => b.role === "in");
     expect(inner.map((b) => b.role === "in" && b.rootInput)).toEqual([false]);
+    const fed = level("closed_loop", "pid_controller").blocks.find((b) => b.id === inPinId("h_ref"));
+    expect(fed?.role === "in" && fed.pinned).toBe(false);
   });
 
   it("gives a child its segment, display name, class, tier and face names", () => {
@@ -91,8 +93,8 @@ describe("every level", () => {
     const m = fixtureModel("primitive");
     const l = levelOf(m.tree!, m.resolution!, "");
     expect(l.blocks).toEqual([
-      { id: inPinId("u"), role: "in", name: "u", rootInput: true },
-      { id: inPinId("d"), role: "in", name: "d", rootInput: true },
+      { id: inPinId("u"), role: "in", name: "u", rootInput: true, pinned: false },
+      { id: inPinId("d"), role: "in", name: "d", rootInput: true, pinned: false },
       {
         id: "", role: "primitive", path: "", segment: "", displayName: "Plant", tier: (m.tree!.root as PrimitiveNode).tier,
         inputs: ["u", "d"], outputs: ["y", "power"],

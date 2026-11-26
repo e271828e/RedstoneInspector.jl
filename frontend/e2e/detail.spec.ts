@@ -236,14 +236,19 @@ test.describe("closed_loop", () => {
     await shot(page, "closed_loop", "", "detail-wire");
   });
 
-  test("pinning on a primitive's own face alone: the root's pin h_ref, the port θ on pid_controller and the pin h_ref inside it say nothing; free's y and plant's V say so", async ({ page }) => {
+  test("pinning on a primitive's own face and a root input: the root's faces mark h_ref and V_ref, as their tags do, and the pin h_ref says pinned, mode not; the port θ on pid_controller and the pin h_ref inside it say nothing; free's y and plant's V say so", async ({ page }) => {
+    await expect(pane(page).locator("table.faces tr.in td.pinned")).toHaveText(["◆", "◆", ""]);
+    await expect(page.locator('.pinned[data-port="⟨in⟩h_ref|out|h_ref"] title')).toHaveText("h_ref pinned");
+    await expect(page.locator('.pinned[data-port="⟨in⟩V_ref|out|V_ref"]')).toHaveCount(1);
+    await expect(page.locator('.pinned[data-port="⟨in⟩mode|out|mode"]')).toHaveCount(0);
+    await page.locator('g.block[data-id="⟨in⟩mode"]').click();
+    await expect(pane(page).locator("p.facts")).toHaveText("not pinned");
     await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
     await expect(pane(page)).toHaveAttribute("data-kind", "pin");
     await expect(pane(page).locator(".type")).toContainText("Float64");
     await expect(pane(page).locator(".type")).toContainText("float");
-    await expect(pane(page).locator("p.facts")).toHaveCount(0);
+    await expect(pane(page).locator("p.facts")).toHaveText("pinned");
     await expect(pane(page).locator(".root-input")).toHaveText("root input: h_ref Float64");
-    await expect(pane(page)).not.toContainText(/pinned/i);
     await expect(pane(page).locator("a.consumer")).toHaveCount(2);
     await expect(link(page, "consumer", "pid_controller/h_ctl", "r")).toHaveCount(1);
     await expect(link(page, "consumer", "lqr_controller/z_ref_pack", "in1")).toHaveCount(1);

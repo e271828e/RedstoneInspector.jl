@@ -8,9 +8,10 @@ interface Pins { blocks: number; wires: number; inPins: number; outPins: number;
 const row = (blocks: number, wires: number, inPins: number, outPins: number, closed: number, stage1: number, pinned: number): Pins =>
   ({ blocks, wires, inPins, outPins, closed, stage1, pinned });
 
-// From the per-level oracle over the committed fixtures; blocks count pins plus children.
+// From the per-level oracle over the committed fixtures; blocks count pins plus children, the pinned marks a pinned
+// root input's tag with a primitive's pinned faces (deployment_overlay.md answer 14).
 const CLOSED_LOOP: Record<string, Pins> = {
-  "": row(9, 30, 3, 0, 5, 6, 0),
+  "": row(9, 30, 3, 0, 5, 6, 2),
   sensing: row(4, 3, 1, 1, 0, 1, 0),
   pid_controller: row(16, 22, 9, 2, 0, 5, 1),
   lqr_controller: row(21, 21, 11, 2, 0, 2, 1),
@@ -28,7 +29,7 @@ const RATES: Record<string, Pins> = {
 };
 const LIBRARY: Record<string, Pins> = { "": row(43, 48, 2, 0, 0, 29, 9) };
 const TIMING: Record<string, Pins> = {
-  "": row(11, 9, 2, 6, 1, 0, 1),
+  "": row(11, 9, 2, 6, 1, 0, 3),
   fast: row(7, 6, 1, 4, 1, 0, 0),
   "fast/outer": row(7, 6, 1, 3, 1, 0, 0),
   "fast/outer/deep": row(3, 2, 1, 1, 0, 0, 0),
@@ -44,21 +45,21 @@ const TABLE: Record<string, Record<string, Pins>> = {
   kinds: { "": row(18, 10, 0, 9, 0, 9, 6) },
   rates: RATES,
   rates_deployment: RATES,
-  large: { "": row(156, 323, 4, 2, 10, 294, 0), ...Object.fromEntries(LARGE_INNER.map((p) => [p, row(4, 3, 1, 1, 0, 2, 0)])) },
-  failure_cycle: { "": row(5, 5, 2, 1, 0, 0, 0) },
+  large: { "": row(156, 323, 4, 2, 10, 294, 4), ...Object.fromEntries(LARGE_INNER.map((p) => [p, row(4, 3, 1, 1, 0, 2, 0)])) },
+  failure_cycle: { "": row(5, 5, 2, 1, 0, 0, 1) },
   library: LIBRARY,
   library_deployment: LIBRARY,
   timing: TIMING,
   timing_deployment: TIMING,
   approach_deployment: {
-    "": row(8, 7, 5, 0, 1, 1, 0),
+    "": row(8, 7, 5, 0, 1, 1, 2),
     vehicle: row(11, 20, 5, 1, 4, 6, 0),
     "vehicle/actuators": row(8, 6, 2, 2, 0, 2, 0),
     "vehicle/cascade": row(16, 22, 9, 2, 0, 5, 1),
     "vehicle/selection": row(15, 14, 5, 5, 0, 3, 0),
     "vehicle/sensing": row(4, 3, 1, 1, 0, 1, 0),
   },
-  failure_nested: { "": row(5, 5, 2, 1, 1, 0, 0), ctl: row(4, 3, 2, 1, 0, 0, 0) },
+  failure_nested: { "": row(5, 5, 2, 1, 1, 0, 1), ctl: row(4, 3, 2, 1, 0, 0, 0) },
   failure_dead: { "": row(5, 5, 2, 0, 0, 0, 0) },
   failure_probe: { "": row(3, 1, 1, 0, 1, 0, 0), s: row(4, 3, 1, 1, 0, 0, 0) },
   warning: { "": row(4, 3, 1, 1, 0, 0, 0) },

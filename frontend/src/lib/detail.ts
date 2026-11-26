@@ -71,8 +71,8 @@ export interface FaceFacts {
   /** The kind marker as a phrase. */
   phrase?: string;
   /**
-   * On a primitive's own face alone, where the marker is declared; none on an assembly's face, which declares none,
-   * nor on a root input, whose `pinned` is the fan-out meet's and waits for the root-inputs tab (deployment_overlay.md answer 14).
+   * On a primitive's own face, where the marker is declared, and on a root input, the fan-out meet's (deployment_overlay.md
+   * answer 14); none on an assembly's face, which declares none.
    */
   pinned?: boolean;
   /** A primitive output's stage, from `outputs.components`. */
@@ -148,7 +148,7 @@ export function faceFacts(model: Model, face: Face): FaceFacts {
     face, name: face.port, type: info?.type, phrase: info && kindPhrase(info.kind),
   };
   const primitive = isPrimitive(tree, face.path);
-  if (primitive && !isRootInput(face)) out.pinned = info?.pinned ?? false;
+  if (primitive || isRootInput(face)) out.pinned = info?.pinned ?? false;
   if (primitive && face.side === "out") {
     const c = model.outputs?.components.find((x) => x.path === face.path);
     if (c) out.stage = c.stage1.includes(face.port) ? 1 : c.stage2.includes(face.port) ? 2 : undefined;

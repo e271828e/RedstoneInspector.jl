@@ -60,10 +60,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **A root input's pin beyond the root-inputs tab**
-  (`deployment_overlay.md` answer 14). Its tag on the canvas and its pin's
-  pane show no mark, where a primitive's pinned face has one in both.
-  Whether they take one is the user's to rule.
 - **Keys that resize the panes** (the user's review of 2026-11-26): the
   tree, the detail pane and the drawer, by key, as the splitters do by
   drag. For a session of its own.

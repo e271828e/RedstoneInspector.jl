@@ -12,6 +12,8 @@ export interface InPin {
   name: string;
   /** A pin of the root: a root input, drawn as a tag. */
   rootInput: boolean;
+  /** A root input that some consumer pins, the `root_inputs` row's `pinned` (deployment_overlay.md answer 14). */
+  pinned: boolean;
 }
 /** An output face of the opened level, drawn as a pin with one input port. */
 export interface OutPin {
@@ -61,10 +63,11 @@ export function parsePortId(id: string): { block: string; side: "in" | "out"; na
  * Input pins, the children in walk order, output pins; the wires keyed by their consumer.
  * A primitive root is its one block with a pin and a wire per face.
  */
-export function levelOf(tree: Tree, _res: Resolution, path: string): Level {
+export function levelOf(tree: Tree, res: Resolution, path: string): Level {
   const self = tree.byPath.get(path);
   if (!self) throw new Error(`no node at "${path}"`);
-  const inPins = self.inputs.map((f): InPin => ({ id: inPinId(f.name), role: "in", name: f.name, rootInput: path === "" }));
+  const pinned = (name: string) => path === "" && !!res.structure.root_inputs.find((f) => f.name === name)?.pinned;
+  const inPins = self.inputs.map((f): InPin => ({ id: inPinId(f.name), role: "in", name: f.name, rootInput: path === "", pinned: pinned(f.name) }));
   const outPins = self.outputs.map((f): OutPin => ({ id: outPinId(f.name), role: "out", name: f.name }));
   if (self.class === "primitive") {
     if (path !== "") throw new Error(`"${path}" is a primitive, not a level`);

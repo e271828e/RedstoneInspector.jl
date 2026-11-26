@@ -291,7 +291,7 @@ What the records do not fix, or where the page differs:
   names with a pinned mark's 8 px; header 36, row 16, foot 6, at least 60. An
   icon counts `ICON_WIDTH` (44), a `Constant` its text cut at
   `CONSTANT_WIDTH` (60) (`iconWidth`). A pin is 22 high; a root tag adds a
-  9 px point and a 9 px empty slot.
+  9 px point and a 9 px empty slot, a pinned one the mark's 8 px after its name.
 - **Colors.** `stepPair` is the one reader of a step's colors: fills,
   strokes, wires, swatches, the tree's dots. No check pins a value.
 - **The rate pill** `g.badge-pill` straddles a child's top edge at the left,
@@ -394,7 +394,7 @@ What the records do not fix, or where the page differs:
 | a halo | `.halo` and `.port-halo`, `.dashed`, `.on` | a search hit's dashed halo; a route origin's port halo |
 | a port | `rect.port[data-port]`, the port id; `.stage1` | every face; `stage1` on an open square |
 | a port's states | `.selected`, `.hover`, `.marked`, `.marked-hover`, `.search-hit`, `.lit`, `.route-origin`, `.route-terminal` | `marked` on the selected wire's two squares, `marked-hover` on the hovered wire's |
-| a pinned mark | `.pinned[data-port]` | a pinned face |
+| a pinned mark | `.pinned[data-port]` | a primitive's pinned face, and a pinned root input's tag after its name |
 | a wire | `path.wire[data-wire][data-kind]`, the kind `scalar`, `flag`, `vector`, `struct` or `opaque`; `.selected`, `.hover`, `.lit` | every level wire |
 | a wire's hit path | `path.wire-hit[data-hit]` | over each wire, transparent, 8 px wide; takes the click, the hover, the `<title>` and the right-click |
 | a struct's core | `path.wire-core[data-wire]` | over each struct wire |
@@ -537,7 +537,7 @@ What the records do not fix, or where the page differs:
 | the sections | `details.section[data-section][open]`, `signature`, `docstring`, `locations`, `timing`, `parameters`, `faces`, in order after `dl.facts`, each a `summary h3` and its content, `code.signature`, `div.docstring` or a table or list below; `timing`'s `summary[title]` | with content, the signature only when it differs from the type; `timing` on a discrete primitive and a rate scope, open level or block; `open` from the session |
 | a frames table | `table.frames`, `thead` "period", "phase", then `tbody tr[data-frame]`, `scope`, `anchor`, `base grid` or `seconds`, with `th.frame[title]` holding `.word` and `.name`, then `td.period`, `td.phase`, `td.unit`; the anchor's `.name[title]` | the base grid row on a deployment; no scope row where the anchor differs from the enclosing scope's; `p.chain` after it on a primitive with a chain |
 | the lists | `.locations li` with `.file` holding `span.file-name`, `.parameters tr` with `td.param-name`, `td.param-value`, `.keys a[data-path]`, `.endpoints`, `.root-input` | the keys on a folder, the endpoints on a wire, `.root-input` on a root input's pin or port |
-| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name` holding `button.row`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a primitive, the ◆ on a primitive's own pinned face; the links on a level too |
+| the faces | `table.faces tr[data-port]`, `.in` or `.out`, cells `.face-name` holding `button.row`, `.face-type`, `.face-kind`, `.pinned`, `.stage`; `a.producer`, `a.consumer` with `data-path`, `data-port` | the stage on a primitive, the ◆ on a primitive's own pinned face and a pinned root input; the links on a level too |
 | the drawer | `section.drawer[data-open][data-tab]` holding `button.tab[data-tab]`, `diagnostics`, `root-inputs`, `timing` or `order`, `.count`, `.tab-body` | `.count` on a tab that has one; the body while open |
 | diagnostics | `div.diagnostics` holding `input.filter`, `ul.diagnostics > li.diagnostic[data-index][data-severity]` with `button.row` holding `.kind`, `.path`, `span.message`, then `.under` holding `a.location`, or on a loop `.under.loop` holding `ul.loop-wires > li.loop-wire[data-from][data-to]` (`path/port`) with `code.pair` and `ul.hops > li.hop[data-level][data-wire][data-declaration]` holding `a.declaration` unless the holder's type is the core's (`isCoreType`: `Redstone` or under it), then `p.members` of `span.member[data-path][data-mode]`, `span.presumed[title]` in a structural one; `.current` | `current` on the focused row; `a.declaration` only where the holder's type locates its method; `p.empty` "No diagnostics or warnings." or "No row matches the filter." |
 | root inputs | `table.root-inputs tr.root-input[data-name]` with `td.name button.row`, `td.type`, `td.kind`, `td.pinned[title]`, `td.consumers` holding a `span.consumer[data-cause]` per consumer with its `code` and `span.cause` | `◆` on a pinned input; `span.cause` on a pinning consumer; `p.empty` "No root inputs." |
