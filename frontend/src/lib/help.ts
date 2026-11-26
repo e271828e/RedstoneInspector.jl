@@ -118,8 +118,8 @@ export const VOCABULARY: [string, string, string][] = [
 
 /** The keyboard table, the map's rows in the map's order (frontend/MAP.md, "The keyboard"), each `[keys, action]`. */
 export const KEYS: [string[], string][] = [
-  [["q", "w", "e", "r"], "focus the tree, the canvas, the detail pane, the drawer; a collapsed pane expands and a closed drawer opens first"],
-  [["Q", "E", "R"], "collapse or expand the tree, the detail pane, the drawer"],
+  [["q", "w", "e", "s"], "focus the tree, the canvas, the detail pane, the drawer; a collapsed pane expands and a closed drawer opens first"],
+  [["Q", "E", "S"], "collapse or expand the tree, the detail pane, the drawer"],
   [["Tab", "Shift-Tab"], "move focus between the tree, the canvas, the detail pane and the drawer"],
   [["h", "j", "k", "l"], "on the canvas or with nothing focused, select the nearest component or pin in that direction, the view following"],
   [["h", "j", "k", "l", "←", "↓", "↑", "→"], "in the tree, the next and previous row, expand or collapse, or the child's or the parent's row"],
@@ -148,11 +148,11 @@ export const KEYS: [string[], string][] = [
   [["?"], "the help page, open or closed"],
   [["Cmd-O", "Ctrl-O"], "open a descriptor"],
   [["x", "X"], "put the last dragged component or pin back in its computed place, or every one"],
-  [["Escape"], "cancel a pending `z` or `g`, else close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
+  [["Escape"], "close the right-click menu, else cancel a pending `z` or `g`, else close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
 ];
 
 /** The keys apply outside text fields; two take a second key; colors, labels and badges are kept per browser. */
-export const KEYS_NOTE = "Single keys or pairs, outside text fields, where Tab, Cmd-O and Ctrl-O still act. `z` and `g` wait for a second key, shown in the status bar; while `z` is held, every `h`, `j`, `k`, `l`, `i` and `o` acts under it. The color mode, the type labels, the order badges and the collapsed panes are kept per browser.";
+export const KEYS_NOTE = "Single keys or pairs, outside text fields, where Tab, Cmd-K, Ctrl-K, Cmd-O and Ctrl-O still act. `z` and `g` wait for a second key, shown in the status bar; while `z` is held, every `h`, `j`, `k`, `l`, `i` and `o` acts under it. The color mode, the type labels, the order badges and the collapsed panes are kept per browser.";
 
 /** The search's prefixes (workspace.md answer 5), each with the field it narrows a term to. */
 export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, and several terms must all match.";

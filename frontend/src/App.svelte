@@ -249,7 +249,7 @@
     return true;
   }
 
-  /** `q w e r`: a region focused, a collapsed pane expanded and a closed drawer opened first; a cursor already in it stays. */
+  /** `q w e s`: a region focused, a collapsed pane expanded and a closed drawer opened first; a cursor already in it stays. */
   async function focusRegion(region: Region) {
     if (session.focus === region && focusedStop()) return;
     if (region === "drawer") openDrawer(session.drawer.tab);
@@ -287,7 +287,7 @@
     focusCanvas();
   }
 
-  /** `R`: the drawer toggled on its tab; the focus the closing drawer held moves to the canvas. */
+  /** `S`: the drawer toggled on its tab; the focus the closing drawer held moves to the canvas. */
   async function toggleDrawerKey() {
     const held = session.focus === "drawer" && session.drawer.open;
     toggleDrawer(session.drawer.tab);
@@ -459,6 +459,12 @@
       if (session.model && cycle(e.shiftKey)) e.preventDefault();
       return;
     }
+    // Cmd-K and Ctrl-K reach the model's search from a text field too, the search field itself included.
+    if (session.model && modified && !e.altKey && !e.shiftKey && name === "k") {
+      e.preventDefault();
+      focusSearch();
+      return;
+    }
     if (typing(e.target)) {
       if (endsHold(prefix, name)) prefix = undefined;
       return;
@@ -476,11 +482,6 @@
       return;
     }
     if (!session.model) return;
-    if (modified && !e.altKey && !e.shiftKey && name === "k") {
-      e.preventDefault();
-      focusSearch();
-      return;
-    }
     if (modified) return;
     // `h j k l` and the arrows follow the focused region: the tree's rows, the detail pane's or the drawer's stops,
     // else the canvas's cursor and pan.
@@ -504,10 +505,10 @@
     else if (name === "q") focusRegion("tree");
     else if (name === "w") focusRegion("canvas");
     else if (name === "e") focusRegion("detail");
-    else if (name === "r") focusRegion("drawer");
+    else if (name === "s") focusRegion("drawer");
     else if (name === "Q") togglePane("tree");
     else if (name === "E") togglePane("detail");
-    else if (name === "R") toggleDrawerKey();
+    else if (name === "S") toggleDrawerKey();
     else if (name === "d" || name === "u") viewBy(STEPS[name === "d" ? "j" : "k"], true);
     else if (name === "G") toEnd(true);
     else if (e.key === "0") canvasView?.fit();

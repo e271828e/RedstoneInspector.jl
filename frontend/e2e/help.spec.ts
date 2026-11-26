@@ -104,10 +104,10 @@ test("before a drop: the landing's link opens five sections over the inert landi
   await expect(h.locator('table.keys kbd:text-is("o")')).toHaveCount(1);
   // the retired keys' rows are gone, and the search's prefixes stand in a table under the keys
   const rowOf = (key: string) => h.locator("table.keys tr").filter({ has: page.locator(`kbd:text-is("${key}")`) });
-  for (const [key, action] of [["r", "focus the tree"], ["d", "half a page"], ["u", "half a page"], ["c", "tier and rate colors"], ["x", "computed place"]]) {
+  for (const [key, action] of [["s", "focus the tree"], ["d", "half a page"], ["u", "half a page"], ["c", "tier and rate colors"], ["x", "computed place"], ["Escape", "close the right-click menu, else cancel a pending z or g, else"]]) {
     await expect(rowOf(key).first(), key).toContainText(action);
   }
-  for (const gone of ["m", "i", "z", "U"]) await expect(rowOf(gone), gone).toHaveCount(0);
+  for (const gone of ["m", "i", "z", "U", "r", "R"]) await expect(rowOf(gone), gone).toHaveCount(0);
   await expect(h.locator("table.keys ~ table.prefixes th code")).toHaveText(["path:", "type:", "face:"]);
   await expect(h.locator("p.vimium code")).toHaveText([
     "http://localhost:8601/*", "https://e271828e.github.io/RedstoneInspector.jl/*",
@@ -273,7 +273,7 @@ test("closed_loop, at pid_controller with a primitive selected and at the root w
     expect([before.selection, before.level]).toEqual([id, level]);
     await press(page, "?");
     await expect(help(page)).toHaveCount(1);
-    for (const key of ["j", "k", "h", "l", "d", "u", "g", "g", "Shift+G", "r", "e", "Shift+Q", "Shift+E", "Shift+R", "c", "o", "y", "t", "0", "x", "Shift+X", "g", "t", "z", "h", "Enter", "Backspace"]) await press(page, key);
+    for (const key of ["j", "k", "h", "l", "d", "u", "g", "g", "Shift+G", "s", "e", "Shift+Q", "Shift+E", "Shift+S", "c", "o", "y", "t", "0", "x", "Shift+X", "g", "t", "z", "h", "Enter", "Backspace"]) await press(page, key);
     await press(page, "?");
     await expect(help(page)).toHaveCount(0);
     await page.locator(readyLevel(level)).waitFor();

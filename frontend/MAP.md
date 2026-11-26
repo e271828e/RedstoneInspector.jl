@@ -569,7 +569,7 @@ What the records do not fix, or where the page differs:
   click focuses `nav.tree`. The ring, 2 px inset in the highlight hue, is on
   the focused pane's box, mouse or key, and on `.viewport` for
   `:focus-visible` alone. A push or a drop refocuses the noted stop, else the
-  region's root, if focus fell to the body; `Q`, `E` or `R` hiding it focus `.viewport`.
+  region's root, if focus fell to the body; `Q`, `E` or `S` hiding it focus `.viewport`.
 - **The cursor in a pane** is the focus on a stop: in `aside.detail` and `.tab-body`,
   every `summary`, `button` and `a[href]` not inside a closed section. A face's links,
   a diagnostic's and a chart row's swatches past its first are its row's further
@@ -614,8 +614,8 @@ What the records do not fix, or where the page differs:
 `App.svelte`'s window `keydown`, as built from `workspace.md` answer 11.
 Cmd-O and Ctrl-O come first. The help page then takes `?`, Escape and `j k d u
 gg G`, every other key the browser's, Tab included. Otherwise Tab comes next,
-from the search field too, cycling only with a model; every other key is
-ignored in a text field, where the search field has its own Down, Up, Enter
+from the search field too, cycling only with a model, then Cmd-K and Ctrl-K,
+from a text field too; every other key is ignored in a text field, where the search field has its own Down, Up, Enter
 and Escape and the filter its Escape. Ctrl or Meta leaves a key to the browser but Cmd-K, Ctrl-K, Cmd-O
 and Ctrl-O; with Alt only Alt-Up and Alt-Backspace act, climbing. `keyName`
 names every letter by Shift, Caps Lock aside. `?`, Cmd-O and the help page's
@@ -630,8 +630,8 @@ Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 
 | key | does |
 |---|---|
-| `q` `w` `e` `r` | focus the region's root, expanding a collapsed pane and opening a closed drawer first; a focused stop already in it stays |
-| `Q` `E` `R` | collapse or expand the tree, the detail pane (`toggleCollapsed`), kept per browser; toggle the drawer on its current tab |
+| `q` `w` `e` `s` | focus the region's root, expanding a collapsed pane and opening a closed drawer first; a focused stop already in it stays |
+| `Q` `E` `S` | collapse or expand the tree, the detail pane (`toggleCollapsed`), kept per browser; toggle the drawer on its current tab |
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
 | `h` `j` `k` `l`, on the canvas or nothing focused | select the nearest block or pin in that direction on the drawn level (`nearest` over `boxes()`: among the boxes whose center lies beyond the origin's far edge, the least gap between facing edges, clamped at zero, plus twice the perpendicular offset between centers, ties by the lower id), from the selected block or pin, a selected port's block or a selected wire's consumer block; with nothing selected on the level, its first block; then `follow` |
 | `h` `j` `k` `l` and the arrows, focus in the tree | the tree's row keys (`treeStep`), `j` or `k` with no row selected taking the first; ← as `h`, ↓ `j`, ↑ `k`, → `l`, with Shift too |
@@ -660,7 +660,7 @@ Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 | `?` | the help page shown or closed (`toggleHelp`), with or without a model; while it shows, see above |
 | Cmd-O, Ctrl-O | click `input.pick`, the file picker, in a text field and under the help page too, where the file loads beneath; with Shift or Alt the browser's |
 | `x`, `X` | the drawn level's last dragged block back in its computed place, the one dragged before it on the next press; `X` and the undo button every one (`undrag`); view and selection kept; nothing with no drag or mid-drag |
-| Escape | a pending prefix, else the session's `escape()`: the route, then the focused diagnostic, then the legend's focus, then the query, then the selection; with the right-click menu open, the menu alone |
+| Escape | with the right-click menu open, the menu alone (`menuKey`); else a pending prefix, else the session's `escape()`: the route, then the focused diagnostic, then the legend's focus, then the query, then the selection |
 
 Dragging has no keyboard form; Shift during a drag is the canvas's own
 listener (see "The canvas").

@@ -2,7 +2,7 @@
 // move the selection by quadrant and center distance with the view following,
 // the arrows pan, Shift-h and Shift-l walk the levels back and forward, Shift-j and
 // Shift-k open and climb, zz centres the selection, z with h j k l pans and zi zo zoom,
-// d and u pan by half a page, 0 + - fit and zoom, Shift-r toggles the drawer, the
+// d and u pan by half a page, 0 + - fit and zoom, Shift-s toggles the drawer, the
 // prefixes z and g wait in the status bar and a held z keeps acting, the retired keys
 // do nothing, Tab cycles the four regions, the ring on a focused pane's box for the
 // mouse and the keyboard and on the canvas for the keyboard only, t with nothing
@@ -230,14 +230,14 @@ test("+ and - zoom by 1.25 about the center, = is +, 0 restores the fit", async 
   for (const k of ["x", "y", "width", "height"] as const) expect(Math.abs(again[k] - fitted[k]), k).toBeLessThan(0.01);
 });
 
-test("Shift-r opens the drawer on its tab and closes it", async ({ page }) => {
+test("Shift-s opens the drawer on its tab and closes it", async ({ page }) => {
   const drawer = page.locator("section.drawer");
   await expect(drawer).toHaveAttribute("data-open", "false");
-  await press(page, "Shift+R");
+  await press(page, "Shift+S");
   await expect(drawer).toHaveAttribute("data-open", "true");
   await expect(drawer).toHaveAttribute("data-tab", "diagnostics");
   await shot(page, "closed_loop", "", "keys");
-  await press(page, "Shift+R");
+  await press(page, "Shift+S");
   await expect(drawer).toHaveAttribute("data-open", "false");
 });
 
@@ -331,7 +331,7 @@ const ringOn = (where?: "tree" | "detail" | "drawer" | "canvas") =>
   ({ tree: where === "tree", detail: where === "detail", drawer: where === "drawer", canvas: where === "canvas", roots: 0 });
 
 test("the ring outlines the tree's, the detail pane's and the drawer's box after a click and after Tab, the canvas only after Tab", async ({ page }) => {
-  await press(page, "Shift+R");
+  await press(page, "Shift+S");
   await page.locator('nav.tree .row[data-path="plant"] .segment').click();
   expect(await rings(page), "a row's click").toEqual(ringOn("tree"));
   await shot(page, "closed_loop", "", "ring-tree");
@@ -604,7 +604,7 @@ test("with no model a z or a g waits for nothing", async ({ page }) => {
   }
 });
 
-test("the retired keys act no more: z alone centres nothing, d, m and i toggle no pane, u and Shift-u put no drag back, r leaves the colors", async ({ page }) => {
+test("the retired keys act no more: z alone centres nothing, d, m and i toggle no pane, u and Shift-u put no drag back, r leaves the colors, r and Shift-r leave the drawer", async ({ page }) => {
   const at = () => page.locator('g.block[data-id="plant"]').getAttribute("transform");
   const box = (await page.locator('g.block[data-id="plant"] > .shape').boundingBox())!;
   await page.mouse.move(box.x + 20, box.y + 10);
@@ -621,9 +621,18 @@ test("the retired keys act no more: z alone centres nothing, d, m and i toggle n
   await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
   await press(page, "r");
   await expect(page.locator("svg.canvas")).toHaveAttribute("data-mode", "tier");
+  await press(page, "Shift+R");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
+  expect(await cursor(page)).not.toBe("drawer");
   expect(await at()).toBe(placed);
   await expect(page.locator("button.undo-drags")).toHaveCount(1);
   await press(page, "x");
   await page.locator(readyLevel("")).waitFor();
   expect(await at()).not.toBe(placed);
+  // s took the drawer from r: open and focused, neither r nor Shift-r closes it or moves the focus
+  await press(page, "s");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");
+  await pressAll(page, "r", "Shift+R");
+  await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");
+  expect(await cursor(page)).toBe("drawer");
 });

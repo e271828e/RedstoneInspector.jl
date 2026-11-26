@@ -1,7 +1,7 @@
 // The cursor in the panes (workspace.md answer 11, the keyboard session's rulings 7 to 28): the browser's focus on a
 // stop of the detail pane or the drawer, walked by h j k l and the arrows; Enter pressing it; a click putting it there;
 // its ring; what keeps it across a redraw and a push, and the region's root once it is removed. Then the keys of the
-// other families by region: q w e r and Q E R, gg and G, gt and gT, zz, z with h j k l, d and u, / in the drawer, and
+// other families by region: q w e s and Q E S, gg and G, gt and gT, zz, z with h j k l, d and u, / in the drawer, and
 // the right-click menu's entry. The prefixes themselves are keys.spec.ts's.
 import { test, type Page } from "@playwright/test";
 import { clickWire, cursor, drop, dropOver, expect, fixtureText, openPath, openSection, press, pressAll, readyLevel, section, SCROLL_STEP, shot, status, viewBox } from "./fixtures";
@@ -363,9 +363,9 @@ test("a stop scrolled to by the cursor lies whole in its pane, its ring included
   expect(await inside()).toBe(true);
 });
 
-test("q w e r focus the tree, the canvas, the detail pane and the drawer from any region, a collapsed pane expanding and a closed drawer opening first; a cursor already there stays", async ({ page }) => {
+test("q w e s focus the tree, the canvas, the detail pane and the drawer from any region, a collapsed pane expanding and a closed drawer opening first; a cursor already there stays", async ({ page }) => {
   await drop(page, "closed_loop");
-  const roots: [string, string][] = [["q", "tree"], ["w", "canvas"], ["e", "detail"], ["r", "drawer"]];
+  const roots: [string, string][] = [["q", "tree"], ["w", "canvas"], ["e", "detail"], ["s", "drawer"]];
   for (const [from] of roots) {
     for (const [key, where] of roots) {
       await press(page, from);
@@ -373,8 +373,8 @@ test("q w e r focus the tree, the canvas, the detail pane and the drawer from an
     }
   }
   await expect(drawer(page)).toHaveAttribute("data-open", "true");
-  // hidden: each shows first, and Q, E and R hide it, the focus it held going to the canvas
-  for (const [key, where] of [["q", "tree"], ["e", "detail"], ["r", "drawer"]]) {
+  // hidden: each shows first, and Q, E and S hide it, the focus it held going to the canvas
+  for (const [key, where] of [["q", "tree"], ["e", "detail"], ["s", "drawer"]]) {
     await press(page, key);
     expect(await walk(page, `Shift+${key.toUpperCase()}`), `Shift-${key}`).toEqual(["canvas"]);
     await expect(page.locator(`.pane[data-pane="${where}"]`)).toHaveClass(/\bcollapsed\b/);
@@ -385,13 +385,13 @@ test("q w e r focus the tree, the canvas, the detail pane and the drawer from an
   await press(page, "e");
   expect(await walk(page, "j", "e")).toEqual(["button.copy Copy", "button.copy Copy"]);
   await page.locator('section.drawer button.tab[data-tab="order"]').focus();
-  expect(await walk(page, "r")).toEqual(["drawer"]);
+  expect(await walk(page, "s")).toEqual(["drawer"]);
   // Shift-w is no key, and none acts in a text field
   await press(page, "Shift+W");
   expect(await cursor(page)).toBe("drawer");
   await press(page, "ControlOrMeta+k");
-  for (const k of ["q", "w", "e", "r"]) await page.keyboard.type(k);
-  await expect(page.locator("input.query")).toHaveValue("qwer");
+  for (const k of ["q", "w", "e", "s"]) await page.keyboard.type(k);
+  await expect(page.locator("input.query")).toHaveValue("qwes");
 });
 
 test("gg and G reach the tree's first and last visible row, a pane's first and last stop, and nothing on the canvas", async ({ page }) => {
@@ -460,7 +460,7 @@ test("gt and gT step the drawer's tabs, wrapping, from any region, the focus sta
     await expect(drawer(page)).toHaveAttribute("data-tab", tab);
   }
   await pressAll(page, "g", "t");
-  await press(page, "r");
+  await press(page, "s");
   expect(await walk(page, "j")).toEqual(["button.row h_ref"]);
   await pressAll(page, "g", "t");
   await expect(drawer(page)).toHaveAttribute("data-tab", "timing");
@@ -473,7 +473,7 @@ test("z with h j k l scrolls the focused pane by the step, the tree's selection 
   await page.locator("nav.tree .row").nth(3).click();
   await openSection(page, "faces");
   await openTab(page, "order");
-  for (const [key, region] of [["q", "tree"], ["e", "detail"], ["r", "drawer"]] as const) {
+  for (const [key, region] of [["q", "tree"], ["e", "detail"], ["s", "drawer"]] as const) {
     await press(page, key);
     if (region !== "tree") await press(page, "j");
     const before = [await cursor(page), await page.locator("nav.tree .row.selected").getAttribute("data-path")];
@@ -549,6 +549,29 @@ test("/ in the drawer on its diagnostics tab goes to the filter, its text select
   await openTab(page, "diagnostics");
   await press(page, "/");
   expect(await on("input.query"), "no diagnostics, no filter").toBe(true);
+});
+
+test("Cmd-K and Ctrl-K reach the model's search with its text selected from the diagnostics filter and from the search field itself (ruling 51)", async ({ page }) => {
+  await drop(page, "failure_probe");
+  const query = page.locator("input.query");
+  const on = (sel: string) => page.locator(sel).evaluate((e) => e === document.activeElement);
+  const selected = () => query.evaluate((e: HTMLInputElement) => [e.selectionStart, e.selectionEnd, e.value.length]);
+  await press(page, "/");
+  await page.keyboard.type("plant");
+  await press(page, "Tab");
+  await drawer(page).focus();
+  await press(page, "/");
+  await page.keyboard.type("boom");
+  expect(await on("input.filter")).toBe(true);
+  await press(page, "ControlOrMeta+k");
+  expect(await on("input.query"), "from the filter").toBe(true);
+  expect(await selected()).toEqual([0, 5, 5]);
+  await expect(page.locator("input.filter")).toHaveValue("boom");
+  await query.evaluate((e: HTMLInputElement) => e.setSelectionRange(5, 5));
+  await press(page, "ControlOrMeta+k");
+  expect(await on("input.query"), "from the field itself").toBe(true);
+  expect(await selected()).toEqual([0, 5, 5]);
+  await expect(query).toHaveValue("plant");
 });
 
 test("a row the filter removes under the cursor gives the focus to the drawer, and one it keeps keeps it", async ({ page }) => {

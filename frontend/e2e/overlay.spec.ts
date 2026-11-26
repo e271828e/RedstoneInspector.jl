@@ -167,7 +167,7 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
 
   await press(page, "Backspace");
   await page.locator(readyLevel("")).waitFor();
-  await press(page, "Shift+R");
+  await press(page, "Shift+S");
   await expect(drawer(page)).toHaveAttribute("data-open", "false");
   await expect(svg(page)).not.toHaveClass(/diagnostic-focus/);
   await t.click();
