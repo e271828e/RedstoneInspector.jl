@@ -22,6 +22,8 @@ export interface Prefs {
 export const KEY = "redstone-inspector/prefs";
 /** Each splitter's minimum and maximum. */
 export const BOUNDS: Record<Splitter, [number, number]> = { tree: [160, 640], detail: [240, 800], drawer: [80, 640] };
+/** What `<` and `>` take from or add to the focused pane, in CSS pixels. */
+export const RESIZE_STEP = 40;
 const DEFAULTS: Prefs = { version: 1, sizes: { tree: 280, detail: 360, drawer: 200 }, collapsed: { tree: false, detail: false }, mode: "tier", labels: false, order: false };
 
 export const clamp = (s: Splitter, px: number): number => Math.min(BOUNDS[s][1], Math.max(BOUNDS[s][0], Math.round(px)));

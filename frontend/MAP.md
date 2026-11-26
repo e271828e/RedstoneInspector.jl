@@ -572,6 +572,7 @@ Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 |---|---|
 | `q` `w` `e` `s` | focus the region's root, expanding a collapsed pane and opening a closed drawer first; a focused stop already in it stays |
 | `Q` `E` `S` | collapse or expand the tree, the detail pane (`toggleCollapsed`), kept per browser; toggle the drawer on its current tab |
+| `<`, `>` | the focused tree, detail pane or open drawer shrunk, grown by 40 px (`RESIZE_STEP`) within its splitter's bounds (`setSize`), kept per browser; with the canvas, nothing or a closed drawer focused, the status bar says there is nothing to resize |
 | Tab, Shift-Tab | the next or previous region root present, in the order tree, canvas, detail, drawer, wrapping; nothing else takes Tab |
 | `h` `j` `k` `l`, on the canvas or nothing focused | select the nearest block or pin in that direction on the drawn level (`nearest` over `boxes()`: among the boxes whose center lies beyond the origin's far edge, the least gap between facing edges, clamped at zero, plus twice the perpendicular offset between centers, ties by the lower id), from the selected block or pin, a selected port's block or a selected wire's consumer block; with nothing selected on the level, its first block; then `follow` |
 | `h` `j` `k` `l` and the arrows, focus in the tree | the tree's row keys (`treeStep`), `j` or `k` with no row selected taking the first; ← as `h`, ↓ `j`, ↑ `k`, → `l`, with Shift too |

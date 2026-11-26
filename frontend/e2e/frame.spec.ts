@@ -2,6 +2,7 @@
 // the drawer's strip, counts and open rule, the splitters and the collapsed panes
 // kept per browser across a reload and a new drop; `m` and `i` collapsing the side
 // panes, and the ring fixed on a focused pane's box while its body scrolls (increment 8b);
+// `<` and `>` resizing the focused pane (the user's ruling of 2026-11-26);
 // a long route line's ellipsis and title with its clear control kept, the counts' and a
 // notice's ellipsis and title too (the polish batch).
 import { test, type Page } from "@playwright/test";
@@ -160,6 +161,53 @@ test("closed_loop: Shift-q and Shift-e collapse and expand the tree and the deta
   await press(page, "Shift+Q");
   await expect(treePane(page)).toHaveClass(collapsed);
   await expect(page.locator("aside.detail.focused")).toHaveCount(1);
+});
+
+test("closed_loop: < and > shrink and grow the focused tree, detail pane and open drawer by 40 px within the splitter's bounds, kept across a reload; with the canvas or a closed drawer focused they resize nothing and the status bar says so", async ({ page }) => {
+  await drop(page, "closed_loop");
+  const drawerPane = page.locator('.pane[data-pane="drawer"]');
+  const width = async (pane: ReturnType<typeof treePane>) => (await pane.boundingBox())!.width;
+  const sizes = () => page.evaluate(() => JSON.parse(localStorage.getItem("redstone-inspector/prefs") ?? "null")?.sizes);
+  const notice = page.locator("footer.status span.notice");
+
+  await press(page, "q");
+  const tree = await width(treePane(page));
+  await press(page, ">");
+  expect(await width(treePane(page))).toBeCloseTo(tree + 40, 0);
+  await press(page, "<");
+  await press(page, "<");
+  expect(await width(treePane(page))).toBeCloseTo(tree - 40, 0);
+  // the tree's floor is 160: from 240 two presses reach it and a third stays
+  for (let i = 0; i < 3; i++) await press(page, "<");
+  expect((await sizes()).tree).toBe(160);
+
+  await press(page, "e");
+  const detail = await width(detailPane(page));
+  await press(page, ">");
+  expect(await width(detailPane(page))).toBeCloseTo(detail + 40, 0);
+
+  await press(page, "s");
+  await expect(drawer(page)).toHaveAttribute("data-open", "true");
+  const height = (await drawerPane.boundingBox())!.height;
+  await press(page, ">");
+  expect((await drawerPane.boundingBox())!.height).toBeCloseTo(height + 40, 0);
+  expect(await sizes()).toEqual({ tree: 160, detail: 400, drawer: 240 });
+  await expect(notice).toHaveCount(0);
+
+  // a click on the open tab closes the drawer, whose tab strip can still hold the focus
+  await tab(page, (await drawer(page).getAttribute("data-tab"))!).click();
+  await expect(drawer(page)).toHaveAttribute("data-open", "false");
+  await page.locator("section.drawer button.tab").first().focus();
+  await expect(page.locator("section.drawer.focused")).toHaveCount(1);
+  await press(page, ">");
+  await expect(notice).toHaveText("nothing to resize: focus the tree, the detail pane or an open drawer");
+  await press(page, "w");
+  await press(page, "<");
+  expect(await sizes()).toEqual({ tree: 160, detail: 400, drawer: 240 });
+
+  await page.reload();
+  await drop(page, "closed_loop");
+  expect(await width(detailPane(page))).toBeCloseTo(detail + 40, 0);
 });
 
 test("large: the ring stays on the pane's box while its body scrolls, for the tree, the detail pane and the drawer", async ({ page }) => {

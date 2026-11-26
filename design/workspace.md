@@ -481,6 +481,7 @@ Open items live in `pending.md`.
     |---|---|
     | `q` `w` `e` `s` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
     | `Q` `E` `S` | collapse or expand the tree, the detail pane, the drawer |
+    | `<` `>` | shrink, grow the focused tree, detail pane or open drawer by a step, as its splitter's drag does; with none of them focused, the status bar says there is nothing to resize |
     | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
     | `h` `j` `k` `l` | the cursor: on the canvas or with nothing focused, the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, the stops, as below |
     | arrows | on the canvas or with nothing focused, pan the canvas; elsewhere what `h j k l` do; with Shift, the same |
@@ -587,13 +588,16 @@ Open items live in `pending.md`.
     with the user away): an Alt key did not end a hold. Amended 2026-11-26
     (the user's review of that increment): `r` and `R` took the drawer,
     Cmd-K and Ctrl-K did nothing in a text field, and Escape's chain did
-    not name the menu.*
+    not name the menu. Amended 2026-11-26 (the user's ruling on
+    `pending.md`'s open item): the panes resized by drag alone.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a
     guided tour, a second help page that interrupts; modifier-heavy
     shortcuts, which collide with the browser's and with Vim-style
-    extensions.
+    extensions; a held `r` with `h j k l` moving the focused pane's edge,
+    half the directions doing nothing in each pane; focusable splitters,
+    which Tab would have to reach.
 
 ## Design axes
 

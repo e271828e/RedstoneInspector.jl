@@ -36,7 +36,7 @@
     say, setLayout, setQuery, setSection, setView, TABS, toggleDiagnosticFocus, toggleDrawer, toggleExpanded, toggleHelp, toggleLegendFocus, trace, type Region,
   } from "./state/session.svelte";
   import { live } from "./state/live.svelte";
-  import { prefs, setMode, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
+  import { prefs, RESIZE_STEP, setMode, setSize, toggleCollapsed, toggleLabels, toggleOrder, type Side } from "./state/prefs.svelte";
   import { onMount, tick, untrack } from "svelte";
 
   let refusal = $state<string | undefined>();
@@ -296,6 +296,13 @@
     focusCanvas();
   }
 
+  /** `<` and `>`: the focused tree, detail pane or open drawer shrunk or grown by a step, as its splitter's drag does. */
+  function resizeFocused(grow: boolean) {
+    const region = session.focus;
+    if (!region || region === "canvas" || (region === "drawer" && !session.drawer.open)) say("nothing to resize: focus the tree, the detail pane or an open drawer");
+    else setSize(region, prefs.sizes[region] + (grow ? RESIZE_STEP : -RESIZE_STEP));
+  }
+
   /** `gt` and `gT`: the drawer's next or previous tab, wrapping; a closed drawer opens on its current one. */
   function stepTab(step: 1 | -1) {
     const { open, tab } = session.drawer;
@@ -509,6 +516,7 @@
     else if (name === "Q") togglePane("tree");
     else if (name === "E") togglePane("detail");
     else if (name === "S") toggleDrawerKey();
+    else if (e.key === "<" || e.key === ">") resizeFocused(e.key === ">");
     else if (name === "d" || name === "u") viewBy(STEPS[name === "d" ? "j" : "k"], true);
     else if (name === "G") toEnd(true);
     else if (e.key === "0") canvasView?.fit();

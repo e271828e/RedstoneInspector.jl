@@ -44,7 +44,7 @@
   <div
     class="splitter" class:active data-pane={pane} role="separator"
     aria-orientation={pane === "drawer" ? "horizontal" : "vertical"}
-    title={active ? `Drag to resize ${pane === "drawer" ? "the drawer" : TITLES[pane]}` : undefined}
+    title={active ? `Drag to resize ${pane === "drawer" ? "the drawer" : TITLES[pane]}, or press < and > with it focused` : undefined}
     onpointerdown={(e) => active && down(pane, e)} onpointermove={move} onpointerup={up} onpointercancel={up}
   ></div>
 {/snippet}

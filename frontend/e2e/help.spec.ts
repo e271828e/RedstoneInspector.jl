@@ -99,7 +99,7 @@ test("before a drop: the landing's link opens five sections over the inert landi
   for (const gone of ["virtual subsystem", "rate scope"]) await expect(vocabulary.filter({ hasText: gone })).toHaveCount(0);
   expect(MAP_KEYS).toBeGreaterThan(10);
   await expect(h.locator("table.keys tr")).toHaveCount(MAP_KEYS);
-  await expect(h.locator("table.keys tr").nth(3)).toContainText("select the nearest component or pin in that direction");
+  await expect(h.locator("table.keys tr").nth(4)).toContainText("select the nearest component or pin in that direction");
   await expect(h.locator('table.keys kbd:text-is("?")')).toHaveCount(1);
   await expect(h.locator('table.keys kbd:text-is("o")')).toHaveCount(1);
   // the retired keys' rows are gone, and the search's prefixes stand in a table under the keys
