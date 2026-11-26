@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { KindMarker, PrimitiveFace, StructureSection } from "./descriptor";
 import {
   classPhrase, detailOf, faceSelection, folderFacts, kindPhrase, levelFacts, memberKind, memberTitle, nodeFacts, pinFacts, portFacts,
-  wireFacts,
+  signatureAdds, wireFacts,
   type FaceFacts, type LevelFacts, type NodeFacts,
 } from "./detail";
 import { fixtureModel } from "./fixtures";
@@ -44,6 +44,21 @@ describe("kindPhrase", () => {
 
 /** A frames table's rows as the pane prints them: the frame, then the name and the pair with its unit. */
 const cells = (t: FramesTable) => t.rows.map((r) => [r.frame, r.name, r.period, r.phase, r.unit]);
+
+describe("signatureAdds", () => {
+  it.each<[string, string, boolean]>([
+    ["Redstone.Library.StopRequest", "Redstone.Library.StopRequest", false],
+    ["Redstone.Library.StopRequest", "StopRequest", false],
+    ["Redstone.Library.StopRequest", "Library.StopRequest", false],
+    ["Main.MyBlock", "MyBlock", false],
+    ["Redstone.Library.Junction", "Redstone.Library.Junction{Float64, Float64, 2, typeof(+)}", true],
+    ["Redstone.Library.Junction", "Junction{Float64, Float64, 2, typeof(+)}", true],
+    ["Redstone.Library.Junction", "Redstone.Library.SumJunction", true],
+    ["Main.StopRequest", "Request", true],
+  ])("the type %s beside the signature %s: %s, the type's own name bare or qualified adding nothing, parameters or another name adding", (type, signature, adds) => {
+    expect(signatureAdds(type, signature)).toBe(adds);
+  });
+});
 
 describe("a primitive's timing (deployment_overlay.md answer 10)", () => {
   it("timing_deployment's fast/outer/hold: the four frames of the record's example, and the chain under them, outermost first", () => {

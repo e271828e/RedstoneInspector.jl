@@ -62,10 +62,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **`signature` in a live session** (the pin bump of 2026-11-23). The
-  descriptor prints a type as the session's `Main` sees it (the core's
-  D-433), so an imported name prints bare and the pane then shows the
-  signature on every such node. The page's to weigh.
 - **An integer past `2^53`** (the core's
   `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
   2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into

@@ -60,6 +60,9 @@ export const FACT_TITLES = {
 
 /** The pane's collapsible sections, in order (workspace.md answer 4). */
 export type Section = "signature" | "docstring" | "locations" | "timing" | "parameters" | "faces";
+/** Whether the signature says more than the type: not when it is the type, or the type less its module prefix as a session importing the name prints it. */
+export const signatureAdds = (type: string, signature: string): boolean =>
+  signature !== type && !type.endsWith("." + signature);
 /** The TIMING heading's hover title, a primitive's and a rate scope's. */
 export const TIMING_TITLE = "When the discrete primitive or the rate scope ticks, in each of its frames down to seconds.";
 

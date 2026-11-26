@@ -5,7 +5,7 @@
   // pane has six collapsible sections, their state the session's. A pin, a port
   // and a wire carry the trace button.
   import {
-    classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, TIMING_TITLE, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
+    classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, signatureAdds, TIMING_TITLE, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
     type Section, type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
@@ -195,7 +195,7 @@
   {/snippet}
   {#snippet faceTable()}{@render faces(f.inputs, f.outputs, f.kind === "primitive", true)}{/snippet}
 
-  {#if f.signature !== f.type}{@render section("signature", signature)}{/if}
+  {#if signatureAdds(f.type, f.signature)}{@render section("signature", signature)}{/if}
   {#if f.docstring}{@render section("docstring", docstring)}{/if}
   {#if f.locations.length}{@render section("locations", locations)}{/if}
   {#if f.timing}{@render section("timing", timing, TIMING_TITLE)}{/if}
