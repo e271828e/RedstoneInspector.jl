@@ -17,8 +17,9 @@ landed (`roadmap.md`).
   probes ran on 2026-11-25 and the notes hold them, with the user's rulings
   on them; `probes/hand.html` there waits for the user's keyboard. Both
   stages, the cold review and its fixes are on the branch
-  `keyboard-legend-proto`, unmerged. Next: the user's review, look and
-  merge, by the notes' section "For the user's review".
+  `keyboard-legend-proto`, unmerged, with the user's review and look done
+  on 2026-11-26. Next: the merge, the roadmap's entry and the cleanup, by
+  the notes' section "For the user's review".
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of

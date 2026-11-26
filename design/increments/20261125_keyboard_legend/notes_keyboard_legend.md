@@ -232,6 +232,17 @@ looked at `large`, ran `probes/hand.html` in Safari 27, and ruled:
     be hidden. `c` stays the color mode, and `r` is free.
 55. **Keys that resize the panes** go to a session of their own, a bullet in
     `pending.md`.
+56. **No `[` and `]` for the regions.** The user weighed them beside Tab or
+    in its place and set them aside as not worth it now. Tab stays the one
+    relative move, and the only one out of a text field. Many layouts,
+    Spanish among them, reach the brackets only with Option or AltGr, which
+    the shell's dispatch drops.
+
+The look's pass landed at `1bda2e5`: `s` and `S` take the drawer, `r` and
+`R` do nothing, Cmd-K and Ctrl-K reach the search from a text field, and
+the help page's Escape row names the menu first. Each change's check went
+red with the change reverted alone. The gate: 629 unit tests, the checker
+clean, 698 browser checks passed and 4 skipped.
 
 The hand run in Safari 27 agreed with every rule. A held `z` repeats with
 `repeat` set and its `keyup` arrives; `l` and `i` repeat under it, the

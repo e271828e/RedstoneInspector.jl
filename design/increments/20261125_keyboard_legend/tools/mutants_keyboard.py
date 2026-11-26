@@ -79,7 +79,7 @@ M=[
 ('Shift-j not from a stop',A,'else if (name === "J") openSelected();','else if (name === "J") !focusedStop() && openSelected();','cursor'),
 ('zi zo swapped',A,'else if (command === "zi") canvasView?.zoomBy(ZOOM_STEP);','else if (command === "zi") canvasView?.zoomBy(1 / ZOOM_STEP);','keys cursor'),
 ('no prefixes table',"src/frame/Help.svelte",'<table class="prefixes">','<table class="prefix">','help'),
-('r also the color mode',A,'else if (name === "r") focusRegion("drawer");','else if (name === "r") { focusRegion("drawer"); setMode("rate"); }','keys'),
+('r also the color mode',A,'else if (name === "s") focusRegion("drawer");','else if (name === "r") { focusRegion("drawer"); setMode("rate"); }','keys'),
 ('X puts back one',A,'undrag(name === "X")','undrag(false)','drag'),
 ('c absent',A,'else if (name === "c") setMode','else if (name === "C") setMode','keys'),
 ('removal rule gone (focusout)',A,'if (!t.isConnected && (!a || a === document.body)) rootOf(region)?.focus','if (false && (!a || a === document.body)) rootOf(region)?.focus','cursor'),
