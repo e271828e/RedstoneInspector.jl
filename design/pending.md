@@ -42,7 +42,9 @@ keyboard by family have landed (`roadmap.md`).
   - **The router's stub** (increment 6). The backward route's 12 px stub
     can cross the port's label after a drag, as `actuators`' `δt` after
     dragging `plant` on `closed_loop`'s root.
-- **Increment 11, the release** (`roadmap.md`).
+- **Increment 11, the release** (`roadmap.md`). No image of
+  `closed_loop`'s root unless tidied by hand first: its tangle is the
+  model's feedback loops (`rules.md`, ELK's pass).
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The first pin
   bump to the registered core turns the root's `[sources]` revision into a
@@ -95,10 +97,3 @@ keyboard by family have landed (`roadmap.md`).
   free: a label on every clickable thing, typed to press it. Wires, port
   squares and the legend's lines have no keyboard path, and on a build no
   key sets the legend's focus.
-- **Pins out of declared order** (increments 4 and 6). `large`'s root
-  draws its two output pins reversed, which only `forceNodeModelOrder`
-  fixes, at 663 to 699 crossings, so no check pins the order.
-  `pid_controller`'s and `selection`'s input pins and `selection`'s and
-  `kinds`' output pins are out of order too.
-- **`closed_loop`'s tangled root** (increment 4). Feedback wires loop over
-  and under the level, at 60 crossings.

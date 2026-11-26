@@ -241,6 +241,13 @@ full text stays.
   none more elsewhere and landed; no option fixes the tangle, which is the
   model's feedback loops (the table, cited by `src/lib/level.ts`, is in
   `bb2511f`'s map).
+- **ELK's in-layer constraints, probed 2026-11-26.** elkjs 0.12.0 registers
+  `inLayerSuccOf` and `inLayerPredOf` but no phase reads them, so they
+  change nothing. `semiInteractive` with an `elk.position` on each pin keeps
+  the pins' declared order, but it switches off the greedy switch:
+  crossings go from 60 to 72 on `closed_loop`'s root, 622 to 701 on
+  `large`'s and 20 to 30 on `pid_controller`. The declared order stays given
+  up, as increment 6 ruled.
 - **Arrowheads on thick wires.** A marker in `strokeWidth` units grew with the
   wire, so markers are `userSpaceOnUse`, one per wire color, the struct's on
   its core since `context-stroke` would take the core's color.
