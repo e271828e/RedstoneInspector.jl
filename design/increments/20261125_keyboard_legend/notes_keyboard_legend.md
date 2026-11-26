@@ -8,6 +8,12 @@ in `workspace.md` answers 5, 7, 9 and 11, `deployment_overlay.md` answer
 13 and `visual_grammar.md` answer 6. This file holds their reasons, what
 was rejected, and the probes that precede the prototype.
 
+*The increment merged on 2026-11-26 at `d191c9c`. The worktrees, the
+branch and the folders under `RedstoneInspector.jl-worktrees/` that this
+file names were local to one machine and are gone, deleted that day. What
+the record rests on is in `probes/`, `tools/` and `review/` beside this
+file.*
+
 ## Rulings on the legend
 
 1. **A deployment's line reads `D₀ · Φ₀`, then `Δt`, then the bare

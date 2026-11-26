@@ -558,6 +558,24 @@ drive from the home row, and a deployment's legend that reads as its
 chart does. Draws on `workspace.md` answers 5, 7, 9 and 11,
 `deployment_overlay.md` answer 13 and `visual_grammar.md` answer 6; its
 notes are `increments/20261125_keyboard_legend/notes_keyboard_legend.md`.
+*Landed on 2026-11-26 at `d191c9c` of `RedstoneInspector.jl`, a merge of
+the branch `keyboard-legend-proto`, unpushed. Built on 2026-11-25 and 26
+with the user away, by two builders and a cold review in Playwright's
+Chromium, Firefox and WebKit, then the user's review and look. The notes
+hold the probes, rulings 1 to 56, the review's record and the Safari hand
+run. The README names no key but `?`, so it needed no change. Facts the
+next briefs take: the gate stands at 629 unit tests and 698 browser checks
+passed with 4 skipped; `src/lib/prefix.ts` is the `z` and `g` state
+machine, `navigate.ts`'s `stopStep` the panes' outline, and `App.svelte`'s
+`stopsOf` the one DOM read of a pane's stops, every visible summary,
+button and link; a stop moved by a keyed `each` is focused again after the
+update; the regions' keys are `q w e s` and `Q E S`, `r` and `R` free, and
+Cmd-K and Ctrl-K act from a text field; a legend line's text is
+`LegendText`'s `period`, `phase`, `dt` and `anchor`, a deployment's pair
+shared with the chart's label through `pairText`; `frontend/MAP.md`
+stands at 786 lines; in Playwright's WebKit, outside CI, 7 checks fail
+for WebKit's own reasons (`design/rules.md`'s traps). Open items, each in
+`pending.md`: keys that resize the panes, hints, and MAP.md's size.*
 
 **Increment 10b: the events.** After a short design session of its own,
 and before the look pass (the record's answers 7 and 12, the user's

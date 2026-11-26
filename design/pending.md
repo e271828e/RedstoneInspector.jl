@@ -7,19 +7,9 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 
 ## The work order
 
-In working order, the first one next. Increments 1 to 10 and 8b have
-landed (`roadmap.md`).
+In working order, the first one next. Increments 1 to 10 and 8b and the
+keyboard by family have landed (`roadmap.md`).
 
-- **The keyboard by family and the legend's line** (`roadmap.md`), by the
-  user's rulings of 2026-11-25, which took the keyboard sweep from after
-  the release and the tall legend from the unordered items. Its notes are
-  `increments/20261125_keyboard_legend/notes_keyboard_legend.md`. The
-  probes ran on 2026-11-25 and the notes hold them, with the user's rulings
-  on them; `probes/hand.html` there waits for the user's keyboard. Both
-  stages, the cold review and its fixes are on the branch
-  `keyboard-legend-proto`, unmerged, with the user's review and look done
-  on 2026-11-26. Next: the merge, the roadmap's entry and the cleanup, by
-  the notes' section "For the user's review".
 - **Increment 10b, the events** (`roadmap.md`), after a short design
   session of its own.
 - **The look pass before the release**, by the user's rulings of
