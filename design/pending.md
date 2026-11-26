@@ -60,14 +60,42 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
+- **`frontend/MAP.md` past its size.** It is 786 lines against
+  `design/rules.md`'s "about 700". A trim outside any increment's text
+  brings it back.
+- **The scopes' empty note on a model with no `sample_times`**
+  (increment 10's review). The timing tab's "No assembly is keyed in
+  `sample_times`; every key names a primitive." shows there too.
+- **Vite's dev server proxying the socket** (`live_session.md` answer 8):
+  a preference listing extra allowed origins and a forwarding entry in the
+  Vite configuration, taken up when the rebuild-and-reload loop chafes.
+- **A root input's pin beyond the root-inputs tab**
+  (`deployment_overlay.md` answer 14). Its tag on the canvas and its pin's
+  pane show no mark, where a primitive's pinned face has one in both.
+  Whether they take one is the user's to rule.
 - **Keys that resize the panes** (the user's review of 2026-11-26): the
   tree, the detail pane and the drawer, by key, as the splitters do by
   drag. For a session of its own.
-
 - **`signature` in a live session** (the pin bump of 2026-11-23). The
   descriptor prints a type as the session's `Main` sees it (the core's
   D-433), so an imported name prints bare and the pane then shows the
   signature on every such node. The page's to weigh.
+- **An integer past `2^53`** (the core's
+  `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
+  2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into
+  JavaScript numbers, so a period of `1//(2^61 - 1)` prints rounded.
+  Display only. The cure is a reader that keeps them exact, or a format
+  change ruled in the core first (D-433).
+- **ELK on the main thread** (increments 3 and 4). `large`'s root takes
+  about 460 ms from drop to drawn on an M4 at thoroughness 20. A web worker
+  would move the sizing and the layout off.
+- **A bare docstring link's joining** (`deployment_overlay.md` answer 15).
+  The page joins one to its type's module, which sends 4 of `library`'s
+  101 to a dead anchor. The pin bump that follows the core's export audit
+  (D-226) drops the joining and the check that pins it.
+- **Names the export audit may change** (the core's `pending.md` bullet
+  "The exported-name audit"): `descriptor` and a diagnostic's `kind`. A
+  rename reaches the schema, the fixtures and the page.
 - **Format changes still open.** Each is ruled in the core first, free
   until the first release and a minor bump after it
   (`deployment_overlay.md` answer 2).
@@ -79,43 +107,14 @@ keyboard by family have landed (`roadmap.md`).
   - The call that builds an assembly, without which a loop's row links no
     hop that a core `Group` holds
     (`increments/20261117_polish/notes_polish.md` ruling 3).
-- **A bare docstring link's joining** (`deployment_overlay.md` answer 15).
-  The page joins one to its type's module, which sends 4 of `library`'s
-  101 to a dead anchor. The pin bump that follows the core's export audit
-  (D-226) drops the joining and the check that pins it.
-- **Names the export audit may change** (the core's `pending.md` bullet
-  "The exported-name audit"): `descriptor` and a diagnostic's `kind`. A
-  rename reaches the schema, the fixtures and the page.
-- **A root input's pin beyond the root-inputs tab**
-  (`deployment_overlay.md` answer 14). Its tag on the canvas and its pin's
-  pane show no mark, where a primitive's pinned face has one in both.
-  Whether they take one is the user's to rule.
 - **Hints** (the keyboard session of 2026-11-25). Vimium's `f`, kept
   free: a label on every clickable thing, typed to press it. Wires, port
   squares and the legend's lines have no keyboard path, and on a build no
   key sets the legend's focus.
-- **The scopes' empty note on a model with no `sample_times`**
-  (increment 10's review). The timing tab's "No assembly is keyed in
-  `sample_times`; every key names a primitive." shows there too.
-- **`frontend/MAP.md` past its size.** It is 786 lines against
-  `design/rules.md`'s "about 700". A trim outside any increment's text
-  brings it back.
-- **An integer past `2^53`** (the core's
-  `Redstone.jl/design/reports/20261113_exact_arithmetic/report.md` section
-  2.8). `loader.ts`'s `JSON.parse` reads the descriptor's integers into
-  JavaScript numbers, so a period of `1//(2^61 - 1)` prints rounded.
-  Display only. The cure is a reader that keeps them exact, or a format
-  change ruled in the core first (D-433).
-- **Vite's dev server proxying the socket** (`live_session.md` answer 8):
-  a preference listing extra allowed origins and a forwarding entry in the
-  Vite configuration, taken up when the rebuild-and-reload loop chafes.
-- **ELK on the main thread** (increments 3 and 4). `large`'s root takes
-  about 460 ms from drop to drawn on an M4 at thoroughness 20. A web worker
-  would move the sizing and the layout off.
-- **`closed_loop`'s tangled root** (increment 4). Feedback wires loop over
-  and under the level, at 60 crossings.
 - **Pins out of declared order** (increments 4 and 6). `large`'s root
   draws its two output pins reversed, which only `forceNodeModelOrder`
   fixes, at 663 to 699 crossings, so no check pins the order.
   `pid_controller`'s and `selection`'s input pins and `selection`'s and
   `kinds`' output pins are out of order too.
+- **`closed_loop`'s tangled root** (increment 4). Feedback wires loop over
+  and under the level, at 60 crossings.
