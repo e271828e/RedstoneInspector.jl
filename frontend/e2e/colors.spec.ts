@@ -1,5 +1,5 @@
 // The color modes (visual_grammar.md answer 6, workspace.md answers 1, 7, 9 and
-// 11): tier by default, `r` and the breadcrumb's switch to rate mode, the steps
+// 11): tier by default, `c` and the breadcrumb's switch to rate mode, the steps
 // in the model's palette order, the badges, the legend, the tree's dots, the
 // mode kept per browser. Every count is the oracle's (`grammar.py`), the continuous
 // line's the look fixer's (`continuous.py`); those the assembly rule of 2026-11-02
