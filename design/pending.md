@@ -69,6 +69,10 @@ landed (`roadmap.md`).
 
 ## Unordered
 
+- **Keys that resize the panes** (the user's review of 2026-11-26): the
+  tree, the detail pane and the drawer, by key, as the splitters do by
+  drag. For a session of its own.
+
 - **`signature` in a live session** (the pin bump of 2026-11-23). The
   descriptor prints a type as the session's `Main` sees it (the core's
   D-433), so an imported name prints bare and the pane then shows the

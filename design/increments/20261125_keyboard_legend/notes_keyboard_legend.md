@@ -107,7 +107,8 @@ was rejected, and the probes that precede the prototype.
     keys and the coordinator's recommendation, and chose `qwer`. The
     color mode moves to `c` to free `r`. Rejected: `gh gj gk gl`, two
     presses and a `gk` that reads as "up" from the drawer alone;
-    relative moves under a third prefix; the digits.
+    relative moves under a third prefix; the digits. *Reversed 2026-11-26
+    by the user's review: `q w e s`, the screen's layout, and `Q E S`.*
 18. **`/` in the drawer goes to the tab's filter.** Vim's `/` searches
     the window one is in. Rejected: the filter as the tab's first stop.
     Keys type inside a text field, so a held `k` or `gg` would land in
@@ -201,7 +202,7 @@ keyboard (`bd53f23`), the record (`bf4faaf`), the review's fixes
 (`01a7952`) and the closing docs commit. Nothing is pushed or merged.
 
 - **To rule:** Cmd-K in a text field (after reading 50), F6 and F9 (the
-  review's record).
+  review's record). Ruled on 2026-11-26, rulings 51 to 55.
 - **To check, the coordinator's calls:** readings 29 to 50. Reading 50 is
   amended by F2, and F8 amends answer 11.
 - **To look at:** `large`'s legend, the rings, the status bar's `z …` and
@@ -214,6 +215,33 @@ keyboard (`bd53f23`), the record (`bf4faaf`), the review's fixes
   removal of the worktrees `keyboard-legend` and `keyboard-legend-review`,
   the folders `keyboard-legend-probes`, `keyboard-legend-review-probes` and
   `keyboard-legend-fix-probes`, and the three notes files beside them.
+
+## The user's review
+
+On 2026-11-26 the user kept readings 29 to 50 and the coordinator's calls,
+looked at `large`, ran `probes/hand.html` in Safari 27, and ruled:
+
+51. **Cmd-K and Ctrl-K reach the model's search from a text field too**,
+    the search field and the diagnostics filter included.
+52. **F6 as recommended.** With the menu open, Escape closes the menu
+    alone, and answer 11's chain names it first.
+53. **F9 stands.** A `g` pending on the help page shows nowhere, and that
+    is acceptable.
+54. **`q w e s` focus the regions, and `Q E S` fold them**, reversing ruling
+    17's choice of `qwer`. Shift-`w` stays unbound, since the canvas cannot
+    be hidden. `c` stays the color mode, and `r` is free.
+55. **Keys that resize the panes** go to a session of their own, a bullet in
+    `pending.md`.
+
+The hand run in Safari 27 agreed with every rule. A held `z` repeats with
+`repeat` set and its `keyup` arrives; `l` and `i` repeat under it, the
+accent menu holding nothing back outside a text field. Under Cmd, `z`'s
+`keyup` never came, and `z` went on repeating with Cmd set, the lost
+`keyup` ruling 27 guards against. Under Alt, `z` became `Ω` and was
+released as `Ω`, finding F8. Across Cmd-Tab, Safari delivered `z`'s `keyup`
+while the window was blurred. A click focused the body for a button and a
+link, and the element itself for a `tabindex` span and a heading, as
+Playwright's WebKit did. Chrome and Firefox were not run by hand.
 
 ## Readings, stage 1
 

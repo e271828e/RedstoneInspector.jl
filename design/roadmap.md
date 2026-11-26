@@ -551,7 +551,7 @@ the anchor, a deployment's `D₀`, `Φ₀`, `Δt` and the anchor in the order
 of `(D₀, Φ₀)`, and a tall legend scrolls. The second is the keyboard:
 every region has a cursor, the detail pane's and the drawer's a focused
 stop; the keys fall in four families, the cursor's, the level's, the
-view's under `z` and go's under `g`; `q w e r` focus the regions and fold
+view's under `z` and go's under `g`; `q w e s` focus the regions and fold
 them with Shift; and the help page lists the search's prefixes. It
 displaces `z`, `d`, `u`, `U`, `m`, `i` and `r`. Visible: a page one can
 drive from the home row, and a deployment's legend that reads as its

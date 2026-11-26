@@ -463,8 +463,8 @@ Open items live in `pending.md`.
     - about, with the privacy statement, the bundle and format versions
       and the links.
 
-    The keys, single or in pairs and outside text fields but for Cmd-O and
-    Ctrl-O. They fall in families, and a family means the same in every
+    The keys, single or in pairs and outside text fields but for Cmd-O,
+    Ctrl-O, Cmd-K and Ctrl-K. They fall in families, and a family means the same in every
     region. Each region has a cursor. The canvas and the tree share one,
     the selection. The detail pane and the drawer each have their own, the
     browser's focus on a stop. A stop is a control the cursor can rest on:
@@ -476,8 +476,8 @@ Open items live in `pending.md`.
 
     | key | action |
     |---|---|
-    | `q` `w` `e` `r` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
-    | `Q` `E` `R` | collapse or expand the tree, the detail pane, the drawer |
+    | `q` `w` `e` `s` | focus the tree, the canvas, the detail pane, the drawer, a collapsed pane expanding and a closed drawer opening first |
+    | `Q` `E` `S` | collapse or expand the tree, the detail pane, the drawer |
     | Tab | move focus between the tree, the canvas, the detail pane and the drawer |
     | `h` `j` `k` `l` | the cursor: on the canvas or with nothing focused, the nearest block, pin or root input in that direction, the view following; in the tree, answer 2's row keys; in the detail pane and the drawer, the stops, as below |
     | arrows | on the canvas or with nothing focused, pan the canvas; elsewhere what `h j k l` do; with Shift, the same |
@@ -498,7 +498,7 @@ Open items live in `pending.md`.
     | `?` | the help page |
     | Cmd-O, Ctrl-O | open a file |
     | `x`, `X` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
-    | Escape | cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
+    | Escape | close the right-click menu, else cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
 
     The detail pane's stops form an outline, as the tree's rows do. `j`
     and `k` walk every visible stop, a row's links apart. `l` opens a
@@ -533,8 +533,9 @@ Open items live in `pending.md`.
     the browser's own binding on purpose and wherever the page shows, in
     the search field, on the landing panel and under the help page, where
     the model loads beneath as a drop's does: the browser's would open the
-    file in place of the page. Every other key with Ctrl or Cmd but Cmd-K
-    and Ctrl-K stays the browser's.
+    file in place of the page. Cmd-K and Ctrl-K reach the model's search
+    from a text field too. Every other key with Ctrl or Cmd stays the
+    browser's.
     Dragging has no keyboard form in stage 1. The keyboard section says
     that Vimium owns many of these keys by default and that the user
     excludes the inspector's origins, `localhost` on the server's port and
@@ -580,7 +581,10 @@ Open items live in `pending.md`.
     section was a stop, a stop's ring was unstated, the open level's pane
     and a block's shared no cursor, and the end of a held `z` was
     unstated. Amended 2026-11-25 (the cold review's F8, the coordinator
-    with the user away): an Alt key did not end a hold.*
+    with the user away): an Alt key did not end a hold. Amended 2026-11-26
+    (the user's review of that increment): `r` and `R` took the drawer,
+    Cmd-K and Ctrl-K did nothing in a text field, and Escape's chain did
+    not name the menu.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a
