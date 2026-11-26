@@ -9,7 +9,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | file | owns |
 |---|---|
 | `package.json`, `package-lock.json` | the scripts and the pinned versions |
-| `vite.config.ts` | the Svelte plugin, one stylesheet (`cssCodeSplit: false`), Vitest's block; the two build-time defines, `__INSPECTOR_VERSION__` from `../Project.toml` (one regex) and `__FORMAT_MAJOR__` from the schema copy's `FormatVersion.properties.major.const`, Vitest seeing them too |
+| `vite.config.ts` | the Svelte plugin, one stylesheet (`cssCodeSplit: false`), Vitest's block; the two build-time defines, `__INSPECTOR_VERSION__` from `../Project.toml` (one regex) and `__FORMAT_MAJOR__` from the schema copy's `FormatVersion.properties.major.const`, Vitest seeing them too; the dev server forwarding `/ws` to port 8601, `vite preview` nothing |
 | `src/vite-env.d.ts` | the two defines' ambient declarations |
 | `svelte.config.js` | the spike's, verbatim |
 | `tsconfig.json` | the spike's, with `e2e/**/*.ts` and `playwright.config.ts` included so `npm run check` covers the harness |

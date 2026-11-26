@@ -75,11 +75,12 @@ when the server starts:
 | `port` | `8601` | The server tries the nine ports after it when it is taken. |
 | `open_browser` | `true` | `false` on a remote machine. |
 | `bundle_dir` | none | The page's folder, read from disk on every request. |
+| `extra_origins` | none | Origins whose pages may open the socket beside the server's own. |
 
 ### Security
 
 The server binds `127.0.0.1` and accepts a socket only from a page it served
-itself. There is no TLS and no login: a local process can connect, as it could
+itself, or from an origin `extra_origins` lists. There is no TLS and no login: a local process can connect, as it could
 read your files anyway. The page reads a dropped file in the browser and
 uploads nothing.
 
@@ -90,6 +91,11 @@ uploads nothing.
   `npm run e2e` (run `npx playwright install chromium firefox` once).
 - `julia --project=scripts scripts/fixtures.jl` regenerates the committed
   fixtures and schema copy. CI fails if they drift.
+
+To work on the live page with instant updates, set `extra_origins` to
+`["http://localhost:5173"]` and run `npm run dev` in `frontend/`. Vite's dev
+server forwards the socket to port 8601, so open `http://localhost:5173/`
+and push with `inspect`.
 
 `AGENTS.md` routes the design records, `frontend/MAP.md` maps the page and
 `frontend/PROTOCOL.md` the socket.

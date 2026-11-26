@@ -143,8 +143,9 @@ no entry here.
   (`initial_design.md` Scope).
 - **Handshake.** The HTTP request that asks a server to open a WebSocket
   at `/ws`. Accepted by the inspector's server when the `Origin` is its
-  own, refused by GitHub Pages, which is how the page learns whether it is
-  live (`live_session.md` answers 5 and 6).
+  own or one the `extra_origins` preference lists, refused by GitHub
+  Pages, which is how the page learns whether it is live
+  (`live_session.md` answers 5, 6 and 8).
 - **Headless browser.** A real Chrome started with no window and driven by
   a script, which is what Playwright runs the checks in
   (`build_release.md` answer 5).

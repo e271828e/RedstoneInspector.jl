@@ -60,9 +60,6 @@ keyboard by family have landed (`roadmap.md`).
 
 ## Unordered
 
-- **Vite's dev server proxying the socket** (`live_session.md` answer 8):
-  a preference listing extra allowed origins and a forwarding entry in the
-  Vite configuration, taken up when the rebuild-and-reload loop chafes.
 - **A root input's pin beyond the root-inputs tab**
   (`deployment_overlay.md` answer 14). Its tag on the canvas and its pin's
   pane show no mark, where a primitive's pinned face has one in both.

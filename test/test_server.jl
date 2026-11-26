@@ -42,9 +42,13 @@ catch err
     err
 end
 
-# Run `f` with the `open_browser` and `bundle_dir` preferences set to the stub's,
-# through an environment first on the load path whose `Project.toml` carries
-# them, for the calls that start a server with the preferences' defaults.
+# The dev server's origin, which `extra_origins` admits.
+const VITE_ORIGIN = "http://localhost:5173"
+
+# Run `f` with the `open_browser` and `bundle_dir` preferences set to the stub's
+# and `extra_origins` to Vite's, through an environment first on the load path
+# whose `Project.toml` carries them, for the calls that start a server with the
+# preferences' defaults.
 function with_stub_preferences(f)
     environment = mktempdir()
     write(joinpath(environment, "Project.toml"), """
@@ -54,6 +58,7 @@ function with_stub_preferences(f)
         [preferences.RedstoneInspector]
         open_browser = false
         bundle_dir = $(repr(STUB_BUNDLE))
+        extra_origins = [$(repr(VITE_ORIGIN))]
         """)
     pushfirst!(LOAD_PATH, environment)
     try
@@ -127,6 +132,10 @@ end
         # A first call's `port` wins over the `port` preference, 8601 by default.
         with_stub_preferences(() -> inspect(loop_build; name = "first", port = 0))
         @test SESSION[] !== nothing && SESSION[].port != 0 && !(SESSION[].port in 8601:8610)
+        # The `extra_origins` preference admits its origin beside the server's own.
+        vite_socket = page_socket(SESSION[]; origin = VITE_ORIGIN)
+        @test !HTTP.WebSockets.isclosed(vite_socket)
+        close(vite_socket)
         stop!()
 
         for bundle_dir in (joinpath(STUB_BUNDLE, "missing"), nothing)
@@ -171,9 +180,12 @@ end
                 @test !HTTP.WebSockets.isclosed(socket)
                 close(socket)
             end
-            err = thrown(() -> page_socket(session; origin = "http://example.com"))
-            @test err isa HTTP.WebSockets.WebSocketError
-            @test occursin("403", sprint(showerror, err))
+            # Another site, and the dev server without the `extra_origins` preference.
+            for origin in ("http://example.com", VITE_ORIGIN)
+                err = thrown(() -> page_socket(session; origin))
+                @test err isa HTTP.WebSockets.WebSocketError
+                @test occursin("403", sprint(showerror, err))
+            end
         end
 
         @testset "a Symbol name" begin

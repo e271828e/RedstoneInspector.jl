@@ -178,11 +178,14 @@ Open items live in `pending.md`.
    line is the build's, so an edit since the last push may land a few
    lines off, as `@edit` does. The server accepts a WebSocket handshake
    only when its `Origin` header is the server's own address,
-   `http://localhost:8601` or `http://127.0.0.1:8601`; a page from any
-   other site is refused before it can greet. Nothing else is promised: no
+   `http://localhost:8601` or `http://127.0.0.1:8601`, or one the
+   `extra_origins` preference lists (answer 8); a page from any other site
+   is refused before it can greet. Nothing else is promised: no
    TLS, no login, and a local process that is not a browser connects
    regardless, as it could read the files anyway; the help page's about
    section and the protocol document say so.
+   *Amended 2026-11-26 (the user's ruling): the check admits the origins
+   `extra_origins` lists, for Vite's dev server.*
    *Why:* `edit` is the function behind `@edit`, honors `JULIA_EDITOR`,
    `VISUAL` and `EDITOR`, and knows the common editors' line syntax, so
    the package carries no editor preference of its own. A browser lets any
@@ -225,7 +228,11 @@ Open items live in `pending.md`.
    fixture descriptors open in Vite's dev server through the file loader
    with instant updates, and the Playwright checks run on them; the live
    session is needed only for the push, the greeting, open-in-editor and
-   the real writer's output, where a reload is an adequate loop. Revise
+   the real writer's output, where a reload is an adequate loop. For those,
+   Vite's dev server forwards `/ws` to the server's default port, and the
+   preference `extra_origins`, a list of origins, lets the server take
+   that page's handshake: `["http://localhost:5173"]` runs the live session
+   under `npm run dev`, with its instant updates. Revise
    covers the request and message handlers, which the server calls by
    name; a change to the session or channel structs needs the unexported
    `stop!`, which closes the server and clears the slot, reached by
@@ -233,11 +240,16 @@ Open items live in `pending.md`.
    loop's only user.
    *Amended 2026-10-30 (increment 9): the server read the bundle through
    the `artifact"bundle"` macro.*
+   *Amended 2026-11-26 (the user's ruling): Vite's dev server proxying
+   `/ws` was rejected and held in `pending.md` until the reload loop
+   chafed; it is now taken, with `extra_origins`.*
    *Why:* serving a folder is what the production server already does, so
-   the preference adds no code path. *Rejected:* Vite's dev server
-   proxying `/ws`, which needs a second preference for the extra origin
-   and a configuration entry, kept pending above; developing the live path
-   only through the installed artifact.
+   the preference adds no code path. The proxy keeps the `Origin` check
+   whole: the dev server's origin is admitted only where the developer
+   lists it, and a page from another site is still refused. *Rejected:*
+   developing the live path only through the installed artifact; the
+   proxy rewriting `Origin` to the server's own, which needs no
+   preference but admits any page that can reach the dev server.
 
 9. **The standalone HTML export: deferred whole.** One `.html` holding the
    bundle and one descriptor, double-clicked and read offline. The

@@ -12,9 +12,11 @@ On load, the page always opens a WebSocket to `/ws` at its own origin,
 
 - **The live page.** The inspector's server accepts the handshake only when
   the `Origin` header is its own address, `http://localhost:<port>` or
-  `http://127.0.0.1:<port>` with the port it listens on. It answers any other
-  `Origin` with `403`, so a page from another site cannot connect. A client
-  that sends no `Origin` is not a browser, and it connects.
+  `http://127.0.0.1:<port>` with the port it listens on, or one the
+  `extra_origins` preference lists, as Vite's dev server's for a page under
+  `npm run dev`, which forwards `/ws`. It answers any other `Origin` with
+  `403`, so a page from another site cannot connect. A client that sends no
+  `Origin` is not a browser, and it connects.
 - **The hosted page.** GitHub Pages serves no socket, so the handshake fails at
   once and the page is the hosted copy: no retry and no connection indicator.
 - **A lost connection.** A connection that closes after a successful handshake
