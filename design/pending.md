@@ -47,8 +47,9 @@ the keyboard by family have landed (`roadmap.md`).
     can cross the port's label after a drag, as `actuators`' `δt` after
     dragging `plant` on `closed_loop`'s root.
 - **Increment 11, the release** (`roadmap.md`). No image of
-  `closed_loop`'s root unless tidied by hand first: its tangle is the
-  model's feedback loops (`rules.md`, ELK's pass).
+  `closed_loop`'s root: its tangle is the model's feedback loops
+  (`rules.md`, ELK's pass), and with the drag gone it cannot be tidied
+  by hand.
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The first pin
   bump to the registered core turns the root's `[sources]` revision into a
@@ -85,6 +86,19 @@ the keyboard by family have landed (`roadmap.md`).
   - The call that builds an assembly, without which a loop's row links no
     hop that a core `Group` holds
     (`increments/20261117_polish/notes_polish.md` ruling 3).
+- **Arranging a level by hand** (the look pass of 2026-11-27,
+  `increments/20261127_look_pass/look_pass.md` entry 11.4). The drag was
+  removed before the release. ELK lays out a level in one pass and cannot
+  keep a block where it was dropped, so a drag handed the touching wires
+  to a local router blind to other blocks, and the wires could not be
+  dragged to repair the result. A drag comes back only as a real
+  solution: one whose drawing is as clean as ELK's and predictable, with
+  a way to repair what it leaves. None is chosen. One possibility is a
+  drop that moves the block to a slot, ELK's `layerChoiceConstraint` and
+  `positionChoiceConstraint` laying the level out again with the block in
+  the nearest layer and place; whether elkjs 0.12 reads them under the
+  declaration-order steering is unprobed. Hand arrangement saved beside
+  the code stays refused (`initial_design.md` answer 12).
 - **Hints** (the keyboard session of 2026-11-25). Vimium's `f`, kept
   free: a label on every clickable thing, typed to press it. Wires, port
   squares and the legend's lines have no keyboard path, and on a build no

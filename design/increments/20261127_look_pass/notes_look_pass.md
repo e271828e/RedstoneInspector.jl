@@ -453,3 +453,41 @@ changed.
   `look_pass_captures` and `look_pass_drop`, and the file
   `look_pass_notes.md`. What the record rests on is in `tools/` beside
   this file.
+
+## The user's rulings after the fixes
+
+The user tried the branch at `e2fe4a5` and ruled again, the checklist's
+section 11 holding the words. Those rulings supersede 1.3, 1.4 and 2.1,
+the builder's readings 1 to 8, the review's F1 to F4 as far as they
+touch the pills' place and the stub, and the delta checks' N1 to N3.
+
+- **The pills.** On a component the `route` and `loop` pills go back to
+  the bottom edge's row from the right (11.1). On a pin they straddle
+  the bottom edge at the inner end, the row running from the
+  bottom-right corner on an input pin and from the bottom-left on an
+  output pin (11.2). The reason the user gave is that the bottom edge
+  reads cleaner, and is the same edge on components and pins.
+  Increment 7 put the pin's pill on the top edge at its outer end with
+  no reason recorded beyond keeping a root tag's slot free, which the
+  inner end keeps free too.
+- **The policy** (11.3), a rule of `design/rules.md` from now on. A
+  fixed mark never covers another. A mark the reader turns on takes a
+  free place first, and covers only where none is left, drawing on top.
+  The coordinator added the second clause: without it, the rule would
+  allow a turned-on `route` pill to be placed over an error by choice,
+  hiding it until the route is cleared.
+- **The drag goes** (11.4). ELK lays out a level in one pass and cannot
+  keep a dropped block where it was dropped (`workspace.md` answer 9).
+  So a drag handed the touching wires to a local router blind to other
+  blocks, and nothing but an undo repaired the result. The coordinator
+  weighed three ways out: a drop that moves a block to a slot through
+  ELK's layer and position constraints, which is unprobed on elkjs 0.12;
+  a second router that avoids obstacles, such as libavoid, which is a
+  second engine beside ELK; and removal. The user ruled removal, with an
+  unordered `pending.md` item that assumes no solution.
+- **What the round does, then:** the records amended to the rulings, the
+  look pass's detour leaving no trace in the answers' notes beyond a
+  sentence; the pills back and the pins' new corners; the cut and the
+  draw order by the policy; the drag removed with its keys, state,
+  router, checks, traps and help lines; the look pass's later checks on
+  the pills' place and the stub removed with what they pinned.

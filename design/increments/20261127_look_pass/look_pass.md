@@ -200,3 +200,53 @@ sections no longer match the schedule, so read only the chart.
   check.
 - [ ] **10.3** The push and CI's screenshots, the first view of 1.2 and
   of the other cuts under CI's fonts. Then increment 11.
+
+## 11. After the fixes
+
+The user's rulings of 2026-11-27, after trying the branch at `e2fe4a5`.
+They supersede the rulings of 1.3, 1.4 and 2.1 above.
+
+- [x] **11.1** REVIEW: I've been trying wire routing in a few fixtures,
+  and I find the old route pill position (at the block's bottom edge)
+  cleaner and more pleasant. Let's revert to it, please. As for the stub
+  fix, it buys little, given that the consequences of the routing not
+  being re-computed by ELK are far worse than what the fix is meant to
+  amend. So I'd like to revert that too.
+  Ruling: on a component the `route` and `loop` pills stand on the
+  bottom edge as before the look pass, in one row from the right, after
+  the diagnostic pill, 2 px apart. 1.3's stub is reverted, then removed
+  with the drag (11.4).
+- [x] **11.2** REVIEW: Can we put the route pill on the bottom right of
+  an input pin and on the bottom left of an output pin? This feels more
+  consistent with the pill's placement on components.
+  Ruling: a pin's pills straddle its bottom edge at its inner end, the
+  end the level's wire touches. On an input pin they form one row from
+  the bottom-right corner leftward, on an output pin from the
+  bottom-left corner rightward, the `loop` pill nearest the corner.
+- [x] **11.3** REVIEW: I would allow a pill or badge to draw over others
+  as long as it can be toggled. In other words, anything that cannot be
+  toggled should not occlude anything else.
+  Ruling, with the coordinator's two refinements, which the user
+  agreed: a fixed mark, one drawn whenever its data exists, never covers
+  another mark. A mark the reader turns on (a key's toggle, a trace, a
+  search, a focus) goes to a free place where one exists. Only where no
+  free place is left may it draw over what is there, and it then draws
+  on top. So 6.1's cut leaves room for the fixed pills together: the
+  diagnostic text is cut so that the diagnostic and `loop` pills end at
+  the left inset, or short of the order badge while the badges show.
+  The `route` pill may run past them, over the order badge or past the
+  corner, and the order badge draws above the overlay's fixed pills.
+- [x] **11.4** REVIEW: ELK cannot compute the layout with a forced block
+  position. As a consequence, the layout after any drag is quite
+  unpredictable and often messy, rarely improving on what ELK gave in
+  the first place. Also, wires cannot be dragged, which prevents the
+  user from fixing that messiness. Therefore, as it stands, the whole
+  drag functionality feels half-baked. Either we find a real solution,
+  or we remove it completely. A non-existing feature is better than a
+  half-baked one. Then: Let's remove the drag and add it as an Unordered
+  item to `pending.md`, but without assuming a specific solution in
+  advance; the slot drag is only recorded as one possibility.
+  Ruling: the drag goes, with Shift's one-axis drag, `x`, `X`, the undo
+  button, the dragged positions in the session and their rekeying on a
+  push, and `router.ts`. A level's drawing is ELK's alone. `pending.md`
+  gains an unordered item for a drag built properly.
