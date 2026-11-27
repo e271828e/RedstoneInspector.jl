@@ -7,6 +7,12 @@ answer 11, `workspace.md` answers 4, 6 and 11 and `deployment_overlay.md`
 answers 7 and 9. This file holds their reasons, what was rejected, the
 coordinator's own rulings and what the user is to review.
 
+*The increment merged on 2026-11-27 at `d623151`, after the user's check.
+The worktrees, the branch and the folders under
+`RedstoneInspector.jl-worktrees/` that this file names were local to one
+machine and are gone, deleted that day. What the record rests on is in
+`tools/`, `probes/` and `review/` beside this file.*
+
 ## The facts the session started from
 
 Read on 2026-11-27 at `a07df11`, the pin at the core's `fcd3660`.
@@ -403,6 +409,14 @@ merged or pushed, and `master` is untouched.
   fixed-step method the step is cut there and then finished (the core's
   §2.3, the remainder step), so the term says "cuts". The coordinator
   raised it and the user ruled.
+
+- **2026-11-27. The rest stands as built.** The user checked the
+  coordinator's rulings and the open items and asked for no change. `zz`
+  keeps centring a group's button: the gap shows only in a drawer well
+  below its default height, and the group's own centring would need the
+  tall group's exception. The Simulink table gains no row. The two look
+  items went to `pending.md` under the look pass. The user then asked for
+  the merge, the push and the cleanup.
 
 ## Out of scope
 

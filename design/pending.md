@@ -7,15 +7,9 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 
 ## The work order
 
-In working order, the first one next. Increments 1 to 10 and 8b and the
-keyboard by family have landed (`roadmap.md`).
+In working order, the first one next. Increments 1 to 10, 8b and 10b and
+the keyboard by family have landed (`roadmap.md`).
 
-- **Increment 10b, the events** (`roadmap.md`). Designed on 2026-11-27,
-  the rulings in `increments/inspector_10b_events/notes_inspector_10b.md`.
-  Built, reviewed and fixed on 2026-11-27 with the user away, on the
-  branch `increment-10b`, unmerged and unpushed. What waits is in the
-  notes' "For the user's review": the user's check of the coordinator's
-  rulings, the look, the merge and the roadmap's landed entry.
 - **The look pass before the release**, by the user's rulings of
   2026-11-17 and 2026-11-20: the canvas's open look items, judged by eye
   in one session, after 10b draws the events and before 11 captures the
@@ -43,6 +37,12 @@ keyboard by family have landed (`roadmap.md`).
   - **The route pill's place** (increment 7). On a short pin, `rates`'
     `in`, it covers most of the top edge. At a tall assembly's bottom
     right it sits far from the entry port and reads as a block mark.
+  - **The events pill on a narrow assembly** (increment 10b). On
+    `events_deployment`'s `pods/a` and `pods/b` the reserved width is
+    exact, so the rate pill and the events pill stand 2 px apart and fill
+    the top edge.
+  - **The tolerance's form** (increment 10b). The events tab prints
+    `1e-6 of Δt_frame` in one code span, where `show` prints `1.0e-6`.
   - **The router's stub** (increment 6). The backward route's 12 px stub
     can cross the port's label after a drag, as `actuators`' `δt` after
     dragging `plant` on `closed_loop`'s root.

@@ -585,7 +585,30 @@ mark on a block, rows in the pane, a legend line; where `firing_budget`,
 drawing wants more from the format, the guard and handler locations
 among it, which is a free change until the release. Its look-and-adjust
 pass may open the look pass. Visible: `approach_deployment`'s `touchdown`
-on `gear`.
+on `gear`. *Landed on 2026-11-27 at `d623151` of `RedstoneInspector.jl`, a
+merge of the branch `increment-10b`. Designed that day in a session with
+the user, then built with the user away: a prototype that was the
+implementation, a cold review in Chromium and Firefox, two fix commits
+and the user's check. The notes,
+`increments/inspector_10b_events/notes_inspector_10b.md`, hold the user's
+rulings 1 to 14, the coordinator's C1 to C11, the readings R1 to R9 and
+the review's record. It draws a count pill on a block's top edge at the
+right, a seventh pane section, EVENTS, a fifth drawer tab with a row per
+event and the three event parameters at its head, and a sixteenth legend
+term on the help page. The format and the pin did not move. The rules are
+`visual_grammar.md` answer 11, `workspace.md` answers 4, 6 and 11 and
+`deployment_overlay.md` answers 7 and 9. Facts the next briefs take: the
+gate stands at 131 Julia tests, 792 unit tests, and 752 browser checks
+passed and 4 skipped; the 22 fixtures hold 1,409,625 bytes, the new one
+`events_deployment`; `src/lib/events.ts` holds every derivation from the
+`events` section; `sizeBlock` reserves the width of the top edge's pills
+for a block with the events pill, in every mode, and no committed layout
+moved; an events group, a `tbody.group`, is one stop, which the shell's
+click finds and `focusStop` scrolls; the head list is `HeadList.svelte`,
+the timing tab's too, and the rate pill's text is `rates.ts`'s `ratePill`;
+`frontend/MAP.md` stands at 675 lines; nobody checked WebKit or a push
+over the live socket. Open, each in `pending.md` under the look pass: the
+two pills on a narrow assembly and the tolerance's form.*
 
 **Increment 11: the release.** `scripts/release.jl`, the `release` job
 with the tag-absent rule, Pages, the `base` path, the version baked into
