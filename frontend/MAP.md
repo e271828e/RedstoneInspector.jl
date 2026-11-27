@@ -46,7 +46,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
 | `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
 | `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
-| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
+| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `STUB`, `producerStub`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (the overlay's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text; `tagD`, a root tag's outline, the canvas's and the help page's |
 | `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
@@ -351,7 +351,9 @@ What the records do not fix, or where the page differs:
 - **The drag.** Past 3 px the block joins the end of `dragged` and the
   pointer is captured after `tick()`. Each move re-routes the touching wires:
   four points through the midpoint, or six running 12 below the lower box
-  when backward. Shift keeps the travel since the press to its axis of
+  when backward. The producer's stub runs 4 past its type label's far end,
+  12 at least and 12 with no label, the labels' toggle aside; the consumer's
+  is 12, and a forward route turns no nearer either port than its stub. Shift keeps the travel since the press to its axis of
   greater absolute travel; a window Shift `keydown` or `keyup` re-applies
   the last place (`dragTo`). The release reports `onlayout` and selects.
 - **Dimming** to `--dim` (0.35). A focus dims every wire, core, dot and
