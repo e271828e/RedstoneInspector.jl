@@ -24,13 +24,15 @@ export const BADGE_FONT = `9px ${FONT_STACK}`;
  * The badge pill: its inset from the block's edge, its height and its text's side padding. The rate pill straddles
  * the top edge at the left, so it never covers the segment, which answer 10 never truncates, and the events pill
  * the top edge at the right (answer 11). The order badge straddles the bottom edge at the left, as far below as the
- * rate pill rises above, and a node diagnostic's pill the same row at the right end; a loop's and a route's stand by
- * their ports (answer 9). A block's size depends on the top edge's pills alone, and only where the events pill
+ * rate pill rises above, and a node diagnostic's pill the same row at the right end, its text cut so it ends at the
+ * left inset or short of the order badge (answer 8); a loop's and a route's stand by their ports (answer 9). A block's size depends on the top edge's pills alone, and only where the events pill
  * stands (`topPillsWidth`).
  */
 export const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
 /** A pill's width around its text: the rate pill's, the events pill's and the order badge's. */
 export const pillWidth = (text: string): number => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+/** A pill's text cut with an ellipsis so the pill is at most `width` wide (the look pass, 6.1). */
+export const cutPill = (text: string, width: number): string => cutTo(text, BADGE_FONT, Math.floor(width) - 2 * BADGE_PAD);
 /** The texts a child's top edge can carry: the rate pill's as rate mode draws it, and the events pill's. */
 export interface TopPills {
   rate?: string;
@@ -90,17 +92,17 @@ export function textWidth(s: string, font: string): number {
   return ctx.measureText(s).width;
 }
 
-/** A text whole when it fits the width in the font, else cut with an ellipsis; memoized per font and width. */
+/** A text whole when it fits the width in the font, else cut with an ellipsis. */
+function cutTo(s: string, font: string, width: number): string {
+  if (textWidth(s, font) <= width) return s;
+  let n = s.length;
+  while (n > 0 && textWidth(s.slice(0, n) + "…", font) > width) n--;
+  return s.slice(0, n) + "…";
+}
+/** `cutTo` memoized per font and width, one map for each. */
 function cutText(cuts: Map<string, string>, s: string, font: string, width: number): string {
   let cut = cuts.get(s);
-  if (cut !== undefined) return cut;
-  cut = s;
-  if (textWidth(s, font) > width) {
-    let n = s.length;
-    while (n > 0 && textWidth(s.slice(0, n) + "…", font) > width) n--;
-    cut = s.slice(0, n) + "…";
-  }
-  cuts.set(s, cut);
+  if (cut === undefined) cuts.set(s, (cut = cutTo(s, font, width)));
   return cut;
 }
 const names = new Map<string, string>(), constants = new Map<string, string>();

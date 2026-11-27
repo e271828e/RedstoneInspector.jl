@@ -121,18 +121,19 @@ describe("overlayOf", () => {
     expect(sorted(o.wires.keys())).toEqual(["g2|in|e", "m|in|g"]);
   });
 
-  it("failure_probe: t's badge reads the function, titled with the message's first line; s/g amber at s", () => {
+  it("failure_probe: t's badge reads the function, titled with the function whole, then the message's first line (visual_grammar.md answer 8); s/g amber at s", () => {
     const m = fixtureModel("failure_probe");
     const root = overlayOf(m, "");
     expect(root.blocks.get("t")).toEqual({
       severity: "error",
-      badge: { text: "y_state", title: "`t`: `y_state` threw during the build's probe — bundle {x, t} (§13.2)", index: 0, severity: "error" },
+      badge: { text: "y_state", title: "y_state\n`t`: `y_state` threw during the build's probe — bundle {x, t} (§13.2)", index: 0, severity: "error" },
     });
     expect(sorted(root.blocks.keys())).toEqual(["t"]);
     const s = overlayOf(m, "s");
     expect(s.blocks.get("s/g")?.severity).toBe("warning");
     expect(s.blocks.get("s/g")?.badge?.text).toBe("EmptyFaceSelection");
     expect(s.blocks.get("s/g")?.badge?.index).toBe(1);
+    expect(s.blocks.get("s/g")?.badge?.title.split("\n")[0]).toBe("EmptyFaceSelection");
   });
 
   it("warning: g amber at the root, its badge the kind", () => {

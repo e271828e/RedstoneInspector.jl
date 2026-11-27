@@ -5,7 +5,8 @@
 // wire marks on a synthetic descriptor, no dimming until a badge focuses its
 // diagnostic. Counts from the oracle (`overlay.py`); geometry read off the DOM.
 // A loop's badge on a pin it leaves through (answer 8 as amended by the polish batch),
-// beside the port it crosses (the look pass of 2026-11-27, 1.4).
+// beside the port it crosses (the look pass of 2026-11-27, 1.4); a long diagnostic pill
+// cut to its room, its title opening with the whole text (6.1).
 import { test, type Page } from "@playwright/test";
 import { drop, effectiveOpacity, expect, fixtureText, openPath, pillByPort, press, readyLevel, shot } from "./fixtures";
 
@@ -142,7 +143,7 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   await expect(t).toHaveAttribute("data-role", "diagnostic");
   await expect(t).toHaveAttribute("data-severity", "error");
   await expect(t.locator("text.badge-text")).toHaveText("y_state");
-  await expect(t.locator("title")).toHaveText(first);
+  await expect(t.locator("title")).toHaveText(`y_state\n${first}`);
   // s, a closed assembly the chain never enters, carries none
   await expect(page.locator("g.badge")).toHaveCount(1);
   await expect(drawer(page)).toHaveAttribute("data-open", "true");
@@ -153,7 +154,7 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   await expect(halo(page, "s/g")).toHaveAttribute("data-severity", "warning");
   const g = page.locator('g.badge[data-id="s/g"]');
   await expect(g).toHaveAttribute("data-severity", "warning");
-  await expect(g.locator("text.badge-text")).toHaveText("EmptyFaceSelection");
+  await expect(g.locator("text.badge-text")).toHaveText(/^E.*…$/);
   expect(await style(page, 'g.badge[data-id="s/g"] rect', "fill")).not.toBe(errorFill);
   await shot(page, "failure_probe", "s", "overlay");
 
@@ -175,6 +176,58 @@ test("failure_probe: t's badge reads the function, s/g's the kind in amber; t's 
   expect(await effectiveOpacity(page, 'g.badge[data-id="t"]')).toBe(1);
   await press(page, "Escape");
   await expect(svg(page)).not.toHaveClass(/diagnostic-focus/);
+});
+
+/**
+ * A diagnostic pill against its block, in the svg's units: its ends, the block's ends less the inset of 4, the order
+ * badge's right end when one shows, its text, its title's first line, and the width of the cut one character longer.
+ */
+const diagnosticPill = (page: Page, id: string) => page.locator(`g.badge[data-role="diagnostic"][data-id="${id}"]`).evaluate((b, id) => {
+  const g = document.querySelector<SVGGElement>(`g.block[data-id="${id}"]`)!;
+  const m = g.transform.baseVal.consolidate()!.matrix, s = g.querySelector<SVGRectElement>(":scope > rect.shape")!;
+  const r = b.querySelector("rect")!, v = (a: SVGAnimatedLength) => a.baseVal.value;
+  const o = g.querySelector<SVGRectElement>("g.order-badge rect");
+  return {
+    left: v(r.x), right: v(r.x) + v(r.width), inLeft: m.e + v(s.x) + 4, inRight: m.e + v(s.x) + v(s.width) - 4,
+    order: o ? m.e + v(o.x) + v(o.width) : undefined,
+    text: b.querySelector("text.badge-text")!.textContent!, head: b.querySelector("title")!.textContent!.split("\n")[0],
+    /** A text's width in the pill's font, measured on a clone of its text. */
+    measure: (() => {
+      const t = b.querySelector("text.badge-text")!;
+      const head = b.querySelector("title")!.textContent!.split("\n")[0], cut = t.textContent!.slice(0, -1);
+      const c = t.cloneNode() as SVGTextElement;
+      c.textContent = head.slice(0, cut.length + 1) + "…";
+      t.parentNode!.appendChild(c);
+      const w = c.getComputedTextLength();
+      c.remove();
+      return w;
+    })(),
+  };
+}, id);
+
+test("a long diagnostic pill is cut with an ellipsis to end at the block's left inset, or 2 short of the order badge with the badges on; its title opens with the whole text (visual_grammar.md answer 8 as amended by the look pass, 6.1)", async ({ page }) => {
+  await drop(page, "failure_probe");
+  await openPath(page, "s");
+  const p = await diagnosticPill(page, "s/g");
+  expect(p.head).toBe("EmptyFaceSelection");
+  expect(p.text).toMatch(/…$/);
+  expect(p.head.startsWith(p.text.slice(0, -1))).toBe(true);
+  expect(p.right).toBeCloseTo(p.inRight, 3);
+  expect(p.left).toBeGreaterThanOrEqual(p.inLeft - 1e-3);
+  // one more character would pass the inset: the cut is the longest that fits, padding 4 a side, within 3 units, as
+  // the cut measures on a canvas and Firefox's svg text measures about 2 units narrower
+  expect(Math.ceil(p.measure) + 8).toBeGreaterThan(p.inRight - p.inLeft - 3);
+  await shot(page, "failure_probe", "s", "diagnostic-cut");
+  // with the order badges on, warning's g stops short of its order badge
+  await drop(page, "warning");
+  await press(page, "o");
+  const q = await diagnosticPill(page, "g");
+  expect(q.order, "g carries an order badge").toBeDefined();
+  expect(q.head).toBe("EmptyFaceSelection");
+  expect(q.left).toBeGreaterThanOrEqual(q.order! + 2 - 1e-3);
+  expect(q.right).toBeCloseTo(q.inRight, 3);
+  expect(q.text).toMatch(/…$/);
+  await shot(page, "warning", "", "diagnostic-cut-order");
 });
 
 test("warning: the drawer closed with its count, g's halo amber, nothing in the error hue", async ({ page }) => {

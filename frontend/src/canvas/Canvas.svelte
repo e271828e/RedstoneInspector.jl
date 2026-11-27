@@ -41,7 +41,7 @@
   import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, cutPill, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     pillWidth, sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
@@ -554,7 +554,8 @@
   const PILL_LIFT = 4;
   /**
    * The overlay's pills (visual_grammar.md answers 8 and 9). A node diagnostic's straddles its block's bottom edge at
-   * the right. A loop's and a route's stand beside each port where the chain or the route crosses a closed child's
+   * the right, its text cut with an ellipsis so it ends at the left inset, or short of the order badge while it shows;
+   * its title opens with the whole text. A loop's and a route's stand beside each port where the chain or the route crosses a closed child's
    * edge (`crossed`) or, off the root, a pin's, above the wire and outside the block or pin: left of an input port,
    * right of an output port, so a pin's stands past where its wire leaves it or short of where it arrives. The loop's
    * is nearer the port where both stand. A pill that would meet a drawn type label, its own port's or the one under
@@ -606,8 +607,11 @@
       const box = shown.geometry.boxes.get(b.id);
       const badge = overlay?.blocks.get(b.id)?.badge;
       if (!box || !badge || b.role === "in" || b.role === "out") continue;
-      const w = width(badge.text);
-      out.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index, x: box.x + box.width - BADGE_INSET - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
+      // from the right inset to the left one, or to the order badge while it shows, the text cut to fit (answer 8)
+      const right = box.x + box.width - BADGE_INSET, order = orders.get(b.id);
+      const left = box.x + BADGE_INSET + (order === undefined ? 0 : pillWidth(order) + BADGE_GAP);
+      const text = cutPill(badge.text, right - left), w = width(text);
+      out.push({ block: b.id, role: "diagnostic", text, title: badge.title, severity: badge.severity, index: badge.index, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
     }
     return out;
   });

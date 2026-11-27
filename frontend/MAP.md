@@ -44,7 +44,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/docstring.ts` | `DOCS_URL`, the core's docs address, the one constant naming it; `refLink`, an `@ref` link's URL or none, read off its target, a bare link joined to the type's module (`joinBare`); `rewriteRefs`, the links rewritten before parsing; `renderDocstring`, `marked` with GFM and its own renderer (raw HTML as text, an image as its text in `code`, a link kept only with an `http` scheme, opened in a new tab) |
 | `src/lib/help.ts` | the help page's text as data: `LEAD`, the paragraph above the legend, `TERMS` (the legend's sixteen, `sample` naming each one's drawing), `NOTATION` (each timing symbol once), `NOTATION_LEAD`, `LAW_LEAD`, `EQUATIONS`, the law, `TYPE_RULE`, `VOCABULARY` (the nineteen Simulink rows, each with a note or none), `KEYS` (this map's keyboard table, its rows in its order) and `KEYS_NOTE`, `SEARCH_LEAD` and `SEARCH_PREFIXES`, `HOSTED_URL`, `VIMIUM_PATTERNS` and the `VIMIUM` sentence, `PRIVACY` (the landing's too), `LINKS`; with `docstring.ts` the only file naming a URL |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
-| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
+| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `cutPill`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
 | `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
 | `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `STUB`, `producerStub`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (the overlay's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
@@ -368,7 +368,9 @@ What the records do not fix, or where the page differs:
   cross, then badges. `data-severity` sets `--hue` from `--error` or
   `--warning`. A diagnostic on the level's own node draws nothing.
 - **The overlay's badges** (`overlayBadges`). A node diagnostic's straddles the
-  bottom edge at the right, `BADGE_INSET` in; its click calls `onbadge`. A
+  bottom edge at the right, `BADGE_INSET` in, its text cut (`cutPill`) to end at
+  the left inset, or `BADGE_GAP` short of the order badge while it shows; its
+  title the whole text, then the message's first line; its click calls `onbadge`. A
   `loop`'s and a `route`'s stand by each port `crossings` gives and, off the
   root, by a pin's port: 2 px beyond the square on the port's side, left of an
   input and right of an output, the bottom 4 px above the wire (`PILL_LIFT`),
