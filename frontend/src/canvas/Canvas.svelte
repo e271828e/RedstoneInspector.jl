@@ -41,7 +41,7 @@
   import { palette, stepPair, type Pair } from "./palette";
   import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, cutPill, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, CROSS, cutConstant, cutPill, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     pillWidth, sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
@@ -924,7 +924,7 @@
               {@const mx = (a.x + z.x) / 2}
               {@const my = (a.y + z.y) / 2}
               <path class="chord" data-id={c.block} data-from={c.from} data-to={c.to} data-severity={c.severity} d="M{a.x},{a.y} L{z.x},{z.y}" />
-              <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - 3},{my - 3} L{mx + 3},{my + 3} M{mx - 3},{my + 3} L{mx + 3},{my - 3}" />
+              <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - CROSS},{my - CROSS} L{mx + CROSS},{my + CROSS} M{mx - CROSS},{my + CROSS} L{mx + CROSS},{my - CROSS}" />
             {/if}
           {/each}
           {#each overlayBadges as q ((q.port ?? q.block) + q.role)}

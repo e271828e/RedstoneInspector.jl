@@ -364,8 +364,8 @@ What the records do not fix, or where the page differs:
   open level is not passed to the canvas, so that level dims nothing.
 - **The overlay**, drawn only once `shown`'s level is `path`: wire marks 3
   px, mark halos 3 px outside at opacity 0.5 (`tagD` for a root tag), port
-  marks 2 px each side, chords between the squares' centers with a ±3 px
-  cross, then badges. `data-severity` sets `--hue` from `--error` or
+  marks 2 px each side, chords between the squares' centers with a ±4 px
+  cross (`CROSS`), then badges. `data-severity` sets `--hue` from `--error` or
   `--warning`. A diagnostic on the level's own node draws nothing.
 - **The overlay's badges** (`overlayBadges`). A node diagnostic's straddles the
   bottom edge at the right, `BADGE_INSET` in, its text cut (`cutPill`) to end at

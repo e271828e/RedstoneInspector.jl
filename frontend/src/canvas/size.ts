@@ -74,6 +74,8 @@ export const ROW = 16;
 /** Clear space under the last face row, inside a closed assembly's inner border. */
 const FOOT = 6;
 export const PORT = 6;
+/** A dead hop's cross: its arms reach this far from the chord's middle on each axis (the look pass, 7.1). */
+export const CROSS = 4;
 /** A pinned mark's width beside its name, the gap included. */
 export const MARK = 8;
 export const PIN_HEIGHT = 22;

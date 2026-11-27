@@ -107,7 +107,7 @@ test("failure_nested: inside ctl the pins the chain leaves through take the loop
   await expect(page.locator('g.badge[data-id^="⟨"]')).toHaveCount(0);
 });
 
-test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle", async ({ page }) => {
+test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle, 8 units across (the look pass, 7.1)", async ({ page }) => {
   await drop(page, "failure_dead");
   const chord = page.locator('path.chord[data-id="m"]');
   await expect(chord).toHaveCount(1);
@@ -126,8 +126,10 @@ test("failure_dead: the dead hop's dashed chord across m from g's square to F's,
   expect(await style(page, 'path.chord[data-id="m"]', "stroke-dasharray")).not.toBe("none");
   const cross = await page.locator('path.cross[data-id="m"]').evaluate((p: SVGPathElement) => {
     const b = p.getBBox();
-    return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+    return { x: b.x + b.width / 2, y: b.y + b.height / 2, width: b.width, height: b.height };
   });
+  // ±4 on each axis (the look pass, 7.1)
+  expect([cross.width, cross.height]).toEqual([8, 8]);
   expect(Math.abs(cross.x - (from.x + to.x) / 2)).toBeLessThanOrEqual(0.5);
   expect(Math.abs(cross.y - (from.y + to.y) / 2)).toBeLessThanOrEqual(0.5);
   await expect(halo(page, "m")).toHaveCount(1);
