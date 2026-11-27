@@ -370,10 +370,8 @@ Open items live in `pending.md`.
    port takes one route badge; where a loop's badge stands at the same
    port, the loop's is nearer. A badge that would meet a drawn type label,
    the one under the wire of the port above, moves outward along its wire
-   past it, within the half of the wire's end segment nearest its port, so
-   the move never carries it onto the badge at the wire's other end or
-   onto the far block. Where no place in that half clears the label, the
-   badge stands unmoved. Search hits take a dashed halo, the
+   past it, unless the moved place would meet a block, a port square or
+   another badge; then it stands unmoved. Search hits take a dashed halo, the
    selected hit the solid one. Focus on a diagnostic, a route, a legend line or a search
    dims everything uninvolved by opacity, never by color; a level on which
    the focus lights nothing does not dim, the status bar saying why.
@@ -388,7 +386,10 @@ Open items live in `pending.md`.
    one badge at its bottom edge's right end, which read as a mark on the
    block and covered the order badge, and a pin's straddled its top edge
    from its outer end. The look pass's first wording let a badge's move
-   past a label run on to another block or badge (its cold review, F1).*
+   past a label run on to another block or badge (its cold review, F1);
+   the fix bounded the move by half the wire's end segment, which left
+   most badges at an output port over the label of the port above (its
+   delta check, N1).*
    *Why:* a halo composes with a tier fill, a filled root tag and an
    outlined pin alike, which a fill or stroke change does not; a route and
    a selection differ in shape, a chain with an origin against one element,
