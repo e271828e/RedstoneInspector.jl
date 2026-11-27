@@ -335,8 +335,8 @@ What the records do not fix, or where the page differs:
 - **Icons.** A text wider than `ICON_WIDTH` squeezed by `textLength`; a
   glyph a `<use>` 12 high in the text color. The icon's `<title>` is the
   display name; it takes the hover (`pointer-events: bounding-box`).
-- **Text levels.** `full` from scale 0.6, `no-faces` from 0.4, `segments`
-  from 0.25, `frames` below; captions, badges and pins' names never drop.
+- **Text levels.** `full` from scale 0.7, `no-faces` from 0.6, `segments`
+  from 0.4, `frames` below; captions, badges and pins' names never drop.
 - **The view.** The fit leaves 24 px clear, stops at scale 2 and covers
   every box; with a legend it leaves the legend's box and inset clear
   (`fitBeside`), so a level's first fit waits a `tick()` for its legend; the wheel zooms by `exp(-deltaY * 0.0015)`, its listener

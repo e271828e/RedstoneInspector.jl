@@ -54,11 +54,12 @@ export const ICON_HEIGHT = 12;
 export const CONSTANT_WIDTH = 60;
 /**
  * The legibility floor (visual_grammar.md answer 10): the scales, screen pixels per world unit, below which a
- * text level drops, face names first, then the display name with its icon, the segment last. A first pass.
+ * text level drops, face names first, then the display name with its icon, the segment last; the look pass's values
+ * (4.1).
  */
-export const FLOOR_FACES = 0.6;
-export const FLOOR_NAMES = 0.4;
-export const FLOOR_SEGMENTS = 0.25;
+export const FLOOR_FACES = 0.7;
+export const FLOOR_NAMES = 0.6;
+export const FLOOR_SEGMENTS = 0.4;
 export type Detail = "full" | "no-faces" | "segments" | "frames";
 /** The text levels drawn at a scale. */
 export const detailAt = (scale: number): Detail =>
