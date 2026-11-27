@@ -7,16 +7,15 @@ import { folderOf } from "./outline";
 import type { Tree } from "./tree";
 import type { View } from "./view";
 
-/** The per-tab state a push rekeys; a level's layout is opaque here. */
-export interface PerTab<L> {
+/** The per-tab state a push rekeys. */
+export interface PerTab {
   level: string;
   selection: Selection | undefined;
   expanded: ReadonlySet<string>;
   views: ReadonlyMap<string, View>;
-  layouts: ReadonlyMap<string, L>;
   query: string;
 }
-export interface Rekeyed<L> extends PerTab<L> {
+export interface Rekeyed extends PerTab {
   /** Set when the open level fell back. */
   note?: string;
 }
@@ -70,17 +69,17 @@ export function sameBlocks(a: Model, b: Model, path: string): boolean {
 
 /**
  * What survives a new model: the level by path or its longest prefix still a level, noted when it falls; the
- * expansion's existing paths; the selection by its key; the views and layouts of surviving levels, a fallen
+ * expansion's existing paths; the selection by its key; the views of surviving levels, a fallen
  * level's and the fallback's views dropped so the canvas fits, and, given the previous model, a view whose level's
  * blocks changed (workspace.md answer 9); the query whole.
  */
-export function rekey<L>(previous: PerTab<L>, model: Model, from?: Model): Rekeyed<L> {
+export function rekey(previous: PerTab, model: Model, from?: Model): Rekeyed {
   const tree = model.tree;
   const fell = (to: string) =>
     `\`${previous.level}\` is not in this model; showing ${to === "" ? "the root" : `\`${to}\``}`;
   if (!tree) {
     return {
-      level: "", selection: undefined, expanded: new Set(), views: new Map(), layouts: new Map(), query: previous.query,
+      level: "", selection: undefined, expanded: new Set(), views: new Map(), query: previous.query,
       note: previous.level === "" ? undefined : fell(""),
     };
   }
@@ -92,7 +91,6 @@ export function rekey<L>(previous: PerTab<L>, model: Model, from?: Model): Rekey
     selection: rekeySelection(model, previous.selection),
     expanded: new Set([...previous.expanded].filter((p) => tree.byPath.has(p) || folderOf(tree, p))),
     views,
-    layouts: new Map([...previous.layouts].filter(([p]) => isLevel(tree, p))),
     query: previous.query,
     note: level === previous.level ? undefined : fell(level),
   };

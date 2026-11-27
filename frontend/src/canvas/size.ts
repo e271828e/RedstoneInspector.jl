@@ -25,12 +25,15 @@ export const BADGE_FONT = `9px ${FONT_STACK}`;
  * the top edge at the left, so it never covers the segment, which answer 10 never truncates, and the events pill
  * the top edge at the right (answer 11). The order badge straddles the bottom edge at the left, as far below as the
  * rate pill rises above, and the overlay's pills the same row, stacked leftward from the right end `BADGE_GAP`
- * apart. Nothing yields: an overlay pill draws over an order badge it meets (the second look's 2.3 and 2.4). A
- * block's size depends on the top edge's pills alone, and only where the events pill stands (`topPillsWidth`).
+ * apart, the diagnostic's text cut so it and the loop's end short of the order badge, which draws above them; the
+ * route's may run over it, drawn on top (answers 8 and 9). A block's size depends on the top edge's pills alone, and
+ * only where the events pill stands (`topPillsWidth`).
  */
 export const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
 /** A pill's width around its text: the rate pill's, the events pill's and the order badge's. */
 export const pillWidth = (text: string): number => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+/** A pill's text cut with an ellipsis so the pill is at most `width` wide (the look pass, 6.1). */
+export const cutPill = (text: string, width: number): string => cutTo(text, BADGE_FONT, Math.floor(width) - 2 * BADGE_PAD);
 /** The texts a child's top edge can carry: the rate pill's as rate mode draws it, and the events pill's. */
 export interface TopPills {
   rate?: string;
@@ -54,11 +57,12 @@ export const ICON_HEIGHT = 12;
 export const CONSTANT_WIDTH = 60;
 /**
  * The legibility floor (visual_grammar.md answer 10): the scales, screen pixels per world unit, below which a
- * text level drops, face names first, then the display name with its icon, the segment last. A first pass.
+ * text level drops, face names first, then the display name with its icon, the segment last; the look pass's values
+ * (4.1).
  */
-export const FLOOR_FACES = 0.6;
-export const FLOOR_NAMES = 0.4;
-export const FLOOR_SEGMENTS = 0.25;
+export const FLOOR_FACES = 0.7;
+export const FLOOR_NAMES = 0.6;
+export const FLOOR_SEGMENTS = 0.4;
 export type Detail = "full" | "no-faces" | "segments" | "frames";
 /** The text levels drawn at a scale. */
 export const detailAt = (scale: number): Detail =>
@@ -71,6 +75,8 @@ export const ROW = 16;
 /** Clear space under the last face row, inside a closed assembly's inner border. */
 const FOOT = 6;
 export const PORT = 6;
+/** A dead hop's cross: its arms reach this far from the chord's middle on each axis (the look pass, 7.1). */
+export const CROSS = 4;
 /** A pinned mark's width beside its name, the gap included. */
 export const MARK = 8;
 export const PIN_HEIGHT = 22;
@@ -89,17 +95,17 @@ export function textWidth(s: string, font: string): number {
   return ctx.measureText(s).width;
 }
 
-/** A text whole when it fits the width in the font, else cut with an ellipsis; memoized per font and width. */
+/** A text whole when it fits the width in the font, else cut with an ellipsis. */
+function cutTo(s: string, font: string, width: number): string {
+  if (textWidth(s, font) <= width) return s;
+  let n = s.length;
+  while (n > 0 && textWidth(s.slice(0, n) + "…", font) > width) n--;
+  return s.slice(0, n) + "…";
+}
+/** `cutTo` memoized per font and width, one map for each. */
 function cutText(cuts: Map<string, string>, s: string, font: string, width: number): string {
   let cut = cuts.get(s);
-  if (cut !== undefined) return cut;
-  cut = s;
-  if (textWidth(s, font) > width) {
-    let n = s.length;
-    while (n > 0 && textWidth(s.slice(0, n) + "…", font) > width) n--;
-    cut = s.slice(0, n) + "…";
-  }
-  cuts.set(s, cut);
+  if (cut === undefined) cuts.set(s, (cut = cutTo(s, font, width)));
   return cut;
 }
 const names = new Map<string, string>(), constants = new Map<string, string>();

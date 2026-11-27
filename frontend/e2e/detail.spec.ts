@@ -11,7 +11,9 @@
 // 3.2); pinning stated on a primitive's own
 // face alone (3.4); a location's file name kept whole with its line number (3.5);
 // the pane's own keys, h j k l and the arrows scrolling it (increment 8b); a primitive
-// root's "open level" mark (answer 4 as amended by the polish batch).
+// root's "open level" mark (answer 4 as amended by the polish batch); every header at
+// the narrowest pane, its path broken after a slash (the look pass of 2026-11-27, 1.1); a
+// stacked parameter's name in the lighter color (3.2 and 4.4).
 import { test, type Page } from "@playwright/test";
 import { clickWire, cursor, drop, dropOver, expect, expectScrollKeys, fixtureText, live, openPath, openSection, paneRing, press, pressAll, readyLevel, SCROLL_STEP, section, shot, viewBox, widen } from "./fixtures";
 
@@ -325,6 +327,41 @@ test.describe("closed_loop", () => {
   });
 });
 
+for (const [fixture, long] of [["closed_loop", "lqr_controller/command_pack"], ["approach_deployment", "vehicle/selection/command_δe"]] as const) {
+  test(`${fixture} at the narrowest pane, 240 px: every node's and every port's header breaks its path after a slash and the pane never scrolls sideways (the look pass, 1.1)`, async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto("/");
+    await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
+      JSON.stringify({ version: 1, sizes: { tree: 280, detail: 240, drawer: 200 }, collapsed: { tree: false, detail: false } })));
+    await drop(page, fixture);
+    for (let c = page.locator("nav.tree .row:not(.expanded) button.chevron"); await c.count(); ) await c.first().click();
+    const paths = await page.locator("nav.tree .row.node").evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")!));
+    const body = page.locator('.pane[data-pane="detail"] .body');
+    const over = () => body.evaluate((e) => e.scrollWidth - e.clientWidth);
+    const node = (p: string) => page.locator(`nav.tree .row[data-path="${p}"] .segment`).first().click();
+    for (const p of paths) {
+      await node(p);
+      expect(await over(), p).toBeLessThanOrEqual(0);
+      const ports = pane(page).locator("table.faces tr[data-port]");
+      for (let i = 0, n = await ports.count(); i < n; i++) {
+        const id = await ports.nth(i).getAttribute("data-port");
+        await ports.nth(i).locator(".face-name").click();
+        await expect(pane(page)).toHaveAttribute("data-kind", /^(port|pin)$/);
+        expect(await over(), id!).toBeLessThanOrEqual(0);
+        await node(p);
+      }
+    }
+    // the fixture shows the case: this path is wider than its line, so it takes two lines
+    await node(long);
+    const lines = await pane(page).locator(".path-line .path").evaluate((e) => {
+      const r = document.createRange();
+      r.selectNodeContents(e);
+      return new Set([...r.getClientRects()].map((q) => Math.round(q.top))).size;
+    });
+    expect(lines).toBeGreaterThan(1);
+  });
+}
+
 test("rates: level fast's TIMING after the locations and before the parameters, with no scope row on its own anchor; hold's against its scope", async ({ page }) => {
   await drop(page, "rates");
   await openPath(page, "fast");
@@ -541,6 +578,45 @@ async function plantAt(page: Page, detail: number) {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').click();
   await expect(pane(page)).toHaveAttribute("data-id", "plant");
+}
+
+for (const [fixture, level, id] of [["kinds", "", "nt"], ["library", "", "ss"]] as const) {
+  test(`${fixture}'s ${id}: stacked at the default 360 px, each parameter's name takes the lighter text color and its value the text color; in two columns at 600 px both the text color (the look pass, 3.2 and 4.4)`, async ({ page }) => {
+    const colors = () => pane(page).locator("table.parameters").evaluate((t) => {
+      const probe = (v: string) => {
+        const s = document.createElement("span");
+        s.style.color = `var(${v})`;
+        t.appendChild(s);
+        const c = getComputedStyle(s).color;
+        s.remove();
+        return c;
+      };
+      const rows = [...t.querySelectorAll("tr")];
+      return {
+        light: probe("--text-light"), text: probe("--text"), rows: rows.length,
+        names: [...new Set(rows.map((r) => getComputedStyle(r.querySelector(".param-name code")!).color))],
+        values: [...new Set(rows.map((r) => getComputedStyle(r.querySelector(".param-value code")!).color))],
+        stacked: rows.every((r) => r.querySelector(".param-value")!.getBoundingClientRect().top >= r.querySelector(".param-name")!.getBoundingClientRect().bottom - 1),
+      };
+    });
+    for (const [detail, stacked] of [[360, true], [600, false]] as const) {
+      await page.goto("/");
+      await page.evaluate((detail) => localStorage.setItem("redstone-inspector/prefs",
+        JSON.stringify({ version: 1, sizes: { tree: 280, detail, drawer: 200 }, collapsed: { tree: false, detail: false } })), detail);
+      await drop(page, fixture);
+      if (level) await openPath(page, level);
+      await page.locator(`g.block[data-id="${id}"]`).click();
+      await expect(pane(page)).toHaveAttribute("data-id", id);
+      await openSection(page, "parameters");
+      const c = await colors();
+      expect(c.rows).toBeGreaterThan(0);
+      expect(c.light).not.toBe(c.text);
+      expect(c.stacked, `${detail} px`).toBe(stacked);
+      expect(c.names, `${detail} px`).toEqual([stacked ? c.light : c.text]);
+      expect(c.values, `${detail} px`).toEqual([c.text]);
+      if (stacked) await shot(page, fixture, level, `stacked-names-${id}`);
+    }
+  });
 }
 
 test("a narrow pane stacks each parameter's summary under its name and each face's facts; a wide one keeps the rows", async ({ page }) => {

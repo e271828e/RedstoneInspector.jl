@@ -87,7 +87,8 @@ export function eventsPill(model: Model, path: string): { text: string; title: s
 /**
  * The events tab's head on a deployment (workspace.md answer 6, ruling 9): `firing_budget` when the model declares an
  * event, `localization_tol` as a fraction of `Δt_frame` and `localization_budget` when it declares a localized one.
- * The tolerance prints in JavaScript's shortest exponent form (the notes' C3). Undefined on a build and a failure.
+ * The tolerance prints in JavaScript's shortest exponent form (the notes' C3), times `Δt_frame`: `2.5e-5 × Δt_frame`
+ * (the look pass, 8.2). Undefined on a build and a failure.
  */
 export function eventHead(model: Model): HeadItem[] | undefined {
   const d = model.descriptor;
@@ -98,7 +99,7 @@ export function eventHead(model: Model): HeadItem[] | undefined {
   return [
     ...(groups.length ? [item("firing_budget", `${firing_budget}`)] : []),
     ...(groups.some((g) => g.events.some((e) => e.localized))
-      ? [item("localization_tol", `${localization_tol.toExponential()} of Δt_frame`), item("localization_budget", `${localization_budget}`)]
+      ? [item("localization_tol", `${localization_tol.toExponential()} × Δt_frame`), item("localization_budget", `${localization_budget}`)]
       : []),
   ];
 }

@@ -4,7 +4,8 @@
 // primitive with stage 1 outputs alone and none on large, straddling the bottom edge
 // at the left, kept per browser across a reload and a drop, none on a pin or a
 // tag or on a model without an order, taking the pointer for its title and
-// dimming with its block. The rate pill straddles the top edge at the left
+// dimming with its block under a search and a focus, drawn in its own group
+// above the blocks (the look pass, 11.3). The rate pill straddles the top edge at the left
 // whatever `o` says (the second look's 2.3). The texts are the oracles'
 // (`analysis.py`, `stage2.py`); the geometric pins are recomputed here from the DOM.
 import { test, type Page } from "@playwright/test";
@@ -16,16 +17,17 @@ const BADGE_INSET = 4;
 const svg = (page: Page) => page.locator("svg.canvas");
 const toggle = (page: Page) => page.locator("nav.breadcrumb .controls button.order-badges");
 const badges = (page: Page) => page.locator("svg.canvas g.order-badge");
-const badge = (page: Page, id: string) => page.locator(`svg.canvas g.block[data-id="${id}"] g.order-badge[data-id="${id}"] text.order`);
+const badge = (page: Page, id: string) => page.locator(`svg.canvas g.order-badges > g.order-badge[data-id="${id}"] text.order`);
 type Rect = { left: number; right: number; top: number; bottom: number };
 /** The screen boxes of each badged block's shape, its order badge's rect and, when present, its rate pill's rect. */
-const boxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.block:has(> g.order-badge)")].map((g) => {
+const boxes = (page: Page) => page.evaluate(() => [...document.querySelectorAll<SVGGElement>("svg.canvas g.order-badge")].map((o) => {
   const r = (e: Element | null) => {
     if (!e) return undefined;
     const b = e.getBoundingClientRect();
     return { left: b.left, right: b.right, top: b.top, bottom: b.bottom };
   };
-  return { id: g.dataset.id!, block: r(g.querySelector(":scope > .shape"))!, order: r(g.querySelector(":scope > g.order-badge > rect"))!, pill: r(g.querySelector(":scope > g.badge-pill > rect")) };
+  const g = document.querySelector(`g.blocks > g.block[data-id="${o.dataset.id}"]`)!;
+  return { id: o.dataset.id!, block: r(g.querySelector(":scope > .shape"))!, order: r(o.querySelector(":scope > rect"))!, pill: r(g.querySelector(":scope > g.badge-pill > rect")) };
 }));
 const overlaps = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
 type Box = { x: number; y: number; width: number; height: number };
@@ -33,13 +35,17 @@ type Box = { x: number; y: number; width: number; height: number };
  * Each block's shape with its rate pill's box and its order badge's, when drawn, in the block's own coordinates: the
  * world's units, a screen pixel each at scale 1.
  */
-const pills = (page: Page) => page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.block:is(:has(> g.badge-pill), :has(> g.order-badge))")].map((g) => {
-  const box = (e: Element | null) => {
+const pills = (page: Page) => page.evaluate(() => Object.fromEntries([...document.querySelectorAll<SVGGElement>("svg.canvas g.blocks > g.block")].flatMap((g) => {
+  const order = document.querySelector(`g.order-badges > g.order-badge[data-id="${g.dataset.id}"] > rect`);
+  if (!order && !g.querySelector(":scope > g.badge-pill")) return [];
+  // the order badge is drawn in the level's units, so its box is moved into the block's by the block's translation
+  const m = g.transform.baseVal.consolidate()!.matrix;
+  const box = (e: Element | null, dx = 0, dy = 0) => {
     if (!e) return undefined;
     const b = (e as SVGGraphicsElement).getBBox();
-    return { x: b.x, y: b.y, width: b.width, height: b.height };
+    return { x: b.x - dx, y: b.y - dy, width: b.width, height: b.height };
   };
-  return [g.dataset.id!, { block: box(g.querySelector(":scope > .shape"))!, pill: box(g.querySelector(":scope > g.badge-pill > rect")), order: box(g.querySelector(":scope > g.order-badge > rect")) }];
+  return [[g.dataset.id!, { block: box(g.querySelector(":scope > .shape"))!, pill: box(g.querySelector(":scope > g.badge-pill > rect")), order: box(order, m.e, m.f) }]];
 }))) as Promise<Record<string, { block: Box; pill?: Box; order?: Box }>>;
 /** Expects a pill's left edge `BADGE_INSET` from its block's and its vertical middle on the block's top or bottom edge, to a unit. */
 function expectPlace(id: string, block: Box, pill: Box, edge: "top" | "bottom") {
@@ -65,7 +71,7 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   for (const [id, text] of Object.entries(texts)) await expect(badge(page, id), id).toHaveText(text);
   await expect(badges(page)).toHaveCount(5);
   await expect(page.locator('g.order-badge[data-id="plant"]')).toHaveCount(0);
-  await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
+  await expect(page.locator('svg.canvas g.order-badge[data-id^="⟨"]')).toHaveCount(0);
   await expect(page.locator('g.order-badge[data-id="pid_controller"] > title')).toHaveText("Stage 2 positions 2, 7, 9, 11 in the execution order: the primitives inside");
   // the badge straddles the block's bottom edge, its left edge by the block's
   for (const b of await boxes(page)) {
@@ -119,7 +125,7 @@ test("closed_loop: o shows the badges at the root and inside pid_controller, on 
   await expect(badge(page, "pid_controller/h_ctl")).toHaveText("7");
   await expect(badge(page, "pid_controller/V_ctl")).toHaveText("2");
   await expect(page.locator('g.order-badge[data-id="pid_controller/free"]')).toHaveCount(0);
-  await expect(page.locator("svg.canvas g.block.pin g.order-badge")).toHaveCount(0);
+  await expect(page.locator('svg.canvas g.order-badge[data-id^="⟨"]')).toHaveCount(0);
   await expect(page.locator('g.order-badge[data-id="pid_controller/h_ctl"] > title')).toHaveText("Stage 2 position 7 in the execution order");
   for (const [id, { block, order }] of Object.entries(await pills(page))) expectPlace(id, block, order!, "bottom");
   await shot(page, "closed_loop", "pid_controller", "order");
@@ -168,7 +174,7 @@ test("primitive, rates and failure_cycle: the root's own primitive badged, the s
   await expect(badges(page)).toHaveCount(0);
 });
 
-test("closed_loop: under a search the badge dims with its block, a hit's badge stays full", async ({ page }) => {
+test("closed_loop: under a search and under a route's focus the badge dims with its block, a hit's or a lit block's stays full", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "o");
   await press(page, "/");
@@ -180,6 +186,14 @@ test("closed_loop: under a search the badge dims with its block, a hit's badge s
   expect(shape).toBeLessThan(1);
   expect(await badgeOf("sensing")).toBeCloseTo(shape, 5);
   expect(await badgeOf("actuators")).toBe(1);
+  await page.locator("input.query").fill("");
+  await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
+  await press(page, "t");
+  await expect(svg(page)).toHaveClass(/\broute-focus\b/);
+  const dim = await effectiveOpacity(page, 'g.block[data-id="sensing"] > .shape');
+  expect(dim).toBeLessThan(1);
+  expect(await badgeOf("sensing")).toBeCloseTo(dim, 5);
+  expect(await badgeOf("pid_controller")).toBe(1);
 });
 
 test("large: with o, no badge anywhere, every primitive having stage 1 outputs alone", async ({ page }) => {

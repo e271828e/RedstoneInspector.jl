@@ -28,7 +28,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/detail.ts` | the pane's facts per element, `kindPhrase`, a discrete primitive's or a rate scope's `timing`, its frames table and chain line, `classPhrase`, `memberKind`, `memberTitle`, `FACT_TITLES`, `TIMING_TITLE`, `Section`, an assembly's `events` fact and a primitive's `eventTable`, `signatureAdds`, `detailOf`; `levelFacts`, the open level's node facts; `count`, a count in words; the `Selection` type; `faceSelection` |
 | `src/lib/navigate.ts` | the keyboard's cursor: `nearest` by the facing-edge gap and the perpendicular offset, `follow`'s least pan; a pane's cursor: `Stop`, `stopStep`, `walkOf` |
 | `src/lib/prefix.ts` | the keyboard's prefixes: `Prefix`, `keyName`, `pressPrefix`, `releasePrefix` |
-| `src/lib/search.ts` | `parseQuery`, `searchModel` with its matched ranges and `CAP`, a face hit's owner type under a `type:` term, `marked`, `beneath`, `levelHits`; `hitSelection`, what picking a hit selects; `stepHit`, `n` and `N` |
+| `src/lib/search.ts` | `parseQuery`, a lone prefix taking the next bare word, `searchModel` with its matched ranges and `CAP`, a face hit's owner type under a `type:` term, `marked`, `beneath`, `levelHits`; `hitSelection`, what picking a hit selects; `stepHit`, `n` and `N` |
 | `src/lib/rekey.ts` | the push: `rekey` of the per-tab state against a new model, `isLevel`, `fallback`, `sameBlocks` |
 | `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `CONTINUOUS`, `CONTINUOUS_TITLE`, `LegendLine`, `legend`, a level's lines' keys and steps with the continuous line, `mixed`, `clocksBeneath`, `clockCount`, `ratePill`, the rate pill's text and title in either mode, `fromRootInput`, `wireTriple` |
 | `src/lib/events.ts` | the state events over the build body's `events` section, none on a failure: `eventsSection`, `EventRow`, `EventGroup`, `eventGroups` (the tab's), `eventsOf` (a primitive's), `Beneath`, `eventsBeneath` (at or beneath a path, the root's the model's), `eventCount`, `localizedWord`, `LOCALIZED_TITLE`, the `localized` head's title in the tab and the pane, `eventsPill` (text and title), `eventHead` (the tab's head under ruling 9's conditions) |
@@ -44,12 +44,11 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/docstring.ts` | `DOCS_URL`, the core's docs address, the one constant naming it; `refLink`, an `@ref` link's URL or none, read off its target, a bare link joined to the type's module (`joinBare`); `rewriteRefs`, the links rewritten before parsing; `renderDocstring`, `marked` with GFM and its own renderer (raw HTML as text, an image as its text in `code`, a link kept only with an `http` scheme, opened in a new tab) |
 | `src/lib/help.ts` | the help page's text as data: `LEAD`, the paragraph above the legend, `TERMS` (the legend's sixteen, `sample` naming each one's drawing), `NOTATION` (each timing symbol once), `NOTATION_LEAD`, `LAW_LEAD`, `EQUATIONS`, the law, `TYPE_RULE`, `VOCABULARY` (the nineteen Simulink rows, each with a note or none), `KEYS` (this map's keyboard table, its rows in its order) and `KEYS_NOTE`, `SEARCH_LEAD` and `SEARCH_PREFIXES`, `HOSTED_URL`, `VIMIUM_PATTERNS` and the `VIMIUM` sentence, `PRIVACY` (the landing's too), `LINKS`; with `docstring.ts` the only file naming a URL |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
-| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
-| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
-| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
+| `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `cutPill`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
+| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (the overlay's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text; `tagD`, a root tag's outline, the canvas's and the help page's |
-| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
+| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
 | `src/state/session.svelte.ts` | the per-tab state: the model, the open level and its hash, the history depth, the views and layouts per level, the selection, the expansion, the query, the legend's focus, the focused diagnostic, the standing route, the drawer, the detail pane's open `sections`, the focused region, the fallback note, the one-off `notice` (`say`), the help page and its hash `#help`; `load`'s rekeying, a route that no longer resolves cleared with a notice; a node's folders expanding with it; `escape`'s chain; `back` and `forward`; `openHelp`, `closeHelp`, `toggleHelp`, `isHelpHash` |
 | `src/state/live.svelte.ts` | the live connection's state, the raw descriptor text last received, the reconnect count; set only by the socket |
 | `src/live/socket.ts` | the one module touching `WebSocket`: `connect`, `sendOpenLocation` |
@@ -65,14 +64,14 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/frame/Landing.svelte` | the privacy statement (`PRIVACY`), the open control, the drop hint, the help link, a refusal |
 | `src/frame/Help.svelte` | the help page, over the shell's `div.under`: the five sections over `help.ts`, the timing notation's table and law, the lead, the legend's sixteen static SVG samples in the canvas's shapes and the palette's colors, the about section's versions from the defines; scrolls on its own, focused on mount |
 | `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, `overlayPills` and `expectPillRows`, the overlay's pill rows recomputed from the DOM, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
 no DOM, no stores, nothing measured. DOM-touching code lives under
 `src/canvas/` and `src/frame/`: `size.ts` measures text, `Canvas.svelte` draws
 the level, the frame's components draw the panes; `layout.ts` is DOM-free but
-async and bound to ELK, `router.ts` DOM-free and synchronous, `glyphs.ts` and
+async and bound to ELK, `glyphs.ts` and
 `palette.ts` data. `src/live/socket.ts`
 alone touches `WebSocket`. The stores live under `src/state/`, Svelte runes in
 `.svelte.ts` modules; `prefs.svelte.ts` alone touches local storage, and its
@@ -125,9 +124,8 @@ them to the stores. The code imports the generated types by name from
   keyed container's field: its path is `parent/field`, the field alone under the
   root, which no node has; its children are the field's keyed nodes in walk
   order, and it sits where its first member would.
-- A **level layout** (`LevelLayout`) is `{geometry, dragged, stale}`: a
-  level's boxes and routes, ELK's output plus drags; the dragged block ids in
-  drag order, the last drawn last; `stale` after a push until laid out again.
+- A **level layout** is a level's `Geometry`, ELK's output: its boxes,
+  routes, junctions, region boxes and labels.
 - A **hit** is a node or a face a query matches (`NodeHit`, `FaceHit`), with
   the matched ranges per field. A node is **marked** when it is a hit or owns a
   face hit; a closed assembly is **under** when it is not a hit and has marked
@@ -185,7 +183,7 @@ The three lifetimes of `workspace.md` answer 9.
 
 - **Per tab, in memory** (`session.svelte.ts`): the model; the open level by path,
   mirrored in the hash; `views` and `layouts`, each visited level's `View` and
-  `LevelLayout` by path; the selection `{level, target}`; the expansion set of node
+  `Geometry` by path; the selection `{level, target}`; the expansion set of node
   and folder paths; `query`; `legendFocus`, a line's key, set by a legend line or a
   chart swatch; `diagnosticFocus`, an index; `route`, the standing route's origin
   face; the drawer's open state and tab; `sections`, the pane's open ones, every
@@ -199,8 +197,8 @@ The three lifetimes of `workspace.md` answer 9.
     drawer opens on `diagnostics` only when the body carries a diagnostic
     (`opensDrawer`), a warning alone leaving it closed though counted.
     `load(undefined)`, a refusal, unloads.
-  - `load` of a replacement passes the state through `rekey` and marks every
-    kept layout `stale`; the legend's focus goes through `rekeyFocus` (an
+  - `load` of a replacement passes the state through `rekey` and drops every
+    layout; the legend's focus goes through `rekeyFocus` (an
     anchor followed by key and scope), the route through `rekeyRoute`, kept
     while the new model's node at its path declares the face and `routeOf`
     resolves it, else cleared with a notice, and the shell
@@ -271,21 +269,19 @@ are the reviewer's Python scripts.
 `view`, `layout`, `hits`, `lit`, `focus`, `focusKey`, `legendFocus`,
 `overlay`, `routeDrawn` and `focused`, and calls `onopen(path)`,
 `onselect(target)` (`undefined` for a background click), `onview(view)`,
-`onlayout(geometry, dragged)`, `onlegend(key)`, `onbadge(index)` and
+`onlayout(geometry)`, `onlegend(key)`, `onbadge(index)` and
 `ontrace(face)`. The caller decides what a click selects and passes back the
 target only when it was made on the drawn level. The shell keys the canvas on
 the model (`{#key model}`), so each model gets a fresh one.
 
 On each `path` it builds and sizes the level with its regions and type
-labels. A held layout not `stale` is drawn at once, `data-ready` never absent;
-otherwise `relayout` clears `data-ready`, runs ELK, puts the layout's dragged
-blocks back with their wires re-routed, reports `onlayout`, sets `data-ready`
-and restores the view or fits. `undrag(all)`, `x` and `X`, runs it on
-`dragged` less its last id, or none, in the current view; a newer run or path
-drops an older result (`run`). `view` and `layout` are read with `untrack`; a
+labels. A held layout is drawn at once, `data-ready` never absent;
+otherwise `relayout` clears `data-ready`, runs ELK, reports `onlayout`, sets
+`data-ready` and restores the view or fits; a newer run or path drops an older
+result (`run`). `view` and `layout` are read with `untrack`; a
 level change clears the hover and closes the menu. The draw order is answer 9's: regions, casings (the
 route's first), wires with struct cores, dots, blocks with ports and halos,
-type labels, `g.overlay`. `<defs>` holds one arrowhead per wire color, in
+type labels, `g.overlay`, `g.order-badges`, `g.route-pills`. `<defs>` holds one arrowhead per wire color, in
 user units, and one `<symbol>` per glyph.
 
 What the records do not fix, or where the page differs:
@@ -321,10 +317,10 @@ What the records do not fix, or where the page differs:
   double line, as answer 4 says. In rate mode a continuous
   producer's wires take `continuousWire`, a root input's the gray.
 - **Trunks.** ELK's `junctionPoints` become `Geometry.junctions`, a
-  `circle.junction` of radius 2.5 each; `rerouteTouching` drops them.
+  `circle.junction` of radius 2.5 each.
 - **Type labels.** ELK edge labels on each port's first wire, `TAIL`, on
   every layout; `Geometry.labels` keeps each box by port id as an offset
-  from the port's point, so a dragged block carries its labels. Baseline 8
+  from the port's point. Baseline 8
   below the box's top, over a 3 px stroke in the background color. A label
   ignores the pointer and has no title; the pane carries the whole type.
 - **Regions.** A compound node `region:<path>`, padding 28, 12, 12, 12,
@@ -335,25 +331,20 @@ What the records do not fix, or where the page differs:
 - **Icons.** A text wider than `ICON_WIDTH` squeezed by `textLength`; a
   glyph a `<use>` 12 high in the text color. The icon's `<title>` is the
   display name; it takes the hover (`pointer-events: bounding-box`).
-- **Text levels.** `full` from scale 0.6, `no-faces` from 0.4, `segments`
-  from 0.25, `frames` below; captions, badges and pins' names never drop.
+- **Text levels.** `full` from scale 0.7, `no-faces` from 0.6, `segments`
+  from 0.4, `frames` below; captions, badges and pins' names never drop.
 - **The view.** The fit leaves 24 px clear, stops at scale 2 and covers
   every box; with a legend it leaves the legend's box and inset clear
   (`fitBeside`), so a level's first fit waits a `tick()` for its legend; the wheel zooms by `exp(-deltaY * 0.0015)`, its listener
-  `{passive: false}`; a drag on the bare SVG pans, under 3 px a click. Every
+  `{passive: false}`; a drag on the bare SVG pans, under 3 px a click; a press
+  on a block pans nothing, and no block moves by hand. Every
   change goes out through `onview`.
 - **The handle** `canvasView`: `fit()`, `zoomBy(factor)` about the center,
   `panBy(dx, dy)`, `boxes()` (none while ELK runs), `follow(id)` with 24 px
   clear, held until the level is drawn, a box larger than the viewport along
   an axis aligned at its left or top edge, the corner holding the segment and
   the first ports, and `centre(target)` on a box, a
-  port square, a wire's bounding box or a folder's frame; `undrag(all)`.
-- **The drag.** Past 3 px the block joins the end of `dragged` and the
-  pointer is captured after `tick()`. Each move re-routes the touching wires:
-  four points through the midpoint, or six running 12 below the lower box
-  when backward. Shift keeps the travel since the press to its axis of
-  greater absolute travel; a window Shift `keydown` or `keyup` re-applies
-  the last place (`dragTo`). The release reports `onlayout` and selects.
+  port square, a wire's bounding box or a folder's frame.
 - **Dimming** to `--dim` (0.35). A focus dims every wire, core, dot and
   label not `lit`, and every child of a block not `lit` but its halos and lit
   ports; a search dims every wire and every child of a non-hit block but its
@@ -362,23 +353,32 @@ What the records do not fix, or where the page differs:
   open level is not passed to the canvas, so that level dims nothing.
 - **The overlay**, drawn only once `shown`'s level is `path`: wire marks 3
   px, mark halos 3 px outside at opacity 0.5 (`tagD` for a root tag), port
-  marks 2 px each side, chords between the squares' centers with a ±3 px
-  cross, then badges. `data-severity` sets `--hue` from `--error` or
+  marks 2 px each side, chords between the squares' centers with a ±4 px
+  cross (`CROSS`), then badges. `data-severity` sets `--hue` from `--error` or
   `--warning`. A diagnostic on the level's own node draws nothing.
-- **Bottom badges** straddle the bottom edge at the right, right to left
-  `BADGE_GAP` (2) apart: the diagnostic's, `loop`, `route` (`overlayBadges`); a
-  diagnostic's click calls `onbadge`, the others `onopen`. Nothing yields: one
-  meeting an order badge draws over it, `g.overlay` coming after `g.blocks`.
+- **The overlay's badges** (`overlayBadges`). On a child one row straddles the
+  bottom edge from the right, `BADGE_INSET` in, `BADGE_GAP` apart: a node
+  diagnostic's, a `loop`'s, the `route`'s. The diagnostic's text is cut
+  (`cutPill`) so that it and the loop's end at the left inset, or `BADGE_GAP`
+  short of the order badge while it shows; the route's stacks after them and may
+  run over the order badge or past the corner. Off the root a pin's straddle its
+  bottom edge at the inner end, `BADGE_INSET` in, the loop's nearest the corner:
+  an input pin's leftward from the bottom-right corner, an output pin's rightward
+  from the bottom-left. A diagnostic's title is the whole text, then the
+  message's first line; its click calls `onbadge`. A loop's and a route's click
+  calls `onopen`, a child's the child, a pin's the parent. The fixed pills draw in
+  `g.overlay`, the route's in `g.route-pills`, last.
 - **The order badge**, `order` on, straddles a child's bottom edge at the left,
   `pillWidth(text)` wide, background fill, text-color stroke, titled "Stage 2
   position N in the execution order" or "Stage 2 positions N in the execution
-  order: the primitives inside"; its click selects the block.
+  order: the primitives inside"; its click selects the block, its double-click
+  opens it, its hover is the block's. It draws in `g.order-badges`, above
+  `g.overlay`, and dims with its block under a search or a focus.
 - **A route.** `path.casing.route`, width 7, in `g.route-casings` at 0.4 as
   one group so a shared trunk does not add up; the origin's halo at 0.5 or
-  its port halo `on`; `route-terminal` squares; a `route` badge on each closed
-  child entered and, off the root, on each pin crossed at its outer end,
-  its click opening the parent. A loop's chain leaving through a pin puts
-  its `continues` badge there first, the route's inward of it.
+  its port halo `on`; `route-terminal` squares; a `route` badge on each child
+  entered (`RouteDrawing.entered`) and, off the root, each pin crossed (`pins`),
+  as above.
 - **The right-click menu.** `contextmenu` on a pin, a `rect.port` or a
   `path.wire-hit` opens `div.menu` at the pointer and selects nothing;
   elsewhere the browser's menu stays. A capture-phase `pointerdown` outside,
@@ -395,8 +395,8 @@ What the records do not fix, or where the page differs:
 | the svg | `.searching` | while `hits` stands |
 | the svg | `.legend-focus`, `.diagnostic-focus` or `.route-focus`, with `[data-focus]` | the standing focus; the line's key, the diagnostic's index or the origin's `faceText` |
 | the canvas region | `div.viewport[tabindex="0"]`, `.focused` | always; `focused` while it holds the keyboard |
-| the buttons | `.tools` holding `button.undo-drags`, then `button.fit` | the undo button while the drawn level holds a drag, titled "Put every dragged component and pin back in its computed place (X)" |
-| a block | `g.blocks > g.block[data-id]` with `.primitive`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin; the last child the most recently dragged |
+| the buttons | `.tools` holding `button.fit` | always |
+| a block | `g.blocks > g.block[data-id]` with `.primitive`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin, in the level's order |
 | a block's outline | `g.block .shape`, a `path` for a root tag, else a `rect`; `[data-step]` | `data-step` in rate mode, absent with the continuous color or the gray |
 | a block's states | `.selected`, `.hover`, `.search-hit`, `.search-under`, `.lit`, `.extra`, `.route-origin` | selection, hover, a hit or a closed assembly with marked nodes beneath, a focus, past the eighth step, a pin as a route's origin |
 | a keyed member | `g.block[data-region]`, its `text.segment` the key | inside a region |
@@ -415,12 +415,12 @@ What the records do not fix, or where the page differs:
 | a type label | `g.type-labels > text.type-label[data-port][data-wire]`, no title, `pointer-events: none` | after `g.blocks`, only while `data-labels`; the producer port and its first wire |
 | a region | `g.regions > g.region[data-path]` holding `rect.halo`, `rect.shape`, `text.caption`; `.selected` | first in the svg; `selected` when the folder is |
 | the rate pill | `g.block g.badge-pill` holding `title`, `rect`, `text.badge` | rate mode, an extra or a clock count |
-| the order badge | `g.block g.order-badge[data-id]` holding `title`, `rect`, `text.order` | while `data-order` |
+| the order badge | `g.order-badges > g.order-badge[data-id]`, `.lit`, `.search-hit`, `.search-under` as its block's, holding `title`, `rect`, `text.order` | while `data-order`; after `g.overlay` |
 | the events pill | `g.block g.events-pill` holding `title`, `rect`, `text.events` | a primitive that declares events, a closed assembly with some beneath; both modes |
-| the overlay | `g.overlay` | last in the svg |
+| the overlay | `g.overlay` | after `g.type-labels` |
 | a mark | `path.mark-wire[data-wire]`, `rect.mark-port[data-port]`, `rect.mark-halo[data-id]`, each `[data-severity]`, `error` or `warning` | a diagnostic's attribution; a `path` mark halo on a root tag |
 | a dead hop | `path.chord[data-id][data-from][data-to][data-severity]`, `path.cross[data-id]` | a dead hop's member |
-| an overlay badge | `g.badge[data-id][data-role]`, the role `diagnostic`, `continues` or `route`, `[data-severity]` on the first two, holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing in a child or leaving by a pin (`data-id` the pin's), a route entering or leaving |
+| an overlay badge | `g.overlay > g.badge[data-id][data-role]`, the role `diagnostic` or `continues`, `[data-severity]`; `g.route-pills > g.badge[data-id][data-role="route"]`, last in the svg; each holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing in a child or leaving by a pin (`data-id` the pin's), a route entering or leaving |
 | the legend | `div.legend` in `.viewport`: `li.continuous`, then `li[data-step]`, each `[title]` and holding `button.line[aria-pressed]` with `span.marks` (`span.swatch`, `span.number` or both), then `span.word` on the continuous line, else `span.period`, `span.phase`, `span.dt`, `span.anchor`; `.deployed` | rate mode with a line; `.deployed` and `span.dt` on a deployment; `aria-pressed` on the focused line; the title `legendText`'s key, declaring scope, `Dₐ`, `Φₐ` and a deployment's `τ` |
 | the menu | `div.menu` in `.viewport` holding `button.trace` | while a right-click menu is open |
 
@@ -458,7 +458,8 @@ What the records do not fix, or where the page differs:
 - **The breadcrumb's controls** are titled "Color by tier", "Color by rate",
   "Show the type of every wire" and "Number every primitive with a stage 2
   output by its position among the stage 2 calls".
-- **The detail pane.** Each `dt` is titled from `FACT_TITLES`, `member` `memberKind`
+- **The detail pane.** The header's path breaks after each slash (`slashed`), so the
+  copy button stays in the pane at 240 px. Each `dt` is titled from `FACT_TITLES`, `member` `memberKind`
   with `memberTitle`. A section's `toggle`, a key's or the browser's search's too,
   calls `onsection`. TIMING's heading is titled `TIMING_TITLE`; in
   its table each frame's head is titled from `FRAME_TITLES`, the anchor's name by
@@ -473,7 +474,7 @@ What the records do not fix, or where the page differs:
   `renderDocstring(facts.docstring, facts.type)` through `{@html}` (`build_release.md`
   answer 7), its styles `:global` under `div.docstring`, a `pre` scrolling sideways.
   `aside.detail` is a size container: under 420 px, the default 360 included,
-  parameters and faces stack. The trace button reads "Trace", or "Clear the route"
+  parameters and faces stack, a parameter's name in `--text-light`. The trace button reads "Trace", or "Clear the route"
   while that route stands, `aria-pressed`.
 - **The drawer.** A tab's click opens on it or closes it. The diagnostics
   filter, a case-insensitive substring over kind, raw path and message, is
@@ -615,11 +616,7 @@ Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 | `o` | the execution-order badges on or off, kept per browser (`toggleOrder`) |
 | `?` | the help page shown or closed (`toggleHelp`), with or without a model; while it shows, see above |
 | Cmd-O, Ctrl-O | click `input.pick`, the file picker, in a text field and under the help page too, where the file loads beneath; with Shift or Alt the browser's |
-| `x`, `X` | the drawn level's last dragged block back in its computed place, the one dragged before it on the next press; `X` and the undo button every one (`undrag`); view and selection kept; nothing with no drag or mid-drag |
 | Escape | with the right-click menu open, the menu alone (`menuKey`); else a pending prefix, else the session's `escape()`: the route, then the focused diagnostic, then the legend's focus, then the query, then the selection |
-
-Dragging has no keyboard form; Shift during a drag is the canvas's own
-listener (see "The canvas").
 
 ## The live tab
 

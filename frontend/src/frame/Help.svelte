@@ -7,7 +7,7 @@
   // It scrolls on its own, focused on mount so the browser's keys scroll it.
   import { GLYPHS, tagD } from "../canvas/glyphs";
   import { palette, stepPair } from "../canvas/palette";
-  import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
+  import { BADGE_FONT, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, CROSS, FACE_FONT, LABEL_FONT, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT, textWidth } from "../canvas/size";
   import { EQUATIONS, KEYS, KEYS_NOTE, LAW_LEAD, LEAD, LINKS, NOTATION, NOTATION_LEAD, PRIVACY, SEARCH_LEAD, SEARCH_PREFIXES, TERMS, TYPE_RULE, VIMIUM, VIMIUM_PATTERNS, VOCABULARY } from "../lib/help";
   import { onMount } from "svelte";
 
@@ -131,7 +131,7 @@
     {:else if key === "chord"}
       <rect x="12" y="4" width="96" height="40" rx="4" fill={palette.discrete.fill} stroke={palette.discrete.stroke} />
       <path class="chord" d="M12,16 L108,32" />
-      <path class="cross" d="M57,21 L63,27 M57,27 L63,21" />
+      <path class="cross" d="M{60 - CROSS},{24 - CROSS} L{60 + CROSS},{24 + CROSS} M{60 - CROSS},{24 + CROSS} L{60 + CROSS},{24 - CROSS}" />
       <rect class="port" {...sq(12, 16)} />
       <rect class="port" {...sq(108, 32)} />
     {:else if key === "dim"}
@@ -216,7 +216,7 @@
           {/each}
         </tbody>
       </table>
-      <p>{SEARCH_LEAD}</p>
+      <p>{@render text(SEARCH_LEAD)}</p>
       <table class="prefixes">
         <tbody>
           {#each SEARCH_PREFIXES as [prefix, field] (prefix)}

@@ -1,0 +1,2 @@
+      if (routeDrawn?.entered.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route continues inside; open it to follow it." });
+      if (loop) pills.push(loop);

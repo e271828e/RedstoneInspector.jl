@@ -19,6 +19,13 @@ describe("detailAt", () => {
   });
 });
 
+describe("the floors", () => {
+  it("are the look pass's: 0.7 for the face names, 0.6 for the display names and icons, 0.4 for the segment (4.1)", () => {
+    expect([FLOOR_FACES, FLOOR_NAMES, FLOOR_SEGMENTS]).toEqual([0.7, 0.6, 0.4]);
+    expect([0.36, 0.45, 0.56, 0.7, 0.88].map(detailAt)).toEqual(["frames", "segments", "segments", "full", "full"]);
+  });
+});
+
 describe("sizeLabels", () => {
   // no DOM here: a document whose canvas has no 2D context, so `textWidth` falls back to its estimate
   afterEach(() => vi.unstubAllGlobals());

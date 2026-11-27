@@ -13,7 +13,7 @@ export interface Term {
 }
 
 /** The paragraph above the legend: the level, the zoom's text order and the computed layout. */
-export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only: `x` puts the last one dragged back in its computed place, and `X` or the Undo drags button every one.";
+export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load.";
 
 /** Component, face and wire, then the glossary's drawn terms in its order, each with its drawing. */
 export const TERMS: Term[] = [
@@ -31,7 +31,7 @@ export const TERMS: Term[] = [
   },
   {
     key: "badge", term: "badge", sample: "badge",
-    line: "A small mark on a component's edge or at a pin's end carrying a fact: a diagnostic, a loop or route continuing inside a closed child, the clocks inside an assembly, a position in the execution order.",
+    line: "A small mark on a component's edge or at a pin's end carrying a fact: a diagnostic, a loop or route continuing inside a closed child or leaving through a pin, the clocks inside an assembly, a position in the execution order.",
   },
   { key: "casing", term: "casing", sample: "casing", line: "The highlight of a line: a wider translucent band under a wire in the highlight hue." },
   {
@@ -152,7 +152,6 @@ export const KEYS: [string[], string][] = [
   [["o"], "execution-order badges on or off"],
   [["?"], "the help page, open or closed"],
   [["Cmd-O", "Ctrl-O"], "open a descriptor"],
-  [["x", "X"], "put the last dragged component or pin back in its computed place, or every one"],
   [["Escape"], "close the right-click menu, else cancel a pending `z` or `g`, else close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
 ];
 
@@ -160,7 +159,7 @@ export const KEYS: [string[], string][] = [
 export const KEYS_NOTE = "Single keys or pairs, outside text fields, where Tab, Cmd-K, Ctrl-K, Cmd-O and Ctrl-O still act. `z` and `g` wait for a second key, shown in the status bar; while `z` is held, every `h`, `j`, `k`, `l`, `i` and `o` acts under it. The color mode, the type labels, the order badges and the panes' sizes and collapse are kept per browser.";
 
 /** The search's prefixes (workspace.md answer 5), each with the field it narrows a term to. */
-export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, and several terms must all match.";
+export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, written against the term or before it, so `face: out` reads as `face:out`; several terms must all match.";
 export const SEARCH_PREFIXES: [string, string][] = [
   ["path:", "the path of a component"],
   ["type:", "its type or its type's alias"],

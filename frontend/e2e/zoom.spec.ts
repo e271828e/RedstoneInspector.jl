@@ -1,9 +1,10 @@
 // The text levels (visual_grammar.md answer 10): zoomed out past each floor of
 // legibility one level of text drops, face names first, then the display name
-// with its icon, the segment last; wires and port squares never drop.
+// with its icon, the segment last; wires and port squares never drop. The floors
+// are the look pass's (2026-11-27, 4.1), so library loads below the segment's.
 import { test, type Page } from "@playwright/test";
 import { drop, expect, openPath, press, shot } from "./fixtures";
-import { FLOOR_FACES, FLOOR_NAMES, FLOOR_SEGMENTS } from "../src/canvas/size";
+import { detailAt, FLOOR_FACES, FLOOR_NAMES, FLOOR_SEGMENTS } from "../src/canvas/size";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 /** The scale, screen pixels per world unit: the svg's width over the viewBox's. */
@@ -68,4 +69,21 @@ test("closed_loop's sensing: the icons drop with the display names and stay drop
   await zoomBelow(page, FLOOR_SEGMENTS);
   await expect(svg(page)).toHaveAttribute("data-detail", "frames");
   await allHidden(page, "g.icon");
+});
+
+test("library: the fit lands below the segment's floor, so the root loads at the frames level, and each zoom step draws detailAt's level for its scale (the look pass, 4.1)", async ({ page }) => {
+  await drop(page, "library");
+  const fit = await scale(page);
+  expect(fit).toBeLessThan(FLOOR_SEGMENTS);
+  await expect(svg(page)).toHaveAttribute("data-detail", "frames");
+  await page.locator(".viewport").focus();
+  const seen = new Set<string>();
+  for (let i = 0; i < 12 && !seen.has("full"); i++) {
+    await press(page, "+");
+    const d = detailAt(await scale(page));
+    seen.add(d);
+    await expect(svg(page)).toHaveAttribute("data-detail", d);
+  }
+  expect([...seen]).toEqual(["frames", "segments", "no-faces", "full"].filter((d) => seen.has(d)));
+  expect(seen.has("full")).toBe(true);
 });

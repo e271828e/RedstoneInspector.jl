@@ -68,7 +68,7 @@
 {#snippet header(segment: string, name: string, path: string, opens = false, traces = false, mark = false)}
   <h2><span class="segment">{segment}</span> <span class="name">{name}</span></h2>
   <div class="path-line">
-    <code class="path" title={path || "/"}>{path || "/"}</code>
+    <code class="path" title={path || "/"}>{@render slashed(path || "/")}</code>
     <button class="copy" title="Copy the path" onclick={() => copy(path)}>{copied === path ? "Copied" : "Copy"}</button>
     {#if opens}<button class="open-level" title={`Open ${segment} as the level`} onclick={() => onopen(path)}>Open</button>{/if}
     {#if mark}<span class="level-mark">open level</span>{/if}
@@ -348,6 +348,8 @@
     .parameters, .parameters tbody, .parameters tr, .parameters td { display: block; }
     .parameters tr { padding: 2px 0; }
     .parameters td { padding: 0; }
+    /* stacked, the name in the lighter color reads apart from the value under it (the look pass, 3.2) */
+    .parameters .param-name { color: var(--text-light); }
     .faces, .faces tbody { display: block; }
     .faces thead { display: none; }
     .faces tbody tr {

@@ -403,9 +403,9 @@ export const jointLine = (joint: JointPeriod): string | undefined =>
     ? undefined
     : `the chart spans the joint period with Δt_frame: ${spanText(joint.baseTicks, joint.seconds)}, ${count(joint.frames, "frame", "frames")}`;
 
-/** The chart's constants, the look pass's (answer 11): the threshold in units of the span, the minimum pitch in px. */
-export const CHART_THRESHOLD = 1000;
-export const CHART_PITCH = 6;
+/** The chart's constants, the look pass's (answer 11, 9.2 and 9.4): the threshold in units of the span, the minimum pitch in px. */
+export const CHART_THRESHOLD = 500;
+export const CHART_PITCH = 10;
 
 /** How the timeline is drawn: omitted past the threshold, else fitted to the width or scrolled at the minimum pitch. */
 export type ChartFit =

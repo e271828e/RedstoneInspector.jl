@@ -97,7 +97,7 @@ export function loopFacts(model: Model, cycle: Cycle): LoopFacts {
   };
 }
 
-/** A node diagnostic's badge: the function at fault or the kind, titled with the message's first line. */
+/** A node diagnostic's badge: the function at fault or the kind, titled with that text whole, then the message's first line. */
 export interface Badge {
   text: string;
   title: string;
@@ -206,7 +206,8 @@ export function overlayOf(model: Model, level: string): Overlay {
   for (const d of diagnosticsOf(model)) {
     const s = d.severity, m = marksOn(model, level, d);
     for (const b of m.blocks) {
-      const badge: Badge | undefined = m.badge === b ? { text: d.function ?? d.kind, title: d.message.split("\n")[0], index: d.index, severity: s } : undefined;
+      const text = d.function ?? d.kind;
+      const badge: Badge | undefined = m.badge === b ? { text, title: `${text}\n${d.message.split("\n")[0]}`, index: d.index, severity: s } : undefined;
       const was = o.blocks.get(b);
       o.blocks.set(b, { severity: worse(was?.severity, s), badge: keep(was?.badge, badge) });
     }

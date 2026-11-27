@@ -206,17 +206,19 @@ b6f08b1.
     as closed blocks. Ties break by declaration order, the order of the
     struct's fields and of each connection list, so the code steers the
     picture. When `inspect` pushes a new descriptor, surviving blocks keep
-    their places by ELK's determinism and a dragged one keeps its dragged
-    place; ELK takes no position hints. A user may drag a block or a pin to
-    untangle a view, Shift held at any moment keeping the move to the axis
-    of greater travel. The change lasts until the page reloads and is never
-    saved. Hand arrangement saved beside the code is refused for now. It
+    their places by ELK's determinism; ELK takes no position hints. A
+    level's drawing is ELK's alone, and no block moves by hand. Hand
+    arrangement saved beside the code is refused for now. It
     could be added on top later, as a sidecar file keyed by path,
     presentation state and never model state.
     *Amended 2026-11-01 (`workspace.md` answer 9): after a push the previous
     positions went to ELK as hints, and only a block could be dragged.
     Amended 2026-11-02 (increment 6's look pass): Shift's one-axis drag
-    joined.*
+    joined. Amended 2026-11-27 (the look pass, 11.4): a user could drag a
+    block or a pin to untangle a view, Shift keeping the move to one axis,
+    until the page reloaded. ELK cannot keep a dropped block in place, so
+    the drag's wires came from a local router blind to other blocks, and
+    the user removed it; `pending.md` holds the item.*
     *Why:* a saved arrangement is a second file to version that drifts from
     the code, and it would bring back through layout the second source of
     truth that answer 2 removed. Computed layout works the same in the live

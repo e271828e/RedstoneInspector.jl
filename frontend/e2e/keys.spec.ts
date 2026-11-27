@@ -4,7 +4,7 @@
 // Shift-k open and climb, zz centres the selection, z with h j k l pans and zi zo zoom,
 // d and u pan by half a page, 0 + - fit and zoom, Shift-s toggles the drawer, the
 // prefixes z and g wait in the status bar and a held z keeps acting, the retired keys
-// do nothing, Tab cycles the four regions, the ring on a focused pane's box for the
+// do nothing, a press and a move on a block move nothing (the look pass, 11.4), Tab cycles the four regions, the ring on a focused pane's box for the
 // mouse and the keyboard and on the canvas for the keyboard only, t with nothing
 // selected does nothing, Escape clears the query before the selection; ? is
 // help.spec.ts's, the cursor in the panes is cursor.spec.ts's, the tree's keys tree.spec.ts's. The geometric pins are recomputed here from the
@@ -604,18 +604,35 @@ test("with no model a z or a g waits for nothing", async ({ page }) => {
   }
 });
 
-test("the retired keys act no more: z alone centres nothing, d, m and i toggle no pane, u and Shift-u put no drag back, r leaves the colors, r and Shift-r leave the drawer", async ({ page }) => {
-  const at = () => page.locator('g.block[data-id="plant"]').getAttribute("transform");
+test("no drag (the look pass, 11.4): a press and a move on plant move no block and pan nothing, and the canvas has no undo button", async ({ page }) => {
+  const transforms = () => page.locator("svg.canvas g.blocks > g.block").evaluateAll((gs) => gs.map((g) => g.getAttribute("transform")));
+  const placed = await transforms();
+  const view = await viewBox(page);
   const box = (await page.locator('g.block[data-id="plant"] > .shape').boundingBox())!;
   await page.mouse.move(box.x + 20, box.y + 10);
   await page.mouse.down();
-  await page.mouse.move(box.x + 20, box.y + 70, { steps: 4 });
+  await page.mouse.move(box.x + 80, box.y + 70, { steps: 4 });
   await page.mouse.up();
+  expect(await transforms()).toEqual(placed);
+  expect(await viewBox(page)).toEqual(view);
+  await expect(page.locator(".viewport .tools button")).toHaveCount(1);
+  await expect(page.locator(".viewport .tools button.fit")).toHaveCount(1);
+});
+
+test("the retired keys act no more: z alone centres nothing, d, m and i toggle no pane, u, Shift-u, x and Shift-x lay nothing out, r leaves the colors, r and Shift-r leave the drawer", async ({ page }) => {
+  const at = () => page.locator('g.block[data-id="plant"]').getAttribute("transform");
   const placed = await at();
-  await expect(page.locator("button.undo-drags")).toHaveAttribute("title", "Put every dragged component and pin back in its computed place (X)");
+  // every time data-ready goes absent from here on is a layout run
+  await page.evaluate(() => {
+    const svg = document.querySelector("svg.canvas")!;
+    (window as any).__layouts = 0;
+    new MutationObserver((ms) => {
+      for (const m of ms) if (m.attributeName === "data-ready" && !svg.hasAttribute("data-ready")) (window as any).__layouts++;
+    }).observe(svg, { attributes: true });
+  });
   await press(page, "+");
   const view = await viewBox(page);
-  await pressAll(page, "z", "Escape", "m", "i", "d", "u", "Shift+U", "Shift+D", "Shift+M", "Shift+I", "Shift+Z");
+  await pressAll(page, "z", "Escape", "m", "i", "d", "u", "Shift+U", "x", "Shift+X", "Shift+D", "Shift+M", "Shift+I", "Shift+Z");
   expect(await viewBox(page)).toEqual(view);
   await expect(page.locator(".pane.side.collapsed")).toHaveCount(0);
   await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
@@ -625,10 +642,7 @@ test("the retired keys act no more: z alone centres nothing, d, m and i toggle n
   await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "false");
   expect(await cursor(page)).not.toBe("drawer");
   expect(await at()).toBe(placed);
-  await expect(page.locator("button.undo-drags")).toHaveCount(1);
-  await press(page, "x");
-  await page.locator(readyLevel("")).waitFor();
-  expect(await at()).not.toBe(placed);
+  expect(await page.evaluate(() => (window as any).__layouts)).toBe(0);
   // s took the drawer from r: open and focused, neither r nor Shift-r closes it or moves the focus
   await press(page, "s");
   await expect(page.locator("section.drawer")).toHaveAttribute("data-open", "true");

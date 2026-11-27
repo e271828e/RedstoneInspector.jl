@@ -6,7 +6,7 @@ import { parseDescriptor } from "./loader";
 import { fixtureJson, fixtureModel } from "./fixtures";
 import { loadModel, type Model } from "./model";
 import {
-  anchorTable, anchorTitle, baseMultiple, CHART_PAD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks,
+  anchorTable, anchorTitle, baseMultiple, CHART_PAD, CHART_PITCH, CHART_THRESHOLD, chainLine, chartFit, chartRows, coarsestLine, componentTable, dueTicks,
   frameLines, frameTopX, framesTable, gridReport, headList, hyperperiod, hyperperiodLine, jointLine, jointPeriod, julia,
   lcmQ, legendText, q, sampleTimesKeyed, scopeFramesTable, scopeTable, seconds, stepsPerFrame, tickX, type DrawnFit,
 } from "./timing";
@@ -314,7 +314,16 @@ describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
   const fitOf = (m: Model, width: number, threshold?: number) => chartFit(jointPeriod(m)!, frameLines(m)!, width, threshold);
   it("fits the width while a base tick gets at least the pitch, else scrolls at the pitch", () => {
     expect(fitOf(libDep, 1000)).toEqual({ kind: "fit", finer: "base tick", units: 10n, tickPx: 100, width: 1000 });
-    expect(fitOf(timingDep, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
+    expect(fitOf(timingDep, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 10, width: 3600 });
+  });
+  it("takes the look pass's constants: a threshold of 500 units and a minimum pitch of 10 px (9.2 and 9.4)", () => {
+    expect([CHART_THRESHOLD, CHART_PITCH]).toEqual([500, 10]);
+    const twice = edited("timing_deployment", (d) => {
+      d.deployment.dt_base = { num: 1, den: 600 };
+      for (const r of [...d.deployment.schedule.anchors, ...d.deployment.schedule.rows, ...d.deployment.schedule.scopes]) [r.D, r.phi] = [r.D * 2, r.phi * 2];
+    });
+    expect(jointPeriod(twice)!.baseTicks).toBe(720n);
+    expect(fitOf(twice, 1000)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 720 base ticks (6/5 s)" });
   });
   it("past the threshold omits the timeline with one line of its length in base ticks and seconds", () => {
     expect(fitOf(timingDep, 1000, 100)).toEqual({ kind: "omitted", line: "chart omitted: the joint period is 360 base ticks (6/5 s)" });
@@ -327,7 +336,7 @@ describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
     });
     const joint = jointPeriod(fine)!;
     expect([joint.baseTicks, joint.frames, frameLines(fine)!.drawn]).toEqual([10n, 25n, true]);
-    expect(fitOf(fine, 100)).toEqual({ kind: "scroll", finer: "frame", units: 25n, tickPx: 15, width: 150 });
+    expect(fitOf(fine, 100)).toEqual({ kind: "scroll", finer: "frame", units: 25n, tickPx: 25, width: 250 });
     expect(fitOf(fine, 1000)).toEqual({ kind: "fit", finer: "frame", units: 25n, tickPx: 100, width: 1000 });
     expect(fitOf(fine, 1000, 15).kind).toBe("omitted");
   });
@@ -338,7 +347,7 @@ describe("the chart's fit (answer 11, rulings 9 and 16)", () => {
     });
     expect([jointPeriod(fine)!.baseTicks, jointPeriod(fine)!.frames]).toEqual([360n, 3600n]);
     expect(frameLines(fine)).toEqual({ drawn: false, framesPerTick: 10n, caption: "every base tick is a frame top: 10 frames in one base tick" });
-    expect(fitOf(fine, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 6, width: 2160 });
+    expect(fitOf(fine, 1000)).toEqual({ kind: "scroll", finer: "base tick", units: 360n, tickPx: 10, width: 3600 });
   });
   it("gives the pitch to the base tick where Δt_frame divides it: library at a tenth of its tick fits 10 ticks in 300 px (an inline copy)", () => {
     const fine = edited("library_deployment", (d) => {
@@ -370,7 +379,7 @@ describe("the chart's lines and geometry (answers 8 and 11)", () => {
   });
   it("puts base tick n at n pitches from the margin, and frame top k at k·Δt_frame/Δt_base ticks, between ticks when that is no whole", () => {
     const fit = chartFit(jointPeriod(timingDep)!, frameLines(timingDep)!, 1000) as DrawnFit;
-    expect([tickX(0n, fit), tickX(5n, fit)]).toEqual([CHART_PAD, CHART_PAD + 30]);
+    expect([tickX(0n, fit), tickX(5n, fit)]).toEqual([CHART_PAD, CHART_PAD + 5 * CHART_PITCH]);
     expect(frameTopX(2n, jointPeriod(timingDep)!, fit)).toBe(tickX(6n, fit));
     const m = edited("library_deployment", (d) => (d.deployment.dt_frame = { num: 3, den: 200 }));
     const joint = jointPeriod(m)!, half = chartFit(joint, frameLines(m)!, 600) as DrawnFit;

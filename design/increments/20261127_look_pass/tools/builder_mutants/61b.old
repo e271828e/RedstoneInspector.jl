@@ -1,0 +1,1 @@
+(order === undefined ? 0 : pillWidth(order) + BADGE_GAP)

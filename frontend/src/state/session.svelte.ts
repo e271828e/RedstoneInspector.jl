@@ -6,7 +6,7 @@
 // route through `rekeyRoute`) and drops the focused diagnostic.
 // Nothing here touches local storage; the open level is the URL's hash, the help
 // page `#help` pushed over it.
-import type { Geometry, LevelLayout } from "../canvas/layout";
+import type { Geometry } from "../canvas/layout";
 import type { Section, Selection } from "../lib/detail";
 import { diagnosticsOf } from "../lib/diagnostics";
 import type { Model } from "../lib/model";
@@ -31,7 +31,7 @@ let drawer = $state.raw<{ open: boolean; tab: Tab }>({ open: false, tab: "diagno
 /** Every node shares one state per section, which a load of any model keeps: only a page load resets it. */
 let sections = $state.raw<ReadonlySet<Section>>(new Set(["events", "parameters", "faces"]));
 let views = $state.raw<ReadonlyMap<string, View>>(new Map());
-let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
+let layouts = $state.raw<ReadonlyMap<string, Geometry>>(new Map());
 let query = $state("");
 let legendFocus = $state<string | undefined>();
 let diagnosticFocus = $state<number | undefined>();
@@ -154,12 +154,12 @@ export function load(m: Model | undefined) {
   diagnosticFocus = undefined; // a diagnostic has no key to rekey by
   notice = undefined;
   if (m && replacing) {
-    const r = rekey({ level, selection, expanded, views, layouts, query }, m, model);
+    const r = rekey({ level, selection, expanded, views, query }, m, model);
     level = r.level;
     selection = r.selection;
     expanded = r.expanded;
     views = r.views;
-    layouts = new Map([...r.layouts].map(([p, l]) => [p, { ...l, stale: true }]));
+    layouts = new Map(); // every level is laid out again
     query = r.query;
     legendFocus = legendFocus === undefined ? undefined : rekeyFocus(legendFocus, model!, m);
     // a route stands while its origin is declared and still resolves; one dropped either way clears, said so
@@ -323,8 +323,8 @@ export function setView(path: string, view: View) {
   views = new Map(views).set(path, view);
 }
 
-export function setLayout(path: string, geometry: Geometry, dragged: ReadonlySet<string>) {
-  layouts = new Map(layouts).set(path, { geometry, dragged, stale: false });
+export function setLayout(path: string, geometry: Geometry) {
+  layouts = new Map(layouts).set(path, geometry);
 }
 
 export function setQuery(text: string) {

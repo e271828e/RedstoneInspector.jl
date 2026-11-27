@@ -15,16 +15,10 @@ export interface Geometry {
   junctions: Map<string, Point[]>;
   /** ELK's box of each region, by folder path; the canvas draws the frame from its members' current boxes. */
   regions: Map<string, Rect>;
-  /** ELK's box of each producer port's type label, by port id, placed from the port's point, so a dragged block carries its labels. */
+  /** ELK's box of each producer port's type label, by port id, placed from the port's point. */
   labels: Map<string, Rect>;
   width: number;
   height: number;
-}
-/** A level's layout as the session keeps it: ELK's output plus drags, the dragged ids in drag order, `stale` after a push until laid out again. */
-export interface LevelLayout {
-  geometry: Geometry;
-  dragged: ReadonlySet<string>;
-  stale: boolean;
 }
 
 const elk = new ELK();

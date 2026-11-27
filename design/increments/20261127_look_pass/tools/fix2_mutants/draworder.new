@@ -1,0 +1,33 @@
+      {#if routeDrawn && shown.level.path === path}
+        <!-- last: the route's pills, turned on by a trace, may run over an order badge (visual_grammar.md answer 9) -->
+        <g class="route-pills">
+          {#each overlayBadges.filter((q) => q.role === "route") as q (q.block + q.role)}
+            {@render pill(q)}
+          {/each}
+        </g>
+      {/if}
+      {#if orders.size}
+        <!-- above the overlay's fixed pills, which end short of them; dimmed with their blocks (workspace.md answer 7) -->
+        <g class="order-badges">
+          {#each shown.level.blocks as b (b.id)}
+            {@const text = orders.get(b.id)}
+            {@const box = g.boxes.get(b.id)}
+            {#if text !== undefined && box}
+              {@const x = box.x + BADGE_INSET}
+              {@const y = box.y + box.height - BADGE_HEIGHT - BADGE_TOP}
+              <g
+                class={["order-badge", { lit: !!lit?.blocks.has(b.id), "search-hit": !!hits?.blocks.has(b.id), "search-under": !!hits?.under.has(b.id) }]}
+                data-id={b.id} role="none"
+                onclick={() => select({ kind: "block", id: b.id })}
+                ondblclick={() => dblclick(b)}
+                onpointerenter={() => (hovered = { kind: "block", id: b.id })}
+                onpointerleave={() => (hovered = undefined)}
+              >
+                <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
+                <rect x={x} y={y} width={pillWidth(text)} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                <text class="order" x={x + BADGE_PAD} y={y + 9} style="font:{BADGE_FONT}">{text}</text>
+              </g>
+            {/if}
+          {/each}
+        </g>
+      {/if}

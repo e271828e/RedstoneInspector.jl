@@ -15,8 +15,7 @@
   // dimming for whichever focus stands, and the execution-order badges
   // (workspace.md answer 7).
   // The view and the layout are the session's: restored on a revisit, reported
-  // on every change. A block or a pin drags, its wires re-routed locally
-  // (initial_design.md answer 12); `x`, `X` and the undo button put drags back.
+  // on every change; the layout is ELK's alone (initial_design.md answer 12).
   import { tick, untrack } from "svelte";
   import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
@@ -37,11 +36,10 @@
   import { follow as followView, type Box } from "../lib/navigate";
   import { legendText } from "../lib/timing";
   import { centreOn, fitBeside, pan, viewRect, zoomAt, type Point, type Rect, type View } from "../lib/view";
-  import { layoutLevel, pathD, type Geometry, type LevelLayout } from "./layout";
+  import { layoutLevel, pathD, type Geometry } from "./layout";
   import { palette, stepPair, type Pair } from "./palette";
-  import { rerouteTouching } from "./router";
   import {
-    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
+    BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, CROSS, cutConstant, cutPill, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
     pillWidth, sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
@@ -61,8 +59,8 @@
     selected?: Target;
     /** The level's view the session holds, restored instead of fitting; read when the level is drawn. */
     view?: View;
-    /** The level's layout the session holds, drawn instead of running ELK unless stale; read when the level is drawn. */
-    layout?: LevelLayout;
+    /** The level's layout the session holds, drawn instead of running ELK; read when the level is drawn. */
+    layout?: Geometry;
     /** A standing query's hits on this level: drawn with the dashed halo, the rest dimmed. */
     hits?: LevelHits;
     /** The standing focus's sets on this level: its blocks, wires and ports lit, the rest dimmed as for a search. */
@@ -84,8 +82,8 @@
     onselect?: (target: Target | undefined) => void;
     /** Every change of the view. */
     onview?: (view: View) => void;
-    /** A level laid out, or a drag released: the geometry and the dragged block ids in drag order. */
-    onlayout?: (geometry: Geometry, dragged: ReadonlySet<string>) => void;
+    /** A level laid out: its geometry. */
+    onlayout?: (geometry: Geometry) => void;
     /** A click on a legend line, with its key. */
     onlegend?: (key: string) => void;
     /** A click on a diagnostic's badge, with its index. */
@@ -101,7 +99,7 @@
   const FIT_MAX_SCALE = 2;
   /** The wheel's zoom per pixel of scroll. */
   const WHEEL_RATE = 0.0015;
-  /** A pointer travel under this many pixels is a click, not a drag. */
+  /** A pointer travel under this many pixels is a click, not a pan. */
   const CLICK_SLOP = 3;
 
   let svg = $state<SVGSVGElement>();
@@ -110,8 +108,6 @@
   let width = $state(0);
   let height = $state(0);
   let shown = $state.raw<{ level: Level; sizes: Map<string, BlockSize>; geometry: Geometry } | undefined>();
-  /** The dragged block ids in drag order; the last is drawn last. */
-  let dragged = $state.raw<ReadonlySet<string>>(new Set());
   let ready = $state(false);
   let view = $state<View>({ x: 0, y: 0, scale: 1 });
   let hovered = $state<Target | undefined>();
@@ -167,8 +163,8 @@
   /** A type label's baseline below the top of its box. */
   const LABEL_BASELINE = 8;
   /**
-   * One type label per producer port: its unqualified type whole, at ELK's place by the port, which a dragged
-   * block carries; the first wire its wire. The detail pane carries the whole type.
+   * One type label per producer port: its unqualified type whole, at ELK's place by the port; the first wire its
+   * wire. The detail pane carries the whole type.
    */
   const typeLabels = $derived.by(() => {
     if (!labels || !shown) return [];
@@ -185,8 +181,7 @@
   const regions = $derived(shown ? regionsOf(tree, shown.level.path) : []);
   const regionOf = $derived(new Map(regions.flatMap((r) => r.members.map((m) => [m, r.path] as const))));
   /**
-   * Each region's frame, by path: its members' current boxes' union grown by the padding, so a dragged member
-   * carries it; ELK's box until a drag.
+   * Each region's frame, by path: its members' boxes' union grown by the padding.
    */
   const frames = $derived.by(() => {
     const out = new Map<string, Rect>();
@@ -204,24 +199,9 @@
     return out;
   });
 
-  /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
-  function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
-    let g = laid;
-    const kept = new Set<string>();
-    for (const id of old.dragged) {
-      const was = old.geometry.boxes.get(id), now = g.boxes.get(id);
-      if (!was || !now) continue;
-      g = { ...g, boxes: new Map(g.boxes).set(id, { ...now, x: was.x, y: was.y }) };
-      g = { ...g, ...rerouteTouching(g, level, sizes, id) };
-      kept.add(id);
-    }
-    return { geometry: g, dragged: kept };
-  }
-
-  function draw(level: Level, sizes: Map<string, BlockSize>, geometry: Geometry, d: ReadonlySet<string>, v: View | undefined) {
+  function draw(level: Level, sizes: Map<string, BlockSize>, geometry: Geometry, v: View | undefined) {
     const drawn = { level, sizes, geometry };
     shown = drawn;
-    dragged = d;
     const finish = () => {
       ready = true;
       if (pending !== undefined) follow(pending);
@@ -243,15 +223,14 @@
 
   /** The latest ELK run; a level change or a newer run leaves an older one's result unused. */
   let run = 0;
-  /** ELK over the level, a held layout's dragged blocks put back where it has them, drawn in the view given or fitted. */
-  function relayout(level: Level, sizes: Map<string, BlockSize>, held: LevelLayout | undefined, v: View | undefined) {
+  /** ELK over the level, drawn in the view given or fitted. */
+  function relayout(level: Level, sizes: Map<string, BlockSize>, v: View | undefined) {
     const mine = ++run;
     ready = false;
     layoutLevel(level, sizes, regionsOf(tree, level.path), sizeLabels(model, level)).then((laid) => {
       if (mine !== run) return;
-      const r = held ? replace(laid, level, sizes, held) : { geometry: laid, dragged: new Set<string>() };
-      draw(level, sizes, r.geometry, r.dragged, v);
-      onlayout?.(r.geometry, r.dragged);
+      draw(level, sizes, laid, v);
+      onlayout?.(laid);
     });
   }
 
@@ -261,30 +240,18 @@
     const [saved, v] = untrack(() => [savedLayout, savedView] as const);
     run++;
     hovered = undefined;
-    blockDrag = undefined;
     menu = undefined;
-    if (saved && !saved.stale) untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
-    else relayout(level, sizes, saved, v);
+    if (saved) untrack(() => draw(level, sizes, saved, v));
+    else relayout(level, sizes, v);
     return () => { run++; };
   });
-
-  /**
-   * `x` and `X`: the last dragged block, or every one, back in its computed place, the level laid out again with the
-   * other drags put back, as a push does, the view kept; false with no drag on the drawn level or one under way.
-   */
-  export function undrag(all: boolean): boolean {
-    if (!shown || shown.level.path !== path || !dragged.size || blockDrag?.moved) return false;
-    dragged = new Set(all ? [] : [...dragged].slice(0, -1));
-    relayout(shown.level, shown.sizes, { geometry: shown.geometry, dragged, stale: true }, view);
-    return true;
-  }
 
   function setView(v: View) {
     view = v;
     onview?.(v);
   }
 
-  /** Fits the level, dragged blocks included, leaving the legend's box and its inset clear. */
+  /** Fits the level, leaving the legend's box and its inset clear. */
   export function fit() {
     if (!shown) return;
     const g = shown.geometry;
@@ -380,10 +347,8 @@
     return marked;
   });
 
-  // Pan, zoom, the background click and the block drag.
+  // Pan, zoom and the background click.
   let drag: { start: Point; view: View; moved: boolean; id: number } | undefined;
-  /** A block's drag: the press, the box at the press, the pointer's last place and whether Shift was held then. */
-  let blockDrag: { block: string; el: Element; start: Point; box: Rect; moved: boolean; id: number; last: Point; shift: boolean } | undefined;
   const local = (e: MouseEvent): Point => {
     const r = svg!.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -393,51 +358,7 @@
     drag = { start: local(e), view, moved: false, id: e.pointerId };
     svg.setPointerCapture(e.pointerId);
   }
-  /**
-   * A press on a block or a pin, root inputs' tags included, the drag starting past the slop. The pointer is captured on the block's group only
-   * then, once the raise has moved the group last: a capture from the press would retarget a port square's click,
-   * and moving a captured node releases the capture.
-   */
-  function blockdown(e: PointerEvent, b: Block) {
-    if (e.button !== 0 || !shown) return;
-    const el = e.currentTarget as Element;
-    const at = local(e);
-    blockDrag = { block: b.id, el, start: at, box: shown.geometry.boxes.get(b.id)!, moved: false, id: e.pointerId, last: at, shift: e.shiftKey };
-  }
-  function blockmove(e: PointerEvent) {
-    blockDrag!.last = local(e);
-    blockDrag!.shift = e.shiftKey;
-    dragTo(blockDrag!);
-  }
-  /**
-   * Moves the dragged block to the pointer's last place. With Shift held the move keeps to the axis of greater
-   * travel since the press (initial_design.md answer 12 as amended); releasing Shift frees it.
-   */
-  function dragTo(d: NonNullable<typeof blockDrag>) {
-    let dx = d.last.x - d.start.x, dy = d.last.y - d.start.y;
-    if (!d.moved && Math.hypot(dx, dy) < CLICK_SLOP) return;
-    if (d.shift) {
-      if (Math.abs(dx) >= Math.abs(dy)) dy = 0;
-      else dx = 0;
-    }
-    if (!d.moved) {
-      d.moved = true;
-      dragged = new Set([...dragged].filter((id) => id !== d.block).concat(d.block));
-      tick().then(() => blockDrag === d && d.el.isConnected && d.el.setPointerCapture(d.id));
-    }
-    const s = shown!;
-    const box = { ...d.box, x: d.box.x + dx / view.scale, y: d.box.y + dy / view.scale };
-    const g = { ...s.geometry, boxes: new Map(s.geometry.boxes).set(d.block, box) };
-    shown = { ...s, geometry: { ...g, ...rerouteTouching(g, s.level, s.sizes, d.block) } };
-  }
-  /** Shift pressed or released during a drag re-applies the pointer's last place, so the constraint snaps on or off. */
-  function shiftKey(e: KeyboardEvent) {
-    if (e.key !== "Shift" || !blockDrag?.moved) return;
-    blockDrag.shift = e.type === "keydown";
-    dragTo(blockDrag);
-  }
   function pointermove(e: PointerEvent) {
-    if (blockDrag && e.pointerId === blockDrag.id) return blockmove(e);
     if (!drag || e.pointerId !== drag.id) return;
     const p = local(e);
     const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
@@ -446,15 +367,6 @@
     setView(pan(drag.view, dx, dy));
   }
   function pointerup(e: PointerEvent) {
-    if (blockDrag && e.pointerId === blockDrag.id) {
-      // The raise moved the pressed node, so the browser fires no click after the release: select here.
-      if (blockDrag.moved && shown) {
-        onlayout?.(shown.geometry, dragged);
-        select({ kind: "block", id: blockDrag.block });
-      }
-      blockDrag = undefined;
-      return;
-    }
     if (!drag || e.pointerId !== drag.id) return;
     if (!drag.moved) select(undefined);
     drag = undefined;
@@ -470,14 +382,6 @@
     };
     el.addEventListener("wheel", wheel, { passive: false });
     return () => el.removeEventListener("wheel", wheel);
-  });
-
-  /** The blocks in drawing order: the most recently dragged last, above its neighbours. */
-  const ordered = $derived.by(() => {
-    if (!shown) return [];
-    const last = [...dragged].at(-1);
-    const top = shown.level.blocks.find((b) => b.id === last);
-    return top ? [...shown.level.blocks.filter((b) => b !== top), top] : shown.level.blocks;
   });
 
   // Opening.
@@ -550,44 +454,50 @@
     return box && p ? { x: box.x + p.x, y: box.y + p.y } : undefined;
   }
   /**
-   * The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a
-   * continuation's, then the route's on a child it enters. On a pin a loop's chain or the route crosses, off the
-   * root, the loop's pill then the route's straddle its top edge from its outer end inward.
+   * The overlay's pills (visual_grammar.md answers 8 and 9). On a child, one row on the bottom edge from the right
+   * inset leftward, `BADGE_GAP` apart: a node diagnostic's, a loop's, the route's. The fixed two never cover another
+   * mark, so the diagnostic's text is cut until both end at the left inset, or short of the order badge while it
+   * shows; the route's, which the reader turns on, stacks after them and may run over the order badge or past the
+   * corner. Off the root a pin's straddle its bottom edge at the inner end, the loop's nearest the corner: an input
+   * pin's from the bottom-right corner leftward, an output pin's from the bottom-left corner rightward.
    */
   const overlayBadges = $derived.by(() => {
     type Pill = { block: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
     const out: (Pill & { x: number; y: number; w: number })[] = [];
     if (!shown) return out;
-    const width = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
     for (const b of shown.level.blocks) {
       const box = shown.geometry.boxes.get(b.id);
       if (!box) continue;
+      const y = box.y + box.height - BADGE_HEIGHT - BADGE_TOP;
+      const pills: Pill[] = [];
       if (b.role === "in" || b.role === "out") {
         if (shown.level.path === "") continue;
-        const pills: Pill[] = [];
         const c = overlay?.leaves.get(b.id);
         if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
         if (routeDrawn?.pins.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
         let left = box.x + BADGE_INSET, right = box.x + box.width - BADGE_INSET;
         for (const q of pills) {
-          const w = width(q.text);
-          const x = b.role === "in" ? left : right - w;
-          out.push({ ...q, x, y: box.y + BADGE_TOP, w });
+          const w = pillWidth(q.text);
+          out.push({ ...q, x: b.role === "in" ? right - w : left, y, w });
           left += w + BADGE_GAP;
           right -= w + BADGE_GAP;
         }
         continue;
       }
-      const pills: Pill[] = [];
       const badge = overlay?.blocks.get(b.id)?.badge;
-      if (badge) pills.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index });
       const c = overlay?.continues.get(b.id);
-      if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
+      const loop: Pill | undefined = c && { block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c };
+      if (badge) {
+        const order = orders.get(b.id);
+        const room = box.width - 2 * BADGE_INSET - (order === undefined ? 0 : pillWidth(order) + BADGE_GAP) - (loop ? pillWidth(loop.text) + BADGE_GAP : 0);
+        pills.push({ block: b.id, role: "diagnostic", text: cutPill(badge.text, room), title: badge.title, severity: badge.severity, index: badge.index });
+      }
+      if (loop) pills.push(loop);
       if (routeDrawn?.entered.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route continues inside; open it to follow it." });
       let right = box.x + box.width - BADGE_INSET;
       for (const q of pills) {
-        const w = width(q.text);
-        out.push({ ...q, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
+        const w = pillWidth(q.text);
+        out.push({ ...q, x: right - w, y, w });
         right -= w + BADGE_GAP;
       }
     }
@@ -640,7 +550,7 @@
   }
 </script>
 
-<svelte:window onkeydown={shiftKey} onkeyup={shiftKey} onkeydowncapture={menuKey} onpointerdowncapture={menuPress} />
+<svelte:window onkeydowncapture={menuKey} onpointerdowncapture={menuPress} />
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex (a region root, one of Tab's four stops by answer 11) -->
 <div
@@ -744,7 +654,7 @@
         {/each}
       </g>
       <g class="blocks">
-        {#each ordered as b (b.id)}
+        {#each shown.level.blocks as b (b.id)}
           {@const box = g.boxes.get(b.id)!}
           {@const size = shown.sizes.get(b.id)!}
           {#if b.role === "in" || b.role === "out"}
@@ -754,7 +664,6 @@
             <g
               class={["block pin", b.role, { "root-input": tag }, blockClass(b)]} data-id={b.id}
               transform="translate({box.x},{box.y})" role="none"
-              onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
               oncontextmenu={(e) => contextmenu(e, { kind: "block", id: b.id })}
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
@@ -789,7 +698,6 @@
             <g
               class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id} data-region={regionOf.get(b.id)}
               transform="translate({box.x},{box.y})" role="none"
-              onpointerdown={(e) => blockdown(e, b)}
               onclick={() => select({ kind: "block", id: b.id })}
               ondblclick={() => dblclick(b)}
               onpointerenter={() => (hovered = { kind: "block", id: b.id })}
@@ -833,16 +741,6 @@
                   <title>{events.title}</title>
                   <rect x={x} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
                   <text class="events" x={x + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{events.text}</text>
-                </g>
-              {/if}
-              {#if orders.has(b.id)}
-                {@const text = orders.get(b.id)!}
-                {@const w = pillWidth(text)}
-                {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
-                <g class="order-badge" data-id={b.id}>
-                  <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
-                  <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
-                  <text class="order" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{text}</text>
                 </g>
               {/if}
               {#each size.ports as p (p.side + p.name)}
@@ -902,24 +800,50 @@
               {@const mx = (a.x + z.x) / 2}
               {@const my = (a.y + z.y) / 2}
               <path class="chord" data-id={c.block} data-from={c.from} data-to={c.to} data-severity={c.severity} d="M{a.x},{a.y} L{z.x},{z.y}" />
-              <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - 3},{my - 3} L{mx + 3},{my + 3} M{mx - 3},{my + 3} L{mx + 3},{my - 3}" />
+              <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - CROSS},{my - CROSS} L{mx + CROSS},{my + CROSS} M{mx - CROSS},{my + CROSS} L{mx + CROSS},{my - CROSS}" />
             {/if}
           {/each}
-          {#each overlayBadges as q (q.block + q.role)}
-            <g class="badge" data-id={q.block} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
-              <title>{q.title}</title>
-              <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
-              <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>
-            </g>
+          {#each overlayBadges.filter((q) => q.role !== "route") as q (q.block + q.role)}
+            {@render pill(q)}
+          {/each}
+        </g>
+      {/if}
+      {#if orders.size}
+        <!-- above the overlay's fixed pills, which end short of them; dimmed with their blocks (workspace.md answer 7) -->
+        <g class="order-badges">
+          {#each shown.level.blocks as b (b.id)}
+            {@const text = orders.get(b.id)}
+            {@const box = g.boxes.get(b.id)}
+            {#if text !== undefined && box}
+              {@const x = box.x + BADGE_INSET}
+              {@const y = box.y + box.height - BADGE_HEIGHT - BADGE_TOP}
+              <g
+                class={["order-badge", { lit: !!lit?.blocks.has(b.id), "search-hit": !!hits?.blocks.has(b.id), "search-under": !!hits?.under.has(b.id) }]}
+                data-id={b.id} role="none"
+                onclick={() => select({ kind: "block", id: b.id })}
+                ondblclick={() => dblclick(b)}
+                onpointerenter={() => (hovered = { kind: "block", id: b.id })}
+                onpointerleave={() => (hovered = undefined)}
+              >
+                <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
+                <rect x={x} y={y} width={pillWidth(text)} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                <text class="order" x={x + BADGE_PAD} y={y + 9} style="font:{BADGE_FONT}">{text}</text>
+              </g>
+            {/if}
+          {/each}
+        </g>
+      {/if}
+      {#if routeDrawn && shown.level.path === path}
+        <!-- last: the route's pills, turned on by a trace, may run over an order badge (visual_grammar.md answer 9) -->
+        <g class="route-pills">
+          {#each overlayBadges.filter((q) => q.role === "route") as q (q.block + q.role)}
+            {@render pill(q)}
           {/each}
         </g>
       {/if}
     {/if}
   </svg>
   <div class="tools">
-    {#if dragged.size}
-      <button class="undo-drags" onclick={() => undrag(true)} title="Put every dragged component and pin back in its computed place (X)">Undo drags</button>
-    {/if}
     <button class="fit" onclick={fit} title="Fit the level to the view">Fit</button>
   </div>
   {#if menu}
@@ -962,6 +886,14 @@
     </div>
   {/if}
 </div>
+
+{#snippet pill(q: (typeof overlayBadges)[number])}
+  <g class="badge" data-id={q.block} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
+    <title>{q.title}</title>
+    <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+    <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>
+  </g>
+{/snippet}
 
 {#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
   {@const c = portClass(id)}
@@ -1015,6 +947,7 @@
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
   /* The order badge (workspace.md answer 7): the text color on the background; it carries its title, a click on it
      selecting the block. */
+  .order-badge { cursor: pointer; }
   .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
   /* The events pill (visual_grammar.md answer 11): the text color on the background in both modes, no click of its own. */
   .events-pill rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
@@ -1027,7 +960,7 @@
   .wire[data-kind="struct"] { stroke-width: 5; }
   .wire-core { fill: none; stroke: var(--bg); stroke-width: 1.6; pointer-events: none; }
   .junction { pointer-events: none; }
-  /* A label ignores the pointer, so a block dragged under it keeps its clicks; the pane carries the whole type. */
+  /* A label ignores the pointer, so what lies under it keeps its clicks; the pane carries the whole type. */
   text.type-label { fill: var(--text-light); stroke: var(--bg); stroke-width: 3; stroke-linejoin: round; paint-order: stroke; pointer-events: none; }
   .wire-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; cursor: pointer; }
   .casing { fill: none; stroke: var(--highlight); stroke-linejoin: round; pointer-events: none; }
@@ -1045,7 +978,7 @@
   .region.selected > .halo { opacity: 0.5; }
   .region > text.caption { fill: var(--text-light); pointer-events: visiblePainted; cursor: pointer; }
 
-  .block { cursor: move; }
+  .block { cursor: pointer; }
   .shape { pointer-events: visible; }
   .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0; pointer-events: none; }
   .block.selected > .halo { opacity: 0.5; }
@@ -1066,14 +999,16 @@
   .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
   .searching :is(.wire, .wire-core, .junction, .type-label) { opacity: var(--dim); }
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
+  .searching .order-badge:not(.search-hit):not(.search-under) { opacity: var(--dim); }
   /* A focus, a legend line's (answer 6 as amended), a diagnostic's or a route's (answer 9): the same dimming, what it lights kept. */
   :is(.legend-focus, .diagnostic-focus, .route-focus) :is(.wire, .wire-core, .junction, .type-label):not(.lit) { opacity: var(--dim); }
   :is(.legend-focus, .diagnostic-focus, .route-focus) .block:not(.lit) > :not(.halo):not(.port-halo):not(.port.lit) { opacity: var(--dim); }
+  :is(.legend-focus, .diagnostic-focus, .route-focus) .order-badge:not(.lit) { opacity: var(--dim); }
 
   /* The diagnostics overlay (answer 8): the error hue, amber for a warning, above everything. */
   .overlay [data-severity="error"] { --hue: var(--error); }
   .overlay [data-severity="warning"] { --hue: var(--warning); }
-  .overlay [data-role="route"] { --hue: var(--highlight); }
+  .route-pills .badge { --hue: var(--highlight); }
   .mark-wire { fill: none; stroke: var(--hue); stroke-width: 3; stroke-linejoin: round; pointer-events: none; }
   .mark-halo { fill: none; stroke: var(--hue); stroke-width: 5; opacity: 0.5; pointer-events: none; }
   .mark-port { fill: none; stroke: var(--hue); stroke-width: 1.5; pointer-events: none; }

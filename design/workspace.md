@@ -207,8 +207,10 @@ Open items live in `pending.md`.
    click does and returns focus to the canvas, Escape clears; while a query
    stands, `n` and `N` on the canvas select the next and the previous hit
    in the list's order, opening its level and the view following; a prefix
-   with no text after it is no term, so `face:` alone lists nothing until a
-   character follows; the query survives a push. Hits take the dashed halo
+   standing alone applies to the next word, so `face: out` reads as
+   `face:out`, and a prefix with no word after it is no term, so `face:`
+   alone lists nothing until a character follows; the query survives a
+   push. Hits take the dashed halo
    on the open level, blocks for nodes and port squares for faces, the rest
    of the level dimming; tree rows take the dashed marker with the count
    propagating up collapsed subtrees; the tree never filters. Docstrings
@@ -224,7 +226,8 @@ Open items live in `pending.md`.
    2026-11-25 (the keyboard session,
    `increments/20261125_keyboard_legend/notes_keyboard_legend.md`): `/`
    went to the model's search from the drawer too, and the filter had no
-   key.*
+   key. Amended 2026-11-27 (the look pass, 2.1): a prefix followed by a
+   space was no term, so the word after it matched as a bare term.*
    *Why:* a face named `q` matches half a model without a prefix; the block
    searched for is usually on a level the user cannot see. *Rejected:* a
    fuzzy matcher, which ranks guesses where the user typed a name they
@@ -269,7 +272,8 @@ Open items live in `pending.md`.
    with the cursor's ring around the group, and a click on any of its
    rows selects it. A deployment heads the tab with `firing_budget` when
    the model declares an event, and with `localization_tol`, as a
-   fraction of `Δt_frame`, and `localization_budget` when it declares a
+   fraction of `Δt_frame` written `2.5e-5 × Δt_frame` in one code span,
+   and `localization_budget` when it declares a
    localized one. A model with no events says so, and a failure says that
    the build did not reach them. The drawer opens on load
    only when a diagnostic exists, on that tab, and otherwise stays
@@ -309,7 +313,8 @@ Open items live in `pending.md`.
    10b's design session,
    `increments/inspector_10b_events/notes_inspector_10b.md`): the drawer
    had four tabs and listed no events, and the deployment's three event
-   parameters showed nowhere.*
+   parameters showed nowhere. Amended 2026-11-27 (the look pass, 8.2): the
+   tolerance read `2.5e-5 of Δt_frame`, the form 10b's notes ruled.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -325,8 +330,10 @@ Open items live in `pending.md`.
    `outputs.order`'s order, on its bottom edge at the left, numbered over
    the whole model, and a closed assembly the range or ranges of those
    positions beneath it, "3–5, 8"; a primitive with stage 1 outputs alone
-   carries none; the badges use the text color, and the overlay's pills on
-   that edge draw over a badge they meet. A
+   carries none; the badges use the text color and draw above the
+   overlay's fixed badges on that edge, which end short of them, and under
+   a route's badge, which may run over one (`visual_grammar.md` answers 8
+   and 9). A
    deployment descriptor turns the legend's lines to the base grid's
    pair, in its order, and adds the hyperperiod chart to the drawer's
    timing tab: a
@@ -346,7 +353,12 @@ Open items live in `pending.md`.
    the core's `fcd3660`, the user away): the pair was written `(D, Φ)`. Amended 2026-11-25
    (`deployment_overlay.md` answer 13, the keyboard session): a
    deployment made the `Δt` of the legend's `A₀` lines concrete and
-   changed nothing else of a line.*
+   changed nothing else of a line. Amended 2026-11-27 (the look pass, 6.1
+   and 11.3): the overlay's pills on the bottom edge drew over an order
+   badge they met; the user ruled that a mark drawn whenever its data
+   exists never covers another, and a mark the reader turns on draws on
+   top. The look pass first moved the route's and the loop's pills off the
+   edge, and the user reverted them.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.
@@ -387,23 +399,16 @@ Open items live in `pending.md`.
    level's zoom and pan, the tree's expansion, the selection, the standing
    route, the search query, the drawer's open state and tab, which of the
    detail pane's sections are open, one state for every node, and each
-   level's block positions, the layout's output plus drags. Per push,
-   everything in the second group is rekeyed against the new descriptor
-   and what has no key is dropped, the open level's fallback noted in the
+   level's layout, ELK's output. Per push, everything in the second group
+   is rekeyed against the new descriptor and what has no key is dropped,
+   the layouts laid out again, the open level's fallback noted in the
    status bar. The keys: a level and a node by path; a wire by its level's
    path and consumer endpoint; a pin by level path, side and face name; a
-   port by node path, side and face name; a route by its origin's key;
-   positions by level and block, a node by path and a pin by side and face
-   name. On a relayout after a push ELK runs with the declaration-order
-   steering and no position hints, and a dragged block or pin keeps its
-   dragged place: ELK honors hints only with the model-order steering off,
-   and then moves blocks nobody dragged (probed 2026-10-30, increment 5's
-   reading 1). A drag lasts until it is undone or the page reloads: `x`
-   puts the last dragged block or pin of the open level back in its
-   computed place, the one dragged before it on the next press, and `X`,
-   or the button beside Fit that shows while the level holds a drag, puts
-   back every one. The undo is the push's relayout with a shorter list of
-   dragged ids, and the view stays. A surviving level keeps its view only
+   port by node path, side and face name; a route by its origin's key. On
+   a relayout after a push ELK runs with the declaration-order steering
+   and no position hints: ELK honors hints only with the model-order
+   steering off (probed 2026-10-30, increment 5's reading 1). A surviving
+   level keeps its view only
    when its set of blocks is unchanged, and fits otherwise, so a different
    model pushed over another is never drawn through the old one's view. A
    push of a different model otherwise follows the same rules, since the
@@ -419,7 +424,12 @@ Open items live in `pending.md`.
    a drag. Amended 2026-11-24 (increment 10's look, 8.1): the pane's two
    sections that collapsed kept no state. Amended 2026-11-25 (the keyboard
    session, `increments/20261125_keyboard_legend/notes_keyboard_legend.md`):
-   the two keys were `u` and `U`.*
+   the two keys were `u` and `U`. Amended 2026-11-27 (the look pass,
+   11.4): a block or pin could be dragged, the session kept each level's
+   dragged places through a push, and `x`, `X` and a button beside Fit put
+   them back. ELK cannot keep a dropped block in place, so a drag handed
+   its wires to a local router blind to other blocks, and the user removed
+   it.*
    *Why:* a renamed block is a different node to the format, so losing its
    selection is the honest outcome. *Rejected:* persisting session state
    across reloads, which resurrects a selection into a descriptor that may
@@ -527,7 +537,6 @@ Open items live in `pending.md`.
     | `c` `y` `o` | the color mode, type labels, order badges |
     | `?` | the help page |
     | Cmd-O, Ctrl-O | open a file |
-    | `x`, `X` | put the last dragged block or pin of the open level back in its computed place, every one (answer 9) |
     | Escape | close the right-click menu, else cancel a pending `z` or `g`, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection |
 
     The detail pane's stops form an outline, as the tree's rows do. `j`
@@ -566,7 +575,7 @@ Open items live in `pending.md`.
     file in place of the page. Cmd-K and Ctrl-K reach the model's search
     from a text field too. Every other key with Ctrl or Cmd stays the
     browser's.
-    Dragging has no keyboard form in stage 1. The keyboard section says
+    The keyboard section says
     that Vimium owns many of these keys by default and that the user
     excludes the inspector's origins, `localhost` on the server's port and
     the hosted address, or uses its insert mode; the live session printing
@@ -618,7 +627,9 @@ Open items live in `pending.md`.
     `pending.md`'s open item): the panes resized by drag alone. Amended
     2026-11-27 (increment 10b's design session): the legend had no term
     for the events pill, the page did not define "localized", and an
-    events group as one stop was unstated.*
+    events group as one stop was unstated. Amended 2026-11-27 (the look
+    pass, 11.4): `x` and `X` put drags back, and dragging had no keyboard
+    form.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

@@ -44,7 +44,7 @@ test("containers: the two regions, their members by key inside, the rest outside
   await shot(page, "containers", "", "regions");
 });
 
-test("containers: the folder selected from the tree and from the region's caption, the frame following a dragged member", async ({ page }) => {
+test("containers: the folder selected from the tree and from the region's caption", async ({ page }) => {
   await drop(page, "containers");
   await row(page, "gains").click();
   await expect(region(page, "gains")).toHaveClass(/\bselected\b/);
@@ -64,20 +64,6 @@ test("containers: the folder selected from the tree and from the region's captio
   const scale = await page.locator("svg.canvas").evaluate((s: SVGSVGElement) => s.clientWidth / s.viewBox.baseVal.width);
   await page.mouse.click(g.x + g.width - 16, g.y - 2.5 * scale);
   await expect(region(page, "gains")).toHaveClass(/\bselected\b/);
-
-  // gains/b dragged 100 down: gains' frame grows to hold it, pair's stays
-  const before = { gains: await frame(page, "gains"), pair: await frame(page, "pair") };
-  const r = (await page.locator('g.block[data-id="gains/b"] > .shape').boundingBox())!;
-  await page.mouse.move(r.x + r.width / 2, r.y + 10);
-  await page.mouse.down();
-  await page.mouse.move(r.x + r.width / 2, r.y + 110, { steps: 8 });
-  await page.mouse.up();
-  const after = { gains: await frame(page, "gains"), pair: await frame(page, "pair") };
-  expect(after.pair).toEqual(before.pair);
-  expect(after.gains.height).toBeGreaterThan(before.gains.height);
-  const b = (await blockBoxes(page)).find((x) => x.id === "gains/b")!;
-  expect(inside(b, after.gains)).toBe(true);
-  expect(b.y).toBeGreaterThan(before.gains.y + before.gains.height - 12);
 
   await press(page, "Escape");
   await expect(page.locator("g.region.selected")).toHaveCount(0);

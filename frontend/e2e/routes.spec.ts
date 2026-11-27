@@ -7,24 +7,18 @@
 // read off the DOM. The polish batch: a push clearing a route that no longer
 // resolves, `t` and the menu on a face with no producer, a level the route misses not dimmed.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, dropOver, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { drop, dropOver, effectiveOpacity, expect, expectPillRows, fixtureText, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
 const statusRoute = (page: Page) => page.locator("footer.status span.route");
-const routeBadge = (page: Page, id: string) => page.locator(`g.overlay g.badge[data-role="route"][data-id="${id}"]`);
+const routeBadge = (page: Page, id: string) => page.locator(`g.route-pills g.badge[data-role="route"][data-id="${id}"]`);
 const casings = (page: Page) => page.locator("g.casings path.casing.route").evaluateAll((ps) => ps.map((p) => p.getAttribute("data-wire")).sort());
 const opacity = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => getComputedStyle(e).opacity);
 const tag = (page: Page, id: string) => page.locator(`g.block[data-id="${id}"]`);
 const routeRows = (page: Page) => page.locator('nav.tree .row:has(span.mark[data-mark="route"])').evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")).sort());
 /** The status line as text, the backquotes of the oracle's spelling dropped. */
 const plain = (s: string) => s.replaceAll("`", "");
-/** A badge's pill in level units, beside its block's or pin's box. */
-async function badgeGeometry(page: Page, id: string) {
-  const rect = await routeBadge(page, id).locator("rect").evaluate((r: SVGRectElement) => ({ x: r.x.baseVal.value, y: r.y.baseVal.value, width: r.width.baseVal.value, height: r.height.baseVal.value }));
-  const box = (await blockBoxes(page)).find((b) => b.id === id)!;
-  return { rect, box };
-}
 /** Whether the browser's menu would open: a `contextmenu` dispatched at the element's center, not prevented. */
 const browserMenu = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => {
   const r = e.getBoundingClientRect();
@@ -56,13 +50,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(statusRoute(page).locator("code")).toHaveText("h_ref");
   await expect(statusRoute(page).locator("button.clear-route")).toHaveText("clear");
   // a child's badge straddles its bottom edge at the right
-  {
-    const { rect, box } = await badgeGeometry(page, "pid_controller");
-    expect(rect.y).toBeLessThan(box.y + box.height);
-    expect(rect.y + rect.height).toBeGreaterThan(box.y + box.height);
-    expect(rect.x + rect.width).toBeLessThanOrEqual(box.x + box.width);
-    expect(rect.x + rect.width).toBeGreaterThan(box.x + box.width / 2);
-  }
+  expect(Object.keys(await expectPillRows(page)).sort()).toEqual(["lqr_controller", "pid_controller"]);
   await expect(pane(page).locator("button.trace")).toHaveAttribute("aria-pressed", "true");
   await expect(pane(page).locator("button.trace")).toHaveAttribute("title", "Clear the route");
   // the tree's blue marks on the levels it crosses, the root's included
@@ -71,7 +59,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(page.locator('nav.tree .row[data-path="pid_controller"] span.mark[data-mark="route"]')).toHaveAttribute("title", "on the route");
   await shot(page, "closed_loop", "", "routes");
 
-  // pid_controller's badge opens it: one casing, the terminal, the pin badged at its top outer end
+  // pid_controller's badge opens it: one casing, the terminal, the pin badged on its bottom edge at the inner end
   await routeBadge(page, "pid_controller").click();
   await page.locator(readyLevel("pid_controller")).waitFor();
   expect(await casings(page)).toEqual(["pid_controller/h_ctl|in|r"]);
@@ -79,13 +67,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(page.locator('g.badge[data-role="route"]')).toHaveCount(1);
   await expect(routeBadge(page, "⟨in⟩h_ref").locator("text.badge-text")).toHaveText("route");
   await expect(routeBadge(page, "⟨in⟩h_ref").locator("title")).toHaveText("The route leaves this level here; go to the parent to follow it.");
-  {
-    const { rect, box } = await badgeGeometry(page, "⟨in⟩h_ref");
-    expect(rect.y).toBeLessThan(box.y);
-    expect(rect.y + rect.height).toBeGreaterThan(box.y);
-    expect(rect.x).toBeGreaterThanOrEqual(box.x);
-    expect(rect.x).toBeLessThan(box.x + box.width / 2);
-  }
+  expect((await expectPillRows(page))["⟨in⟩h_ref"].kind).toBe("in");
   await expect(page.locator("g.block.route-origin")).toHaveCount(0);
   await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
   await shot(page, "closed_loop", "pid_controller", "routes");
@@ -300,6 +282,25 @@ test("rates: src/out traced from the menu, fast and slow badged, fast opened by 
   expect(await casings(page)).toEqual(["fast/inner|in|in", "fast/outer|in|in"]);
   // the four levels marked in the tree once fast is open, its row expanded
   expect(await routeRows(page)).toEqual(["", "fast", "fast/outer", "slow"]);
+});
+
+test("rates' fast: an input pin's route pill on its bottom edge from the bottom-right corner, src/out traced, and an output pin's from the bottom-left, the root output outer traced (visual_grammar.md answer 9 as amended by the look pass, 11.2)", async ({ page }) => {
+  await drop(page, "rates");
+  await page.locator('rect.port[data-port="src|out|out"]').click();
+  await press(page, "t");
+  await openPath(page, "fast");
+  const inRows = await expectPillRows(page);
+  expect(Object.keys(inRows).sort()).toEqual(["fast/outer", "⟨in⟩in"]);
+  expect(inRows["⟨in⟩in"].kind).toBe("in");
+  await shot(page, "rates", "fast", "route-pin-in");
+  await drop(page, "rates");
+  await page.locator('g.block[data-id="⟨out⟩outer"]').click();
+  await press(page, "t");
+  await openPath(page, "fast");
+  const outRows = await expectPillRows(page);
+  expect(Object.keys(outRows).sort()).toEqual(["fast/outer", "⟨out⟩outer"]);
+  expect(outRows["⟨out⟩outer"].kind).toBe("out");
+  await shot(page, "rates", "fast", "route-pin-out");
 });
 
 test("primitive: the u tag traced reads 0 consumers across 0 levels, the tag the origin, no casing", async ({ page }) => {

@@ -1,8 +1,8 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
 // the wait for the drawn level or the outcome text, counts, the frame's locators,
-// a wire's clickable point, an element's effective opacity, screenshots and
-// the live tab's mock socket.
+// a wire's clickable point, an element's effective opacity, the overlay's pill rows,
+// screenshots and the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator, type Page, type WebSocketRoute } from "@playwright/test";
@@ -171,6 +171,48 @@ export const effectiveOpacity = (page: Page, sel: string) => page.locator(sel).f
   for (let n: Element | null = e; n; n = n.matches("svg.canvas") ? null : n.parentElement) o *= Number(getComputedStyle(n).opacity);
   return o;
 });
+
+type Edges = { left: number; right: number; top: number; bottom: number };
+/**
+ * The overlay's pills on the drawn level by block, the fixed ones in `g.overlay` and the route's in `g.route-pills`,
+ * in world units, with the block's box read from its shape and whether it is a child, an input pin or an output pin.
+ */
+export const overlayPills = (page: Page) => page.evaluate(() => {
+  const out: Record<string, { kind: "child" | "in" | "out"; box: Edges; pills: (Edges & { role: string; text: string })[] }> = {};
+  for (const g of document.querySelectorAll<SVGGElement>("svg.canvas :is(g.overlay, g.route-pills) > g.badge")) {
+    const id = g.dataset.id!;
+    if (!out[id]) {
+      const b = document.querySelector<SVGGElement>(`g.blocks > g.block[data-id="${id}"]`)!;
+      const m = b.transform.baseVal.consolidate()!.matrix, s = b.querySelector<SVGGraphicsElement>(":scope > .shape")!.getBBox();
+      const kind = b.classList.contains("in") ? "in" : b.classList.contains("out") ? "out" : "child";
+      out[id] = { kind, box: { left: m.e + s.x, right: m.e + s.x + s.width, top: m.f + s.y, bottom: m.f + s.y + s.height }, pills: [] };
+    }
+    const r = g.querySelector("rect")!, v = (a: SVGAnimatedLength) => a.baseVal.value;
+    out[id].pills.push({ role: g.dataset.role!, text: g.querySelector("text")!.textContent!, left: v(r.x), right: v(r.x) + v(r.width), top: v(r.y), bottom: v(r.y) + v(r.height) });
+  }
+  return out;
+}) as Promise<Record<string, { kind: "child" | "in" | "out"; box: Edges; pills: (Edges & { role: string; text: string })[] }>>;
+
+/**
+ * The rows of visual_grammar.md answers 8 and 9 at every pill on the drawn level, recomputed from the DOM, and the
+ * rows returned: each pill straddles its block's bottom edge, at most one per role; on a child and an input pin the
+ * row runs leftward from the right end 4 in, on an output pin rightward from the left end 4 in, 2 apart, the
+ * diagnostic's first, then the loop's, then the route's.
+ */
+export async function expectPillRows(page: Page) {
+  const rows = await overlayPills(page);
+  const order = ["diagnostic", "continues", "route"];
+  for (const [id, { kind, box, pills }] of Object.entries(rows)) {
+    expect(new Set(pills.map((p) => p.role)).size, `${id} one pill per role`).toBe(pills.length);
+    let edge = kind === "out" ? box.left + 4 : box.right - 4;
+    for (const p of [...pills].sort((a, b) => order.indexOf(a.role) - order.indexOf(b.role))) {
+      expect(p.top < box.bottom && box.bottom < p.bottom, `${id} ${p.role} straddles the bottom edge`).toBe(true);
+      expect(kind === "out" ? p.left : p.right, `${id} ${p.role} in the row`).toBeCloseTo(edge, 3);
+      edge = kind === "out" ? p.right + 2 : p.left - 2;
+    }
+  }
+  return rows;
+}
 
 /** A client point of a wire's line where the wire's own hit path is on top. */
 export async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {

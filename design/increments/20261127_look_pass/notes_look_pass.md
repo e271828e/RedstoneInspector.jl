@@ -1,0 +1,628 @@
+# Notes: the look pass before the release
+
+The record of the look pass's fixes, `pending.md`'s first bullet.
+`look_pass.md`, beside this file, is the user's checklist of 2026-11-27:
+the user's words after each `REVIEW:`, and a ruling under each entry.
+The user ruled every entry, asked for every fix, and left the run to
+the coordinator. What follows was ruled by the coordinator with the user
+away, unless the checklist says otherwise.
+
+## The pipeline
+
+- One high-tier builder in the worktree `look_pass` on the branch
+  `look-pass`, from `415a64b`, with the checklist as its brief and no
+  other. A cold review follows, then the fixes to its findings and a
+  delta check. Nothing is merged or pushed.
+- The coordinator's slip, which the builder corrected: the checklist's
+  1.4 ruling cites `workspace.md` answer 6 for the route pill, which is
+  the drawer. The rule lives in `visual_grammar.md` answer 9, which took
+  the amendment.
+- The coordinator took the builder's twelve readings as reported.
+  Readings 1 and 4 go past the ruling's words: a pill on an output port
+  of the producer's child, and a pill moved past another port's label.
+  Both follow from "beside the port it crosses, clear of the type
+  label". Both are for the user's check.
+
+## Commits, from `415a64b`
+
+| hash | entry | message |
+|---|---|---|
+| `33d83a6` | | Commit the look pass's checklist and amend the records its rulings change |
+| `b0e5147` | 1.1 | Break the detail pane header's path after each slash so the narrow pane never scrolls sideways in Chromium |
+| `f6c16f3` | 1.3 | Lengthen a dragged wire's producer stub past its port's type label |
+| `1810c2b` | 1.4, 2.1 | Stand the route's and the loop's pills beside the ports they cross, above the wire and clear of the type labels |
+| `c7af7b2` | 3.2, 4.4 | Give a stacked parameter's name the lighter text color |
+| `0fe6a65` | 4.1 | Raise the text levels' floors to 0.7, 0.6 and 0.4 |
+| `76ce63e` | 6.1 | Cut a long diagnostic pill to its block and open its title with the whole text |
+| `03bff14` | 7.1 | Widen the dead hop's cross to four units each way on the canvas and the help page |
+| `990ebfb` | 8.2 | Write the localization tolerance as a product with Δt_frame |
+| `9782e59` | 9 | Set the chart's threshold to 500 base ticks and its pitch to 10 px, and draw the base ticks longer in the lighter text color |
+| `699daa9` | 2.1 | Apply a search prefix standing alone to the word after it |
+
+## The records amended
+
+All in `33d83a6`, each with one note dated 2026-11-27. `1810c2b`
+tightened answers 8 and 9 of `visual_grammar.md` within the same note.
+
+- **`visual_grammar.md` answer 8.** The diagnostic badge keeps the bottom
+  edge at the right. Its text is cut with an ellipsis to end at the
+  block's left inset, or short of the order badge while the badges show.
+  Its title opens with the whole text, then the message's first line.
+  The loop's badges stand as answer 9 places a route's.
+- **`visual_grammar.md` answer 9.** A route's badge stands outside the
+  block or pin, above the wire, clear of its type label. On a closed
+  child it stands left of each input port the route enters by. On a
+  closed child entered by no input, the one holding the producer, it
+  stands right of each output port the route leaves by. Off the root it
+  stands past where the wire leaves an input pin, or short of where it
+  reaches an output pin. There is one per port, the loop's nearer the
+  port. A badge that would meet a drawn label moves outward past it.
+- **`workspace.md` answer 5.** A search prefix standing alone applies to
+  the next word.
+- **`workspace.md` answer 6.** The tolerance reads `2.5e-5 × Δt_frame`.
+  Its 10b form stood only in 10b's notes.
+- **`workspace.md` answer 7.** The overlay's pills no longer draw over
+  an order badge, and the diagnostic pill is cut short of it.
+- **`deployment_overlay.md` answer 11.** The threshold is 500 base
+  ticks, the minimum pitch 10 px, and a base tick a 6 px stroke in the
+  lighter text color.
+- **`design/rules.md`.** The trap "Pills sharing an edge" states the new
+  places.
+- **Not amended.** `workspace.md` answer 8 states no place for the
+  badge. `visual_grammar.md` answer 10 states no floor values. No record
+  states the cross's size, which `frontend/MAP.md` holds. The glossary
+  needed nothing. `pending.md`'s bullet waits for the close (10.1).
+
+## The readings
+
+1. **Which ports of a closed child take a pill.** `crossings()` in
+   `level.ts`, one rule for the route and the loop. Each input port
+   entered takes one. A child entered by no input takes one at each
+   output port it is left by: the route's producer child, or a loop's
+   partial chain. *Rejected:* inputs only, which leaves the route out of
+   its producer's child with no pill, as on `rates`' root at
+   `fast|out|outer`. Also every touched port, which gives a child the
+   route passes through two pills. Probe: `failure_nested`'s root gets
+   `ctl|in|y` alone.
+2. **The pins.** An input pin's pill stands right of its port, past
+   where the wire leaves it. An output pin's stands left of its port,
+   above the wire arriving. *Rejected:* the top edge's outer end, the
+   old place.
+3. **The offsets.** The pill stands `BADGE_GAP`, 2 px, beyond the port
+   square. Its bottom is `PILL_LIFT`, 4 px, above the wire's centre,
+   clear of the route's 7 px casing.
+4. **A pill meeting another port's label.** On `rates`, the pill of
+   `fast|out|outer` sat over the label of `fast|out|inner`, the port
+   above. A pill that would meet a drawn label moves outward along its
+   wire, past the label's far end plus 2. With the labels off it does
+   not move. *Rejected:* lifting the pill between the rows, since a
+   label fills most of a 16 px row.
+5. **A loop and a route at one port.** The loop's pill stands nearer
+   the port, the route's next.
+6. **The fit** covers the overlay's pills as it covers the boxes.
+   *Rejected:* the boxes alone, which cut a pill at the edge when
+   `fast/outer` is dragged 600 px left.
+7. **Left as is.** A pill draws over other wires, and under the HTML
+   legend, as a block does. On `rates`' `fast` the pills at the two ends
+   of one short wire stand side by side, `fast/outer|out|out` and the
+   output pin `out`. On a shorter wire they would overlap.
+8. **1.3, which label counts.** The stub counts a port's label whether
+   the toggle shows it or not, since the layout reserves the labels
+   either way. It runs to the label box's far end, its ELK offset
+   included, plus 4, and is at least 12. A forward route turns no nearer
+   the producer than its stub and no nearer the consumer than 12. It
+   needs the stub plus 12 of run, else it goes backward. *Rejected:*
+   following the toggle, which would make a route depend on a
+   preference.
+9. **6.1's cut** is measured on the canvas, by `cutPill` over a new
+   `cutTo` in `size.ts`, and the pill is at most its room. A block with
+   no order badge keeps the left inset as its limit, the badges on or
+   off. At the harness's widths `failure_probe`'s `s/g` reads `EmptyF…`.
+10. **2.1's search.** A lone prefix takes the next word only when that
+    word is bare. Before a prefixed word, or at the end, it is no term.
+    Of two lone prefixes in a row, the nearer wins. *Rejected:* taking a
+    prefixed word as the text, `face:path:x`.
+11. **7.1.** A new `CROSS = 4` in `size.ts`, read by the canvas and by
+    the help page's chord sample, which wrote ±3 itself.
+12. **4.1.** At the harness's 1600 by 1000, `library` fits at 0.277 and
+    loads at `frames`, `large` at 0.083, `closed_loop` at 0.819. The
+    checklist's 0.36 was the user's window. The check pins `library`
+    loading at `frames` and each zoom step drawing `detailAt`'s level,
+    and not the third and fourth steps, which the window decides.
+
+## The gate
+
+| | `33d83a6`, the base's code | `699daa9` |
+|---|---|---|
+| unit tests | 792 in 32 files | 801 in 32 files |
+| the checker | 413 files, clean | 413 files, clean |
+| build | ok | ok |
+| browser checks, both projects | 752 passed, 4 skipped | 770 passed, 4 skipped |
+
+The base's first run failed four `zoom.spec` checks, which read the
+floors from the source, already at the ruled values; at the base's
+floors they pass. The Julia suite and the drift check did not run:
+nothing under `src/`, `test/` or `scripts/` changed.
+
+## What the tests pin
+
+Each fix was reverted alone from a saved copy by
+`look_pass_scratch/mutant.py`. All red, no survivor.
+
+| fix reverted | the check that goes red |
+|---|---|
+| 1.1, no `<wbr>` | `detail.spec`, every node's and port's header at the 240 px pane on `closed_loop` and `approach_deployment`: 2 red in Chromium; Firefox stays green, breaking after slashes itself |
+| 1.3, the stub at 12 | `router.test`, `closed_loop`'s backward wire out of `actuators` |
+| 1.4, the pill on the wire | `routes.spec` and `overlay.spec`, 8 red |
+| 1.4, no move past a label | `routes.spec`, the route's pills with the labels on |
+| 1.4, a fit without pills | `routes.spec`, `rates`' `fast` with `outer` dragged left |
+| 3.2, the rule removed | `detail.spec`, `kinds`' `nt` and `library`'s `ss` at 360 px |
+| 4.1, the old floors | `size.test`, the floors; `zoom.spec`, `library`'s fit below the segment's floor |
+| 6.1, no cut; the order badge ignored | `overlay.spec`, the long pill cut with an ellipsis |
+| 6.1, the old title | `diagnostics.test`, `failure_probe`'s titles |
+| 7.1, `CROSS = 3` | `overlay.spec`, `failure_dead`'s cross 8 by 8 |
+| 8.2, " of " | `events.test`; `events.spec` on `events_deployment` |
+| 9, the threshold at 1000; the pitch at 6 | `timing.test`; `timing.spec` |
+| 9, the ticks in `--border`; 4 px long | `timing.spec`, the look pass's chart |
+| 2.1, a lone prefix dropped | `search.test`, 3 red |
+
+Two pins rest on probes:
+- **1.1.** At the base in Chromium at 240 px, these node panes scrolled
+  sideways:
+  - `closed_loop`'s `lqr_controller/command_pack` by 14 px, and its copy
+    in `closed_loop_deployment`;
+  - `approach_deployment`'s `vehicle/selection/command_δe` and
+    `command_δt` by 21 px, and `select_δe` and `select_δt` by 14 px.
+
+  Port panes, with their Trace button, scrolled by up to 73 px. Firefox
+  showed none, and after the fix neither browser does.
+- **6.1.** The pin that the cut is the longest that fits allows 3 units.
+  Firefox's SVG text measures about 2 units narrower than the canvas the
+  cut measures with.
+
+## Captures
+
+Local to one machine, in `RedstoneInspector.jl-worktrees/look_pass_captures/`,
+each entry as `<entry>.chromium.png` and `<entry>.firefox.png`:
+`1.4_root`, `1.4_routes_root`, `1.4_outputs`, `2.1_pin`, `3.2`, `4.4`,
+`4.1`, `6.1`, `6.1_order`, `6.1_overlay`, `7.1`, `8.2`, `9.2` and
+`9.4`. None for 1.1 or 1.3, and no Firefox shot of `failure_nested`'s
+pins inside `ctl`.
+
+## Noticed, not touched
+
+- A wire pane's endpoint paths, `p.endpoints`, carry no `<wbr>`. The
+  ruling and the probe covered node and port panes.
+- The help page's search lead printed as plain text. It renders its code
+  spans now, through the `text` snippet as `KEYS_NOTE` does (`699daa9`).
+- `RouteDrawing.entered`, block ids, became `crossed`, port ids, and an
+  overlay badge carries `data-port`, in `frontend/MAP.md`'s contract
+  table.
+
+## The cold review's charter
+
+An independent agent reads the checklist and the amended answers, then
+the page, and the code only where a check needs it. It runs the gate and
+reverts each fix alone. It drives what the builder did not:
+- the route pills under a drag that puts one near another block or a
+  junction, a child both entered and left, a short wire from a child's
+  output to an output pin, a pill under the legend, `y` toggling the
+  labels beside a pill, and a far zoom with pills on;
+- 1.3's stub under a drag of `plant` on `closed_loop`, the labels on and
+  off;
+- 6.1's cut and its two-line title in Firefox;
+- the chart's ticks on `rates_deployment` and 360 ticks at 10 px;
+- the floors on `library` in a real window;
+- typing `face: out` and `face: ` key by key.
+
+## The cold review
+
+An independent agent reviewed `415a64b..c9b8475` on 2026-11-27 in its own
+worktree, `look_pass_review`. Its gate matched the record's figures:
+801 unit tests in 32 files, the checker clean, the build, and 770
+browser checks passed and 4 skipped. It ran every fix's mutant again,
+all red, and 21 of its own. It swept every producer port on every
+fixture's root and on each closed child of the root, both browsers,
+with the labels on and off. The coordinator ruled on each finding with
+the user away.
+
+- **F1, fixed.** With the labels on, reading 4's move put a pill onto
+  another block, port or pill on three fixtures:
+  - on `failure_nested`'s root, `plant|out|power` traced, the route's
+    pill at `ctl|in|y` landed on `plant`'s `y`;
+  - on `closed_loop`'s root, `selection|out|δt` traced, `selection`'s
+    pill landed on `actuators|in|δt_cmd`'s;
+  - on `timing`'s `fast`, `fast/outer|out|deep` traced, the output
+    pill landed on the `⟨out⟩deep` pin's.
+
+  A drag of `pid_controller` gave the same. Ruling: a pill's move
+  along its wire stays within the half of the wire's end segment
+  nearest its port, so the two ends' pills never meet and none reaches
+  the far block. Where no place in that half clears the label, the pill
+  stands at its unmoved place. A check pins, over the review's sweep,
+  that no pill meets another block, port square or pill.
+- **F2, fixed.** A regression of 1.3. The router chose the backward form
+  below a gap of the stub plus 12, about 52 units for a `Float64` label,
+  where it had chosen it below 24. A forward drag with a gap of 24 to 52
+  then ran both wires into the consumer's box and round it. This
+  happened with the labels on or off. Ruling: the choice stays the
+  base's, forward from a gap of 24. A forward route turns at the
+  midpoint, moved toward the consumer to clear the label where the gap
+  allows, and never nearer the consumer than 12. The longer stub
+  applies in full only to the backward form. A check pins a forward gap
+  that the base drew forward.
+- **F3, ruled to the user's wording.** The user ruled the stub on the
+  "drawn" label, and 12 px where none is drawn. Reading 8 counted the
+  label with the toggle off too, so that a route never depends on a
+  preference. The user's ruling stands: the stub follows the toggle. A
+  toggle re-routes the wires touching each dragged block, so a drawn
+  route never keeps a stub for a label no longer drawn. Reading 8 is
+  overturned on that point.
+- **F4, checks added.** Two rules of answer 9 held with no check. The
+  loop's pill stands nearer the port than the route's, which
+  `failure_nested`'s root shows with `plant|out|power` traced. The pill
+  stands `PILL_LIFT` above the wire, within a tolerance.
+- **F5, fixed.** `visual_grammar.md` answer 8 had the loop's badge where
+  the chain crosses "into" a closed child, which misses an output port
+  the chain only leaves. It now reads as answer 9 does for a route.
+
+Not findings, ruled as follows:
+- **The probes and the mutant scripts** are committed in a `tools/`
+  folder beside this file, their paths as arguments: the builder's
+  `mutant.py` and the review's runners and specs. The captures stay on
+  this machine until the user's look, then go.
+- Left as observed: a pill's top edge sits on the wire of the port
+  above; the fit covers the diagnostic pills as well; `cutPill` gives
+  "…" where the room is narrower than an ellipsis pill; MAP's `size.ts`
+  row does not list `CROSS`. The help page's chord sample at ±3
+  survives a mutant, a minor gap the fixer may close.
+
+## The fix
+
+A fresh high-tier fixer landed the rulings: `b7f0161` amends answers 8
+and 9 and the trap "Pills sharing an edge", `ee9ef37` "Fix the look
+pass's review findings", and `c4fa27e` commits `tools/` beside this file.
+
+- **F1.** A pill moved past a label falls back to its unmoved place when
+  the move would take it past half of the end segment nearest its port.
+  For an input port that is the wire's last segment. For an output port
+  it is the shortest first segment among the port's wires.
+  `e2e/pills.spec.ts` sweeps every producer port on the root and on each
+  closed child of the root, on all 22 fixtures, with the labels off and
+  on. It asserts that no overlay pill meets a block (a diagnostic's own
+  excepted), a port square or another pill. It found the review's three
+  cases before the fix and none after. The suite's browser run went from
+  2.5 to 3.4 minutes.
+- **F2.** The route runs forward from a gap of 24 again, turning at
+  `min(max(midpoint, a.x + stub), b.x - 12)`. The backward form leaves by
+  the whole stub. `router.test.ts` pins `plant` 30 units right of
+  `actuators` on `closed_loop`'s root, four points with the label drawn
+  or not, and gaps of 50, 24 and 23.
+- **F3.** `rerouteTouching` takes the labels' state, and one helper,
+  `rerouteDragged`, re-routes the dragged blocks' wires in three places:
+  after a relayout, when a held layout is drawn again, and on a toggle
+  of the labels. `drag.spec.ts` drags `plant`, toggles `y` twice, then
+  toggles on another level and climbs back.
+- **F4.** Every pill in `routes.spec` and `overlay.spec` stands
+  `PILL_LIFT` above its wire, to 0.05 units. `overlay.spec` pins the
+  loop's pill between the port and the route's on `failure_nested`.
+  `help.spec` pins the help page's cross at 8 by 8.
+- **F5.** Answer 8 now places the chain's badges as answer 9 places a
+  route's. The help page's badge line follows.
+
+The fixer's readings, which the coordinator took:
+1. **F1 on `rates`' root.** `fast|out|outer`'s first segment is 50 units
+   and its pill 32, so even the unmoved pill passes the half and the
+   move is refused. The pill stands over `fast|out|inner`'s label, the
+   port above's, and clear of its own, as 1.4's words ask.
+   `routes.spec` pins it unmoved. This is the overlap reading 4 had
+   removed, and it is for the user's look.
+2. **The review's drag of `pid_controller`, 20 px right of
+   `lqr_controller`, is not F1.** The re-routed wire runs through
+   `lqr_controller` with the labels off too, since the router ignores
+   third blocks as 1.3 ruled, and the pill is wider than the gap. Open,
+   unpinned.
+3. **A legal move is pinned:** on `approach_deployment`'s `vehicle`,
+   `selection|out|engaged` traced, the pill moves 35 units within a
+   544-unit segment.
+4. **No record states the stub.** F2 and F3 live in MAP's drag paragraph
+   and router row.
+5. **Held layouts on other levels** are re-routed when drawn again, so a
+   toggle made elsewhere reaches them.
+
+Mutants, all red but one: the bound removed; no move at all; the
+threshold at the stub plus 12; the label counted with the toggle off;
+the toggle's effect removed; a held layout drawn without the re-route;
+`PILL_LIFT` 3; a pill 10 higher; the route nearer than the loop; the
+help page's cross at ±3. The survivor, the bound taken as half the
+wire's whole run, is acceptable: no fixture tells the two readings
+apart.
+
+| | before | after |
+|---|---|---|
+| unit tests | 801 in 32 files | 804 in 32 files |
+| the checker | 413 files, clean | 414 files, clean |
+| browser checks, both projects | 770 passed, 4 skipped | 818 passed, 4 skipped |
+
+## The delta check
+
+The reviewer, resumed, checked `c9b8475..c4fa27e`. Its gate matched the
+fixer's: 804 unit tests in 32 files, 414 files clean, 818 browser checks
+passed and 4 skipped. F1 to F5 are fixed as ruled, in both browsers.
+Every fixer's mutant is red but F1-wholewire. It agreed with the five
+readings. It raised three points, and the coordinator ruled on each.
+
+- **N1, the coordinator's F1 ruling turned.** Bounding the move by half
+  the end segment refuses most moves, since ELK usually turns soon after
+  the label. The sweep finds 19 output-port pills, on `closed_loop`,
+  `approach_deployment`, `rates`, `timing` and `events_deployment`,
+  standing over the label of the port above. Before the bound, all but
+  F1's three moved clear without meeting anything. Ruling: the bound
+  goes. A pill moves past the labels it meets, as reading 4 had it, and
+  stands at its unmoved place only where the moved place would meet a
+  block, a port square or another pill. That is the rule `pills.spec`
+  already checks. A check pins that the 19 now clear the labels.
+  Reading 1 of the fix, `rates`' unmoved pill, goes with the bound.
+- **N2, left as observed.** Below a gap of 24 the backward route leaves
+  by the full stub, so with the labels on its vertical runs 17 to 40
+  units inside the consumer's box, where the base ran up to 12 inside.
+  The ruling said the full stub applies to the backward form, and the
+  router ignores other blocks.
+- **N3, a check added.** A live drag with the labels off takes the
+  12-unit stub. Nothing pinned it: a mutant passing the labels as drawn
+  during the drag survived.
+
+## The second fix and the last delta check
+
+The fixer, resumed, landed N1 and N3: `40d1851` amends answer 9 and the
+trap, and `1bce3d6` "Fix the look pass's delta check findings".
+
+- **N1.** The bound is gone. A pill moves outward past the labels it
+  meets and stands unmoved only where the moved place would meet a
+  block or pin box, a port square, a diagnostic's pill, a pill already
+  placed, or another port's unmoved stack. The diagnostics' pills are
+  placed first and never move. Every port's pills are stacked unmoved,
+  the loop's nearest. Ports are then taken in the overlay's order: loop
+  crossings, loop pins, route crossings, route pins. `frontend/MAP.md`'s
+  badges paragraph states the order. A new `pills.spec` test pins nine
+  of the delta check's pills as moved and clear of every label, and
+  `routes.spec` pins `rates`' `fast|out|outer` as moved again.
+- **N3.** `drag.spec`'s toggle check ends with a live drag of `plant`,
+  labels off, its backward stub 12.
+
+Mutants, all red: the refusal removed; the refusal blind to pills; a
+short bound put back; no move at all; the live drag passing the labels
+as drawn. The earlier F2 to F4 mutants stay red. The bound's two
+mutants left the list with the bound.
+
+The reviewer's last delta check, at `1bce3d6`, matched the fixer's gate:
+804 unit tests in 32 files, 414 files clean, 820 browser checks passed
+and 4 skipped. Its sweep, identical in both browsers, finds nothing
+meeting a block, a port square or a pill. Three pills still stand over
+a label, F1's three, each held where its move would meet something:
+
+- on `failure_nested`'s root, `plant|out|power` traced, the route's pill
+  at `ctl|in|y`, which would meet `plant` and its `y`;
+- on `closed_loop`'s root, `selection|out|δt` traced, the pill at
+  `selection|out|δt`, which would meet `actuators|in|δt_cmd`'s at the
+  wire's other end;
+- on `timing`'s `fast`, `fast/outer|out|deep` traced, which would meet
+  the `⟨out⟩deep` pin's pill.
+
+Three of the reviewer's mutants survive, each acceptable. With port
+squares dropped from the obstacles, or blocks dropped, the one fixture
+case is still held by the other; with both dropped it goes red. With
+the diagnostics' pills dropped nothing changes, since no fixture has a
+move that lands on one; pinning it needs a synthetic case.
+
+## For the user's review
+
+The branch `look-pass` holds 21 commits from `415a64b`, nothing merged
+or pushed, `master` untouched. Its gate: 804 unit tests in 32 files,
+the checker clean on 414 files, the build, and 820 browser checks
+passed and 4 skipped in both projects. The Julia suite and the drift
+check did not run, since nothing under `src/`, `test/` or `scripts/`
+changed.
+
+- **To check, the coordinator's calls:** the builder's readings, with
+  reading 4 turned twice and reading 8 overturned on the toggle;
+  rulings F1 to F5 and N1 to N3; the fixer's readings 2 to 5.
+- **To look at,** with `npm run dev` in the worktree's `frontend/`:
+  - the route and loop pills beside their ports: `closed_loop`'s root
+    with `h_ref`, then `selection`'s `δt`, traced, and `rates`' `src`'s
+    `out` traced, at the root and in `fast`;
+  - F1's three pills, held over another port's label;
+  - a dragged backward wire's stub: `plant` dragged on `closed_loop`'s
+    root, the labels on and off with `y`;
+  - the floors on `library`, `kinds` and `closed_loop`, the pill cut on
+    `failure_probe`'s `s` and on `warning` with `o` on, and the chart on
+    `timing_deployment` and the copies in `look_pass_drop/`.
+- **Open, by the rulings:** the drag's router ignores third blocks, so
+  a close drag of `pid_controller` beside `lqr_controller` runs a wire
+  and a pill over `lqr_controller` (the fix's reading 2); below a gap of
+  24 a backward wire runs up to 40 units inside the consumer's box (N2).
+- **Noticed, not touched:** a wire pane's endpoint paths carry no
+  `<wbr>`; `cutPill` gives "…" where the room is narrower than an
+  ellipsis pill; MAP's `size.ts` row does not list `CROSS`.
+- **Then:** the merge, the push and CI's screenshots (10.3), the
+  roadmap's note and `pending.md`'s bullet closed (10.1), and the
+  removal of what is local to this machine under
+  `RedstoneInspector.jl-worktrees/`. That means the worktrees
+  `look_pass` and `look_pass_review`, the folders `look_pass_scratch`,
+  `look_pass_review_probes`, `look_pass_fix_probes`,
+  `look_pass_captures` and `look_pass_drop`, and the file
+  `look_pass_notes.md`. What the record rests on is in `tools/` beside
+  this file.
+
+## The user's rulings after the fixes
+
+The user tried the branch at `e2fe4a5` and ruled again, the checklist's
+section 11 holding the words. Those rulings supersede 1.3, 1.4 and 2.1,
+the builder's readings 1 to 8, the review's F1 to F4 as far as they
+touch the pills' place and the stub, and the delta checks' N1 to N3.
+
+- **The pills.** On a component the `route` and `loop` pills go back to
+  the bottom edge's row from the right (11.1). On a pin they straddle
+  the bottom edge at the inner end, the row running from the
+  bottom-right corner on an input pin and from the bottom-left on an
+  output pin (11.2). The reason the user gave is that the bottom edge
+  reads cleaner, and is the same edge on components and pins.
+  Increment 7 put the pin's pill on the top edge at its outer end with
+  no reason recorded beyond keeping a root tag's slot free, which the
+  inner end keeps free too.
+- **The policy** (11.3), a rule of `design/rules.md` from now on. A
+  fixed mark never covers another. A mark the reader turns on takes a
+  free place first, and covers only where none is left, drawing on top.
+  The coordinator added the second clause: without it, the rule would
+  allow a turned-on `route` pill to be placed over an error by choice,
+  hiding it until the route is cleared.
+- **The drag goes** (11.4). ELK lays out a level in one pass and cannot
+  keep a dropped block where it was dropped (`workspace.md` answer 9).
+  So a drag handed the touching wires to a local router blind to other
+  blocks, and nothing but an undo repaired the result. The coordinator
+  weighed three ways out: a drop that moves a block to a slot through
+  ELK's layer and position constraints, which is unprobed on elkjs 0.12;
+  a second router that avoids obstacles, such as libavoid, which is a
+  second engine beside ELK; and removal. The user ruled removal, with an
+  unordered `pending.md` item that assumes no solution.
+- **What the round does, then:** the records amended to the rulings, the
+  look pass's detour leaving no trace in the answers' notes beyond a
+  sentence; the pills back and the pins' new corners; the cut and the
+  draw order by the policy; the drag removed with its keys, state,
+  router, checks, traps and help lines; the look pass's later checks on
+  the pills' place and the stub removed with what they pinned.
+
+## The last round
+
+A fresh fixer built section 11 in four commits from `4925f72`:
+- `2da557a`, the records;
+- `7aed220`, the pills;
+- `26b9946`, the drag;
+- `36dcba2`, the mutant list.
+
+**The records (`2da557a`).**
+- `visual_grammar.md` answers 8 and 9.
+- `workspace.md` answers 7 and 9, and answer 11, the keyboard.
+- `initial_design.md` answer 12.
+- `design/rules.md`. It gains the policy as a rule under "Frontend
+  increments" and restates the trap "Pills sharing an edge". The four
+  drag-only traps go. Three traps are reworded: "ELK's position hints",
+  "A right-click fires no click", and "The undo's sync point", now "A
+  layout's sync point".
+
+Each answer's 2026-11-27 note says what the rule was at `415a64b`, and
+gives one sentence to the reverted detour.
+
+**The pills.** The lib files go back to `415a64b`: `crossings` goes,
+and `RouteDrawing.entered` holds block ids again. A component's row runs
+from the right, the diagnostic's pill first, then the loop's, then the
+route's. A pin's row runs from its inner corner.
+
+**The policy.**
+- The diagnostic's room is reduced by the loop's pill and the gap. The
+  check runs on an edited copy of `failure_nested` with a warning on
+  `ctl`, since no fixture has both pills on one block.
+- The order badges leave `g.block` for a group of their own,
+  `g.order-badges`, after `g.overlay`. The route's pills draw last, in
+  `g.route-pills`. `colors.spec` pins the groups' order.
+- The order badge carries its block's `.lit` and `.search-*`, so it
+  still dims with its block.
+
+**The drag.** The fixer removed:
+- in `Canvas.svelte`, the block drag, Shift's axis, `rerouteDragged`,
+  the undo button and the stale layouts;
+- `LevelLayout` in `layout.ts`;
+- the dragged layouts in the session and in `rekey.ts`;
+- `x` and `X` in `App.svelte`;
+- `router.ts`, `router.test.ts` and `drag.spec.ts`;
+- the help page's lines and `frontend/MAP.md`'s drag paragraphs.
+
+A push now drops every held layout. `keys.spec` pins that a press and a
+move on a block move nothing and that `x` does nothing.
+
+**The fixer's readings, taken:**
+1. The route's pills form their own last group.
+2. The order badge, now outside its block, has its own click (select),
+   double-click (open) and hover.
+3. A pin's row starts `BADGE_INSET` from the corner.
+4. The order badges draw over the bottom-left of a red mark's halo, so
+   answer 9 reads "the error hue wins over the drawing" in place of
+   "always wins". The policy allows it: the order badge is turned on,
+   has one place, and covers only the 3 px halo band, never the
+   diagnostic pill. This one is for the user's check.
+5. `.block`'s cursor is `pointer`.
+6. A push drops every held layout, since a stale layout held only
+   drags.
+
+**The mutants.** All ten red:
+- 11.1-routebeforeloop;
+- 11.2-outerend, 11.2-topedge and 11.2-routenearest;
+- 11.3-cutnoloop, 11.3-draworder, 11.3-nodimfocus and
+  11.3-nodimsearch;
+- 11.4-blockpans and 11.4-xacts.
+
+**The third delta check, at `36dcba2`.**
+- **The gate** matched the fixer's: 793 unit tests in 31 files, 410
+  files clean, the build, and 752 browser checks passed and 4 skipped.
+  The figures fell from 820 because `router.test`, `pills.spec`,
+  `drag.spec` and the beside-port checks went.
+- **The probe of section 11** passed in both browsers: a component's
+  row, the pins' corners, the order badge's click, double-click, hover
+  and dimming, and no drag on a block, a pin or with Shift. Nothing the
+  removal touched broke: the pan, a click, a long press, and a region's
+  caption.
+- **The mutants.** Every fixer's mutant is red, and the reviewer's two
+  as well: the order badges drawn under the overlay, and the cut blind
+  to the loop.
+- **The readings.** The reviewer agreed with readings 1 to 5. It
+  judged reading 6 plausible and did not drive it.
+
+Two things the reviewer noted:
+- **N1, for the close.** `pending.md`'s look bullet still lists the
+  router's stub, now moot. It goes when that bullet closes.
+- **The short pin.** On `failure_nested`'s `ctl`, the pin `⟨in⟩y` is
+  shorter than its row of two pills, so the route's pill ends about 86
+  px past the pin's outer end. The policy allows it for a route. Whether
+  the fixed `loop` pill also passes the pin's end was not measured. That
+  is for the user's look.
+
+## For the user's review, as it now stands
+
+This section supersedes the earlier "For the user's review".
+
+**The branch.** `look-pass` holds the arc `415a64b..HEAD`, nothing
+merged or pushed. Its gate is the third delta check's.
+
+**To check, the coordinator's calls:**
+- the occlusion policy's second clause, which the user agreed;
+- reading 4 of the last round, the order badges over an error's halo;
+- reading 6, a push dropping every held layout;
+- the earlier rulings that still stand: 1.1, 3.2, 4.1, 6.1 with its
+  cut, 7.1, 8.2, section 9, and the search prefix.
+
+**To look at,** with `npm run dev` in the worktree's `frontend/`:
+- the pills on `closed_loop`'s root with `h_ref` traced and `o` on;
+- `rates`' `fast` with `src`'s `out` traced;
+- `failure_nested`'s `ctl` with `plant`'s `power` traced, and the
+  short pin there;
+- `failure_probe`'s `s` and `warning`'s `g`, with `o` on;
+- the canvas with no drag.
+
+**Open:**
+- the unordered item "Arranging a level by hand" in `pending.md`;
+- N1, at the close.
+
+**Then:**
+- the merge, the push and CI's screenshots (10.3);
+- the roadmap's note, and `pending.md`'s look bullet closed with N1
+  (10.1);
+- the removal of what is local to this machine under
+  `RedstoneInspector.jl-worktrees/`. That means the worktrees
+  `look_pass` and `look_pass_review`, the folders `look_pass_scratch`,
+  `look_pass_review_probes`, `look_pass_fix_probes`,
+  `look_pass_fix2_probes`, `look_pass_captures` and `look_pass_drop`,
+  and the file `look_pass_notes.md`. What the record rests on is in
+  `tools/` beside this file.
+
+The captures in `look_pass_captures/` show the superseded pill places,
+and stand only for the other entries.

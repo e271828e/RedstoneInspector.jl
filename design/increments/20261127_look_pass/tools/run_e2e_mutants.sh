@@ -1,0 +1,23 @@
+#!/bin/bash
+# The review's mutants of the look pass, each on the scratch copy (mutant_scratch.py's environment).
+M="python3 $(dirname "$0")/mutant_scratch.py"
+$M E1-nowbr src/frame/Detail.svelte '<code class="path" title={path || "/"}>{@render slashed(path || "/")}</code>' '<code class="path" title={path || "/"}>{path || "/"}</code>' "e2e:e2e/detail.spec.ts --project chromium"
+$M E2-onwire src/canvas/Canvas.svelte 'const PILL_LIFT = 4;' 'const PILL_LIFT = -6;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E2b-lift3 src/canvas/Canvas.svelte 'const PILL_LIFT = 4;' 'const PILL_LIFT = 3;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E3-nomove src/canvas/Canvas.svelte 'moved = !!hit;' 'moved = false;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E4-fitnopills src/canvas/Canvas.svelte ', ...overlayBadges.map((q) => ({ ...q, width: q.w, height: BADGE_HEIGHT }))]' ']' "e2e:e2e/routes.spec.ts --project chromium"
+$M E5-routefirst src/canvas/Canvas.svelte '    for (const [port, c] of overlay?.continues ?? []) add(port, { role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });' '    for (const port of routeDrawn?.crossed ?? []) add(port, { role: "route", text: "route", title: "x" });
+    for (const [port, c] of overlay?.continues ?? []) add(port, { role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E6-gap10 src/canvas/Canvas.svelte 'let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;' 'let edge = east ? at.x + PORT / 2 + 10 : at.x - PORT / 2 - 10;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E7-param src/frame/Detail.svelte '    .parameters .param-name { color: var(--text-light); }' '' "e2e:e2e/detail.spec.ts --project chromium"
+$M E8a-nocut src/canvas/Canvas.svelte 'const text = cutPill(badge.text, right - left), w = width(text);' 'const text = badge.text, w = width(text);' "e2e:e2e/overlay.spec.ts --project chromium"
+$M E8b-noorder src/canvas/Canvas.svelte '(order === undefined ? 0 : pillWidth(order) + BADGE_GAP)' '0' "e2e:e2e/overlay.spec.ts --project chromium"
+$M E8c-nogap src/canvas/Canvas.svelte '(order === undefined ? 0 : pillWidth(order) + BADGE_GAP)' '(order === undefined ? 0 : pillWidth(order))' "e2e:e2e/overlay.spec.ts --project chromium e2e/order.spec.ts"
+$M E9-cross3 src/canvas/size.ts 'export const CROSS = 4;' 'export const CROSS = 3;' "e2e:e2e/overlay.spec.ts e2e/help.spec.ts --project chromium"
+$M E9b-helpcross src/frame/Help.svelte 'd="M{60 - CROSS},{24 - CROSS} L{60 + CROSS},{24 + CROSS} M{60 - CROSS},{24 + CROSS} L{60 + CROSS},{24 - CROSS}"' 'd="M57,21 L63,27 M57,27 L63,21"' "e2e:e2e/help.spec.ts --project chromium"
+$M E10a-border src/frame/tabs/Chart.svelte '.grid { stroke: var(--text-light); stroke-width: 1; }' '.grid { stroke: var(--border); stroke-width: 1; }' "e2e:e2e/timing.spec.ts --project chromium"
+$M E10b-4px src/frame/tabs/Chart.svelte '${ROW / 2 - 3}v6' '${ROW / 2 - 2}v4' "e2e:e2e/timing.spec.ts --project chromium"
+$M E11-of src/lib/events.ts '} × Δt_frame`' '} of Δt_frame`' "e2e:e2e/events.spec.ts --project chromium"
+$M E12-lead src/frame/Help.svelte '<p>{@render text(SEARCH_LEAD)}</p>' '<p>{SEARCH_LEAD}</p>' "e2e:e2e/help.spec.ts --project chromium"
+$M E13-pinside src/canvas/Canvas.svelte 'return portId(id, b.role === "in" ? "out" : "in", b.name);' 'return portId(id, b.role === "in" ? "in" : "out", b.name);' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
+$M E14-floors src/canvas/size.ts 'export const FLOOR_SEGMENTS = 0.4;' 'export const FLOOR_SEGMENTS = 0.25;' "e2e:e2e/zoom.spec.ts --project chromium"
