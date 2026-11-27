@@ -315,7 +315,7 @@ Open items live in `pending.md`.
    halos its members; its wires are terminal pairs, which the client maps
    onto the chain of declared wires between the two primitives by answer
    18's resolution in reverse, drawn on every level the chain touches. A
-   badge stands beside each input port by which the chain enters a closed
+   badge stands beside each port where the chain crosses into a closed
    child, and, off the root, beside a pin where the chain leaves the level,
    placed as answer 9 places a route's. A child's badge opens it, a pin's
    climbs to the parent with the chain lit, and each such level takes a
@@ -359,11 +359,14 @@ Open items live in `pending.md`.
    closed child or through a pin, the terminal port marked, a dot per level
    in the tree. A badge stands outside its block or pin, above the wire and
    clear of the wire's type label below it: left of each input port by
-   which the route enters a closed child, right of the output port by which
-   it leaves the closed child holding its producer, and, off the root, past
-   the point where the wire leaves an input pin or short of the point where
-   it reaches an output pin. Each port takes one route badge; where a loop's
-   badge stands at the same port, the loop's is nearer. Search hits take a dashed halo, the
+   which the route enters a closed child, right of each output port by
+   which it leaves a closed child it enters by none, the one holding its
+   producer, and, off the root, past the point where the wire leaves an
+   input pin or short of the point where it reaches an output pin. Each
+   port takes one route badge; where a loop's badge stands at the same
+   port, the loop's is nearer. A badge that would meet a drawn type label,
+   the one under the wire of the port above, moves outward along its wire
+   past it. Search hits take a dashed halo, the
    selected hit the solid one. Focus on a diagnostic, a route, a legend line or a search
    dims everything uninvolved by opacity, never by color; a level on which
    the focus lights nothing does not dim, the status bar saying why.

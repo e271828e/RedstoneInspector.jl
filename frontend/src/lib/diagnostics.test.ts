@@ -92,12 +92,12 @@ describe("overlayOf", () => {
     expect([o.ports.size, o.chords, o.continues.size]).toEqual([0, [], 0]);
   });
 
-  it("failure_nested: plant and the root's two wires with ctl continuing; inside ctl, pi and the two inner wires", () => {
+  it("failure_nested: plant and the root's two wires with ctl continuing, crossed at its input y alone (visual_grammar.md answer 8); inside ctl, pi and the two inner wires", () => {
     const m = fixtureModel("failure_nested");
     const root = overlayOf(m, "");
     expect(sorted(root.blocks.keys())).toEqual(["plant"]);
     expect(sorted(root.wires.keys())).toEqual(["ctl|in|y", "plant|in|u"]);
-    expect(Object.fromEntries(root.continues)).toEqual({ ctl: { severity: "error", index: 0 } });
+    expect(Object.fromEntries(root.continues)).toEqual({ "ctl|in|y": { severity: "error", index: 0 } });
     const ctl = overlayOf(m, "ctl");
     expect(sorted(ctl.blocks.keys())).toEqual(["ctl/pi"]);
     expect(ctl.blocks.get("ctl/pi")!.badge).toBeUndefined();

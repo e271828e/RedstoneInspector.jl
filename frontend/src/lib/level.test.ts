@@ -3,7 +3,7 @@ import type { AssemblyNode, PrimitiveNode } from "./descriptor";
 import { fixtureModel } from "./fixtures";
 import { regionsOf } from "./regions";
 import { labelledPorts } from "./wires";
-import { elkGraph, inPinId, levelOf, outPinId, parsePortId, portId, type BlockSize, type Level } from "./level";
+import { crossings, elkGraph, inPinId, levelOf, outPinId, parsePortId, portId, type BlockSize, type Level } from "./level";
 
 const level = (name: string, path = ""): Level => {
   const m = fixtureModel(name);
@@ -115,6 +115,13 @@ describe("every level", () => {
     const primitive = m.structure!.nodes.find((n) => n.class === "primitive")!.path;
     expect(() => levelOf(m.tree!, m.resolution!, primitive)).toThrow(/primitive/);
     expect(() => levelOf(m.tree!, m.resolution!, "nowhere")).toThrow(/no node/);
+  });
+});
+
+describe("crossings", () => {
+  it("takes each input port entered, and an output port only on a child entered by none (visual_grammar.md answer 9)", () => {
+    expect([...crossings(["a|in|x", "a|in|w"], ["a|out|y", "b|out|z"])].sort()).toEqual(["a|in|w", "a|in|x", "b|out|z"]);
+    expect([...crossings([], ["b|out|z", "b|out|v"])].sort()).toEqual(["b|out|v", "b|out|z"]);
   });
 });
 

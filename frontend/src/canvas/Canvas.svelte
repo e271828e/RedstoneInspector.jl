@@ -18,7 +18,7 @@
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12); `x`, `X` and the undo button put drags back.
   import { tick, untrack } from "svelte";
-  import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
+  import type { Block, BlockSize, ChildBlock, InPin, Level, LevelEnd, LevelWire, OutPin } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { orderBadge } from "../lib/analysis";
@@ -178,7 +178,8 @@
       const { block, side, name } = parsePortId(t.port);
       const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
       if (!at || !box || !p) return [];
-      return [{ port: t.port, text: shortType(t.type), wire: t.wires[0], x: box.x + p.x + at.x, y: box.y + p.y + at.y + LABEL_BASELINE }];
+      const x = box.x + p.x + at.x, top = box.y + p.y + at.y;
+      return [{ port: t.port, text: shortType(t.type), wire: t.wires[0], x, y: top + LABEL_BASELINE, box: { x, y: top, width: at.width, height: at.height } }];
     });
   });
   /** The drawn level's regions, and each keyed member's region path. */
@@ -284,12 +285,12 @@
     onview?.(v);
   }
 
-  /** Fits the level, dragged blocks included, leaving the legend's box and its inset clear. */
+  /** Fits the level, dragged blocks and the overlay's pills included, leaving the legend's box and its inset clear. */
   export function fit() {
     if (!shown) return;
     const g = shown.geometry;
     let x0 = 0, y0 = 0, x1 = g.width, y1 = g.height;
-    for (const b of [...g.boxes.values(), ...frames.values()]) {
+    for (const b of [...g.boxes.values(), ...frames.values(), ...overlayBadges.map((q) => ({ ...q, width: q.w, height: BADGE_HEIGHT }))]) {
       x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
       x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
     }
@@ -549,47 +550,64 @@
     const box = shown?.geometry.boxes.get(block), p = shown?.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
     return box && p ? { x: box.x + p.x, y: box.y + p.y } : undefined;
   }
+  /** How far above a port's wire a route's or a loop's pill stands, its bottom edge clear of the route's casing. */
+  const PILL_LIFT = 4;
   /**
-   * The overlay's pills on each block, right to left from its bottom right corner: a diagnostic's, then a
-   * continuation's, then the route's on a child it enters. On a pin a loop's chain or the route crosses, off the
-   * root, the loop's pill then the route's straddle its top edge from its outer end inward.
+   * The overlay's pills (visual_grammar.md answers 8 and 9). A node diagnostic's straddles its block's bottom edge at
+   * the right. A loop's and a route's stand beside each port where the chain or the route crosses a closed child's
+   * edge (`crossed`) or, off the root, a pin's, above the wire and outside the block or pin: left of an input port,
+   * right of an output port, so a pin's stands past where its wire leaves it or short of where it arrives. The loop's
+   * is nearer the port where both stand. A pill that would meet a drawn type label, its own port's or the one under
+   * the port above, moves outward along its wire past the label's far end.
    */
   const overlayBadges = $derived.by(() => {
-    type Pill = { block: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
+    type Pill = { block: string; port?: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
     const out: (Pill & { x: number; y: number; w: number })[] = [];
     if (!shown) return out;
     const width = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
-    for (const b of shown.level.blocks) {
-      const box = shown.geometry.boxes.get(b.id);
-      if (!box) continue;
-      if (b.role === "in" || b.role === "out") {
-        if (shown.level.path === "") continue;
-        const pills: Pill[] = [];
-        const c = overlay?.leaves.get(b.id);
-        if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
-        if (routeDrawn?.pins.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
-        let left = box.x + BADGE_INSET, right = box.x + box.width - BADGE_INSET;
-        for (const q of pills) {
-          const w = width(q.text);
-          const x = b.role === "in" ? left : right - w;
-          out.push({ ...q, x, y: box.y + BADGE_TOP, w });
-          left += w + BADGE_GAP;
-          right -= w + BADGE_GAP;
-        }
-        continue;
-      }
-      const pills: Pill[] = [];
-      const badge = overlay?.blocks.get(b.id)?.badge;
-      if (badge) pills.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index });
-      const c = overlay?.continues.get(b.id);
-      if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
-      if (routeDrawn?.entered.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route continues inside; open it to follow it." });
-      let right = box.x + box.width - BADGE_INSET;
+    const atPorts = new Map<string, Pill[]>();
+    const add = (port: string, q: Omit<Pill, "block" | "port">) => {
+      const list = atPorts.get(port) ?? [];
+      list.push({ ...q, block: parsePortId(port).block, port });
+      atPorts.set(port, list);
+    };
+    /** A pin's one port: an input pin's on its east side, an output pin's on its west. */
+    const pinPort = (id: string) => {
+      const b = byId.get(id) as InPin | OutPin;
+      return portId(id, b.role === "in" ? "out" : "in", b.name);
+    };
+    for (const [port, c] of overlay?.continues ?? []) add(port, { role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
+    if (shown.level.path !== "") {
+      for (const [pin, c] of overlay?.leaves ?? []) add(pinPort(pin), { role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
+    }
+    for (const port of routeDrawn?.crossed ?? []) add(port, { role: "route", text: "route", title: "The route continues inside; open it to follow it." });
+    if (shown.level.path !== "") {
+      for (const pin of routeDrawn?.pins ?? []) add(pinPort(pin), { role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
+    }
+    for (const [port, pills] of atPorts) {
+      const at = portAt(port);
+      if (!at) continue;
+      const east = parsePortId(port).side === "out";
+      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
+      const y = at.y - PILL_LIFT - BADGE_HEIGHT;
       for (const q of pills) {
         const w = width(q.text);
-        out.push({ ...q, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
-        right -= w + BADGE_GAP;
+        for (let moved = true; moved; ) {
+          const x = east ? edge : edge - w;
+          const hit = typeLabels.find(({ box: l }) => l.x < x + w && x < l.x + l.width && l.y < y + BADGE_HEIGHT && y < l.y + l.height);
+          moved = !!hit;
+          if (hit) edge = east ? hit.box.x + hit.box.width + BADGE_GAP : hit.box.x - BADGE_GAP;
+        }
+        out.push({ ...q, x: east ? edge : edge - w, y, w });
+        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
       }
+    }
+    for (const b of shown.level.blocks) {
+      const box = shown.geometry.boxes.get(b.id);
+      const badge = overlay?.blocks.get(b.id)?.badge;
+      if (!box || !badge || b.role === "in" || b.role === "out") continue;
+      const w = width(badge.text);
+      out.push({ block: b.id, role: "diagnostic", text: badge.text, title: badge.title, severity: badge.severity, index: badge.index, x: box.x + box.width - BADGE_INSET - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
     }
     return out;
   });
@@ -905,8 +923,8 @@
               <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - 3},{my - 3} L{mx + 3},{my + 3} M{mx - 3},{my + 3} L{mx + 3},{my - 3}" />
             {/if}
           {/each}
-          {#each overlayBadges as q (q.block + q.role)}
-            <g class="badge" data-id={q.block} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
+          {#each overlayBadges as q ((q.port ?? q.block) + q.role)}
+            <g class="badge" data-id={q.block} data-port={q.port} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
               <title>{q.title}</title>
               <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
               <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>

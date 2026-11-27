@@ -4,9 +4,10 @@
 // probe failure's badge reading the function, amber for a warning, the port and
 // wire marks on a synthetic descriptor, no dimming until a badge focuses its
 // diagnostic. Counts from the oracle (`overlay.py`); geometry read off the DOM.
-// A loop's badge on a pin it leaves through (answer 8 as amended by the polish batch).
+// A loop's badge on a pin it leaves through (answer 8 as amended by the polish batch),
+// beside the port it crosses (the look pass of 2026-11-27, 1.4).
 import { test, type Page } from "@playwright/test";
-import { drop, effectiveOpacity, expect, fixtureText, openPath, press, readyLevel, shot } from "./fixtures";
+import { drop, effectiveOpacity, expect, fixtureText, openPath, pillByPort, press, readyLevel, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const drawer = (page: Page) => page.locator("section.drawer");
@@ -82,26 +83,17 @@ test("failure_nested: plant and the root's two hops, ctl's loop badge opening ct
   await expect(mark("")).toHaveAttribute("title", "1 error, beneath");
 });
 
-test("failure_nested: inside ctl the pins the chain leaves through take the loop badge on their top edge at the outer end; a click climbs to the root with the chain drawn", async ({ page }) => {
+test("failure_nested: inside ctl the pins the chain leaves through take the loop badge beside their ports, above the wire and outside the pin, as ctl's stands left of its input y at the root (answer 8 as amended by the look pass, 1.4); a click climbs to the root with the chain drawn", async ({ page }) => {
   await drop(page, "failure_nested");
+  const rule = async (port: string) => {
+    const q = await pillByPort(page.locator(`g.badge[data-role="continues"][data-port="${port}"]`));
+    expect([q.above, q.outside, q.near, q.label], port).toEqual([true, true, true, false]);
+  };
+  await press(page, "y");
+  await rule("ctl|in|y");
   await openPath(page, "ctl");
-  // in level units: the pill's rect, and the pin's capsule placed by its group's translation
-  const geometry = (id: string) => page.locator(`g.badge[data-role="continues"][data-id="${id}"] rect`).evaluate((r: SVGRectElement, id) => {
-    const g = document.querySelector<SVGGElement>(`g.block[data-id="${id}"]`)!;
-    const s = g.querySelector<SVGRectElement>(":scope > rect.shape")!;
-    const m = g.transform.baseVal.consolidate()!.matrix;
-    const v = (a: SVGAnimatedLength) => a.baseVal.value;
-    return {
-      r: { left: v(r.x), right: v(r.x) + v(r.width), top: v(r.y), bottom: v(r.y) + v(r.height) },
-      s: { left: m.e + v(s.x), right: m.e + v(s.x) + v(s.width), top: m.f + v(s.y) },
-    };
-  }, id);
-  // the inset of 4 from the outer end, the pill straddling the top edge
-  const inPin = await geometry("⟨in⟩y");
-  expect(inPin.r.left).toBeCloseTo(inPin.s.left + 4, 3);
-  const outPin = await geometry("⟨out⟩u");
-  expect(outPin.r.right).toBeCloseTo(outPin.s.right - 4, 3);
-  for (const g of [inPin, outPin]) expect(g.r.top < g.s.top && g.s.top < g.r.bottom).toBe(true);
+  await expect(page.locator('g.badge[data-role="continues"]')).toHaveCount(2);
+  for (const port of ["⟨in⟩y|out|y", "⟨out⟩u|in|u"]) await rule(port);
   const badge = page.locator('g.badge[data-role="continues"][data-id="⟨in⟩y"]');
   await expect(badge).toHaveAttribute("data-severity", "error");
   await expect(badge.locator("text.badge-text")).toHaveText("loop");

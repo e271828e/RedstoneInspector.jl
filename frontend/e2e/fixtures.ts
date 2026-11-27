@@ -1,8 +1,8 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
 // the wait for the drawn level or the outcome text, counts, the frame's locators,
-// a wire's clickable point, an element's effective opacity, screenshots and
-// the live tab's mock socket.
+// a wire's clickable point, an element's effective opacity, an overlay pill's place by its
+// port, screenshots and the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator, type Page, type WebSocketRoute } from "@playwright/test";
@@ -170,6 +170,34 @@ export const effectiveOpacity = (page: Page, sel: string) => page.locator(sel).f
   let o = 1;
   for (let n: Element | null = e; n; n = n.matches("svg.canvas") ? null : n.parentElement) o *= Number(getComputedStyle(n).opacity);
   return o;
+});
+
+/**
+ * Where an overlay pill stands by the port it names (`data-port`), in client pixels off the DOM
+ * (visual_grammar.md answer 9): `above`, its bottom edge above the port square's top, so above the wire; `outside`,
+ * beyond the square on the port's side, left of an input port and right of an output port, so outside the block or
+ * pin; `near`, its near end within its own height of the square or of the far end of a drawn type label it stands
+ * past; `label`, whether it meets a drawn type label. A label's ends come from its text's start and length, since
+ * Firefox pads a text's box.
+ */
+export const pillByPort = (badge: Locator) => badge.evaluate((g) => {
+  const port = g.getAttribute("data-port")!;
+  const p = document.querySelector(`rect.port[data-port="${port}"]`)!.getBoundingClientRect();
+  const r = g.querySelector("rect")!.getBoundingClientRect();
+  const east = port.split("|").at(-2) === "out";
+  const svg = document.querySelector<SVGSVGElement>("svg.canvas")!, vb = svg.viewBox.baseVal, at = svg.getBoundingClientRect();
+  const scale = svg.clientWidth / vb.width;
+  const labels = [...document.querySelectorAll<SVGTextElement>("text.type-label")].map((t) => {
+    const x = t.x.baseVal.getItem(0).value, b = t.getBBox();
+    const cx = (u: number) => at.left + (u - vb.x) * scale, cy = (u: number) => at.top + (u - vb.y) * scale;
+    return { left: cx(x), right: cx(x + t.getComputedTextLength()), top: cy(b.y), bottom: cy(b.y + b.height) };
+  });
+  const gap = east ? r.left - p.right : p.left - r.right;
+  const past = labels.some((l) => (east ? r.left - l.right : l.left - r.right) >= 0 && (east ? r.left - l.right : l.left - r.right) < r.height);
+  return {
+    above: r.bottom <= p.top, outside: gap >= 0, near: gap < r.height || past,
+    label: labels.some((l) => l.left < r.right && r.left < l.right && l.top < r.bottom && r.top < l.bottom),
+  };
 });
 
 /** A client point of a wire's line where the wire's own hit path is on top. */
