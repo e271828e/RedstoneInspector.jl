@@ -371,3 +371,85 @@ readings. It raised three points, and the coordinator ruled on each.
 - **N3, a check added.** A live drag with the labels off takes the
   12-unit stub. Nothing pinned it: a mutant passing the labels as drawn
   during the drag survived.
+
+## The second fix and the last delta check
+
+The fixer, resumed, landed N1 and N3: `40d1851` amends answer 9 and the
+trap, and `1bce3d6` "Fix the look pass's delta check findings".
+
+- **N1.** The bound is gone. A pill moves outward past the labels it
+  meets and stands unmoved only where the moved place would meet a
+  block or pin box, a port square, a diagnostic's pill, a pill already
+  placed, or another port's unmoved stack. The diagnostics' pills are
+  placed first and never move. Every port's pills are stacked unmoved,
+  the loop's nearest. Ports are then taken in the overlay's order: loop
+  crossings, loop pins, route crossings, route pins. `frontend/MAP.md`'s
+  badges paragraph states the order. A new `pills.spec` test pins nine
+  of the delta check's pills as moved and clear of every label, and
+  `routes.spec` pins `rates`' `fast|out|outer` as moved again.
+- **N3.** `drag.spec`'s toggle check ends with a live drag of `plant`,
+  labels off, its backward stub 12.
+
+Mutants, all red: the refusal removed; the refusal blind to pills; a
+short bound put back; no move at all; the live drag passing the labels
+as drawn. The earlier F2 to F4 mutants stay red. The bound's two
+mutants left the list with the bound.
+
+The reviewer's last delta check, at `1bce3d6`, matched the fixer's gate:
+804 unit tests in 32 files, 414 files clean, 820 browser checks passed
+and 4 skipped. Its sweep, identical in both browsers, finds nothing
+meeting a block, a port square or a pill. Three pills still stand over
+a label, F1's three, each held where its move would meet something:
+
+- on `failure_nested`'s root, `plant|out|power` traced, the route's pill
+  at `ctl|in|y`, which would meet `plant` and its `y`;
+- on `closed_loop`'s root, `selection|out|δt` traced, the pill at
+  `selection|out|δt`, which would meet `actuators|in|δt_cmd`'s at the
+  wire's other end;
+- on `timing`'s `fast`, `fast/outer|out|deep` traced, which would meet
+  the `⟨out⟩deep` pin's pill.
+
+Three of the reviewer's mutants survive, each acceptable. With port
+squares dropped from the obstacles, or blocks dropped, the one fixture
+case is still held by the other; with both dropped it goes red. With
+the diagnostics' pills dropped nothing changes, since no fixture has a
+move that lands on one; pinning it needs a synthetic case.
+
+## For the user's review
+
+The branch `look-pass` holds 21 commits from `415a64b`, nothing merged
+or pushed, `master` untouched. Its gate: 804 unit tests in 32 files,
+the checker clean on 414 files, the build, and 820 browser checks
+passed and 4 skipped in both projects. The Julia suite and the drift
+check did not run, since nothing under `src/`, `test/` or `scripts/`
+changed.
+
+- **To check, the coordinator's calls:** the builder's readings, with
+  reading 4 turned twice and reading 8 overturned on the toggle;
+  rulings F1 to F5 and N1 to N3; the fixer's readings 2 to 5.
+- **To look at,** with `npm run dev` in the worktree's `frontend/`:
+  - the route and loop pills beside their ports: `closed_loop`'s root
+    with `h_ref`, then `selection`'s `δt`, traced, and `rates`' `src`'s
+    `out` traced, at the root and in `fast`;
+  - F1's three pills, held over another port's label;
+  - a dragged backward wire's stub: `plant` dragged on `closed_loop`'s
+    root, the labels on and off with `y`;
+  - the floors on `library`, `kinds` and `closed_loop`, the pill cut on
+    `failure_probe`'s `s` and on `warning` with `o` on, and the chart on
+    `timing_deployment` and the copies in `look_pass_drop/`.
+- **Open, by the rulings:** the drag's router ignores third blocks, so
+  a close drag of `pid_controller` beside `lqr_controller` runs a wire
+  and a pill over `lqr_controller` (the fix's reading 2); below a gap of
+  24 a backward wire runs up to 40 units inside the consumer's box (N2).
+- **Noticed, not touched:** a wire pane's endpoint paths carry no
+  `<wbr>`; `cutPill` gives "…" where the room is narrower than an
+  ellipsis pill; MAP's `size.ts` row does not list `CROSS`.
+- **Then:** the merge, the push and CI's screenshots (10.3), the
+  roadmap's note and `pending.md`'s bullet closed (10.1), and the
+  removal of what is local to this machine under
+  `RedstoneInspector.jl-worktrees/`. That means the worktrees
+  `look_pass` and `look_pass_review`, the folders `look_pass_scratch`,
+  `look_pass_review_probes`, `look_pass_fix_probes`,
+  `look_pass_captures` and `look_pass_drop`, and the file
+  `look_pass_notes.md`. What the record rests on is in `tools/` beside
+  this file.
