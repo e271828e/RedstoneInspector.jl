@@ -1,0 +1,2 @@
+        if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
+        if (routeDrawn?.pins.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });

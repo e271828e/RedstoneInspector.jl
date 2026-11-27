@@ -21,8 +21,9 @@ the logs stayed on the machine that made them.
   61a and 61b in `canvas/Canvas.svelte`, 21s in `lib/search.ts`, 41 and 71
   in `canvas/size.ts`, 61c in `lib/diagnostics.ts`, 82 in `lib/events.ts`,
   9a and 9b in `lib/timing.ts`, 9c and 9d in `frame/tabs/Chart.svelte`.
-  The cold review's fixes changed some of that text. Nothing may read or
-  edit the tree while it runs.
+  The cold review's fixes changed some of that text, and the user's
+  rulings of section 11 removed what 13, 14a, 14b and 14fit mutate. Nothing
+  may read or edit the tree while it runs.
 - `mutant_scratch.py`, the review's. It works on a scratch copy of the
   frontend folder, never the worktree, and restores each file from the
   worktree. A command `e2e:<args>` builds the copy first. Set
@@ -33,9 +34,14 @@ the logs stayed on the machine that made them.
   the look pass's fixes, one `mutant_scratch.py` call a line, the checks it
   runs named on its line. They match the code at `699daa9`, which `fe0e1be`
   leaves unchanged. E2b, E9b and E17 survived the review; the checks F4
-  added turn them red.
-- `run_fix_mutants.sh`, the fixer's mutants of the cold review's fixes, F1
-  to F4, and of the delta check's, N1 and N3, the same way. All go red.
+  added turn them red. Those on the pills beside the ports and on the drag
+  no longer apply after the checklist's section 11.
+- `run_fix_mutants.sh`, the second fixer's mutants of the user's rulings in
+  the checklist's section 11, the same way, one per rule: the components'
+  row order, a pin's corner and edge and its loop's place, the cut leaving
+  room for the loop's pill, the draw order of the order badges and the
+  route's pills, the order badge's dimming, and no drag. `fix2_mutants/`
+  holds the two texts too long for a line, a swap each. All go red.
 
 ## The probes
 
@@ -51,8 +57,8 @@ holding a `shots/` folder, then run `npx playwright test` from `probe/`.
   the legend, the svg's edge.
 - `specs/sweep.spec.ts`: every producer port on every fixture's root and on
   each closed child of the root traced, labels and rate mode on, each
-  level's meetings logged. It found the cold review's F1; `e2e/pills.spec.ts`
-  now runs it in the suite, the labels on and off.
+  level's meetings logged. It found the cold review's F1, of the pills
+  beside the ports that section 11 reverted.
 - `specs/cases.spec.ts`: F1's three cases, cropped, labels on and off.
 - `specs/charter.spec.ts`: the review's charter, driven and logged: a child
   both entered and left, a drag beside another block, a far zoom, a pill

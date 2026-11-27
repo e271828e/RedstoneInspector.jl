@@ -1,21 +1,19 @@
 #!/bin/bash
-# The fixer's mutants of the cold review's and the delta check's fixes, each on the scratch copy (mutant_scratch.py's environment).
-M="python3 $(dirname "$0")/mutant_scratch.py"
+# The second fixer's mutants of the user's rulings after the fixes (the checklist's 11.1 to 11.4), each on the scratch
+# copy (mutant_scratch.py's environment); fix2_mutants/ holds the texts too long for a line.
+D=$(dirname "$0")
+M="python3 $D/mutant_scratch.py"
 C=src/canvas/Canvas.svelte
-$M N1-norefusal $C '        if (edge !== from && [...blocked, ...out.map(pillRect), ...others].some((b) => meets(r, b))) edge = from;
-' '' "e2e:e2e/pills.spec.ts e2e/routes.spec.ts --project chromium"
-$M N1-blocksonly $C '[...blocked, ...out.map(pillRect), ...others].some(' '[...blocked].some(' "e2e:e2e/pills.spec.ts e2e/routes.spec.ts --project chromium"
-$M N1-halfbound $C '        const r = pillRect({ x: east ? edge : edge - w, y, w });' '        const r = pillRect({ x: east ? edge : edge - w, y, w });
-        if (Math.abs(edge - from) > 8) edge = from;' "e2e:e2e/pills.spec.ts e2e/routes.spec.ts --project chromium"
-$M E3b-nomoveatall $C 'const hit = typeLabels.find(' 'const hit = ([] as typeof typeLabels).find(' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
-$M F2-threshold src/canvas/router.ts 'if (b.x - a.x >= 2 * STUB) {' 'if (b.x - a.x >= from + STUB) {' "npx vitest run src/canvas/router.test.ts"
-$M F3-labelsaside src/canvas/router.ts 'producerStub(labels ? g.labels.get(portId(w.from.block, "out", w.from.port)) : undefined)' 'producerStub(g.labels.get(portId(w.from.block, "out", w.from.port)))' "npx vitest run src/canvas/router.test.ts" "e2e:e2e/drag.spec.ts -g 'F3' --project chromium"
-$M N3-livedrag $C 'rerouteTouching(g, s.level, s.sizes, d.block, labels)' 'rerouteTouching(g, s.level, s.sizes, d.block, true)' "e2e:e2e/drag.spec.ts -g 'F3' --project chromium"
-$M F3-notoggle $C '      shown = { ...shown, geometry: rerouteDragged(shown.geometry, shown.level, shown.sizes, dragged) };
-      onlayout?.(shown.geometry, dragged);
-' '' "e2e:e2e/drag.spec.ts -g 'F3' --project chromium"
-$M F3-heldstale $C 'draw(level, sizes, rerouteDragged(saved.geometry, level, sizes, saved.dragged), saved.dragged, v)' 'draw(level, sizes, saved.geometry, saved.dragged, v)' "e2e:e2e/drag.spec.ts -g 'F3' --project chromium"
-$M F4-lift3 $C 'const PILL_LIFT = 4;' 'const PILL_LIFT = 3;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
-$M F4-float $C 'y = at.y - PILL_LIFT - BADGE_HEIGHT;' 'y = at.y - PILL_LIFT - BADGE_HEIGHT - 10;' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
-$M F4-routenearer $C 'list.push({ ...q, block: parsePortId(port).block, port });' 'list[q.role === "route" ? "unshift" : "push"]({ ...q, block: parsePortId(port).block, port });' "e2e:e2e/routes.spec.ts e2e/overlay.spec.ts --project chromium"
-$M F4-helpcross src/frame/Help.svelte 'd="M{60 - CROSS},{24 - CROSS} L{60 + CROSS},{24 + CROSS} M{60 - CROSS},{24 + CROSS} L{60 + CROSS},{24 - CROSS}"' 'd="M57,21 L63,27 M57,27 L63,21"' "e2e:e2e/help.spec.ts --project chromium"
+E="e2e:e2e/overlay.spec.ts e2e/routes.spec.ts --project chromium"
+$M 11.1-routebeforeloop $C "$(cat "$D/fix2_mutants/roworder.old")" "$(cat "$D/fix2_mutants/roworder.new")" "$E"
+$M 11.2-outerend $C 'x: b.role === "in" ? right - w : left, y, w' 'x: b.role === "in" ? left : right - w, y, w' "$E"
+$M 11.2-topedge $C 'x: b.role === "in" ? right - w : left, y, w' 'x: b.role === "in" ? right - w : left, y: box.y + BADGE_TOP, w' "$E"
+$M 11.2-routenearest $C "$(cat "$D/fix2_mutants/pinorder.old")" "$(cat "$D/fix2_mutants/pinorder.new")" "$E"
+$M 11.3-cutnoloop $C ' - (loop ? pillWidth(loop.text) + BADGE_GAP : 0);' ';' "$E"
+$M 11.3-draworder $C "$(cat "$D/fix2_mutants/draworder.old")" "$(cat "$D/fix2_mutants/draworder.new")" "e2e:e2e/overlay.spec.ts e2e/colors.spec.ts --project chromium"
+$M 11.3-nodimfocus $C '  :is(.legend-focus, .diagnostic-focus, .route-focus) .order-badge:not(.lit) { opacity: var(--dim); }
+' '' "e2e:e2e/order.spec.ts --project chromium"
+$M 11.3-nodimsearch $C '  .searching .order-badge:not(.search-hit):not(.search-under) { opacity: var(--dim); }
+' '' "e2e:e2e/order.spec.ts --project chromium"
+$M 11.4-blockpans $C '    if (e.target !== svg || e.button !== 0) return;' '    if (e.button !== 0) return;' "e2e:e2e/keys.spec.ts --project chromium"
+$M 11.4-xacts src/App.svelte '    else if (e.key === "0") canvasView?.fit();' '    else if (e.key === "0" || name === "x") canvasView?.fit();' "e2e:e2e/keys.spec.ts --project chromium"
