@@ -610,6 +610,39 @@ the timing tab's too, and the rate pill's text is `rates.ts`'s `ratePill`;
 over the live socket. Open, each in `pending.md` under the look pass: the
 two pills on a narrow assembly and the tolerance's form.*
 
+**The look pass before the release.** The canvas's open look items,
+judged by eye in one session after 10b and before 11 captures the
+README's images, by the user's rulings of 2026-11-17 and 2026-11-20.
+*Landed on 2026-11-27 at `782eb72` of `RedstoneInspector.jl`, a merge of
+the branch `look-pass`. The user ruled each item on a checklist, then a
+builder, a cold review in Chromium and Firefox, two fix rounds and three
+delta checks ran with the user away. After trying the branch the user
+ruled again: the route and loop pills back on the bottom edge, a pin's
+at its inner end; a policy that a fixed mark never covers another and a
+mark the reader turns on takes a free place first; and the drag removed
+whole, with Shift, `x`, `X`, the dragged positions and the local router.
+The user checked a second list and asked for no change. The record is
+`increments/20261127_look_pass/`: `look_pass.md` and `look2_pass.md`,
+the two checklists, `notes_look_pass.md`, the rulings, readings and
+reviews, and `tools/`, the mutant runners and probes. Landed besides:
+the pane header's path breaks after its slashes; a stacked parameter's
+name takes the lighter color; the text levels' floors are 0.7, 0.6 and
+0.4; a diagnostic pill is cut to leave room for the loop's, its title
+opening with the whole text; the dead hop's cross is ±4; the tolerance
+reads `2.5e-5 × Δt_frame`; the chart's threshold is 500 base ticks and
+its pitch 10 px, its base ticks 6 px strokes in the lighter color; and a
+search prefix standing alone applies to the next word. The rules are
+`visual_grammar.md` answers 8 and 9, `workspace.md` answers 5, 6, 7, 9
+and 11, `deployment_overlay.md` answer 11, `initial_design.md` answer 12
+and the policy in `design/rules.md`. Facts the next briefs take: the
+gate stands at 131 Julia tests, untouched, 793 unit tests in 31 files,
+and 752 browser checks passed and 4 skipped; the fixtures did not
+change; the order badges draw in `g.order-badges` after `g.overlay` and
+the route's pills last in `g.route-pills`; a push lays every level out
+again, the session holding no dragged layout; `frontend/MAP.md` stands
+at 672 lines; nobody checked WebKit or a push over the live socket.
+Open in `pending.md`: arranging a level by hand.*
+
 **Increment 11: the release.** `scripts/release.jl`, the `release` job
 with the tag-absent rule, Pages, the `base` path, the version baked into
 the page, the Vimium patterns, the docs address constant and the
