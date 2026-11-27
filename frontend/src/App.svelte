@@ -366,10 +366,15 @@
     const region = session.focus;
     return region === "detail" || region === "drawer" ? stopsOf(region).find((e) => e === document.activeElement) : undefined;
   }
-  /** The cursor put on a stop and scrolled into view, an events group's whole `tbody` for its button. */
+  /**
+   * The cursor put on a stop and scrolled into view: for an events group's button the whole `tbody`, or its top, which
+   * holds the button, when the group is taller than the tab's body.
+   */
   function focusStop(e: HTMLElement | undefined) {
     e?.focus({ preventScroll: true });
-    (e?.closest("tbody.group") ?? e)?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const group = e?.closest("tbody.group");
+    const tall = !!group && group.getBoundingClientRect().height > group.closest(".tab-body")!.clientHeight;
+    (group ?? e)?.scrollIntoView({ block: tall ? "start" : "nearest", inline: "nearest" });
   }
 
   /** A pane's `h j k l`: the cursor to another stop, or a section opened or closed. */

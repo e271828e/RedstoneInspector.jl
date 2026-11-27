@@ -91,7 +91,8 @@ M = [
     ("fix: long names unbroken", DE, "  .events .name { overflow-wrap: anywhere; min-width: 8ch; }\n", "", "events"),
     ("fix: a later row's click focuses nothing", A, 'const row = t.closest("tbody.group") ?? t.closest("tr, .line, li.edge");',
      'const row = t.closest("tr, .line, li.edge");', "events"),
-    ("fix: the button scrolled, not the group", A, '(e?.closest("tbody.group") ?? e)?.scrollIntoView(', "e?.scrollIntoView(", "events"),
+    ("fix: the button scrolled, not the group", A, '(group ?? e)?.scrollIntoView(', "e?.scrollIntoView(", "events"),
+    ("fix: a tall group's bottom aligned", A, 'block: tall ? "start" : "nearest"', 'block: "nearest"', "events"),
     ("fix: the pane's localized head untitled", DE, "<th title={LOCALIZED_TITLE}>localized</th>", "<th>localized</th>", "events"),
     ("fix: the tab's localized head untitled", T, "<th title={LOCALIZED_TITLE}>localized</th>", "<th>localized</th>", "events"),
     ("fix: the pill takes its own click", C, '<g class="events-pill">', '<g class="events-pill" role="none" onclick={(e) => e.stopPropagation()}>', "events"),
@@ -127,6 +128,8 @@ for name, f, a, b, route in M:
         print(("RED  " if fails else "SURVIVED ") + name + " :: " + " | ".join(x.strip()[:120] for x in fails[:3]), flush=True)
     finally:
         shutil.copy(BACKUP, f)
+if os.path.exists(BACKUP):
+    os.remove(BACKUP)
 # the bundle left behind is the last mutant's: build the restored sources
 subprocess.run("npm run build", shell=True, capture_output=True, text=True)
 print("done", flush=True)

@@ -323,6 +323,37 @@ test("library_deployment: j, k, gg and G scroll the whole group into the tab's b
   }
 });
 
+test("library_deployment, the drawer at its 80 px minimum: j, k, gg and G onto a group taller than the tab's body keep the focused button inside it", async ({ page }) => {
+  await drop(page, "library_deployment");
+  await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
+    JSON.stringify({ version: 1, sizes: { tree: 280, detail: 360, drawer: 80 }, collapsed: { tree: false, detail: false } })));
+  await drop(page, "library_deployment");
+  await openEvents(page);
+  await drawer(page).focus();
+  /** The focused button's box against the tab body's visible box, and whether its group is taller than that box. */
+  const at = () => drawer(page).evaluate((d) => {
+    const body = d.querySelector(".tab-body")!, b = body.getBoundingClientRect();
+    const top = b.top + body.clientTop, bottom = top + body.clientHeight;
+    const a = document.activeElement!, r = a.getBoundingClientRect();
+    return { tall: a.closest("tbody.group")!.getBoundingClientRect().height > body.clientHeight, inside: r.top >= top - 1 && r.bottom <= bottom + 1 };
+  });
+  const tall: string[] = [];
+  const check = async () => {
+    const c = await cursor(page), s = await at();
+    if (s.tall) tall.push(c);
+    expect(s.inside, c).toBe(true);
+  };
+  for (let i = 0; i < 6; i++) { await press(page, "j"); await check(); }
+  await press(page, "g");
+  await press(page, "g");
+  await check();
+  await press(page, "Shift+G");
+  await check();
+  for (let i = 0; i < 5; i++) { await press(page, "k"); await check(); }
+  // the walk met groups taller than the body, k from comparator onto ld_integrator among them
+  expect(tall).toContain("button.row ld_integrator");
+});
+
 /** events.ts's `LOCALIZED_TITLE`, copied: an e2e check imports no app module. */
 const LOCALIZED_TITLE = "yes: the event is located in time inside a step; no: its guard is checked at step boundaries only";
 

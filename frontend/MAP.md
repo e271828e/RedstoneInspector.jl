@@ -527,7 +527,7 @@ What the records do not fix, or where the page differs:
 - **The cursor in a pane** is the focus on a stop: in `aside.detail` and `.tab-body`,
   every `summary`, `button` and `a[href]` not inside a closed section. A face's links,
   a diagnostic's and a chart row's swatches past its first are its row's further
-  controls (`Stop` depth 2). An events group's one stop is its `button.row`, its ring on the `tbody` (`:has`), the whole `tbody` scrolled into view. The ring is on `:focus`, 1 px out, a swatch's 3 px, past
+  controls (`Stop` depth 2). An events group's one stop is its `button.row`, its ring on the `tbody` (`:has`), the whole `tbody` scrolled into view, or its top when taller than the tab's body. The ring is on `:focus`, 1 px out, a swatch's 3 px, past
   the pressed one's. A click's capture phase focuses the stop, or the row's
   `button.row`, an events group's on any of its rows, unless it left a text selection on the row (`dragged`). The open level
   and a block share one branch of `Detail.svelte`; a stop a keyed `each` moves is refocused.
