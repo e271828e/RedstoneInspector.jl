@@ -74,9 +74,10 @@ Checked against the core's history, `fcd3660..318859d4`.
   read two commits earlier.
 - `src/diagnostics.jl`: 79 lines added and 66 removed, over 11 commits.
 - `src/descriptor.jl`: one line, ruling 2's.
-- `src/assembly.jl`: 9 lines, the fixtures' only line shift.
-- `show.jl`, `structure.jl` and `readers.jl` changed in comments alone.
-  `deployment.jl` is untouched.
+- `src/assembly.jl`: 16 lines added and 7 removed, 9 net above `Group`'s
+  methods, the fixtures' only line shift.
+- `show.jl` and `readers.jl` changed in comments alone, and
+  `structure.jl` in one internal docstring. `deployment.jl` is untouched.
 - The manifest differs from the old one in the two Redstone revisions
   alone.
 
@@ -88,7 +89,9 @@ of their own model.
 
 - **`DeclarationOnWrongTier`.** The `:continuous_only` arm is retired
   with its message on `x_projection`; the core's `7a300b9d` moves that
-  check to the structure step.
+  check to the structure step, the `:no_manifold` arm with it. A model
+  that fails it gave a descriptor with a structure, which the page drew
+  with a badge on the node, and now gives the list alone.
 - **`TransparentContainerUnknown`.** "returns `:<field>`" became
   "returns `<repr(field)>`", so a value that is no `Symbol` prints as it
   is, and "names a `Tuple` or `NamedTuple` field" became "names one".
@@ -143,7 +146,9 @@ drift check alone. Three mutants ran on a scratch clone, all killed:
    description in `Redstone.jl/src/descriptor.json` still lists four
    kinds that write `function`, and `descriptor.jl` writes it for
    `BundleFieldError` too. It is the core's to fix, and the copy here
-   follows at a later bump.
+   follows at the next bump after the fix. Increment 11's bullet in
+   `pending.md` holds it, since a fix before the second bump puts one
+   schema line in a diff that ruling 6 wants to be the example's alone.
 2. **The oracle had a gap from increment 10b**, closed by ruling 3.
 
 ## Bookkeeping
@@ -168,3 +173,38 @@ values with a reading of its own, looks for a reader of the descriptor
 or a printed text that the core's 89 commits leave behind, reads ruling
 2's amendment against the core's writer, and tries the drift check's
 mutants. An empty review is acceptable.
+
+## The review's record
+
+One high-tier agent reviewed `209f642` with its record, at `d67a540`, in
+a worktree of its own. Its gate was green at this file's counts, the
+oracle and the look's reading included. Its own comparison of the
+fixtures as values, written before it opened `tools/valuediff.py`, gave
+the same 523 leaves: 405 paths of `Redstone`, 28 of `RedstoneExamples`
+and 90 lines. The schema copy is the core's byte for byte. It found no
+reader of the descriptor that the core's changes pass by, and no text of
+the page, the help page, the map, the README or a record that the core
+reworded. Nothing was a must-fix. It disagreed with no ruling. The
+findings, as the coordinator adjudicated them, all landed in one commit:
+
+- **1, finding 1 had no home outside this file.** Taken: a sentence on
+  increment 11's bullet in `pending.md`, at the merge. The core's
+  `pending.md` is the core's to write.
+- **2, answer 2's amended sentence** ran to 93 characters and read
+  `GuardForm`'s clause as more of `BundleFieldError`'s. Rewrapped and
+  split.
+- **3, the amendment's note** lacked "the user away". Added.
+- **4, two figures** of "The core between the two pins": `assembly.jl`'s
+  lines and `structure.jl`'s docstring. Fixed.
+- **5, the `x_projection` check's move** changes what the page draws for
+  that failure. A sentence added to the bullet.
+- **6, `tools/valuediff.py`** folded the two packages' folders into one
+  name, so a location moved from one package to the other would have
+  counted as a path's hash. Fixed; the figures stand.
+
+Its mutants: the drift check's three, killed again; the badge reading
+`d.kind` alone, killed by two tests of `diagnostics.test.ts`, which
+bears ruling 4 out; and `events_deployment` built with another
+localization budget in the crosscheck, which survives. The last is
+acceptable: the oracle derives timing facts alone, and the crosscheck's
+call matches `scripts/fixtures.jl:85` argument for argument.

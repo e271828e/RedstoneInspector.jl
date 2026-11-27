@@ -16,7 +16,7 @@ def walk(a, b, path):
     elif a != b:
         leaf = path.rsplit(".", 1)[-1]
         if leaf == "file":
-            na = re.sub(r"packages/Redstone(?:Examples)?/[^/]+/", "packages/Redstone/X/", a); nb = re.sub(r"packages/Redstone(?:Examples)?/[^/]+/", "packages/Redstone/X/", b)
+            na = re.sub(r"packages/(Redstone(?:Examples)?)/[^/]+/", r"packages/\1/X/", a); nb = re.sub(r"packages/(Redstone(?:Examples)?)/[^/]+/", r"packages/\1/X/", b)
             kinds["file: package dir only" if na == nb else "file: other"] += 1
             if na != nb: details.append(("FILE", path, a, b))
         elif leaf == "line": kinds["line"] += 1; details.append(("LINE", path, a, b))
