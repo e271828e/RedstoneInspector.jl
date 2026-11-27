@@ -315,9 +315,12 @@ Open items live in `pending.md`.
    halos its members; its wires are terminal pairs, which the client maps
    onto the chain of declared wires between the two primitives by answer
    18's resolution in reverse, drawn on every level the chain touches. A
-   badge stands beside each port where the chain crosses into a closed
-   child, and, off the root, beside a pin where the chain leaves the level,
-   placed as answer 9 places a route's. A child's badge opens it, a pin's
+   badge stands beside each port where the chain crosses a closed child's
+   edge, chosen as answer 9 chooses a route's: each input port by which it
+   enters a closed child, and each output port by which it leaves a closed
+   child it enters by none. Off the root one stands beside a pin where the
+   chain leaves the level. Each is placed as answer 9 places a route's
+   badge. A child's badge opens it, a pin's
    climbs to the parent with the chain lit, and each such level takes a
    red dot in the tree. The verdict is text, not a second color. A
    dead hop is a dashed chord across its member from the input square to the
@@ -335,7 +338,8 @@ Open items live in `pending.md`.
    right end, the chain's after the diagnostic's, and a pin's straddled
    its top edge from its outer end; a long diagnostic badge ran past the
    block's left corner, and its title was the message's first line
-   alone.*
+   alone. The look pass's first wording put the chain's badge only at a
+   port where the chain crossed into a child (its cold review, F5).*
    *Why:* the two questions a loop raises, where it closes and which hop is
    false, become things seen rather than reconstructed from slash paths:
    the chord names the member whose contract to question and the wire into
@@ -366,7 +370,10 @@ Open items live in `pending.md`.
    port takes one route badge; where a loop's badge stands at the same
    port, the loop's is nearer. A badge that would meet a drawn type label,
    the one under the wire of the port above, moves outward along its wire
-   past it. Search hits take a dashed halo, the
+   past it, within the half of the wire's end segment nearest its port, so
+   the move never carries it onto the badge at the wire's other end or
+   onto the far block. Where no place in that half clears the label, the
+   badge stands unmoved. Search hits take a dashed halo, the
    selected hit the solid one. Focus on a diagnostic, a route, a legend line or a search
    dims everything uninvolved by opacity, never by color; a level on which
    the focus lights nothing does not dim, the status bar saying why.
@@ -380,7 +387,8 @@ Open items live in `pending.md`.
    2026-11-27 (the look pass, 1.4 and 2.1): a closed child entered took
    one badge at its bottom edge's right end, which read as a mark on the
    block and covered the order badge, and a pin's straddled its top edge
-   from its outer end.*
+   from its outer end. The look pass's first wording let a badge's move
+   past a label run on to another block or badge (its cold review, F1).*
    *Why:* a halo composes with a tier fill, a filled root tag and an
    outlined pin alike, which a fill or stroke change does not; a route and
    a selection differ in shape, a chain with an origin against one element,

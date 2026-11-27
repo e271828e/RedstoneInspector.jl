@@ -325,7 +325,10 @@ full text stays.
   take the top and the bottom edge at the left and share none (increment
   8's second look); the diagnostic's pill takes the bottom edge's right
   end, cut short of an order badge, and the route's and the loop's stand
-  beside their ports, off the edges (the look pass). A check on a pill's place
+  beside their ports, off the edges (the look pass). A move past a type
+  label stays within the half of the wire's end segment nearest the port:
+  an unbounded move put a pill on the far block or on the pill at the
+  wire's other end (the look pass's cold review). A check on a pill's place
   asserts the rule recomputed from the DOM, never a block's outcome that a
   font's width decides.
 - **A selection through a click.** Chromium keeps a text selection through
