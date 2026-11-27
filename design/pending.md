@@ -10,10 +10,16 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 In working order, the first one next. Increments 1 to 10, 8b and 10b, the
 keyboard by family and the look pass have landed (`roadmap.md`).
 
-- **Increment 11, the release** (`roadmap.md`). No image of
-  `closed_loop`'s root: its tangle is the model's feedback loops
-  (`rules.md`, ELK's pass), and with the drag gone it cannot be tidied
-  by hand.
+- **Increment 11, the release** (`roadmap.md`). Stage reached: designed
+  on 2026-11-27, nothing built. The rulings, the order of the work and
+  what the prototype must still probe are
+  `increments/inspector_11_release/notes_inspector_11.md`. The mechanics
+  come first and need nothing. The README's pictures wait for a pin bump
+  to the core once the tutorial's increment 1b has landed there
+  (`Redstone.jl/design/pending.md`), since they show its reworked
+  `autopilot`. No image of `closed_loop`'s root: its tangle is the
+  model's feedback loops (`rules.md`, ELK's pass), and with the drag gone
+  it cannot be tidied by hand.
 - **After the core's first release.** The bundle's docs constant flips
   from `dev/` to `stable/` (`build_release.md` answer 7). The first pin
   bump to the registered core turns the root's `[sources]` revision into a
