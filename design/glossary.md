@@ -121,7 +121,7 @@ no entry here.
   object. A minor bump only adds fields, which a reader ignores when it
   does not know them; a major bump may break readers, and a reader refuses
   a major it does not know. The format stays at 1.0 and changes freely
-  until the first release (`initial_design.md` answer 7,
+  until the inspector's first release (`initial_design.md` answer 7,
   `descriptor_design.md` answer 1, `deployment_overlay.md` answer 2).
 - **Frame.** The grid of tree, canvas, detail pane and drawer with its
   splitters, replaced by stage 4's dock while the panes stay. Not the

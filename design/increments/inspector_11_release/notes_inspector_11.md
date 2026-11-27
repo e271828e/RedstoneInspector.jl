@@ -203,6 +203,8 @@ If 1b stalls on its retuning, the fallback is a release with today's
 
 ## The records this increment amends when it lands
 
-`build_release.md` answers 1, 5, 6 and 8; `deployment_overlay.md` answer
-2, for D-483; `roadmap.md`'s entry; `pending.md`; `AGENTS.md`, for the
-fifth job and a fetch after a release; and the README.
+`build_release.md` answers 1, 5, 6 and 8; `roadmap.md`'s entry;
+`pending.md`; `AGENTS.md`, for the fifth job and a fetch after a release;
+and the README. `deployment_overlay.md` answer 2, the glossary's entry and
+`pending.md`'s bullet on the open format changes followed D-483 on
+2026-11-27.

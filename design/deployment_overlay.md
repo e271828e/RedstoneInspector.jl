@@ -55,8 +55,9 @@ the user away): both stood open in the core's `pending.md`.*
    whole", which has no boundary, a `Model` adding a scalar type, buffers
    and state; a `schedule` section alone, the roadmap's scope.
 
-2. **The format stays at 1.0 until the first release.** It changes freely
-   until then, and version 1.0 is the format as of that release. The
+2. **The format stays at 1.0 until the inspector's first release.** It
+   changes freely until then, and version 1.0 is the format as of that
+   release. The two bump rules bind from then (the core's D-483). The
    schema requires the new sections. The header cannot tell a file that
    an older core wrote, since both say 1.0, so the page's loader tells it
    by structure. It refuses a body whose structure has no `grid`,
@@ -87,7 +88,9 @@ the user away): both stood open in the core's `pending.md`.*
    file written between `44d52cc` and that commit has `grid` and the old
    keys. It loaded, and the readers then threw or printed `NaN` and
    `undefined`. Amended 2026-11-25 (the user's review of that bump): the
-   check on `timing` joined.*
+   check on `timing` joined. Amended 2026-11-27 (increment 11's design
+   session, the core's D-483): "the first release" was the core's, as
+   D-467 had it.*
    *Why:* D-433's annotation, D-434 and D-437 each added to version one
    unbumped, "no reader to protect while unreleased", and a rule replaces
    the repeated exception. A minor bump only adds fields, so a 1.1 schema

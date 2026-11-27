@@ -45,7 +45,7 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   "The exported-name audit"): `descriptor` and a diagnostic's `kind`. A
   rename reaches the schema, the fixtures and the page.
 - **Format changes still open.** Each is ruled in the core first, free
-  until the first release and a minor bump after it
+  until the inspector's first release and a minor bump after it
   (`deployment_overlay.md` answer 2).
   - A `string` kind when a `String` port appears, and `min`/`max` on an
     integer marker if stage 4's widgets want bounds.
