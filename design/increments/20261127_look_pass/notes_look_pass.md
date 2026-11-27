@@ -214,3 +214,65 @@ reverts each fix alone. It drives what the builder did not:
 - the chart's ticks on `rates_deployment` and 360 ticks at 10 px;
 - the floors on `library` in a real window;
 - typing `face: out` and `face: ` key by key.
+
+## The cold review
+
+An independent agent reviewed `415a64b..c9b8475` on 2026-11-27 in its own
+worktree, `look_pass_review`. Its gate matched the record's figures:
+801 unit tests in 32 files, the checker clean, the build, and 770
+browser checks passed and 4 skipped. It ran every fix's mutant again,
+all red, and 21 of its own. It swept every producer port on every
+fixture's root and on each closed child of the root, both browsers,
+with the labels on and off. The coordinator ruled on each finding with
+the user away.
+
+- **F1, fixed.** With the labels on, reading 4's move put a pill onto
+  another block, port or pill on three fixtures:
+  - on `failure_nested`'s root, `plant|out|power` traced, the route's
+    pill at `ctl|in|y` landed on `plant`'s `y`;
+  - on `closed_loop`'s root, `selection|out|δt` traced, `selection`'s
+    pill landed on `actuators|in|δt_cmd`'s;
+  - on `timing`'s `fast`, `fast/outer|out|deep` traced, the output
+    pill landed on the `⟨out⟩deep` pin's.
+
+  A drag of `pid_controller` gave the same. Ruling: a pill's move
+  along its wire stays within the half of the wire's end segment
+  nearest its port, so the two ends' pills never meet and none reaches
+  the far block. Where no place in that half clears the label, the pill
+  stands at its unmoved place. A check pins, over the review's sweep,
+  that no pill meets another block, port square or pill.
+- **F2, fixed.** A regression of 1.3. The router chose the backward form
+  below a gap of the stub plus 12, about 52 units for a `Float64` label,
+  where it had chosen it below 24. A forward drag with a gap of 24 to 52
+  then ran both wires into the consumer's box and round it. This
+  happened with the labels on or off. Ruling: the choice stays the
+  base's, forward from a gap of 24. A forward route turns at the
+  midpoint, moved toward the consumer to clear the label where the gap
+  allows, and never nearer the consumer than 12. The longer stub
+  applies in full only to the backward form. A check pins a forward gap
+  that the base drew forward.
+- **F3, ruled to the user's wording.** The user ruled the stub on the
+  "drawn" label, and 12 px where none is drawn. Reading 8 counted the
+  label with the toggle off too, so that a route never depends on a
+  preference. The user's ruling stands: the stub follows the toggle. A
+  toggle re-routes the wires touching each dragged block, so a drawn
+  route never keeps a stub for a label no longer drawn. Reading 8 is
+  overturned on that point.
+- **F4, checks added.** Two rules of answer 9 held with no check. The
+  loop's pill stands nearer the port than the route's, which
+  `failure_nested`'s root shows with `plant|out|power` traced. The pill
+  stands `PILL_LIFT` above the wire, within a tolerance.
+- **F5, fixed.** `visual_grammar.md` answer 8 had the loop's badge where
+  the chain crosses "into" a closed child, which misses an output port
+  the chain only leaves. It now reads as answer 9 does for a route.
+
+Not findings, ruled as follows:
+- **The probes and the mutant scripts** are committed in a `tools/`
+  folder beside this file, their paths as arguments: the builder's
+  `mutant.py` and the review's runners and specs. The captures stay on
+  this machine until the user's look, then go.
+- Left as observed: a pill's top edge sits on the wire of the port
+  above; the fit covers the diagnostic pills as well; `cutPill` gives
+  "…" where the room is narrower than an ellipsis pill; MAP's `size.ts`
+  row does not list `CROSS`. The help page's chord sample at ±3
+  survives a mutant, a minor gap the fixer may close.
