@@ -491,3 +491,138 @@ touch the pills' place and the stub, and the delta checks' N1 to N3.
   draw order by the policy; the drag removed with its keys, state,
   router, checks, traps and help lines; the look pass's later checks on
   the pills' place and the stub removed with what they pinned.
+
+## The last round
+
+A fresh fixer built section 11 in four commits from `4925f72`:
+- `2da557a`, the records;
+- `7aed220`, the pills;
+- `26b9946`, the drag;
+- `36dcba2`, the mutant list.
+
+**The records (`2da557a`).**
+- `visual_grammar.md` answers 8 and 9.
+- `workspace.md` answers 7 and 9, and answer 11, the keyboard.
+- `initial_design.md` answer 12.
+- `design/rules.md`. It gains the policy as a rule under "Frontend
+  increments" and restates the trap "Pills sharing an edge". The four
+  drag-only traps go. Three traps are reworded: "ELK's position hints",
+  "A right-click fires no click", and "The undo's sync point", now "A
+  layout's sync point".
+
+Each answer's 2026-11-27 note says what the rule was at `415a64b`, and
+gives one sentence to the reverted detour.
+
+**The pills.** The lib files go back to `415a64b`: `crossings` goes,
+and `RouteDrawing.entered` holds block ids again. A component's row runs
+from the right, the diagnostic's pill first, then the loop's, then the
+route's. A pin's row runs from its inner corner.
+
+**The policy.**
+- The diagnostic's room is reduced by the loop's pill and the gap. The
+  check runs on an edited copy of `failure_nested` with a warning on
+  `ctl`, since no fixture has both pills on one block.
+- The order badges leave `g.block` for a group of their own,
+  `g.order-badges`, after `g.overlay`. The route's pills draw last, in
+  `g.route-pills`. `colors.spec` pins the groups' order.
+- The order badge carries its block's `.lit` and `.search-*`, so it
+  still dims with its block.
+
+**The drag.** The fixer removed:
+- in `Canvas.svelte`, the block drag, Shift's axis, `rerouteDragged`,
+  the undo button and the stale layouts;
+- `LevelLayout` in `layout.ts`;
+- the dragged layouts in the session and in `rekey.ts`;
+- `x` and `X` in `App.svelte`;
+- `router.ts`, `router.test.ts` and `drag.spec.ts`;
+- the help page's lines and `frontend/MAP.md`'s drag paragraphs.
+
+A push now drops every held layout. `keys.spec` pins that a press and a
+move on a block move nothing and that `x` does nothing.
+
+**The fixer's readings, taken:**
+1. The route's pills form their own last group.
+2. The order badge, now outside its block, has its own click (select),
+   double-click (open) and hover.
+3. A pin's row starts `BADGE_INSET` from the corner.
+4. The order badges draw over the bottom-left of a red mark's halo, so
+   answer 9 reads "the error hue wins over the drawing" in place of
+   "always wins". The policy allows it: the order badge is turned on,
+   has one place, and covers only the 3 px halo band, never the
+   diagnostic pill. This one is for the user's check.
+5. `.block`'s cursor is `pointer`.
+6. A push drops every held layout, since a stale layout held only
+   drags.
+
+**The mutants.** All ten red:
+- 11.1-routebeforeloop;
+- 11.2-outerend, 11.2-topedge and 11.2-routenearest;
+- 11.3-cutnoloop, 11.3-draworder, 11.3-nodimfocus and
+  11.3-nodimsearch;
+- 11.4-blockpans and 11.4-xacts.
+
+**The third delta check, at `36dcba2`.**
+- **The gate** matched the fixer's: 793 unit tests in 31 files, 410
+  files clean, the build, and 752 browser checks passed and 4 skipped.
+  The figures fell from 820 because `router.test`, `pills.spec`,
+  `drag.spec` and the beside-port checks went.
+- **The probe of section 11** passed in both browsers: a component's
+  row, the pins' corners, the order badge's click, double-click, hover
+  and dimming, and no drag on a block, a pin or with Shift. Nothing the
+  removal touched broke: the pan, a click, a long press, and a region's
+  caption.
+- **The mutants.** Every fixer's mutant is red, and the reviewer's two
+  as well: the order badges drawn under the overlay, and the cut blind
+  to the loop.
+- **The readings.** The reviewer agreed with readings 1 to 5. It
+  judged reading 6 plausible and did not drive it.
+
+Two things the reviewer noted:
+- **N1, for the close.** `pending.md`'s look bullet still lists the
+  router's stub, now moot. It goes when that bullet closes.
+- **The short pin.** On `failure_nested`'s `ctl`, the pin `⟨in⟩y` is
+  shorter than its row of two pills, so the route's pill ends about 86
+  px past the pin's outer end. The policy allows it for a route. Whether
+  the fixed `loop` pill also passes the pin's end was not measured. That
+  is for the user's look.
+
+## For the user's review, as it now stands
+
+This section supersedes the earlier "For the user's review".
+
+**The branch.** `look-pass` holds the arc `415a64b..HEAD`, nothing
+merged or pushed. Its gate is the third delta check's.
+
+**To check, the coordinator's calls:**
+- the occlusion policy's second clause, which the user agreed;
+- reading 4 of the last round, the order badges over an error's halo;
+- reading 6, a push dropping every held layout;
+- the earlier rulings that still stand: 1.1, 3.2, 4.1, 6.1 with its
+  cut, 7.1, 8.2, section 9, and the search prefix.
+
+**To look at,** with `npm run dev` in the worktree's `frontend/`:
+- the pills on `closed_loop`'s root with `h_ref` traced and `o` on;
+- `rates`' `fast` with `src`'s `out` traced;
+- `failure_nested`'s `ctl` with `plant`'s `power` traced, and the
+  short pin there;
+- `failure_probe`'s `s` and `warning`'s `g`, with `o` on;
+- the canvas with no drag.
+
+**Open:**
+- the unordered item "Arranging a level by hand" in `pending.md`;
+- N1, at the close.
+
+**Then:**
+- the merge, the push and CI's screenshots (10.3);
+- the roadmap's note, and `pending.md`'s look bullet closed with N1
+  (10.1);
+- the removal of what is local to this machine under
+  `RedstoneInspector.jl-worktrees/`. That means the worktrees
+  `look_pass` and `look_pass_review`, the folders `look_pass_scratch`,
+  `look_pass_review_probes`, `look_pass_fix_probes`,
+  `look_pass_fix2_probes`, `look_pass_captures` and `look_pass_drop`,
+  and the file `look_pass_notes.md`. What the record rests on is in
+  `tools/` beside this file.
+
+The captures in `look_pass_captures/` show the superseded pill places,
+and stand only for the other entries.
