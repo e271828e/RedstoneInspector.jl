@@ -578,8 +578,8 @@
    * edge (`crossed`) or, off the root, a pin's, above the wire and outside the block or pin: left of an input port,
    * right of an output port, so a pin's stands past where its wire leaves it or short of where it arrives. The loop's
    * is nearer the port where both stand. A pill that would meet a drawn type label, its own port's or the one under
-   * the port above, moves outward along its wire past the label's far end, within the half of the wire's end segment
-   * nearest the port; where no place in that half clears the label, it stands unmoved.
+   * the port above, moves outward along its wire past the label's far end, unless the moved place would meet a
+   * block, a port square or another pill; then it stands unmoved.
    */
   const overlayBadges = $derived.by(() => {
     type Pill = { block: string; port?: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
@@ -605,31 +605,8 @@
     if (shown.level.path !== "") {
       for (const pin of routeDrawn?.pins ?? []) add(pinPort(pin), { role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
     }
-    for (const [port, pills] of atPorts) {
-      const at = portAt(port);
-      if (!at) continue;
-      const { block, side, name } = parsePortId(port);
-      const east = side === "out";
-      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
-      const y = at.y - PILL_LIFT - BADGE_HEIGHT;
-      // a move stays within the half of the end segment nearest the port, the shortest of an output's wires
-      const ends = shown.level.wires.filter((w) => east ? w.from.block === block && w.from.port === name : w.to.block === block && w.to.port === name)
-        .map((w) => shown!.geometry.routes.get(w.id)!)
-        .map((r) => Math.abs(east ? r[1].x - r[0].x : r.at(-1)!.x - r.at(-2)!.x));
-      const reach = Math.min(...ends) / 2;
-      for (const q of pills) {
-        const w = width(q.text), unmoved = edge;
-        for (let moved = true; moved; ) {
-          const x = east ? edge : edge - w;
-          const hit = typeLabels.find(({ box: l }) => l.x < x + w && x < l.x + l.width && l.y < y + BADGE_HEIGHT && y < l.y + l.height);
-          moved = !!hit;
-          if (hit) edge = east ? hit.box.x + hit.box.width + BADGE_GAP : hit.box.x - BADGE_GAP;
-        }
-        if (edge !== unmoved && (east ? edge + w - at.x : at.x - (edge - w)) > reach) edge = unmoved;
-        out.push({ ...q, x: east ? edge : edge - w, y, w });
-        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
-      }
-    }
+    // the diagnostics' pills, which never move, then each port's, a move kept off every block, port square and pill
+    const diagnostics: typeof out = [];
     for (const b of shown.level.blocks) {
       const box = shown.geometry.boxes.get(b.id);
       const badge = overlay?.blocks.get(b.id)?.badge;
@@ -638,8 +615,48 @@
       const right = box.x + box.width - BADGE_INSET, order = orders.get(b.id);
       const left = box.x + BADGE_INSET + (order === undefined ? 0 : pillWidth(order) + BADGE_GAP);
       const text = cutPill(badge.text, right - left), w = width(text);
-      out.push({ block: b.id, role: "diagnostic", text, title: badge.title, severity: badge.severity, index: badge.index, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
+      diagnostics.push({ block: b.id, role: "diagnostic", text, title: badge.title, severity: badge.severity, index: badge.index, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
     }
+    const meets = (a: Rect, b: Rect) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+    const pillRect = (q: { x: number; y: number; w: number }): Rect => ({ x: q.x, y: q.y, width: q.w, height: BADGE_HEIGHT });
+    const blocked: Rect[] = [...shown.geometry.boxes.values(), ...diagnostics.map(pillRect)];
+    for (const b of shown.level.blocks) {
+      const box = shown.geometry.boxes.get(b.id);
+      for (const p of box ? shown.sizes.get(b.id)?.ports ?? [] : []) blocked.push({ x: box!.x + p.x - PORT / 2, y: box!.y + p.y - PORT / 2, width: PORT, height: PORT });
+    }
+    // every port's pills stacked unmoved, outward from the port, the loop's nearest; a move elsewhere keeps clear of them
+    const stacks = [...atPorts].flatMap(([port, pills]) => {
+      const at = portAt(port);
+      if (!at) return [];
+      const east = parsePortId(port).side === "out", y = at.y - PILL_LIFT - BADGE_HEIGHT;
+      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
+      const unmoved = pills.map((q) => {
+        const w = width(q.text), x = east ? edge : edge - w;
+        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
+        return { x, y, w };
+      });
+      return [{ pills, at, east, y, unmoved }];
+    });
+    // in the order the ports were gathered, each pill moves outward past the labels it meets, unless the moved place
+    // meets a block, a port square, a pill already placed or another port's unmoved stack
+    for (const [k, { pills, at, east, y }] of stacks.entries()) {
+      const others = stacks.slice(k + 1).flatMap((t) => t.unmoved.map(pillRect));
+      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
+      for (const q of pills) {
+        const w = width(q.text), from = edge;
+        for (let moved = true; moved; ) {
+          const x = east ? edge : edge - w;
+          const hit = typeLabels.find(({ box: l }) => l.x < x + w && x < l.x + l.width && l.y < y + BADGE_HEIGHT && y < l.y + l.height);
+          moved = !!hit;
+          if (hit) edge = east ? hit.box.x + hit.box.width + BADGE_GAP : hit.box.x - BADGE_GAP;
+        }
+        const r = pillRect({ x: east ? edge : edge - w, y, w });
+        if (edge !== from && [...blocked, ...out.map(pillRect), ...others].some((b) => meets(r, b))) edge = from;
+        out.push({ ...q, x: east ? edge : edge - w, y, w });
+        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
+      }
+    }
+    out.push(...diagnostics);
     return out;
   });
   /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, either on a pin the parent. */

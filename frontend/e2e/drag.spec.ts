@@ -164,7 +164,7 @@ async function press(page: Page, id: string): Promise<{ x: number; y: number }> 
   return at;
 }
 
-test("closed_loop: plant dragged, the labels on, a backward wire out of actuators leaves by a stub past its label; y turns the labels off and the stub drops to 12, y again brings it back, and a toggle on another level reaches the held layout (the look pass's review, F3)", async ({ page }) => {
+test("closed_loop: plant dragged, the labels on, a backward wire out of actuators leaves by a stub past its label; y turns the labels off and the stub drops to 12, y again brings it back, a toggle on another level reaches the held layout, and a drag with the labels off leaves by 12 (the look pass's review, F3, and its delta check, N3)", async ({ page }) => {
   await drop(page, "closed_loop");
   await pressKey(page, "y");
   await dragBlock(page, "plant", 0, 60);
@@ -186,6 +186,9 @@ test("closed_loop: plant dragged, the labels on, a backward wire out of actuator
   await pressKey(page, "y");
   await pressKey(page, "Backspace");
   await page.locator(readyLevel("")).waitFor();
+  expect(await stub()).toBeCloseTo(12, 6);
+  // a live drag with the labels off takes 12 too (the delta check, N3)
+  await dragBlock(page, "plant", 0, 30);
   expect(await stub()).toBeCloseTo(12, 6);
 });
 

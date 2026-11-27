@@ -35,8 +35,7 @@ the logs stayed on the machine that made them.
   leaves unchanged. E2b, E9b and E17 survived the review; the checks F4
   added turn them red.
 - `run_fix_mutants.sh`, the fixer's mutants of the cold review's fixes, F1
-  to F4, the same way. All go red but `F1-wholewire`, which bounds the move
-  by half the wire's whole horizontal run: no fixture tells the two apart.
+  to F4, and of the delta check's, N1 and N3, the same way. All go red.
 
 ## The probes
 

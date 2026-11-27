@@ -378,8 +378,10 @@ What the records do not fix, or where the page differs:
   root, by a pin's port: 2 px beyond the square on the port's side, left of an
   input and right of an output, the bottom 4 px above the wire (`PILL_LIFT`),
   the loop's nearer; one meeting a drawn type label moves outward past its far
-  end by 2, within the half of the wire's end segment nearest the port, the
-  shortest of an output's wires, else stands unmoved. Their click calls `onopen`, a child's the child, a pin's the parent.
+  end by 2, unless the moved place meets a block, a port square, a pill
+  already placed or another port's unmoved pills, the ports taken in the
+  order the overlay gathers them (loops, then the route), the diagnostics'
+  pills placed first; then it stands unmoved. Their click calls `onopen`, a child's the child, a pin's the parent.
   The fit covers them.
 - **The order badge**, `order` on, straddles a child's bottom edge at the left,
   `pillWidth(text)` wide, background fill, text-color stroke, titled "Stage 2

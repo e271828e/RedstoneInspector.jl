@@ -30,22 +30,15 @@ async function routePills(page: Page) {
   }
   return out;
 }
-/**
- * The rule of visual_grammar.md answer 9 as amended by the look pass (1.4 and 2.1) and its cold review (F1), at every
- * pill on the level: clear of every label, or, at a port in `unmoved`, where the half of the wire's end segment leaves
- * no room to move past a label, about `BADGE_GAP` off the square and clear of its own label.
- */
-async function expectBesidePorts(page: Page, ports: string[], unmoved: string[] = []) {
+/** The rule of visual_grammar.md answer 9 as amended by the look pass (1.4 and 2.1), at every pill on the level. */
+async function expectBesidePorts(page: Page, ports: string[]) {
   const pills = await routePills(page);
   expect(Object.keys(pills).sort()).toEqual([...ports].sort());
   for (const [port, q] of Object.entries(pills)) {
     expect(q.above, `${port} above the wire`).toBe(true);
     expect(q.outside, `${port} outside the block or pin`).toBe(true);
     expect(q.near, `${port} beside its port, or past a label beside it`).toBe(true);
-    if (unmoved.includes(port)) {
-      expect(q.gap, `${port} unmoved, where a move would clear a label's whole width`).toBeLessThan(4);
-      expect(q.own, `${port} clear of its own label`).toBe(false);
-    } else expect(q.label, `${port} clear of the type labels`).toBe(false);
+    expect(q.label, `${port} clear of the type labels`).toBe(false);
     expect(q.lift, `${port} PILL_LIFT above the wire`).toBeCloseTo(PILL_LIFT, 1);
   }
 }
@@ -314,7 +307,7 @@ test("rates: src/out traced from the menu, fast and slow badged, fast opened by 
   expect(await routeRows(page)).toEqual(["", "fast", "fast/outer", "slow"]);
 });
 
-test("the route's pills, the type labels on: beside each port it crosses, a child's input, a child's output, an input pin's and an output pin's, above the wire, outside the block or pin and clear of every label, unmoved over the label of the port above where the half of the wire's end segment leaves no room (visual_grammar.md answer 9 as amended by the look pass, 1.4 and 2.1, and its cold review, F1)", async ({ page }) => {
+test("the route's pills, the type labels on: beside each port it crosses, a child's input, a child's output, an input pin's and an output pin's, above the wire, outside the block or pin and clear of every label (visual_grammar.md answer 9 as amended by the look pass, 1.4 and 2.1)", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "y");
   await expect(svg(page)).toHaveAttribute("data-labels", "");
@@ -322,7 +315,7 @@ test("the route's pills, the type labels on: beside each port it crosses, a chil
   await press(page, "t");
   await expectBesidePorts(page, ["lqr_controller|in|V", "pid_controller|in|V"]);
   await shot(page, "closed_loop", "", "route-pills");
-  // a move past a label within the half of a long end segment: selection's engaged inside approach_deployment's vehicle
+  // a move past a label: selection's engaged inside approach_deployment's vehicle
   await drop(page, "approach_deployment");
   await openPath(page, "vehicle");
   await page.locator('rect.port[data-port="vehicle/selection|out|engaged"]').dispatchEvent("click");
@@ -330,12 +323,13 @@ test("the route's pills, the type labels on: beside each port it crosses, a chil
   await expectBesidePorts(page, ["vehicle/cascade|in|engaged", "vehicle/selection|out|engaged"]);
   expect((await pillByPort(page.locator('g.badge[data-role="route"][data-port="vehicle/selection|out|engaged"]'))).gap, "moved past a label").toBeGreaterThan(4);
   // the output forms: rates' root output, its producer inside fast/outer, the label at each output port drawn; at the
-  // root the pill fills more than half of fast's 50-unit end segment, so it stands unmoved over inner's label
+  // root the pill moves past inner's label, the port above's
   await drop(page, "rates");
   await page.locator('g.block[data-id="⟨out⟩outer"]').click();
   await press(page, "t");
   await expect(page.locator('text.type-label[data-port="fast|out|outer"]')).toHaveCount(1);
-  await expectBesidePorts(page, ["fast|out|outer"], ["fast|out|outer"]);
+  await expectBesidePorts(page, ["fast|out|outer"]);
+  expect((await pillByPort(page.locator('g.badge[data-role="route"][data-port="fast|out|outer"]'))).gap, "moved past a label").toBeGreaterThan(4);
   await openPath(page, "fast");
   await expect(page.locator('text.type-label[data-port="fast/outer|out|out"]')).toHaveCount(1);
   await expectBesidePorts(page, ["fast/outer|out|out", "⟨out⟩outer|in|outer"]);

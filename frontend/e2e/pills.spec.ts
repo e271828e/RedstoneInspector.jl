@@ -3,7 +3,7 @@
 // labels on and off, no pill meets a block, a port square or another pill, a diagnostic's own block aside.
 import { readdirSync } from "node:fs";
 import { test, type Page } from "@playwright/test";
-import { drop, expect, openPath, press, readyLevel } from "./fixtures";
+import { drop, expect, openPath, pillByPort, press, readyLevel } from "./fixtures";
 
 const FIXTURES = readdirSync(new URL("../fixtures/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
@@ -55,3 +55,26 @@ for (const f of FIXTURES) {
     expect([...new Set(found)]).toEqual([]);
   });
 }
+
+/** Output ports whose route pill met the label of the port above while a bound kept its move short (the delta check, N1). */
+const N1: [string, string, string][] = [
+  ["closed_loop", "", "lqr_controller|out|δt"], ["closed_loop", "", "pid_controller|out|δt"], ["closed_loop", "", "selection|out|δt_prev"],
+  ["closed_loop", "", "actuators|out|δt"], ["approach_deployment", "vehicle", "vehicle/selection|out|δe_prev"],
+  ["rates", "", "fast|out|outer"], ["timing", "", "fast|out|same"], ["timing", "fast", "fast/outer|out|same"], ["events_deployment", "", "nest|out|h"],
+];
+
+test("the type labels on, each output port's route pill the delta check found over the label of the port above moves past it, clear of every label (visual_grammar.md answer 9 as amended by the look pass's delta check, N1)", async ({ page }) => {
+  let shown = "";
+  for (const [f, level, port] of N1) {
+    if (`${f}/${level}` !== shown) {
+      await drop(page, f);
+      if (!shown) await press(page, "y");
+      if (level) await openPath(page, level);
+      shown = `${f}/${level}`;
+    }
+    await page.locator(`rect.port[data-port="${port}"]`).dispatchEvent("click");
+    await press(page, "t");
+    const q = await pillByPort(page.locator(`g.overlay g.badge[data-role="route"][data-port="${port}"]`));
+    expect([q.label, q.gap > 4], `${f} "${level}" ${port}: clear of the labels, moved`).toEqual([false, true]);
+  }
+});
