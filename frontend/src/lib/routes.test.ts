@@ -16,7 +16,7 @@ function traced(name: string, origin: Face): Traced {
 const marks = (name: string, r: Traced) => Object.fromEntries([...routeLevels(fixtureModel(name).tree!, r)].sort());
 const drawing = (name: string, r: Traced, level: string) => {
   const d = routeDrawing(fixtureModel(name), r, level);
-  return { wires: sorted(d.wires), crossed: sorted(d.crossed), pins: sorted(d.pins), terminals: sorted(d.terminals), origin: d.origin };
+  return { wires: sorted(d.wires), entered: sorted(d.entered), pins: sorted(d.pins), terminals: sorted(d.terminals), origin: d.origin };
 };
 
 describe("originOf", () => {
@@ -37,24 +37,24 @@ describe("originOf", () => {
 });
 
 describe("closed_loop's routes", () => {
-  it("h_ref: 2 consumers across 3 levels, both controllers crossed at their h_ref inputs, the tag the origin", () => {
+  it("h_ref: 2 consumers across 3 levels, both controllers entered, the tag the origin", () => {
     const r = traced("closed_loop", face("", "in", "h_ref"));
     expect(routeStatus(r.origin, r)).toBe("tracing `h_ref`: 2 consumers across 3 levels");
     expect(marks("closed_loop", r)).toEqual({ "": true, lqr_controller: true, pid_controller: true });
     expect(drawing("closed_loop", r, "")).toEqual({
-      wires: ["lqr_controller|in|h_ref", "pid_controller|in|h_ref"], crossed: ["lqr_controller|in|h_ref", "pid_controller|in|h_ref"],
+      wires: ["lqr_controller|in|h_ref", "pid_controller|in|h_ref"], entered: ["lqr_controller", "pid_controller"],
       pins: ["⟨in⟩h_ref"], terminals: ["⟨in⟩h_ref|out|h_ref"], origin: "⟨in⟩h_ref|out|h_ref",
     });
     expect(drawing("closed_loop", r, "pid_controller")).toEqual({
-      wires: ["pid_controller/h_ctl|in|r"], crossed: [], pins: ["⟨in⟩h_ref"], terminals: ["pid_controller/h_ctl|in|r"], origin: undefined,
+      wires: ["pid_controller/h_ctl|in|r"], entered: [], pins: ["⟨in⟩h_ref"], terminals: ["pid_controller/h_ctl|in|r"], origin: undefined,
     });
-    expect(drawing("closed_loop", r, "sensing")).toEqual({ wires: [], crossed: [], pins: [], terminals: [], origin: undefined });
+    expect(drawing("closed_loop", r, "sensing")).toEqual({ wires: [], entered: [], pins: [], terminals: [], origin: undefined });
   });
   it("mode: 7 consumers across 4 levels", () => {
     const r = traced("closed_loop", face("", "in", "mode"));
     expect(routeStatus(r.origin, r)).toBe("tracing `mode`: 7 consumers across 4 levels");
     expect(marks("closed_loop", r)).toEqual({ "": true, lqr_controller: true, pid_controller: true, selection: true });
-    expect(drawing("closed_loop", r, "").crossed).toEqual(["lqr_controller|in|mode", "pid_controller|in|mode", "selection|in|mode"]);
+    expect(drawing("closed_loop", r, "").entered).toEqual(["lqr_controller", "pid_controller", "selection"]);
     expect(drawing("closed_loop", r, "pid_controller").terminals).toEqual([
       "pid_controller/V_ctl|in|engaged", "pid_controller/h_ctl|in|engaged", "pid_controller/q_ctl|in|engaged", "pid_controller/θ_ctl|in|engaged",
     ]);
@@ -63,7 +63,7 @@ describe("closed_loop's routes", () => {
     const r = traced("closed_loop", face("plant", "out", "V"));
     expect(routeStatus(r.origin, r)).toBe("tracing `plant/V`: 3 consumers across 3 levels");
     expect(drawing("closed_loop", r, "")).toEqual({
-      wires: ["lqr_controller|in|V", "pid_controller|in|V"], crossed: ["lqr_controller|in|V", "pid_controller|in|V"], pins: [],
+      wires: ["lqr_controller|in|V", "pid_controller|in|V"], entered: ["lqr_controller", "pid_controller"], pins: [],
       terminals: ["plant|out|V"], origin: "plant|out|V",
     });
     expect(drawing("closed_loop", r, "lqr_controller").terminals).toEqual(["lqr_controller/state_pack|in|in1", "lqr_controller/z_pack|in|in2"]);
@@ -95,26 +95,26 @@ describe("closed_loop's routes", () => {
 });
 
 describe("rates' and the other fixtures' routes", () => {
-  it("src/out: 3 consumers across 4 levels, fast and slow crossed at their inputs at the root, fast/outer at fast", () => {
+  it("src/out: 3 consumers across 4 levels, fast and slow entered at the root, fast/outer at fast", () => {
     const r = traced("rates", face("src", "out", "out"));
     expect(routeStatus(r.origin, r)).toBe("tracing `src/out`: 3 consumers across 4 levels");
     expect(drawing("rates", r, "")).toEqual({
-      wires: ["fast|in|in", "slow|in|in"], crossed: ["fast|in|in", "slow|in|in"], pins: [], terminals: ["src|out|out"], origin: "src|out|out",
+      wires: ["fast|in|in", "slow|in|in"], entered: ["fast", "slow"], pins: [], terminals: ["src|out|out"], origin: "src|out|out",
     });
     expect(drawing("rates", r, "fast")).toEqual({
-      wires: ["fast/inner|in|in", "fast/outer|in|in"], crossed: ["fast/outer|in|in"], pins: ["⟨in⟩in"], terminals: ["fast/inner|in|in"], origin: undefined,
+      wires: ["fast/inner|in|in", "fast/outer|in|in"], entered: ["fast/outer"], pins: ["⟨in⟩in"], terminals: ["fast/inner|in|in"], origin: undefined,
     });
     expect(drawing("rates", r, "fast/outer").terminals).toEqual(["fast/outer/hold|in|in"]);
   });
-  it("the root output outer: 1 consumer across 3 levels, the pins crossed, and the children it only leaves crossed at their outputs (visual_grammar.md answer 9)", () => {
+  it("the root output outer: 1 consumer across 3 levels, the pins crossed", () => {
     const r = traced("rates", face("", "out", "outer"));
     expect(routeStatus(r.origin, r)).toBe("tracing `outer`: 1 consumer across 3 levels");
     expect(drawing("rates", r, "")).toEqual({
-      wires: ["⟨out⟩outer|in|outer"], crossed: ["fast|out|outer"], pins: ["⟨out⟩outer"], terminals: ["⟨out⟩outer|in|outer"], origin: "⟨out⟩outer|in|outer",
+      wires: ["⟨out⟩outer|in|outer"], entered: ["fast"], pins: ["⟨out⟩outer"], terminals: ["⟨out⟩outer|in|outer"], origin: "⟨out⟩outer|in|outer",
     });
-    expect(drawing("rates", r, "fast")).toEqual({ wires: ["⟨out⟩outer|in|outer"], crossed: ["fast/outer|out|out"], pins: ["⟨out⟩outer"], terminals: [], origin: undefined });
+    expect(drawing("rates", r, "fast")).toEqual({ wires: ["⟨out⟩outer|in|outer"], entered: ["fast/outer"], pins: ["⟨out⟩outer"], terminals: [], origin: undefined });
     expect(drawing("rates", r, "fast/outer")).toEqual({
-      wires: ["⟨out⟩out|in|out"], crossed: [], pins: ["⟨out⟩out"], terminals: ["fast/outer/hold|out|out"], origin: undefined,
+      wires: ["⟨out⟩out|in|out"], entered: [], pins: ["⟨out⟩out"], terminals: ["fast/outer/hold|out|out"], origin: undefined,
     });
   });
   it("large's b102/out1: 6 consumers across 1 level", () => {
@@ -125,7 +125,7 @@ describe("rates' and the other fixtures' routes", () => {
   it("primitive's u: no wire, 0 consumers across 0 levels, the tag still the origin", () => {
     const r = traced("primitive", face("", "in", "u"));
     expect(routeStatus(r.origin, r)).toBe("tracing `u`: 0 consumers across 0 levels");
-    expect(drawing("primitive", r, "")).toEqual({ wires: [], crossed: [], pins: [], terminals: [], origin: "⟨in⟩u|out|u" });
+    expect(drawing("primitive", r, "")).toEqual({ wires: [], entered: [], pins: [], terminals: [], origin: "⟨in⟩u|out|u" });
   });
 });
 

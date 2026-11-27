@@ -3,7 +3,7 @@
 // the status line, the tree's levels and the origin kept across a push.
 import { count, type Selection } from "./detail";
 import type { Lit } from "./focus";
-import { crossings, inPinId, levelOf, outPinId, parsePortId, portId, producerFace } from "./level";
+import { inPinId, levelOf, outPinId, parsePortId, portId, producerFace } from "./level";
 import type { Model } from "./model";
 import { faceKey, route, type Face, type Route } from "./resolve";
 import type { Tree } from "./tree";
@@ -17,8 +17,8 @@ export interface Traced extends Route {
 export interface RouteDrawing {
   /** The route's wires, by consumer port id. */
   wires: Set<string>;
-  /** The closed children's ports the route crosses, by port id (`crossings`). */
-  crossed: Set<string>;
+  /** The closed children a wire enters or leaves. */
+  entered: Set<string>;
   /** The level's own pins a wire starts or ends at, a root tag included. */
   pins: Set<string>;
   /** The terminal producer's and every consumer's port, a root face's as its pin's. */
@@ -67,17 +67,15 @@ function portOn(model: Model, level: string, f: Face): string | undefined {
 
 export function routeDrawing(model: Model, r: Traced, level: string): RouteDrawing {
   const tree = model.tree!;
-  const out: RouteDrawing = { wires: new Set(), crossed: new Set(), pins: new Set(), terminals: new Set(), origin: portOn(model, level, r.origin) };
-  const entries: string[] = [], exits: string[] = [];
+  const out: RouteDrawing = { wires: new Set(), entered: new Set(), pins: new Set(), terminals: new Set(), origin: portOn(model, level, r.origin) };
   for (const w of r.wires) {
     if (w.level !== level) continue;
     out.wires.add(portOn(model, level, w.to)!);
     for (const f of [w.from, w.to]) {
       if (f.path === level) out.pins.add(f.side === "in" ? inPinId(f.port) : outPinId(f.port));
-      else if (tree.byPath.get(f.path)?.class === "assembly") (f.side === "in" ? entries : exits).push(portId(f.path, f.side, f.port));
+      else if (tree.byPath.get(f.path)?.class === "assembly") out.entered.add(f.path);
     }
   }
-  out.crossed = crossings(entries, exits);
   if (r.levels.has(level)) {
     for (const f of [r.producer, ...r.consumers]) {
       const id = portOn(model, level, f);

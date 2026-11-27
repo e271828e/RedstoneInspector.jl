@@ -1,47 +1,24 @@
 // Face routes (workspace.md answers 8, 11, 9 and 3, visual_grammar.md answer 9):
 // started by `t`, the pane's trace button or the canvas's right-click menu, drawn
-// as casings with the origin's halo, the terminal ports marked and a badge beside each
-// port crossed (the look pass, 1.4 and 2.1), the level dimmed, the status bar naming it;
+// as casings with the origin's halo, the terminal ports marked and a badge on each
+// child entered and each pin crossed, the level dimmed, the status bar naming it;
 // it survives navigation and selection, clears on Escape, the trace repeated or
 // the clear control. Counts from the oracle (`overlay.py`'s `routes`); geometry
 // read off the DOM. The polish batch: a push clearing a route that no longer
 // resolves, `t` and the menu on a face with no producer, a level the route misses not dimmed.
 import { test, type Page } from "@playwright/test";
-import { blockBoxes, drop, dropOver, effectiveOpacity, expect, fixtureText, openPath, PILL_LIFT, pillByPort, press, readyLevel, shot, wirePoint } from "./fixtures";
+import { drop, dropOver, effectiveOpacity, expect, expectPillRows, fixtureText, openPath, press, readyLevel, shot, wirePoint } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const pane = (page: Page) => page.locator("aside.detail");
 const statusRoute = (page: Page) => page.locator("footer.status span.route");
-const routeBadge = (page: Page, id: string) => page.locator(`g.overlay g.badge[data-role="route"][data-id="${id}"]`);
+const routeBadge = (page: Page, id: string) => page.locator(`g.route-pills g.badge[data-role="route"][data-id="${id}"]`);
 const casings = (page: Page) => page.locator("g.casings path.casing.route").evaluateAll((ps) => ps.map((p) => p.getAttribute("data-wire")).sort());
 const opacity = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => getComputedStyle(e).opacity);
 const tag = (page: Page, id: string) => page.locator(`g.block[data-id="${id}"]`);
 const routeRows = (page: Page) => page.locator('nav.tree .row:has(span.mark[data-mark="route"])').evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")).sort());
 /** The status line as text, the backquotes of the oracle's spelling dropped. */
 const plain = (s: string) => s.replaceAll("`", "");
-/** Each route pill on the drawn level, its port, and where it stands by that port; one per port. */
-async function routePills(page: Page) {
-  const pills = page.locator('g.overlay g.badge[data-role="route"]');
-  const out: Record<string, Awaited<ReturnType<typeof pillByPort>>> = {};
-  for (let i = 0, n = await pills.count(); i < n; i++) {
-    const port = (await pills.nth(i).getAttribute("data-port"))!;
-    expect(out[port], `one pill at ${port}`).toBeUndefined();
-    out[port] = await pillByPort(pills.nth(i));
-  }
-  return out;
-}
-/** The rule of visual_grammar.md answer 9 as amended by the look pass (1.4 and 2.1), at every pill on the level. */
-async function expectBesidePorts(page: Page, ports: string[]) {
-  const pills = await routePills(page);
-  expect(Object.keys(pills).sort()).toEqual([...ports].sort());
-  for (const [port, q] of Object.entries(pills)) {
-    expect(q.above, `${port} above the wire`).toBe(true);
-    expect(q.outside, `${port} outside the block or pin`).toBe(true);
-    expect(q.near, `${port} beside its port, or past a label beside it`).toBe(true);
-    expect(q.label, `${port} clear of the type labels`).toBe(false);
-    expect(q.lift, `${port} PILL_LIFT above the wire`).toBeCloseTo(PILL_LIFT, 1);
-  }
-}
 /** Whether the browser's menu would open: a `contextmenu` dispatched at the element's center, not prevented. */
 const browserMenu = (page: Page, sel: string) => page.locator(sel).first().evaluate((e) => {
   const r = e.getBoundingClientRect();
@@ -72,8 +49,8 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
   await expect(statusRoute(page).locator("code")).toHaveText("h_ref");
   await expect(statusRoute(page).locator("button.clear-route")).toHaveText("clear");
-  // a child's pill stands left of the input port the route enters by, above its wire
-  await expectBesidePorts(page, ["lqr_controller|in|h_ref", "pid_controller|in|h_ref"]);
+  // a child's badge straddles its bottom edge at the right
+  expect(Object.keys(await expectPillRows(page)).sort()).toEqual(["lqr_controller", "pid_controller"]);
   await expect(pane(page).locator("button.trace")).toHaveAttribute("aria-pressed", "true");
   await expect(pane(page).locator("button.trace")).toHaveAttribute("title", "Clear the route");
   // the tree's blue marks on the levels it crosses, the root's included
@@ -82,7 +59,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(page.locator('nav.tree .row[data-path="pid_controller"] span.mark[data-mark="route"]')).toHaveAttribute("title", "on the route");
   await shot(page, "closed_loop", "", "routes");
 
-  // pid_controller's badge opens it: one casing, the terminal, the pin badged past the point its wire leaves it
+  // pid_controller's badge opens it: one casing, the terminal, the pin badged on its bottom edge at the inner end
   await routeBadge(page, "pid_controller").click();
   await page.locator(readyLevel("pid_controller")).waitFor();
   expect(await casings(page)).toEqual(["pid_controller/h_ctl|in|r"]);
@@ -90,7 +67,7 @@ test("closed_loop: h_ref traced by t, drawn across its levels by the badges, kep
   await expect(page.locator('g.badge[data-role="route"]')).toHaveCount(1);
   await expect(routeBadge(page, "⟨in⟩h_ref").locator("text.badge-text")).toHaveText("route");
   await expect(routeBadge(page, "⟨in⟩h_ref").locator("title")).toHaveText("The route leaves this level here; go to the parent to follow it.");
-  await expectBesidePorts(page, ["⟨in⟩h_ref|out|h_ref"]);
+  expect((await expectPillRows(page))["⟨in⟩h_ref"].kind).toBe("in");
   await expect(page.locator("g.block.route-origin")).toHaveCount(0);
   await expect(statusRoute(page)).toContainText(plain("tracing `h_ref`: 2 consumers across 3 levels"));
   await shot(page, "closed_loop", "pid_controller", "routes");
@@ -307,63 +284,23 @@ test("rates: src/out traced from the menu, fast and slow badged, fast opened by 
   expect(await routeRows(page)).toEqual(["", "fast", "fast/outer", "slow"]);
 });
 
-test("the route's pills, the type labels on: beside each port it crosses, a child's input, a child's output, an input pin's and an output pin's, above the wire, outside the block or pin and clear of every label (visual_grammar.md answer 9 as amended by the look pass, 1.4 and 2.1)", async ({ page }) => {
-  await drop(page, "closed_loop");
-  await press(page, "y");
-  await expect(svg(page)).toHaveAttribute("data-labels", "");
-  await page.locator('rect.port[data-port="plant|out|V"]').click();
+test("rates' fast: an input pin's route pill on its bottom edge from the bottom-right corner, src/out traced, and an output pin's from the bottom-left, the root output outer traced (visual_grammar.md answer 9 as amended by the look pass, 11.2)", async ({ page }) => {
+  await drop(page, "rates");
+  await page.locator('rect.port[data-port="src|out|out"]').click();
   await press(page, "t");
-  await expectBesidePorts(page, ["lqr_controller|in|V", "pid_controller|in|V"]);
-  await shot(page, "closed_loop", "", "route-pills");
-  // a move past a label: selection's engaged inside approach_deployment's vehicle
-  await drop(page, "approach_deployment");
-  await openPath(page, "vehicle");
-  await page.locator('rect.port[data-port="vehicle/selection|out|engaged"]').dispatchEvent("click");
-  await press(page, "t");
-  await expectBesidePorts(page, ["vehicle/cascade|in|engaged", "vehicle/selection|out|engaged"]);
-  expect((await pillByPort(page.locator('g.badge[data-role="route"][data-port="vehicle/selection|out|engaged"]'))).gap, "moved past a label").toBeGreaterThan(4);
-  // the output forms: rates' root output, its producer inside fast/outer, the label at each output port drawn; at the
-  // root the pill moves past inner's label, the port above's
+  await openPath(page, "fast");
+  const inRows = await expectPillRows(page);
+  expect(Object.keys(inRows).sort()).toEqual(["fast/outer", "⟨in⟩in"]);
+  expect(inRows["⟨in⟩in"].kind).toBe("in");
+  await shot(page, "rates", "fast", "route-pin-in");
   await drop(page, "rates");
   await page.locator('g.block[data-id="⟨out⟩outer"]').click();
   await press(page, "t");
-  await expect(page.locator('text.type-label[data-port="fast|out|outer"]')).toHaveCount(1);
-  await expectBesidePorts(page, ["fast|out|outer"]);
-  expect((await pillByPort(page.locator('g.badge[data-role="route"][data-port="fast|out|outer"]'))).gap, "moved past a label").toBeGreaterThan(4);
   await openPath(page, "fast");
-  await expect(page.locator('text.type-label[data-port="fast/outer|out|out"]')).toHaveCount(1);
-  await expectBesidePorts(page, ["fast/outer|out|out", "⟨out⟩outer|in|outer"]);
-  await shot(page, "rates", "fast", "route-pills");
-  // the short pin of 2.1: fast's in, src/out traced
-  await drop(page, "rates");
-  await page.locator('rect.port[data-port="src|out|out"]').click();
-  await press(page, "t");
-  await openPath(page, "fast");
-  await expect(page.locator('text.type-label[data-port="⟨in⟩in|out|in"]')).toHaveCount(1);
-  await expectBesidePorts(page, ["fast/outer|in|in", "⟨in⟩in|out|in"]);
-  await shot(page, "rates", "fast", "route-pin");
-});
-
-test("rates' fast, outer dragged left of every box: the fit covers the route's pill left of outer's input, as it covers the boxes (the look pass, 1.4)", async ({ page }) => {
-  await drop(page, "rates");
-  await page.locator('rect.port[data-port="src|out|out"]').click();
-  await press(page, "t");
-  await openPath(page, "fast");
-  const r = (await page.locator('g.block[data-id="fast/outer"] > .shape').boundingBox())!;
-  await page.mouse.move(r.x + r.width / 2, r.y + 10);
-  await page.mouse.down();
-  await page.mouse.move(r.x + r.width / 2 - 600, r.y + 10, { steps: 8 });
-  await page.mouse.up();
-  await page.locator(".viewport").focus();
-  await press(page, "0");
-  const pill = page.locator('g.overlay g.badge[data-role="route"][data-port="fast/outer|in|in"]');
-  // the case: the pill's left end lies left of every box
-  const left = await pill.locator("rect").evaluate((q: SVGRectElement) => q.x.baseVal.value);
-  expect(Math.min(...(await blockBoxes(page)).map((b) => b.x))).toBeGreaterThan(left);
-  await expect.poll(async () => {
-    const [p, v] = await Promise.all([pill.locator("rect").evaluate((q) => q.getBoundingClientRect().left), svg(page).evaluate((e) => e.getBoundingClientRect().left)]);
-    return p >= v;
-  }).toBe(true);
+  const outRows = await expectPillRows(page);
+  expect(Object.keys(outRows).sort()).toEqual(["fast/outer", "⟨out⟩outer"]);
+  expect(outRows["⟨out⟩outer"].kind).toBe("out");
+  await shot(page, "rates", "fast", "route-pin-out");
 });
 
 test("primitive: the u tag traced reads 0 consumers across 0 levels, the tag the origin, no casing", async ({ page }) => {

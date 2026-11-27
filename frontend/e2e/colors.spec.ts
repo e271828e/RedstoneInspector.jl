@@ -185,7 +185,7 @@ test("rates: fast gray with two clocks whatever its scope row, slow on its primi
   await expect(legendLines(page).locator("button.line")).toHaveText(["continuous", "1/50 s · τ 0 A₁", "1/25 s · τ 0 A₁"]);
 });
 
-test("nothing yields: failure_nested's ctl shows its clock pill with its loop pill; rates' fast and slow keep their clock pills and order badges under a route; the overlay drawn after the blocks", async ({ page }) => {
+test("nothing yields: failure_nested's ctl shows its clock pill with its loop pill; rates' fast and slow keep their clock pills and order badges under a route; the overlay drawn after the blocks, the order badges after the overlay, the route's pills last (visual_grammar.md answer 9 as amended by the look pass, 11.3)", async ({ page }) => {
   // failure_nested: ctl, 60 wide, carries "1 clock" on its top edge and the loop's pill on its bottom edge
   await drop(page, "failure_nested");
   await press(page, "c");
@@ -201,12 +201,10 @@ test("nothing yields: failure_nested's ctl shows its clock pill with its loop pi
   const orders = { fast: "1–2", slow: "3" };
   await page.locator('rect.port[data-port="src|out|out"]').click();
   await press(page, "t");
-  for (const id of Object.keys(clocks)) await expect(page.locator(`g.overlay g.badge[data-id="${id}"][data-role="route"]`), id).toHaveCount(1);
+  for (const id of Object.keys(clocks)) await expect(page.locator(`g.route-pills g.badge[data-id="${id}"][data-role="route"]`), id).toHaveCount(1);
   for (const [id, text] of Object.entries(clocks)) await expect(badge(page, id), id).toHaveText(text);
-  for (const [id, text] of Object.entries(orders)) await expect(block(page, id).locator("g.order-badge text.order"), id).toHaveText(text);
-  // the overlay's group follows the blocks' group, so its pills paint over an order badge they meet
-  expect(await page.evaluate(() => {
-    const blocks = document.querySelector("svg.canvas g.blocks")!, overlay = document.querySelector("svg.canvas g.overlay")!;
-    return !!(blocks.compareDocumentPosition(overlay) & Node.DOCUMENT_POSITION_FOLLOWING);
-  })).toBe(true);
+  for (const [id, text] of Object.entries(orders)) await expect(page.locator(`g.order-badge[data-id="${id}"] text.order`), id).toHaveText(text);
+  // the groups in drawing order: the blocks, the overlay's fixed pills, the order badges, the route's pills
+  expect(await page.evaluate(() => [...document.querySelectorAll("svg.canvas > :is(g.blocks, g.overlay, g.order-badges, g.route-pills)")].map((g) => ["blocks", "overlay", "order-badges", "route-pills"].find((c) => g.classList.contains(c)))))
+    .toEqual(["blocks", "overlay", "order-badges", "route-pills"]);
 });

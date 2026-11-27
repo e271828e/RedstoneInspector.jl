@@ -60,17 +60,6 @@ export function parsePortId(id: string): { block: string; side: "in" | "out"; na
 }
 
 /**
- * The ports where a route or a loop's chain crosses a closed child's edge, by port id (visual_grammar.md answer 9):
- * each input port it enters by, and on a child it enters by none, each output port it leaves by.
- */
-export function crossings(entries: Iterable<string>, exits: Iterable<string>): Set<string> {
-  const out = new Set(entries);
-  const entered = new Set([...out].map((id) => parsePortId(id).block));
-  for (const id of exits) if (!entered.has(parsePortId(id).block)) out.add(id);
-  return out;
-}
-
-/**
  * Input pins, the children in walk order, output pins; the wires keyed by their consumer.
  * A primitive root is its one block with a pin and a wire per face.
  */

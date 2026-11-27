@@ -1,17 +1,14 @@
 /// <reference types="node" />
 // The harness's helper: a fixture dropped on the page as a File in a DataTransfer,
 // the wait for the drawn level or the outcome text, counts, the frame's locators,
-// a wire's clickable point, an element's effective opacity, an overlay pill's place by its
-// port, screenshots and the live tab's mock socket.
+// a wire's clickable point, an element's effective opacity, the overlay's pill rows,
+// screenshots and the live tab's mock socket.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator, type Page, type WebSocketRoute } from "@playwright/test";
 
 const fixtures = new URL("../fixtures/", import.meta.url);
 const screenshots = new URL("screenshots/", import.meta.url);
-
-/** How far a route's or a loop's pill stands above its wire, the canvas's `PILL_LIFT`, in world units. */
-export const PILL_LIFT = 4;
 
 /** A committed fixture's text. */
 export const fixtureText = (name: string): string => readFileSync(new URL(`${name}.json`, fixtures), "utf8");
@@ -175,36 +172,47 @@ export const effectiveOpacity = (page: Page, sel: string) => page.locator(sel).f
   return o;
 });
 
+type Edges = { left: number; right: number; top: number; bottom: number };
 /**
- * Where an overlay pill stands by the port it names (`data-port`), in client pixels off the DOM
- * (visual_grammar.md answer 9): `above`, its bottom edge above the port square's top, so above the wire; `outside`,
- * beyond the square on the port's side, left of an input port and right of an output port, so outside the block or
- * pin; `near`, its near end within its own height of the square or of the far end of a drawn type label it stands
- * past; `label`, whether it meets a drawn type label; in world units, `gap`, its near end's
- * distance from the square, and `lift`, its bottom edge above the square's centre, where the wire runs. A label's
- * ends come from its text's start and length, since Firefox pads a text's box.
+ * The overlay's pills on the drawn level by block, the fixed ones in `g.overlay` and the route's in `g.route-pills`,
+ * in world units, with the block's box read from its shape and whether it is a child, an input pin or an output pin.
  */
-export const pillByPort = (badge: Locator) => badge.evaluate((g) => {
-  const port = g.getAttribute("data-port")!;
-  const p = document.querySelector(`rect.port[data-port="${port}"]`)!.getBoundingClientRect();
-  const r = g.querySelector("rect")!.getBoundingClientRect();
-  const east = port.split("|").at(-2) === "out";
-  const svg = document.querySelector<SVGSVGElement>("svg.canvas")!, vb = svg.viewBox.baseVal, at = svg.getBoundingClientRect();
-  const scale = svg.clientWidth / vb.width;
-  const labels = [...document.querySelectorAll<SVGTextElement>("text.type-label")].map((t) => {
-    const x = t.x.baseVal.getItem(0).value, b = t.getBBox();
-    const cx = (u: number) => at.left + (u - vb.x) * scale, cy = (u: number) => at.top + (u - vb.y) * scale;
-    return { left: cx(x), right: cx(x + t.getComputedTextLength()), top: cy(b.y), bottom: cy(b.y + b.height) };
-  });
-  const meets = (l: (typeof labels)[number]) => l.left < r.right && r.left < l.right && l.top < r.bottom && r.top < l.bottom;
-  const gap = east ? r.left - p.right : p.left - r.right;
-  const past = labels.some((l) => (east ? r.left - l.right : l.left - r.right) >= 0 && (east ? r.left - l.right : l.left - r.right) < r.height);
-  return {
-    above: r.bottom <= p.top, outside: gap >= 0, near: gap < r.height || past,
-    label: labels.some(meets),
-    gap: gap / scale, lift: ((p.top + p.bottom) / 2 - r.bottom) / scale,
-  };
-});
+export const overlayPills = (page: Page) => page.evaluate(() => {
+  const out: Record<string, { kind: "child" | "in" | "out"; box: Edges; pills: (Edges & { role: string; text: string })[] }> = {};
+  for (const g of document.querySelectorAll<SVGGElement>("svg.canvas :is(g.overlay, g.route-pills) > g.badge")) {
+    const id = g.dataset.id!;
+    if (!out[id]) {
+      const b = document.querySelector<SVGGElement>(`g.blocks > g.block[data-id="${id}"]`)!;
+      const m = b.transform.baseVal.consolidate()!.matrix, s = b.querySelector<SVGGraphicsElement>(":scope > .shape")!.getBBox();
+      const kind = b.classList.contains("in") ? "in" : b.classList.contains("out") ? "out" : "child";
+      out[id] = { kind, box: { left: m.e + s.x, right: m.e + s.x + s.width, top: m.f + s.y, bottom: m.f + s.y + s.height }, pills: [] };
+    }
+    const r = g.querySelector("rect")!, v = (a: SVGAnimatedLength) => a.baseVal.value;
+    out[id].pills.push({ role: g.dataset.role!, text: g.querySelector("text")!.textContent!, left: v(r.x), right: v(r.x) + v(r.width), top: v(r.y), bottom: v(r.y) + v(r.height) });
+  }
+  return out;
+}) as Promise<Record<string, { kind: "child" | "in" | "out"; box: Edges; pills: (Edges & { role: string; text: string })[] }>>;
+
+/**
+ * The rows of visual_grammar.md answers 8 and 9 at every pill on the drawn level, recomputed from the DOM, and the
+ * rows returned: each pill straddles its block's bottom edge, at most one per role; on a child and an input pin the
+ * row runs leftward from the right end 4 in, on an output pin rightward from the left end 4 in, 2 apart, the
+ * diagnostic's first, then the loop's, then the route's.
+ */
+export async function expectPillRows(page: Page) {
+  const rows = await overlayPills(page);
+  const order = ["diagnostic", "continues", "route"];
+  for (const [id, { kind, box, pills }] of Object.entries(rows)) {
+    expect(new Set(pills.map((p) => p.role)).size, `${id} one pill per role`).toBe(pills.length);
+    let edge = kind === "out" ? box.left + 4 : box.right - 4;
+    for (const p of [...pills].sort((a, b) => order.indexOf(a.role) - order.indexOf(b.role))) {
+      expect(p.top < box.bottom && box.bottom < p.bottom, `${id} ${p.role} straddles the bottom edge`).toBe(true);
+      expect(kind === "out" ? p.left : p.right, `${id} ${p.role} in the row`).toBeCloseTo(edge, 3);
+      edge = kind === "out" ? p.right + 2 : p.left - 2;
+    }
+  }
+  return rows;
+}
 
 /** A client point of a wire's line where the wire's own hit path is on top. */
 export async function wirePoint(page: Page, id: string): Promise<{ x: number; y: number }> {

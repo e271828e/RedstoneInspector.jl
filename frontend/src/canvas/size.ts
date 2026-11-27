@@ -24,9 +24,10 @@ export const BADGE_FONT = `9px ${FONT_STACK}`;
  * The badge pill: its inset from the block's edge, its height and its text's side padding. The rate pill straddles
  * the top edge at the left, so it never covers the segment, which answer 10 never truncates, and the events pill
  * the top edge at the right (answer 11). The order badge straddles the bottom edge at the left, as far below as the
- * rate pill rises above, and a node diagnostic's pill the same row at the right end, its text cut so it ends at the
- * left inset or short of the order badge (answer 8); a loop's and a route's stand by their ports (answer 9). A block's size depends on the top edge's pills alone, and only where the events pill
- * stands (`topPillsWidth`).
+ * rate pill rises above, and the overlay's pills the same row, stacked leftward from the right end `BADGE_GAP`
+ * apart, the diagnostic's text cut so it and the loop's end short of the order badge, which draws above them; the
+ * route's may run over it, drawn on top (answers 8 and 9). A block's size depends on the top edge's pills alone, and
+ * only where the events pill stands (`topPillsWidth`).
  */
 export const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
 /** A pill's width around its text: the rate pill's, the events pill's and the order badge's. */

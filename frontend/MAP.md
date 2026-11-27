@@ -21,7 +21,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/tree.ts` | the parent rule, segments, memberships, `displayName`, `buildTree` |
 | `src/lib/resolve.ts` | faces, the resolution, terminal producers and consumers, `faceInfo`, face routes |
 | `src/lib/feedthrough.ts` | the feedthrough edges, as the core's `_feedthrough` |
-| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes, the level's regions and its type labels (`EdgeLabel`), `REGION_PADDING`, `regionNodeId`; `parsePortId`, `producerFace`; `crossings`, the closed children's ports a route or a chain crosses |
+| `src/lib/level.ts` | one level's blocks and wires, and ELK's graph over it given sizes, the level's regions and its type labels (`EdgeLabel`), `REGION_PADDING`, `regionNodeId`; `parsePortId`, `producerFace` |
 | `src/lib/view.ts` | the viewport math: `fitView`, `fitBeside` (the fit leaving a corner box clear), `zoomAt`, `pan`, `centreOn`, `viewRect`, `toWorld` |
 | `src/lib/model.ts` | `loadModel`: everything above, built once |
 | `src/lib/outline.ts` | the tree pane's rows: `outlineRows`, `allRows`, `defaultExpansion`, `folderOf`, `foldersOf`, a node's folders, `ancestors`; `rowSelection`, what a row's click selects; `treeStep`, the tree's `h j k l` |
@@ -33,7 +33,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/rates.ts` | rate mode's data: `Triple`, `tripleKey`, `STEPS`, `blockTriple`, `tripleOrder`, `stepsOf`, `CONTINUOUS`, `CONTINUOUS_TITLE`, `LegendLine`, `legend`, a level's lines' keys and steps with the continuous line, `mixed`, `clocksBeneath`, `clockCount`, `ratePill`, the rate pill's text and title in either mode, `fromRootInput`, `wireTriple` |
 | `src/lib/events.ts` | the state events over the build body's `events` section, none on a failure: `eventsSection`, `EventRow`, `EventGroup`, `eventGroups` (the tab's), `eventsOf` (a primitive's), `Beneath`, `eventsBeneath` (at or beneath a path, the root's the model's), `eventCount`, `localizedWord`, `LOCALIZED_TITLE`, the `localized` head's title in the tab and the pane, `eventsPill` (text and title), `eventHead` (the tab's head under ruling 9's conditions) |
 | `src/lib/focus.ts` | `Lit`, what a focus lights (blocks, wires, ports); the legend's focus: `legendLit`, what a key lights on a level; `legendMarks`, the tree's rows on it; `rekeyFocus`, the key across a push |
-| `src/lib/diagnostics.ts` | the overlay's data: `diagnosticsOf`, the diagnostics then the warnings, a deployment's own after the build's, indexed; `chainOf`, a loop's terminal pairs mapped onto declared wires (`Hop`); `loopFacts`, the drawer's loop row (`LoopFacts`: each pair's `DeclaredHop`s producer first, each with its `Declaration` and its holder's location, each member's mode, `presumed` when structural); `overlayOf`, what a level draws (`Overlay`: blocks with their `Badge`, ports, wires, `Chord`s, continuations by the port crossed, the pins a chain `leaves` through); `treeMarks`, the tree's counts (`TreeMark`); `diagnosticTarget`, where a row's click goes; `litBy`, what a focused diagnostic lights |
+| `src/lib/diagnostics.ts` | the overlay's data: `diagnosticsOf`, the diagnostics then the warnings, a deployment's own after the build's, indexed; `chainOf`, a loop's terminal pairs mapped onto declared wires (`Hop`); `loopFacts`, the drawer's loop row (`LoopFacts`: each pair's `DeclaredHop`s producer first, each with its `Declaration` and its holder's location, each member's mode, `presumed` when structural); `overlayOf`, what a level draws (`Overlay`: blocks with their `Badge`, ports, wires, `Chord`s, continuations, the pins a chain `leaves` through); `treeMarks`, the tree's counts (`TreeMark`); `diagnosticTarget`, where a row's click goes; `litBy`, what a focused diagnostic lights |
 | `src/lib/routes.ts` | face routes over `resolve.ts`'s `route`: `originOf`, the face a selection traces; `routeOf`, the route with its origin (`Traced`); `routeDrawing`, what a level draws (`RouteDrawing`); `routeStatus` and `faceText`; `routeLevels`, the tree's marks; `routeLit`; `rekeyRoute`, the origin across a push; `sameFace` |
 | `src/lib/wires.ts` | the wire classes: `wireClass`, `levelWireClasses`, `labelledPorts`, `fanouts`; the type labels' `shortType` |
 | `src/lib/icons.ts` | the library icons: `iconOf`, the roster keyed on the alias, then the type, `Delay`'s `K` from its signature, a `Constant`'s value |
@@ -65,7 +65,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/frame/Landing.svelte` | the privacy statement (`PRIVACY`), the open control, the drop hint, the help link, a refusal |
 | `src/frame/Help.svelte` | the help page, over the shell's `div.under`: the five sections over `help.ts`, the timing notation's table and law, the lead, the legend's sixteen static SVG samples in the canvas's shapes and the palette's colors, the about section's versions from the defines; scrolls on its own, focused on mount |
 | `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, `pillByPort`, an overlay pill's place by its port, with `PILL_LIFT` copied from the canvas, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, `overlayPills` and `expectPillRows`, the overlay's pill rows recomputed from the DOM, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
@@ -285,7 +285,7 @@ and restores the view or fits. `undrag(all)`, `x` and `X`, runs it on
 drops an older result (`run`). `view` and `layout` are read with `untrack`; a
 level change clears the hover and closes the menu. The draw order is answer 9's: regions, casings (the
 route's first), wires with struct cores, dots, blocks with ports and halos,
-type labels, `g.overlay`. `<defs>` holds one arrowhead per wire color, in
+type labels, `g.overlay`, `g.order-badges`, `g.route-pills`. `<defs>` holds one arrowhead per wire color, in
 user units, and one `<symbol>` per glyph.
 
 What the records do not fix, or where the page differs:
@@ -370,27 +370,29 @@ What the records do not fix, or where the page differs:
   marks 2 px each side, chords between the squares' centers with a ±4 px
   cross (`CROSS`), then badges. `data-severity` sets `--hue` from `--error` or
   `--warning`. A diagnostic on the level's own node draws nothing.
-- **The overlay's badges** (`overlayBadges`). A node diagnostic's straddles the
-  bottom edge at the right, `BADGE_INSET` in, its text cut (`cutPill`) to end at
-  the left inset, or `BADGE_GAP` short of the order badge while it shows; its
-  title the whole text, then the message's first line; its click calls `onbadge`. A
-  `loop`'s and a `route`'s stand by each port `crossings` gives and, off the
-  root, by a pin's port: 2 px beyond the square on the port's side, left of an
-  input and right of an output, the bottom 4 px above the wire (`PILL_LIFT`),
-  the loop's nearer; one meeting a drawn type label moves outward past its far
-  end by 2, unless the moved place meets a block, a port square, a pill
-  already placed or another port's unmoved pills, the ports taken in the
-  order the overlay gathers them (loops, then the route), the diagnostics'
-  pills placed first; then it stands unmoved. Their click calls `onopen`, a child's the child, a pin's the parent.
-  The fit covers them.
+- **The overlay's badges** (`overlayBadges`). On a child one row straddles the
+  bottom edge from the right, `BADGE_INSET` in, `BADGE_GAP` apart: a node
+  diagnostic's, a `loop`'s, the `route`'s. The diagnostic's text is cut
+  (`cutPill`) so that it and the loop's end at the left inset, or `BADGE_GAP`
+  short of the order badge while it shows; the route's stacks after them and may
+  run over the order badge or past the corner. Off the root a pin's straddle its
+  bottom edge at the inner end, `BADGE_INSET` in, the loop's nearest the corner:
+  an input pin's leftward from the bottom-right corner, an output pin's rightward
+  from the bottom-left. A diagnostic's title is the whole text, then the
+  message's first line; its click calls `onbadge`. A loop's and a route's click
+  calls `onopen`, a child's the child, a pin's the parent. The fixed pills draw in
+  `g.overlay`, the route's in `g.route-pills`, last.
 - **The order badge**, `order` on, straddles a child's bottom edge at the left,
   `pillWidth(text)` wide, background fill, text-color stroke, titled "Stage 2
   position N in the execution order" or "Stage 2 positions N in the execution
-  order: the primitives inside"; its click selects the block.
+  order: the primitives inside"; its click selects the block, its double-click
+  opens it, its hover is the block's. It draws in `g.order-badges`, above
+  `g.overlay`, and dims with its block under a search or a focus.
 - **A route.** `path.casing.route`, width 7, in `g.route-casings` at 0.4 as
   one group so a shared trunk does not add up; the origin's halo at 0.5 or
-  its port halo `on`; `route-terminal` squares; a `route` badge by each port
-  crossed (`RouteDrawing.crossed`, then `pins` off the root), as above.
+  its port halo `on`; `route-terminal` squares; a `route` badge on each child
+  entered (`RouteDrawing.entered`) and, off the root, each pin crossed (`pins`),
+  as above.
 - **The right-click menu.** `contextmenu` on a pin, a `rect.port` or a
   `path.wire-hit` opens `div.menu` at the pointer and selects nothing;
   elsewhere the browser's menu stays. A capture-phase `pointerdown` outside,
@@ -427,12 +429,12 @@ What the records do not fix, or where the page differs:
 | a type label | `g.type-labels > text.type-label[data-port][data-wire]`, no title, `pointer-events: none` | after `g.blocks`, only while `data-labels`; the producer port and its first wire |
 | a region | `g.regions > g.region[data-path]` holding `rect.halo`, `rect.shape`, `text.caption`; `.selected` | first in the svg; `selected` when the folder is |
 | the rate pill | `g.block g.badge-pill` holding `title`, `rect`, `text.badge` | rate mode, an extra or a clock count |
-| the order badge | `g.block g.order-badge[data-id]` holding `title`, `rect`, `text.order` | while `data-order` |
+| the order badge | `g.order-badges > g.order-badge[data-id]`, `.lit`, `.search-hit`, `.search-under` as its block's, holding `title`, `rect`, `text.order` | while `data-order`; after `g.overlay` |
 | the events pill | `g.block g.events-pill` holding `title`, `rect`, `text.events` | a primitive that declares events, a closed assembly with some beneath; both modes |
-| the overlay | `g.overlay` | last in the svg |
+| the overlay | `g.overlay` | after `g.type-labels` |
 | a mark | `path.mark-wire[data-wire]`, `rect.mark-port[data-port]`, `rect.mark-halo[data-id]`, each `[data-severity]`, `error` or `warning` | a diagnostic's attribution; a `path` mark halo on a root tag |
 | a dead hop | `path.chord[data-id][data-from][data-to][data-severity]`, `path.cross[data-id]` | a dead hop's member |
-| an overlay badge | `g.badge[data-id][data-role]`, the role `diagnostic`, `continues` or `route`, `[data-severity]` on the first two, `[data-port]` on the last two, holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing in a child or leaving by a pin (`data-id` the pin's), a route entering or leaving; `data-port` the port it stands by |
+| an overlay badge | `g.overlay > g.badge[data-id][data-role]`, the role `diagnostic` or `continues`, `[data-severity]`; `g.route-pills > g.badge[data-id][data-role="route"]`, last in the svg; each holding `title`, `rect`, `text.badge-text` | a node diagnostic, a chain continuing in a child or leaving by a pin (`data-id` the pin's), a route entering or leaving |
 | the legend | `div.legend` in `.viewport`: `li.continuous`, then `li[data-step]`, each `[title]` and holding `button.line[aria-pressed]` with `span.marks` (`span.swatch`, `span.number` or both), then `span.word` on the continuous line, else `span.period`, `span.phase`, `span.dt`, `span.anchor`; `.deployed` | rate mode with a line; `.deployed` and `span.dt` on a deployment; `aria-pressed` on the focused line; the title `legendText`'s key, declaring scope, `Dₐ`, `Φₐ` and a deployment's `τ` |
 | the menu | `div.menu` in `.viewport` holding `button.trace` | while a right-click menu is open |
 

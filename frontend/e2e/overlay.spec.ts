@@ -5,10 +5,11 @@
 // wire marks on a synthetic descriptor, no dimming until a badge focuses its
 // diagnostic. Counts from the oracle (`overlay.py`); geometry read off the DOM.
 // A loop's badge on a pin it leaves through (answer 8 as amended by the polish batch),
-// beside the port it crosses (the look pass of 2026-11-27, 1.4); a long diagnostic pill
-// cut to its room, its title opening with the whole text (6.1).
+// on its bottom edge at the inner end (the look pass of 2026-11-27, 11.2); a long
+// diagnostic pill cut to its room, the loop's beside it included, its title opening
+// with the whole text (6.1 and 11.3); the route's pill above an order badge it meets.
 import { test, type Page } from "@playwright/test";
-import { drop, effectiveOpacity, expect, fixtureText, openPath, PILL_LIFT, pillByPort, press, readyLevel, shot } from "./fixtures";
+import { drop, effectiveOpacity, expect, expectPillRows, fixtureText, openPath, press, readyLevel, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const drawer = (page: Page) => page.locator("section.drawer");
@@ -84,18 +85,13 @@ test("failure_nested: plant and the root's two hops, ctl's loop badge opening ct
   await expect(mark("")).toHaveAttribute("title", "1 error, beneath");
 });
 
-test("failure_nested: inside ctl the pins the chain leaves through take the loop badge beside their ports, above the wire and outside the pin, as ctl's stands left of its input y at the root (answer 8 as amended by the look pass, 1.4); a click climbs to the root with the chain drawn", async ({ page }) => {
+test("failure_nested: inside ctl the pins the chain leaves through take the loop badge on their bottom edge at the inner end, the input pin's from its bottom-right corner, the output pin's from its bottom-left, as ctl's stands at its bottom edge's right end at the root (answer 8 as amended by the look pass, 11.1 and 11.2); a click climbs to the root with the chain drawn", async ({ page }) => {
   await drop(page, "failure_nested");
-  const rule = async (port: string) => {
-    const q = await pillByPort(page.locator(`g.badge[data-role="continues"][data-port="${port}"]`));
-    expect([q.above, q.outside, q.near, q.label], port).toEqual([true, true, true, false]);
-    expect(q.lift, `${port} PILL_LIFT above the wire`).toBeCloseTo(PILL_LIFT, 1);
-  };
-  await press(page, "y");
-  await rule("ctl|in|y");
+  expect(Object.keys(await expectPillRows(page))).toEqual(["ctl"]);
   await openPath(page, "ctl");
   await expect(page.locator('g.badge[data-role="continues"]')).toHaveCount(2);
-  for (const port of ["⟨in⟩y|out|y", "⟨out⟩u|in|u"]) await rule(port);
+  const rows = await expectPillRows(page);
+  expect([rows["⟨in⟩y"].kind, rows["⟨out⟩u"].kind]).toEqual(["in", "out"]);
   const badge = page.locator('g.badge[data-role="continues"][data-id="⟨in⟩y"]');
   await expect(badge).toHaveAttribute("data-severity", "error");
   await expect(badge.locator("text.badge-text")).toHaveText("loop");
@@ -108,19 +104,18 @@ test("failure_nested: inside ctl the pins the chain leaves through take the loop
   await expect(page.locator('g.badge[data-id^="⟨"]')).toHaveCount(0);
 });
 
-test("failure_nested's root, plant's power traced: at ctl's input y the loop's pill stands nearer the port than the route's, both PILL_LIFT above the wire, the labels off and on (visual_grammar.md answer 9)", async ({ page }) => {
+test("failure_nested, plant's power traced: ctl's row reads the loop's pill, then the route's; inside ctl the input pin y carries both, the loop's nearest its bottom-right corner (visual_grammar.md answers 8 and 9 as amended by the look pass, 11.1 and 11.2)", async ({ page }) => {
   await drop(page, "failure_nested");
   await page.locator('rect.port[data-port="plant|out|power"]').dispatchEvent("click");
   await press(page, "t");
-  const pill = (role: string) => page.locator(`g.overlay g.badge[data-role="${role}"][data-port="ctl|in|y"]`);
-  for (const labels of [false, true]) {
-    if (labels) await press(page, "y");
-    const [loop, route] = await Promise.all(["continues", "route"].map((role) => pill(role).locator("rect").evaluate((r) => r.getBoundingClientRect().toJSON() as DOMRect)));
-    const port = await page.locator('rect.port[data-port="ctl|in|y"]').evaluate((r) => r.getBoundingClientRect().left);
-    expect(loop.right, `labels ${labels}: the loop's pill left of the port`).toBeLessThanOrEqual(port);
-    expect(route.right, `labels ${labels}: the route's pill left of the loop's`).toBeLessThanOrEqual(loop.left);
-    for (const role of ["continues", "route"]) expect((await pillByPort(pill(role))).lift, `labels ${labels}: ${role}`).toBeCloseTo(PILL_LIFT, 1);
-  }
+  const roles = (rows: Awaited<ReturnType<typeof expectPillRows>>, id: string) => rows[id].pills.map((p) => p.role).sort();
+  const root = await expectPillRows(page);
+  expect(roles(root, "ctl")).toEqual(["continues", "route"]);
+  await openPath(page, "ctl");
+  const ctl = await expectPillRows(page);
+  expect(ctl["⟨in⟩y"].kind).toBe("in");
+  expect(roles(ctl, "⟨in⟩y")).toEqual(["continues", "route"]);
+  await shot(page, "failure_nested", "ctl", "loop-route");
 });
 
 test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle, 8 units across (the look pass, 7.1)", async ({ page }) => {
@@ -204,10 +199,12 @@ const diagnosticPill = (page: Page, id: string) => page.locator(`g.badge[data-ro
   const g = document.querySelector<SVGGElement>(`g.block[data-id="${id}"]`)!;
   const m = g.transform.baseVal.consolidate()!.matrix, s = g.querySelector<SVGRectElement>(":scope > rect.shape")!;
   const r = b.querySelector("rect")!, v = (a: SVGAnimatedLength) => a.baseVal.value;
-  const o = g.querySelector<SVGRectElement>("g.order-badge rect");
+  const o = document.querySelector<SVGRectElement>(`g.order-badges g.order-badge[data-id="${id}"] rect`);
+  const loop = document.querySelector<SVGRectElement>(`g.overlay g.badge[data-role="continues"][data-id="${id}"] rect`);
   return {
     left: v(r.x), right: v(r.x) + v(r.width), inLeft: m.e + v(s.x) + 4, inRight: m.e + v(s.x) + v(s.width) - 4,
-    order: o ? m.e + v(o.x) + v(o.width) : undefined,
+    order: o ? v(o.x) + v(o.width) : undefined,
+    loop: loop ? { left: v(loop.x), right: v(loop.x) + v(loop.width) } : undefined,
     text: b.querySelector("text.badge-text")!.textContent!, head: b.querySelector("title")!.textContent!.split("\n")[0],
     /** A text's width in the pill's font, measured on a clone of its text. */
     measure: (() => {
@@ -246,6 +243,40 @@ test("a long diagnostic pill is cut with an ellipsis to end at the block's left 
   expect(q.right).toBeCloseTo(q.inRight, 3);
   expect(q.text).toMatch(/…$/);
   await shot(page, "warning", "", "diagnostic-cut-order");
+});
+
+test("failure_nested with a warning on ctl, edited in: the diagnostic's text cut so that it and the loop's pill end at the left inset, or 2 short of the order badge, the loop's 2 left of it (visual_grammar.md answer 8 as amended by the look pass, 11.3)", async ({ page }) => {
+  const d = JSON.parse(fixtureText("failure_nested"));
+  d.failure.warnings = [...(d.failure.warnings ?? []), {
+    kind: "EmptyFaceSelection", severity: "warning", path: "ctl", message: "`input_passthrough` at `ctl`: `select` accepted no face of the child (§8.8)",
+  }];
+  await drop(page, "failure_nested", JSON.stringify(d));
+  const p = await diagnosticPill(page, "ctl");
+  expect(p.loop, "ctl carries the loop's pill").toBeDefined();
+  expect(p.head).toBe("EmptyFaceSelection");
+  expect(p.text).toMatch(/…$/);
+  expect(p.right).toBeCloseTo(p.inRight, 3);
+  expect(p.loop!.right).toBeCloseTo(p.left - 2, 3);
+  expect(p.loop!.left).toBeGreaterThanOrEqual(p.inLeft - 1e-3);
+  await expectPillRows(page);
+  await shot(page, "failure_nested_warning_ctl", "", "diagnostic-cut-loop");
+});
+
+test("closed_loop, h_ref traced with the order badges on: where lqr_controller's route pill meets its order badge, the route's pill is on top (visual_grammar.md answer 9 as amended by the look pass, 11.3)", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await press(page, "o");
+  await page.locator('g.block[data-id="⟨in⟩h_ref"]').click();
+  await press(page, "t");
+  const at = await page.evaluate(() => {
+    const a = document.querySelector('g.route-pills g.badge[data-id="lqr_controller"] rect')!.getBoundingClientRect();
+    const b = document.querySelector('g.order-badge[data-id="lqr_controller"] rect')!.getBoundingClientRect();
+    return { meets: a.left < b.right && b.left < a.right, x: (a.left + b.right) / 2, y: (Math.max(a.top, b.top) + Math.min(a.bottom, b.bottom)) / 2 };
+  });
+  expect(at.meets, "the case: the two meet").toBe(true);
+  expect(await page.evaluate(({ x, y }) => {
+    const e = document.elementFromPoint(x, y)?.closest("g.badge, g.order-badge");
+    return e && `${e.classList.contains("badge") ? "badge" : "order-badge"} ${e.getAttribute("data-role")}`;
+  }, at)).toBe("badge route");
 });
 
 test("warning: the drawer closed with its count, g's halo amber, nothing in the error hue", async ({ page }) => {

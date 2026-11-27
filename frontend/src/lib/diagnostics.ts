@@ -5,7 +5,7 @@
 import type { BuildBody, Cycle, Diagnostic, Endpoint, FailureBody, Location, TracedMember, Wire } from "./descriptor";
 import type { Selection } from "./detail";
 import type { Lit } from "./focus";
-import { crossings, inPinId, outPinId, portId } from "./level";
+import { inPinId, outPinId, portId } from "./level";
 import type { Model } from "./model";
 import { faceKey, wireFaces, type Face } from "./resolve";
 import type { Tree } from "./tree";
@@ -117,7 +117,7 @@ export interface Overlay {
   ports: Map<string, Severity>;
   wires: Map<string, Severity>;
   chords: Chord[];
-  /** A closed child's port where the chain crosses into it (`crossings`), by port id, with the loop's index. */
+  /** A closed child the chain continues inside, with the loop's index. */
   continues: Map<string, { severity: Severity; index: number }>;
   /** A pin of the level's own the chain leaves the level through, off the root, with the loop's index. */
   leaves: Map<string, { severity: Severity; index: number }>;
@@ -131,8 +131,6 @@ interface LevelMarks {
   wires: string[];
   chords: { block: string; from: string; to: string }[];
   continues: string[];
-  /** The closed children's ports the chain crosses (`crossings`). */
-  crossed: string[];
   /** The level's own pins the chain runs to or from. */
   pins: string[];
 }
@@ -165,24 +163,20 @@ function wireMark(model: Model, w: Wire): { level: string; id: string } | undefi
 
 function marksOn(model: Model, level: string, d: Diagnostic): LevelMarks {
   const tree = model.tree!;
-  const out: LevelMarks = { blocks: [], ports: [], wires: [], chords: [], continues: [], crossed: [], pins: [] };
+  const out: LevelMarks = { blocks: [], ports: [], wires: [], chords: [], continues: [], pins: [] };
   const onLevel = (p: string) => p !== "" && tree.parent.get(p) === level;
   const closed = (p: string) => onLevel(p) && tree.byPath.get(p)?.class === "assembly";
   if (d.cycle) {
     out.blocks.push(...d.cycle.members.filter(onLevel));
-    const entries: string[] = [], exits: string[] = [];
     for (const h of chainOf(model, d.cycle)) {
       if (h.level !== level) continue;
       out.wires.push(h.wire);
       for (const p of [h.to.side === "in" ? h.to.path : undefined, h.from.side === "out" ? h.from.path : undefined]) {
         if (p !== undefined && closed(p) && !out.continues.includes(p)) out.continues.push(p);
       }
-      if (h.to.side === "in" && closed(h.to.path)) entries.push(portId(h.to.path, "in", h.to.port));
-      if (h.from.side === "out" && closed(h.from.path)) exits.push(portId(h.from.path, "out", h.from.port));
       if (h.from.path === level) out.pins.push(inPinId(h.from.port));
       if (h.to.path === level) out.pins.push(outPinId(h.to.port));
     }
-    out.crossed = [...crossings(entries, exits)];
     for (const x of d.cycle.dead) {
       if (onLevel(x.path)) out.chords.push({ block: x.path, from: portId(x.path, "in", x.input), to: portId(x.path, "out", x.output) });
     }
@@ -220,7 +214,7 @@ export function overlayOf(model: Model, level: string): Overlay {
     for (const p of m.ports) o.ports.set(p, worse(o.ports.get(p), s));
     for (const w of m.wires) o.wires.set(w, worse(o.wires.get(w), s));
     for (const c of m.chords) o.chords.push({ ...c, severity: s });
-    for (const [list, into] of [[m.crossed, o.continues], [level === "" ? [] : m.pins, o.leaves]] as const) {
+    for (const [list, into] of [[m.continues, o.continues], [level === "" ? [] : m.pins, o.leaves]] as const) {
       for (const c of list) {
         const was = into.get(c);
         if (!was || (was.severity === "warning" && s === "error")) into.set(c, { severity: s, index: d.index });

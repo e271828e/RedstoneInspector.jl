@@ -18,7 +18,7 @@
   // on every change. A block or a pin drags, its wires re-routed locally
   // (initial_design.md answer 12); `x`, `X` and the undo button put drags back.
   import { tick, untrack } from "svelte";
-  import type { Block, BlockSize, ChildBlock, InPin, Level, LevelEnd, LevelWire, OutPin } from "../lib/level";
+  import type { Block, BlockSize, ChildBlock, Level, LevelEnd, LevelWire } from "../lib/level";
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { orderBadge } from "../lib/analysis";
@@ -178,8 +178,7 @@
       const { block, side, name } = parsePortId(t.port);
       const box = g.boxes.get(block), p = shown!.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
       if (!at || !box || !p) return [];
-      const x = box.x + p.x + at.x, top = box.y + p.y + at.y;
-      return [{ port: t.port, text: shortType(t.type), wire: t.wires[0], x, y: top + LABEL_BASELINE, box: { x, y: top, width: at.width, height: at.height } }];
+      return [{ port: t.port, text: shortType(t.type), wire: t.wires[0], x: box.x + p.x + at.x, y: box.y + p.y + at.y + LABEL_BASELINE }];
     });
   });
   /** The drawn level's regions, and each keyed member's region path. */
@@ -293,12 +292,12 @@
     onview?.(v);
   }
 
-  /** Fits the level, dragged blocks and the overlay's pills included, leaving the legend's box and its inset clear. */
+  /** Fits the level, dragged blocks included, leaving the legend's box and its inset clear. */
   export function fit() {
     if (!shown) return;
     const g = shown.geometry;
     let x0 = 0, y0 = 0, x1 = g.width, y1 = g.height;
-    for (const b of [...g.boxes.values(), ...frames.values(), ...overlayBadges.map((q) => ({ ...q, width: q.w, height: BADGE_HEIGHT }))]) {
+    for (const b of [...g.boxes.values(), ...frames.values()]) {
       x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
       x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
     }
@@ -569,94 +568,54 @@
     const box = shown?.geometry.boxes.get(block), p = shown?.sizes.get(block)?.ports.find((q) => q.side === side && q.name === name);
     return box && p ? { x: box.x + p.x, y: box.y + p.y } : undefined;
   }
-  /** How far above a port's wire a route's or a loop's pill stands, its bottom edge clear of the route's casing. */
-  const PILL_LIFT = 4;
   /**
-   * The overlay's pills (visual_grammar.md answers 8 and 9). A node diagnostic's straddles its block's bottom edge at
-   * the right, its text cut with an ellipsis so it ends at the left inset, or short of the order badge while it shows;
-   * its title opens with the whole text. A loop's and a route's stand beside each port where the chain or the route crosses a closed child's
-   * edge (`crossed`) or, off the root, a pin's, above the wire and outside the block or pin: left of an input port,
-   * right of an output port, so a pin's stands past where its wire leaves it or short of where it arrives. The loop's
-   * is nearer the port where both stand. A pill that would meet a drawn type label, its own port's or the one under
-   * the port above, moves outward along its wire past the label's far end, unless the moved place would meet a
-   * block, a port square or another pill; then it stands unmoved.
+   * The overlay's pills (visual_grammar.md answers 8 and 9). On a child, one row on the bottom edge from the right
+   * inset leftward, `BADGE_GAP` apart: a node diagnostic's, a loop's, the route's. The fixed two never cover another
+   * mark, so the diagnostic's text is cut until both end at the left inset, or short of the order badge while it
+   * shows; the route's, which the reader turns on, stacks after them and may run over the order badge or past the
+   * corner. Off the root a pin's straddle its bottom edge at the inner end, the loop's nearest the corner: an input
+   * pin's from the bottom-right corner leftward, an output pin's from the bottom-left corner rightward.
    */
   const overlayBadges = $derived.by(() => {
-    type Pill = { block: string; port?: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
+    type Pill = { block: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
     const out: (Pill & { x: number; y: number; w: number })[] = [];
     if (!shown) return out;
-    const width = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
-    const atPorts = new Map<string, Pill[]>();
-    const add = (port: string, q: Omit<Pill, "block" | "port">) => {
-      const list = atPorts.get(port) ?? [];
-      list.push({ ...q, block: parsePortId(port).block, port });
-      atPorts.set(port, list);
-    };
-    /** A pin's one port: an input pin's on its east side, an output pin's on its west. */
-    const pinPort = (id: string) => {
-      const b = byId.get(id) as InPin | OutPin;
-      return portId(id, b.role === "in" ? "out" : "in", b.name);
-    };
-    for (const [port, c] of overlay?.continues ?? []) add(port, { role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c });
-    if (shown.level.path !== "") {
-      for (const [pin, c] of overlay?.leaves ?? []) add(pinPort(pin), { role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
-    }
-    for (const port of routeDrawn?.crossed ?? []) add(port, { role: "route", text: "route", title: "The route continues inside; open it to follow it." });
-    if (shown.level.path !== "") {
-      for (const pin of routeDrawn?.pins ?? []) add(pinPort(pin), { role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
-    }
-    // the diagnostics' pills, which never move, then each port's, a move kept off every block, port square and pill
-    const diagnostics: typeof out = [];
     for (const b of shown.level.blocks) {
       const box = shown.geometry.boxes.get(b.id);
-      const badge = overlay?.blocks.get(b.id)?.badge;
-      if (!box || !badge || b.role === "in" || b.role === "out") continue;
-      // from the right inset to the left one, or to the order badge while it shows, the text cut to fit (answer 8)
-      const right = box.x + box.width - BADGE_INSET, order = orders.get(b.id);
-      const left = box.x + BADGE_INSET + (order === undefined ? 0 : pillWidth(order) + BADGE_GAP);
-      const text = cutPill(badge.text, right - left), w = width(text);
-      diagnostics.push({ block: b.id, role: "diagnostic", text, title: badge.title, severity: badge.severity, index: badge.index, x: right - w, y: box.y + box.height - BADGE_HEIGHT - BADGE_TOP, w });
-    }
-    const meets = (a: Rect, b: Rect) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
-    const pillRect = (q: { x: number; y: number; w: number }): Rect => ({ x: q.x, y: q.y, width: q.w, height: BADGE_HEIGHT });
-    const blocked: Rect[] = [...shown.geometry.boxes.values(), ...diagnostics.map(pillRect)];
-    for (const b of shown.level.blocks) {
-      const box = shown.geometry.boxes.get(b.id);
-      for (const p of box ? shown.sizes.get(b.id)?.ports ?? [] : []) blocked.push({ x: box!.x + p.x - PORT / 2, y: box!.y + p.y - PORT / 2, width: PORT, height: PORT });
-    }
-    // every port's pills stacked unmoved, outward from the port, the loop's nearest; a move elsewhere keeps clear of them
-    const stacks = [...atPorts].flatMap(([port, pills]) => {
-      const at = portAt(port);
-      if (!at) return [];
-      const east = parsePortId(port).side === "out", y = at.y - PILL_LIFT - BADGE_HEIGHT;
-      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
-      const unmoved = pills.map((q) => {
-        const w = width(q.text), x = east ? edge : edge - w;
-        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
-        return { x, y, w };
-      });
-      return [{ pills, at, east, y, unmoved }];
-    });
-    // in the order the ports were gathered, each pill moves outward past the labels it meets, unless the moved place
-    // meets a block, a port square, a pill already placed or another port's unmoved stack
-    for (const [k, { pills, at, east, y }] of stacks.entries()) {
-      const others = stacks.slice(k + 1).flatMap((t) => t.unmoved.map(pillRect));
-      let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
-      for (const q of pills) {
-        const w = width(q.text), from = edge;
-        for (let moved = true; moved; ) {
-          const x = east ? edge : edge - w;
-          const hit = typeLabels.find(({ box: l }) => l.x < x + w && x < l.x + l.width && l.y < y + BADGE_HEIGHT && y < l.y + l.height);
-          moved = !!hit;
-          if (hit) edge = east ? hit.box.x + hit.box.width + BADGE_GAP : hit.box.x - BADGE_GAP;
+      if (!box) continue;
+      const y = box.y + box.height - BADGE_HEIGHT - BADGE_TOP;
+      const pills: Pill[] = [];
+      if (b.role === "in" || b.role === "out") {
+        if (shown.level.path === "") continue;
+        const c = overlay?.leaves.get(b.id);
+        if (c) pills.push({ block: b.id, role: "continues", text: "loop", title: "The loop leaves this level here; go to the parent to follow the chain.", ...c });
+        if (routeDrawn?.pins.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route leaves this level here; go to the parent to follow it." });
+        let left = box.x + BADGE_INSET, right = box.x + box.width - BADGE_INSET;
+        for (const q of pills) {
+          const w = pillWidth(q.text);
+          out.push({ ...q, x: b.role === "in" ? right - w : left, y, w });
+          left += w + BADGE_GAP;
+          right -= w + BADGE_GAP;
         }
-        const r = pillRect({ x: east ? edge : edge - w, y, w });
-        if (edge !== from && [...blocked, ...out.map(pillRect), ...others].some((b) => meets(r, b))) edge = from;
-        out.push({ ...q, x: east ? edge : edge - w, y, w });
-        edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
+        continue;
+      }
+      const badge = overlay?.blocks.get(b.id)?.badge;
+      const c = overlay?.continues.get(b.id);
+      const loop: Pill | undefined = c && { block: b.id, role: "continues", text: "loop", title: "The loop continues inside; open it to follow the chain.", ...c };
+      if (badge) {
+        const order = orders.get(b.id);
+        const room = box.width - 2 * BADGE_INSET - (order === undefined ? 0 : pillWidth(order) + BADGE_GAP) - (loop ? pillWidth(loop.text) + BADGE_GAP : 0);
+        pills.push({ block: b.id, role: "diagnostic", text: cutPill(badge.text, room), title: badge.title, severity: badge.severity, index: badge.index });
+      }
+      if (loop) pills.push(loop);
+      if (routeDrawn?.entered.has(b.id)) pills.push({ block: b.id, role: "route", text: "route", title: "The route continues inside; open it to follow it." });
+      let right = box.x + box.width - BADGE_INSET;
+      for (const q of pills) {
+        const w = pillWidth(q.text);
+        out.push({ ...q, x: right - w, y, w });
+        right -= w + BADGE_GAP;
       }
     }
-    out.push(...diagnostics);
     return out;
   });
   /** A diagnostic's badge focuses it; a continuation's or a route's on a child opens the child, either on a pin the parent. */
@@ -901,16 +860,6 @@
                   <text class="events" x={x + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{events.text}</text>
                 </g>
               {/if}
-              {#if orders.has(b.id)}
-                {@const text = orders.get(b.id)!}
-                {@const w = pillWidth(text)}
-                {@const top = box.height - BADGE_HEIGHT - BADGE_TOP}
-                <g class="order-badge" data-id={b.id}>
-                  <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
-                  <rect x={BADGE_INSET} y={top} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
-                  <text class="order" x={BADGE_INSET + BADGE_PAD} y={top + 9} style="font:{BADGE_FONT}">{text}</text>
-                </g>
-              {/if}
               {#each size.ports as p (p.side + p.name)}
                 {@const id = portId(b.id, p.side, p.name)}
                 {@const west = p.side === "in"}
@@ -971,12 +920,41 @@
               <path class="cross" data-id={c.block} data-severity={c.severity} d="M{mx - CROSS},{my - CROSS} L{mx + CROSS},{my + CROSS} M{mx - CROSS},{my + CROSS} L{mx + CROSS},{my - CROSS}" />
             {/if}
           {/each}
-          {#each overlayBadges as q ((q.port ?? q.block) + q.role)}
-            <g class="badge" data-id={q.block} data-port={q.port} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
-              <title>{q.title}</title>
-              <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
-              <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>
-            </g>
+          {#each overlayBadges.filter((q) => q.role !== "route") as q (q.block + q.role)}
+            {@render pill(q)}
+          {/each}
+        </g>
+      {/if}
+      {#if orders.size}
+        <!-- above the overlay's fixed pills, which end short of them; dimmed with their blocks (workspace.md answer 7) -->
+        <g class="order-badges">
+          {#each shown.level.blocks as b (b.id)}
+            {@const text = orders.get(b.id)}
+            {@const box = g.boxes.get(b.id)}
+            {#if text !== undefined && box}
+              {@const x = box.x + BADGE_INSET}
+              {@const y = box.y + box.height - BADGE_HEIGHT - BADGE_TOP}
+              <g
+                class={["order-badge", { lit: !!lit?.blocks.has(b.id), "search-hit": !!hits?.blocks.has(b.id), "search-under": !!hits?.under.has(b.id) }]}
+                data-id={b.id} role="none"
+                onclick={() => select({ kind: "block", id: b.id })}
+                ondblclick={() => dblclick(b)}
+                onpointerenter={() => (hovered = { kind: "block", id: b.id })}
+                onpointerleave={() => (hovered = undefined)}
+              >
+                <title>{b.role === "primitive" ? `Stage 2 position ${text} in the execution order` : `Stage 2 positions ${text} in the execution order: the primitives inside`}</title>
+                <rect x={x} y={y} width={pillWidth(text)} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                <text class="order" x={x + BADGE_PAD} y={y + 9} style="font:{BADGE_FONT}">{text}</text>
+              </g>
+            {/if}
+          {/each}
+        </g>
+      {/if}
+      {#if routeDrawn && shown.level.path === path}
+        <!-- last: the route's pills, turned on by a trace, may run over an order badge (visual_grammar.md answer 9) -->
+        <g class="route-pills">
+          {#each overlayBadges.filter((q) => q.role === "route") as q (q.block + q.role)}
+            {@render pill(q)}
           {/each}
         </g>
       {/if}
@@ -1028,6 +1006,14 @@
     </div>
   {/if}
 </div>
+
+{#snippet pill(q: (typeof overlayBadges)[number])}
+  <g class="badge" data-id={q.block} data-role={q.role} data-severity={q.severity} role="none" onclick={() => badgeClick(q)}>
+    <title>{q.title}</title>
+    <rect x={q.x} y={q.y} width={q.w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+    <text class="badge-text" x={q.x + BADGE_PAD} y={q.y + 9} style="font:{BADGE_FONT}">{q.text}</text>
+  </g>
+{/snippet}
 
 {#snippet port(block: string, id: string, x: number, y: number, name: string, open: boolean)}
   {@const c = portClass(id)}
@@ -1081,6 +1067,7 @@
   .badge-pill rect { fill: var(--bg); stroke-width: 1; }
   /* The order badge (workspace.md answer 7): the text color on the background; it carries its title, a click on it
      selecting the block. */
+  .order-badge { cursor: pointer; }
   .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
   /* The events pill (visual_grammar.md answer 11): the text color on the background in both modes, no click of its own. */
   .events-pill rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
@@ -1132,14 +1119,16 @@
   .port-halo.dashed { fill: none; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: var(--dash); opacity: 1; }
   .searching :is(.wire, .wire-core, .junction, .type-label) { opacity: var(--dim); }
   .searching .block:not(.search-hit):not(.search-under) > :not(.halo):not(.port-halo):not(.port.search-hit) { opacity: var(--dim); }
+  .searching .order-badge:not(.search-hit):not(.search-under) { opacity: var(--dim); }
   /* A focus, a legend line's (answer 6 as amended), a diagnostic's or a route's (answer 9): the same dimming, what it lights kept. */
   :is(.legend-focus, .diagnostic-focus, .route-focus) :is(.wire, .wire-core, .junction, .type-label):not(.lit) { opacity: var(--dim); }
   :is(.legend-focus, .diagnostic-focus, .route-focus) .block:not(.lit) > :not(.halo):not(.port-halo):not(.port.lit) { opacity: var(--dim); }
+  :is(.legend-focus, .diagnostic-focus, .route-focus) .order-badge:not(.lit) { opacity: var(--dim); }
 
   /* The diagnostics overlay (answer 8): the error hue, amber for a warning, above everything. */
   .overlay [data-severity="error"] { --hue: var(--error); }
   .overlay [data-severity="warning"] { --hue: var(--warning); }
-  .overlay [data-role="route"] { --hue: var(--highlight); }
+  .route-pills .badge { --hue: var(--highlight); }
   .mark-wire { fill: none; stroke: var(--hue); stroke-width: 3; stroke-linejoin: round; pointer-events: none; }
   .mark-halo { fill: none; stroke: var(--hue); stroke-width: 5; opacity: 0.5; pointer-events: none; }
   .mark-port { fill: none; stroke: var(--hue); stroke-width: 1.5; pointer-events: none; }
