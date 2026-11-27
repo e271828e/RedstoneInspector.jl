@@ -170,3 +170,128 @@ prototype reports where one proves wrong.
   `increment-10b`, with this file as the record and no brief. One cold
   review follows, then a fixer and the delta check. Nothing is merged or
   pushed. The roadmap takes the landed facts after the user's merge.
+
+## The readings
+
+The prototype reported on 2026-11-27 with nine readings. The coordinator
+ruled on each with the user away.
+
+- **R1, taken. The ring around a group** (C8) is an outline on the
+  component's `tbody`, set while its button holds the focus, and the
+  button's own ring is off there. The table stays a table. The probe
+  drew four variants in Chromium and Firefox and read the pixels 2 px
+  outside the group on each side: an outline on the `tbody` under
+  collapsed and under separate borders, a positioned `::after`, and a
+  grid with subgrid groups. All four painted on all four sides
+  (`probes/ring/`). *Rejected:* the subgrid, which turns the table into
+  `div`s for nothing.
+- **R2, taken. A group's click reuses the timing tab's `component` row
+  kind** in `rowTarget`. A new row kind would select the same thing.
+- **R3, taken. One head list for both tabs**, `HeadList.svelte`, moved
+  out of `Timing.svelte`. A copy in the events tab would be a second
+  mechanism for one thing.
+- **R4, taken. The rate pill's text moved to `rates.ts`** as `ratePill`,
+  from the canvas's `badgeOf`. `size.ts` needs that text in either mode
+  for the reserved width, and one derivation serves both.
+- **R5, taken. The tolerance reads `2.5e-5 of Δt_frame` in one code
+  span.** For the user's look: the unit could stand as prose after the
+  number.
+- **R6, turned. The `localized` head takes a hover title** in the tab
+  and in the pane, saying what `yes` and `no` mean. The prototype gave it
+  none, reading ruling 13 as the help page's alone. Every other head and
+  fact label on the page carries one (`workspace.md` answer 4), and the
+  help page still defines the word once. It goes to the fixer.
+- **R7, taken. A deployment with no events shows no head**, since no
+  item's condition holds, and the empty sentence alone.
+- **R8, taken. The `events` fact stands after `wires`** and before
+  `member`.
+- **R9, taken. The new fixture sets the three parameters off their
+  defaults**, 2, `2.5e-5` and 16, so `approach_deployment` shows the
+  defaults and the new one a mantissa.
+
+Two things the prototype noticed also go to the fixer or the close:
+
+- `j` and `k` scroll a group's button into view and not the group, so
+  its last rows can stay below the fold. The fixer scrolls the group.
+- The glossary gains "events pill", and `design/rules.md` the trap on
+  `openPath` and a keyed container's field. Both are in the closing docs
+  commit.
+
+## The shape built
+
+- `scripts/synthetic.jl`, `scripts/fixtures.jl`: the model `events` and
+  its one fixture, `events_deployment`, 30,407 bytes. `Bouncer` has one
+  localized event. `Thermostat` has two localized and one non-localized.
+  The root holds the keyed `pods/a` and `pods/b`, each a ball and a
+  discrete hold, `nest` with a non-localized `Step` and a nested `deep`,
+  and `heater`. The counts beneath are 7 events on 5 primitives at the
+  root, 1 on 1 in each pod, 2 on 2 in `nest` and 1 on 1 in `nest/deep`.
+- `src/lib/events.ts`, new and pure: the section, a node's events, the
+  count beneath, the tab's groups, the pill's text and title, the head's
+  items. `rates.ts` gains `ratePill`.
+- `src/canvas/size.ts`: `topPills`, `topPillsWidth` and the reserved
+  width in `sizeBlock`. `Canvas.svelte` draws `g.events-pill`.
+- `src/lib/detail.ts`, `Detail.svelte`: the EVENTS section and the
+  `events` fact. `session.svelte.ts`: the fifth tab and the section open
+  at first.
+- `src/frame/tabs/Events.svelte` and `HeadList.svelte`, new.
+  `Drawer.svelte`, `Timing.svelte`.
+- `help.ts`, `Help.svelte`: the sixteenth term and its sample.
+- `frontend/MAP.md`, at 675 lines.
+- Checks: `events.test.ts` and `e2e/events.spec.ts`, new. `size`,
+  `rates`, `session`, `detail` and `fixtures` tests, and the `help`,
+  `cursor` and `draw` specs, follow. `e2e/fixtures.ts`'s `openPath` now
+  passes a keyed container's field, which has no block.
+
+## Measurements
+
+The prototype's, on its uncommitted tree over `8e4c2c2`.
+
+| check | before | after |
+|---|---|---|
+| Julia suite | 131 | 131 |
+| unit tests | 641 in 31 files | 792 in 32 files |
+| the checker | clean | clean |
+| browser checks, both projects | 700 passed, 4 skipped | 740 passed, 4 skipped |
+| fixtures | 21, 1,379,218 bytes | 22, 1,409,625 bytes |
+| `frontend/MAP.md` | 660 lines | 675 lines |
+
+- No other fixture and no schema file changed on regeneration.
+- **No committed layout moved** (C2). A bundle built from the tip and the
+  increment's were compared over every level of the 21 committed
+  fixtures, 60 levels in each browser: every block's place and size and
+  every wire's path are identical (`probes/layout/`).
+- The pills' widths, the same in both browsers: `1 event` 40, `2 events`
+  to `4 events` 46, `1 clock` 39. Every committed block that carries the
+  pill is wider than it needs, the tightest `library`'s `step` and
+  `relay` at 60 against 48 and 54.
+- In the new fixture the reserved width sets `pods/a` and `pods/b`: 89
+  wide against a need of 89.
+
+## What the tests pin
+
+42 mutants, all red, by `tools/mutants_events.py`, run with a worktree's
+`frontend/` as its argument. One survived the first run, a count beneath
+that matched a path prefix across a segment, and an inline test now kills
+it. The rules on the section, the counts, the pill's text and title, the
+head's conditions and the reserved width are unit-tested, tabled over
+every fixture where a rule holds for all, with the root path on an inline
+copy of `primitive`. The rules on the DOM are in `events.spec.ts`: the
+pill's place in both modes, the two pills apart on the pods with nothing
+moving between modes, the section's and the fact's order, the tab's
+place and count, the ring, one stop per component, Enter and a click on
+a later row, the empty states, the head, the 240 px pane and the help
+term. `tools/fixture_facts.py` and `tools/draw_oracle.py` are the
+prototype's oracles over the fixtures.
+
+## The cold review's charter
+
+An independent agent reads the answers the session amended, then the
+page and the code. It runs the gate and writes its own oracle of the
+counts from the records. It drives what the builder did not: a push from
+a model with events to one without and back with the tab open and a
+group focused, the tab under a failure and a structureless failure, the
+pill under a search, a legend focus, a route and a diagnostic, a dragged
+pod in both modes, the narrow pane and a narrow drawer, and long event
+names. It reads the screenshots against the answers. It reverts each
+rule alone to show a check goes red.
