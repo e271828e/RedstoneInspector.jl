@@ -8,7 +8,7 @@
 // beside the port it crosses (the look pass of 2026-11-27, 1.4); a long diagnostic pill
 // cut to its room, its title opening with the whole text (6.1).
 import { test, type Page } from "@playwright/test";
-import { drop, effectiveOpacity, expect, fixtureText, openPath, pillByPort, press, readyLevel, shot } from "./fixtures";
+import { drop, effectiveOpacity, expect, fixtureText, openPath, PILL_LIFT, pillByPort, press, readyLevel, shot } from "./fixtures";
 
 const svg = (page: Page) => page.locator("svg.canvas");
 const drawer = (page: Page) => page.locator("section.drawer");
@@ -89,6 +89,7 @@ test("failure_nested: inside ctl the pins the chain leaves through take the loop
   const rule = async (port: string) => {
     const q = await pillByPort(page.locator(`g.badge[data-role="continues"][data-port="${port}"]`));
     expect([q.above, q.outside, q.near, q.label], port).toEqual([true, true, true, false]);
+    expect(q.lift, `${port} PILL_LIFT above the wire`).toBeCloseTo(PILL_LIFT, 1);
   };
   await press(page, "y");
   await rule("ctl|in|y");
@@ -105,6 +106,21 @@ test("failure_nested: inside ctl the pins the chain leaves through take the loop
   await expect(page.locator('g.badge[data-id="ctl"][data-role="continues"]')).toHaveCount(1);
   // the root's pins take none
   await expect(page.locator('g.badge[data-id^="⟨"]')).toHaveCount(0);
+});
+
+test("failure_nested's root, plant's power traced: at ctl's input y the loop's pill stands nearer the port than the route's, both PILL_LIFT above the wire, the labels off and on (visual_grammar.md answer 9)", async ({ page }) => {
+  await drop(page, "failure_nested");
+  await page.locator('rect.port[data-port="plant|out|power"]').dispatchEvent("click");
+  await press(page, "t");
+  const pill = (role: string) => page.locator(`g.overlay g.badge[data-role="${role}"][data-port="ctl|in|y"]`);
+  for (const labels of [false, true]) {
+    if (labels) await press(page, "y");
+    const [loop, route] = await Promise.all(["continues", "route"].map((role) => pill(role).locator("rect").evaluate((r) => r.getBoundingClientRect().toJSON() as DOMRect)));
+    const port = await page.locator('rect.port[data-port="ctl|in|y"]').evaluate((r) => r.getBoundingClientRect().left);
+    expect(loop.right, `labels ${labels}: the loop's pill left of the port`).toBeLessThanOrEqual(port);
+    expect(route.right, `labels ${labels}: the route's pill left of the loop's`).toBeLessThanOrEqual(loop.left);
+    for (const role of ["continues", "route"]) expect((await pillByPort(pill(role))).lift, `labels ${labels}: ${role}`).toBeCloseTo(PILL_LIFT, 1);
+  }
 });
 
 test("failure_dead: the dead hop's dashed chord across m from g's square to F's, its cross at the middle, 8 units across (the look pass, 7.1)", async ({ page }) => {

@@ -71,6 +71,12 @@ test("before a drop: the landing's link opens five sections over the inert landi
   await expect(h.locator('li[data-term="component"] .term')).toHaveText("component");
   // the tag's outline is the canvas's own
   await expect(h.locator('svg.sample[data-sample="tag"] path')).toHaveAttribute("d", TAG_D);
+  // the dead hop's cross is the canvas's, four units each way (the look pass, 7.1)
+  const cross = await h.locator('svg.sample[data-sample="chord"] path.cross').evaluate((p: SVGPathElement) => {
+    const b = p.getBBox();
+    return { width: b.width, height: b.height };
+  });
+  expect([cross.width, cross.height]).toEqual([8, 8]);
   // the badge's clock pill straddles the assembly's top edge at its left, as the canvas draws it
   const pill = await h.locator('svg.sample[data-sample="badge"]').evaluate((svg) => {
     const [box, pill] = [svg.querySelector("rect")!, svg.querySelector("rect.pill")!].map((r) => (r as SVGRectElement).getBBox());

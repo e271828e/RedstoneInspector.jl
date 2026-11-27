@@ -164,6 +164,31 @@ async function press(page: Page, id: string): Promise<{ x: number; y: number }> 
   return at;
 }
 
+test("closed_loop: plant dragged, the labels on, a backward wire out of actuators leaves by a stub past its label; y turns the labels off and the stub drops to 12, y again brings it back, and a toggle on another level reaches the held layout (the look pass's review, F3)", async ({ page }) => {
+  await drop(page, "closed_loop");
+  await pressKey(page, "y");
+  await dragBlock(page, "plant", 0, 60);
+  /** The first segment's length of plant's δt wire, from actuators' port, in world units. */
+  const stub = async () => {
+    const d = (await wires(page))["plant|in|δt"];
+    expect(points(d), "the wire runs backward").toBe(6);
+    const [a, b] = d.split(/[ML]/).filter((t) => t.trim()).map((t) => Number(t.split(",")[0]));
+    return b - a;
+  };
+  const long = await stub();
+  expect(long).toBeGreaterThan(12);
+  await pressKey(page, "y");
+  expect(await stub()).toBeCloseTo(12, 6);
+  await pressKey(page, "y");
+  expect(await stub()).toBeCloseTo(long, 6);
+  await page.locator('g.block[data-id="actuators"]').dblclick();
+  await page.locator(readyLevel("actuators")).waitFor();
+  await pressKey(page, "y");
+  await pressKey(page, "Backspace");
+  await page.locator(readyLevel("")).waitFor();
+  expect(await stub()).toBeCloseTo(12, 6);
+});
+
 test("closed_loop: Shift keeps a drag to its axis of greater travel, pressed at the start or midway, and releasing it frees the move", async ({ page }) => {
   await drop(page, "closed_loop");
   const scale = await scaleOf(page);

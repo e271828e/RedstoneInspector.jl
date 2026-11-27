@@ -205,6 +205,15 @@
     return out;
   });
 
+  /**
+   * The wires touching each dragged block re-routed, each producer's stub clearing the type label drawn now, so a
+   * drawn route never keeps a stub for a label no longer drawn (the look pass's review, F3).
+   */
+  function rerouteDragged(g: Geometry, level: Level, sizes: Map<string, BlockSize>, ids: Iterable<string>): Geometry {
+    for (const id of ids) g = { ...g, ...rerouteTouching(g, level, sizes, id, labels) };
+    return g;
+  }
+
   /** ELK's fresh output with a stale layout's dragged blocks put back at their dragged places. */
   function replace(laid: Geometry, level: Level, sizes: Map<string, BlockSize>, old: LevelLayout) {
     let g = laid;
@@ -213,10 +222,9 @@
       const was = old.geometry.boxes.get(id), now = g.boxes.get(id);
       if (!was || !now) continue;
       g = { ...g, boxes: new Map(g.boxes).set(id, { ...now, x: was.x, y: was.y }) };
-      g = { ...g, ...rerouteTouching(g, level, sizes, id) };
       kept.add(id);
     }
-    return { geometry: g, dragged: kept };
+    return { geometry: rerouteDragged(g, level, sizes, kept), dragged: kept };
   }
 
   function draw(level: Level, sizes: Map<string, BlockSize>, geometry: Geometry, d: ReadonlySet<string>, v: View | undefined) {
@@ -264,7 +272,7 @@
     hovered = undefined;
     blockDrag = undefined;
     menu = undefined;
-    if (saved && !saved.stale) untrack(() => draw(level, sizes, saved.geometry, saved.dragged, v));
+    if (saved && !saved.stale) untrack(() => draw(level, sizes, rerouteDragged(saved.geometry, level, sizes, saved.dragged), saved.dragged, v));
     else relayout(level, sizes, saved, v);
     return () => { run++; };
   });
@@ -429,8 +437,19 @@
     const s = shown!;
     const box = { ...d.box, x: d.box.x + dx / view.scale, y: d.box.y + dy / view.scale };
     const g = { ...s.geometry, boxes: new Map(s.geometry.boxes).set(d.block, box) };
-    shown = { ...s, geometry: { ...g, ...rerouteTouching(g, s.level, s.sizes, d.block) } };
+    shown = { ...s, geometry: { ...g, ...rerouteTouching(g, s.level, s.sizes, d.block, labels) } };
   }
+  // A toggle of the labels re-routes the drawn level's dragged wires; a level being laid out routes them itself.
+  let routedLabels = untrack(() => labels);
+  $effect(() => {
+    if (labels === routedLabels) return;
+    routedLabels = labels;
+    untrack(() => {
+      if (!ready || !shown || shown.level.path !== path || !dragged.size || blockDrag?.moved) return;
+      shown = { ...shown, geometry: rerouteDragged(shown.geometry, shown.level, shown.sizes, dragged) };
+      onlayout?.(shown.geometry, dragged);
+    });
+  });
   /** Shift pressed or released during a drag re-applies the pointer's last place, so the constraint snaps on or off. */
   function shiftKey(e: KeyboardEvent) {
     if (e.key !== "Shift" || !blockDrag?.moved) return;
@@ -559,7 +578,8 @@
    * edge (`crossed`) or, off the root, a pin's, above the wire and outside the block or pin: left of an input port,
    * right of an output port, so a pin's stands past where its wire leaves it or short of where it arrives. The loop's
    * is nearer the port where both stand. A pill that would meet a drawn type label, its own port's or the one under
-   * the port above, moves outward along its wire past the label's far end.
+   * the port above, moves outward along its wire past the label's far end, within the half of the wire's end segment
+   * nearest the port; where no place in that half clears the label, it stands unmoved.
    */
   const overlayBadges = $derived.by(() => {
     type Pill = { block: string; port?: string; role: "diagnostic" | "continues" | "route"; text: string; title: string; severity?: Severity; index?: number };
@@ -588,17 +608,24 @@
     for (const [port, pills] of atPorts) {
       const at = portAt(port);
       if (!at) continue;
-      const east = parsePortId(port).side === "out";
+      const { block, side, name } = parsePortId(port);
+      const east = side === "out";
       let edge = east ? at.x + PORT / 2 + BADGE_GAP : at.x - PORT / 2 - BADGE_GAP;
       const y = at.y - PILL_LIFT - BADGE_HEIGHT;
+      // a move stays within the half of the end segment nearest the port, the shortest of an output's wires
+      const ends = shown.level.wires.filter((w) => east ? w.from.block === block && w.from.port === name : w.to.block === block && w.to.port === name)
+        .map((w) => shown!.geometry.routes.get(w.id)!)
+        .map((r) => Math.abs(east ? r[1].x - r[0].x : r.at(-1)!.x - r.at(-2)!.x));
+      const reach = Math.min(...ends) / 2;
       for (const q of pills) {
-        const w = width(q.text);
+        const w = width(q.text), unmoved = edge;
         for (let moved = true; moved; ) {
           const x = east ? edge : edge - w;
           const hit = typeLabels.find(({ box: l }) => l.x < x + w && x < l.x + l.width && l.y < y + BADGE_HEIGHT && y < l.y + l.height);
           moved = !!hit;
           if (hit) edge = east ? hit.box.x + hit.box.width + BADGE_GAP : hit.box.x - BADGE_GAP;
         }
+        if (edge !== unmoved && (east ? edge + w - at.x : at.x - (edge - w)) > reach) edge = unmoved;
         out.push({ ...q, x: east ? edge : edge - w, y, w });
         edge += east ? w + BADGE_GAP : -(w + BADGE_GAP);
       }

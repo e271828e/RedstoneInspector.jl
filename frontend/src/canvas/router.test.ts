@@ -23,8 +23,14 @@ describe("orthoRoute", () => {
     expect(back[4]).toEqual({ x: -12, y: 50 });
     // forward, the midpoint nearer the producer than its stub moves out to the stub
     expect(orthoRoute({ x: 0, y: 10 }, { x: 60, y: 50 }, undefined, 40)).toEqual([{ x: 0, y: 10 }, { x: 40, y: 10 }, { x: 40, y: 50 }, { x: 60, y: 50 }]);
-    // too short for both stubs, the route runs backward
-    expect(orthoRoute({ x: 0, y: 10 }, { x: 50, y: 50 }, 80, 40)).toHaveLength(6);
+  });
+
+  it("runs forward from a gap of 24 whatever the stub, turning toward the consumer to clear the stub where the gap allows and never nearer the consumer than 12; below 24 backward by the whole stub (the look pass's review, F2)", () => {
+    expect(orthoRoute({ x: 0, y: 10 }, { x: 50, y: 50 }, 80, 40)).toEqual([{ x: 0, y: 10 }, { x: 38, y: 10 }, { x: 38, y: 50 }, { x: 50, y: 50 }]);
+    expect(orthoRoute({ x: 0, y: 10 }, { x: 24, y: 50 }, 80, 40)).toEqual([{ x: 0, y: 10 }, { x: 12, y: 10 }, { x: 12, y: 50 }, { x: 24, y: 50 }]);
+    const back = orthoRoute({ x: 0, y: 10 }, { x: 23, y: 50 }, 80, 40);
+    expect(back).toHaveLength(6);
+    expect(back[1]).toEqual({ x: 40, y: 10 });
   });
 
   it("takes a producer's stub past its type label's far end by 4, 12 at least and 12 with no label (the look pass, 1.3)", () => {
@@ -54,14 +60,15 @@ describe("rerouteTouching", () => {
     expect(before.some((id) => touching.has(id)), "a plant wire with junctions").toBe(true);
     expect(before.some((id) => !touching.has(id)), "another wire with junctions").toBe(true);
     const box = g.boxes.get("plant")!;
-    const { junctions } = rerouteTouching({ ...g, boxes: new Map(g.boxes).set("plant", { ...box, y: box.y + 200 }) }, l, sizes, "plant");
+    const { junctions } = rerouteTouching({ ...g, boxes: new Map(g.boxes).set("plant", { ...box, y: box.y + 200 }) }, l, sizes, "plant", false);
     for (const id of before) {
       if (touching.has(id)) expect(junctions.has(id), id).toBe(false);
       else expect(junctions.get(id), id).toBe(g.junctions.get(id));
     }
   });
 
-  it("on closed_loop's root a backward wire out of actuators, plant dragged left, leaves by a stub past its type label and enters plant by 12 (the look pass, 1.3)", async () => {
+  /** closed_loop's root laid out with a `Float64` label on the actuators' port feeding plant, plant moved to `x`. */
+  async function plantMoved(x: (actuators: { x: number; width: number }) => number) {
     const m = fixtureModel("closed_loop");
     const l = levelOf(m.tree!, m.resolution!, "");
     const sizes = flatSizes(l);
@@ -69,14 +76,36 @@ describe("rerouteTouching", () => {
     const port = `actuators|out|${wire.from.port}`;
     const g = await layoutLevel(l, sizes, [], new Map([[port, { text: "Float64", width: 30, height: 11 }]]));
     const label = g.labels.get(port)!;
-    expect(label, "the layout keeps the label's box").toBeDefined();
     const box = g.boxes.get("plant")!, act = g.boxes.get("actuators")!;
-    const moved = { ...g, boxes: new Map(g.boxes).set("plant", { ...box, x: act.x - 200 }) };
-    const r = rerouteTouching(moved, l, sizes, "plant").routes.get(wire.id)!;
+    const moved = { ...g, boxes: new Map(g.boxes).set("plant", { ...box, x: x(act) }) };
+    return { label, route: (labels: boolean) => rerouteTouching(moved, l, sizes, "plant", labels).routes.get(wire.id)! };
+  }
+
+  it("on closed_loop's root a backward wire out of actuators, plant dragged left, leaves by a stub past its drawn type label and enters plant by 12 (the look pass, 1.3)", async () => {
+    const { label, route } = await plantMoved((act) => act.x - 200);
+    expect(label, "the layout keeps the label's box").toBeDefined();
+    const r = route(true);
     expect(r, "the wire runs backward").toHaveLength(6);
     expect(r[1].x - r[0].x).toBe(Math.max(STUB, Math.max(0, label.x) + label.width + 4));
     expect(r[1].x - r[0].x).toBeGreaterThan(STUB);
     expect(r[5].x - r[4].x).toBe(STUB);
+  });
+
+  it("on closed_loop's root the same backward wire leaves by 12 where no label is drawn (the look pass's review, F3)", async () => {
+    const r = (await plantMoved((act) => act.x - 200)).route(false);
+    expect(r).toHaveLength(6);
+    expect(r[1].x - r[0].x).toBe(STUB);
+  });
+
+  it("on closed_loop's root, plant dragged 30 units right of actuators, the wire runs forward in four points, turning 12 short of plant, the label drawn or not (the look pass's review, F2)", async () => {
+    const { route } = await plantMoved((act) => act.x + act.width + 30);
+    for (const labels of [true, false]) {
+      const r = route(labels);
+      expect(r, `labels ${labels}`).toHaveLength(4);
+      expect(r[3].x - r[0].x).toBe(30);
+      expect(r[1].x).toBe(r[2].x);
+      expect(r[3].x - r[2].x).toBe(labels ? STUB : 15);
+    }
   });
 
   it("on descent's root re-routes plant's three wires and keeps gear's wire to stop", async () => {
@@ -92,7 +121,7 @@ describe("rerouteTouching", () => {
     const g = await layoutLevel(l, sizes);
     const box = g.boxes.get("plant")!;
     const moved = { ...g, boxes: new Map(g.boxes).set("plant", { ...box, y: box.y + 200 }) };
-    const { routes } = rerouteTouching(moved, l, sizes, "plant");
+    const { routes } = rerouteTouching(moved, l, sizes, "plant", false);
     const touching = l.wires.filter((w) => w.from.block === "plant" || w.to.block === "plant").map((w) => w.id);
     expect(touching.sort()).toEqual(["gear|in|h", "plant|in|δe", "plant|in|δt"].sort());
     for (const id of touching) expect(routes.get(id), id).not.toEqual(g.routes.get(id));

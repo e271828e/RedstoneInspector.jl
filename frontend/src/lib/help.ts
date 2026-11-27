@@ -31,7 +31,7 @@ export const TERMS: Term[] = [
   },
   {
     key: "badge", term: "badge", sample: "badge",
-    line: "A small mark carrying a fact, on a component's edge or beside a port: a diagnostic, a loop or a route crossing into a closed child or through a pin, the clocks inside an assembly, a position in the execution order.",
+    line: "A small mark carrying a fact, on a component's edge or beside a port: a diagnostic, a loop or a route entering or leaving a closed child or crossing a pin, the clocks inside an assembly, a position in the execution order.",
   },
   { key: "casing", term: "casing", sample: "casing", line: "The highlight of a line: a wider translucent band under a wire in the highlight hue." },
   {

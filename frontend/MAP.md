@@ -46,7 +46,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
 | `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `cutPill`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
 | `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
-| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `STUB`, `producerStub`, `rerouteTouching` for a dragged block's wires, dropping their junction points |
+| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `STUB`, `producerStub`, `rerouteTouching` for a dragged block's wires, dropping their junction points, given whether the labels are drawn |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (the overlay's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text; `tagD`, a root tag's outline, the canvas's and the help page's |
 | `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
@@ -65,7 +65,7 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/frame/Landing.svelte` | the privacy statement (`PRIVACY`), the open control, the drop hint, the help link, a refusal |
 | `src/frame/Help.svelte` | the help page, over the shell's `div.under`: the five sections over `help.ts`, the timing notation's table and law, the lead, the legend's sixteen static SVG samples in the canvas's shapes and the palette's colors, the about section's versions from the defines; scrolls on its own, focused on mount |
 | `playwright.config.ts` | the browser checks' runner: two projects, `chromium` and `firefox`, 1600 by 1000, `vite preview` on port 4319 over `dist/` |
-| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, `pillByPort`, an overlay pill's place by its port, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
+| `e2e/fixtures.ts` | the harness's helper: the drop and the drop over a loaded model, the wait, the counts, the tree's rows and the status bar, the pane's `section` and `openSection`, a wire's clickable point, `effectiveOpacity`, the screenshots, `viewBox`, `blockBoxes`, `hash`, `press`, `pressAll`, `SCROLL_STEP`, `expectScrollKeys`, `widen`, `cursor`, `paneRing`, `pillByPort`, an overlay pill's place by its port, with `PILL_LIFT` copied from the canvas, and `live`, the mock socket; `shot` writes a non-Chromium project's screenshots under its own folder |
 | `e2e/*.spec.ts` | the browser checks, one file per concern |
 
 Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
@@ -350,10 +350,13 @@ What the records do not fix, or where the page differs:
   port square, a wire's bounding box or a folder's frame; `undrag(all)`.
 - **The drag.** Past 3 px the block joins the end of `dragged` and the
   pointer is captured after `tick()`. Each move re-routes the touching wires:
-  four points through the midpoint, or six running 12 below the lower box
-  when backward. The producer's stub runs 4 past its type label's far end,
-  12 at least and 12 with no label, the labels' toggle aside; the consumer's
-  is 12, and a forward route turns no nearer either port than its stub. Shift keeps the travel since the press to its axis of
+  from a gap of 24 between the ports four points, turning at the midpoint
+  moved toward the consumer past the producer's stub where the gap allows,
+  never nearer the consumer than 12; below it six, running 12 below the
+  lower box, leaving by the whole stub. The producer's stub runs 4 past its
+  drawn type label's far end, 12 at least and 12 with no label drawn; the
+  consumer's is 12. A toggle of the labels and a held layout drawn again
+  re-route every dragged block's wires (`rerouteDragged`). Shift keeps the travel since the press to its axis of
   greater absolute travel; a window Shift `keydown` or `keyup` re-applies
   the last place (`dragTo`). The release reports `onlayout` and selects.
 - **Dimming** to `--dim` (0.35). A focus dims every wire, core, dot and
@@ -375,7 +378,8 @@ What the records do not fix, or where the page differs:
   root, by a pin's port: 2 px beyond the square on the port's side, left of an
   input and right of an output, the bottom 4 px above the wire (`PILL_LIFT`),
   the loop's nearer; one meeting a drawn type label moves outward past its far
-  end by 2. Their click calls `onopen`, a child's the child, a pin's the parent.
+  end by 2, within the half of the wire's end segment nearest the port, the
+  shortest of an output's wires, else stands unmoved. Their click calls `onopen`, a child's the child, a pin's the parent.
   The fit covers them.
 - **The order badge**, `order` on, straddles a child's bottom edge at the left,
   `pillWidth(text)` wide, background fill, text-color stroke, titled "Stage 2

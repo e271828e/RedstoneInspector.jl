@@ -11,11 +11,12 @@ export const STUB = 12;
 const LABEL_CLEAR = 4;
 
 /**
- * A right-angle route from an east port to a west port, below both boxes when it runs backward. The producer's stub,
- * `from`, is at least `STUB`; a forward route turns no nearer the producer than it, nor nearer the consumer than `STUB`.
+ * A right-angle route from an east port to a west port. From a gap of `2 * STUB` it runs forward, turning at the
+ * midpoint moved toward the consumer to clear the producer's stub, `from`, where the gap allows, never nearer the
+ * consumer than `STUB`. Below that gap it runs backward, below both boxes, leaving the producer by the whole stub.
  */
 export function orthoRoute(a: Point, b: Point, below = Math.max(a.y, b.y), from = STUB): Point[] {
-  if (b.x - a.x >= from + STUB) {
+  if (b.x - a.x >= 2 * STUB) {
     const mx = Math.min(Math.max(Math.round((a.x + b.x) / 2), a.x + from), b.x - STUB);
     return [a, { x: mx, y: a.y }, { x: mx, y: b.y }, b];
   }
@@ -24,9 +25,8 @@ export function orthoRoute(a: Point, b: Point, below = Math.max(a.y, b.y), from 
 }
 
 /**
- * The producer's stub: past its port's type label by `LABEL_CLEAR`, the label's offset from the port and its width
- * taken from the layout's box, or `STUB` where the port carries none. The labels' toggle changes nothing, as the
- * layout reserves the labels shown or not.
+ * The producer's stub: past its port's drawn type label by `LABEL_CLEAR`, the label's offset from the port and its
+ * width taken from the layout's box, or `STUB` where no label is drawn (the look pass, 1.3, and its review, F3).
  */
 export const producerStub = (label: Rect | undefined): number =>
   label ? Math.max(STUB, Math.max(0, label.x) + label.width + LABEL_CLEAR) : STUB;
@@ -40,10 +40,11 @@ function portPoint(g: Geometry, sizes: ReadonlyMap<string, BlockSize>, block: st
 
 /**
  * New routes and junctions: every wire with `block` at either end re-routed port to port with its junction points
- * dropped, since the local router draws no trunks, its producer's stub clearing its type label; every other wire kept.
+ * dropped, since the local router draws no trunks, its producer's stub clearing its type label while `labels` draws
+ * it; every other wire kept.
  */
 export function rerouteTouching(
-  g: Geometry, level: Level, sizes: ReadonlyMap<string, BlockSize>, block: string,
+  g: Geometry, level: Level, sizes: ReadonlyMap<string, BlockSize>, block: string, labels: boolean,
 ): Pick<Geometry, "routes" | "junctions"> {
   const routes = new Map(g.routes);
   const junctions = new Map(g.junctions);
@@ -53,7 +54,7 @@ export function rerouteTouching(
     const a = portPoint(g, sizes, w.from.block, "out", w.from.port);
     const b = portPoint(g, sizes, w.to.block, "in", w.to.port);
     const fa = g.boxes.get(w.from.block)!, fb = g.boxes.get(w.to.block)!;
-    const from = producerStub(g.labels.get(portId(w.from.block, "out", w.from.port)));
+    const from = producerStub(labels ? g.labels.get(portId(w.from.block, "out", w.from.port)) : undefined);
     routes.set(w.id, orthoRoute(a, b, Math.max(fa.y + fa.height, fb.y + fb.height), from));
   }
   return { routes, junctions };

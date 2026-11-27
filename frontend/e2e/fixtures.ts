@@ -10,6 +10,9 @@ import { expect, test, type Locator, type Page, type WebSocketRoute } from "@pla
 const fixtures = new URL("../fixtures/", import.meta.url);
 const screenshots = new URL("screenshots/", import.meta.url);
 
+/** How far a route's or a loop's pill stands above its wire, the canvas's `PILL_LIFT`, in world units. */
+export const PILL_LIFT = 4;
+
 /** A committed fixture's text. */
 export const fixtureText = (name: string): string => readFileSync(new URL(`${name}.json`, fixtures), "utf8");
 
@@ -177,8 +180,9 @@ export const effectiveOpacity = (page: Page, sel: string) => page.locator(sel).f
  * (visual_grammar.md answer 9): `above`, its bottom edge above the port square's top, so above the wire; `outside`,
  * beyond the square on the port's side, left of an input port and right of an output port, so outside the block or
  * pin; `near`, its near end within its own height of the square or of the far end of a drawn type label it stands
- * past; `label`, whether it meets a drawn type label. A label's ends come from its text's start and length, since
- * Firefox pads a text's box.
+ * past; `label`, whether it meets a drawn type label, `own` its own port's; in world units, `gap`, its near end's
+ * distance from the square, and `lift`, its bottom edge above the square's centre, where the wire runs. A label's
+ * ends come from its text's start and length, since Firefox pads a text's box.
  */
 export const pillByPort = (badge: Locator) => badge.evaluate((g) => {
   const port = g.getAttribute("data-port")!;
@@ -190,13 +194,15 @@ export const pillByPort = (badge: Locator) => badge.evaluate((g) => {
   const labels = [...document.querySelectorAll<SVGTextElement>("text.type-label")].map((t) => {
     const x = t.x.baseVal.getItem(0).value, b = t.getBBox();
     const cx = (u: number) => at.left + (u - vb.x) * scale, cy = (u: number) => at.top + (u - vb.y) * scale;
-    return { left: cx(x), right: cx(x + t.getComputedTextLength()), top: cy(b.y), bottom: cy(b.y + b.height) };
+    return { port: t.getAttribute("data-port"), left: cx(x), right: cx(x + t.getComputedTextLength()), top: cy(b.y), bottom: cy(b.y + b.height) };
   });
+  const meets = (l: (typeof labels)[number]) => l.left < r.right && r.left < l.right && l.top < r.bottom && r.top < l.bottom;
   const gap = east ? r.left - p.right : p.left - r.right;
   const past = labels.some((l) => (east ? r.left - l.right : l.left - r.right) >= 0 && (east ? r.left - l.right : l.left - r.right) < r.height);
   return {
     above: r.bottom <= p.top, outside: gap >= 0, near: gap < r.height || past,
-    label: labels.some((l) => l.left < r.right && r.left < l.right && l.top < r.bottom && r.top < l.bottom),
+    label: labels.some(meets), own: labels.some((l) => l.port === port && meets(l)),
+    gap: gap / scale, lift: ((p.top + p.bottom) / 2 - r.bottom) / scale,
   };
 });
 
