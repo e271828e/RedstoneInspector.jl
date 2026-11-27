@@ -67,9 +67,20 @@ point by point.
 1. **The release is rehearsed twice before it is real.** The Pkg half
    runs locally, a bare repo on disk standing in for the remote. The
    GitHub half runs end to end in a throwaway public repo on the user's
-   account, which the coordinator asks before creating and before
-   deleting. The workflow reads the repo's name from `github.repository`
-   so that one file runs in both. *Why:* a workflow cannot run locally,
+   account. The workflow reads the repo's name from `github.repository`
+   so that one file runs in both. The user gave a standing approval for
+   the run, the same day. Without asking, the coordinator may create one
+   public repo, `e271828e/RedstoneInspector-rehearsal`, described as a
+   throwaway that nobody should install; push branches, tags and releases
+   to it; set its Pages source to "GitHub Actions"; and run, re-run and
+   deliberately break its workflows. Without the user's word it pushes
+   nothing to `RedstoneInspector.jl`, the first pin bump included, changes
+   none of that repo's settings, and does not delete the rehearsal repo,
+   which it leaves for the user with a list of what to look at. If git's
+   keychain credential cannot push a workflow file, that one push goes
+   through `gh`'s login, as
+   `git -c credential.helper='!gh auth git-credential' push`, which
+   changes no configuration. The login holds no `delete_repo` scope. *Why:* a workflow cannot run locally,
    its first real run is v0.1.0, and only a throwaway allows failing a
    step on purpose and a second bump. *Rejected:* a trial version in this
    repo, which leaves a trial tag in public history; no rehearsal, with
@@ -128,10 +139,16 @@ point by point.
    the core's first release, as D-467 had it; major 0 until then with the
    minor counting breaks, which needs a second matching rule in the three
    checks that read the major and is dead at 1.0.
-6. **The pin moves to the core's tip once increment 1b has landed.** The
-   bump is one commit by `build_release.md` answer 2. The new fixture
-   follows as a second commit. Both are pushed before the landing push,
-   while master's workflow has no `release` job. The README says in two
+6. **The pin moves twice.** A first bump goes to the core's tip at once,
+   before the tutorial's increment 1b, and takes in what the core changed
+   since `fcd3660`. A second follows once 1b has landed and brings the
+   example's changes alone. Each is one commit by `build_release.md`
+   answer 2, and the new fixture follows the second as a commit of its
+   own. All are pushed before the landing push, while master's workflow
+   has no `release` job. *Why two:* the last diff before the release is
+   then small and reads as the example's rework, and the first bump waits
+   for nothing. *Rejected:* one bump after 1b, which mixes the reworded
+   diagnostics with the example's changes. The README says in two
    sentences that a release is tested against the revision in its
    `Project.toml`, which a fresh environment gets, and that a Redstone
    already in the environment is used. It spells no hash.
@@ -172,15 +189,21 @@ session.
   `inspect`. The build from a checkout moves under "Development". One
   sentence points to the hosted copy.
 - **C7. The run's shape.** The prototype is the implementation, in a
-  worktree under `../RedstoneInspector.jl-worktrees/`.
+  worktree under `../RedstoneInspector.jl-worktrees/`. The user is away
+  for the run, so the coordinator rules on the prototype's readings and
+  records each one here for the user's review.
 
 ## The order of the work
 
 1. The mechanics, now: the release script, the workflow, the `base` line,
    the real-server check, and the two rehearsals. None needs a picture or
-   the new pin.
+   the new pin. They stay on their branch, since the first push of master
+   that carries the `release` job is the release. Beside them, the first
+   pin bump, a unit of its own as the earlier bumps were, merged locally
+   when green and pushed by the user.
 2. The core's increment 1b, in parallel.
-3. The pin bump, then the `autopilot_deployment` fixture, both pushed.
+3. The second pin bump, then the `autopilot_deployment` fixture, both
+   pushed. The mechanics' branch rebases onto them.
 4. The captures and the user's choice of pictures.
 5. Pages' source set to "GitHub Actions", once, by hand or by the
    coordinator at the user's word.

@@ -14,7 +14,8 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   on 2026-11-27, nothing built. The rulings, the order of the work and
   what the prototype must still probe are
   `increments/inspector_11_release/notes_inspector_11.md`. The mechanics
-  come first and need nothing. The README's pictures wait for a pin bump
+  come first and need nothing, and so does a first pin bump to the
+  core's tip. The README's pictures wait for a second pin bump
   to the core once the tutorial's increment 1b has landed there
   (`Redstone.jl/design/pending.md`), since they show its reworked
   `autopilot`. No image of `closed_loop`'s root: its tangle is the
@@ -25,7 +26,18 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   bump to the registered core turns the root's `[sources]` revision into a
   `[compat]` range, and `scripts/`'s exact pin into an equality bound plus
   the release tag (answer 2). The schema's `$id` resolves only once that
-  release deploys `stable/`.
+  release deploys `stable/`. From then the pin moves only at a core
+  release.
+- **The inspector's registration**, after the core's and before the core's
+  announcement, so that the tutorial installs both by name on that day. The
+  registration comment goes on the commit the workflow tagged, which holds
+  the new `Artifacts.toml`, and never on the bump commit: answer 1 of
+  `build_release.md` is right and answer 8's wording is not. The install
+  line becomes `Pkg.add("RedstoneInspector")` in the README and in the
+  core's tutorial, and the `release` branch leaves the job's push and the
+  repo (`increments/inspector_11_release/notes_inspector_11.md`, ruling 7).
+  To check then: General's waiting period for a new package, and its rule
+  on a first version, the inspector having released several by URL.
 - **The later stages**: the bridge, the live inspector and the cockpit
   (`initial_design.md`'s stage 2 to 4 sections, and the core's `pending.md`
   bullet "The inspector, stages 2 to 4"). The records add, for stage 2,
