@@ -45,11 +45,10 @@ section. Rules and reasons live in the records, open items in `design/pending.md
 | `src/lib/help.ts` | the help page's text as data: `LEAD`, the paragraph above the legend, `TERMS` (the legend's sixteen, `sample` naming each one's drawing), `NOTATION` (each timing symbol once), `NOTATION_LEAD`, `LAW_LEAD`, `EQUATIONS`, the law, `TYPE_RULE`, `VOCABULARY` (the nineteen Simulink rows, each with a note or none), `KEYS` (this map's keyboard table, its rows in its order) and `KEYS_NOTE`, `SEARCH_LEAD` and `SEARCH_PREFIXES`, `HOSTED_URL`, `VIMIUM_PATTERNS` and the `VIMIUM` sentence, `PRIVACY` (the landing's too), `LINKS`; with `docstring.ts` the only file naming a URL |
 | `src/lib/fixtures.ts` | the test helper: fixtures by name, the schema copy, `fixtureModel` |
 | `src/canvas/size.ts` | the font stack, text measured with a 2D canvas context, `sizeBlock` and `sizeLevel`, `sizeLabels`, `cutName`, `cutConstant`, `iconWidth`; `ICON_WIDTH`, `CONSTANT_WIDTH`, `LABEL_HEIGHT`; the pills' `BADGE_INSET`, `BADGE_HEIGHT`, `BADGE_PAD`, `BADGE_TOP`, `BADGE_GAP`, the canvas's and the help page's; `pillWidth`, `cutPill`, `TopPills`, `topPills`, `topPillsWidth`, the width the events pill's block reserves; the legibility floor, `FLOOR_FACES`, `FLOOR_NAMES`, `FLOOR_SEGMENTS`, `detailAt` |
-| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points; `LevelLayout`, the session's record of a level's geometry |
-| `src/canvas/router.ts` | the local router, DOM-free: the spike's `orthoRoute`, `STUB`, `producerStub`, `rerouteTouching` for a dragged block's wires, dropping their junction points, given whether the labels are drawn |
+| `src/canvas/layout.ts` | `layoutLevel`: ELK on the main thread over `elkGraph`, the `Geometry` of boxes, routes, junction points and region boxes in the level's coordinates, and the type labels' boxes as offsets from their ports' points |
 | `src/canvas/palette.ts` | the settled colors, the canvas's and the frame's, the only file naming one: the tiers, the frame's, `rate`'s eight steps, the four colored `extras`, the shared `extra`, `stepPair`, `error` and `warning` (the overlay's), `wireLight`, `continuousWire`; the search's `dim` opacity and `dash` array |
 | `src/canvas/glyphs.ts` | the glyph icons' artwork as data, `GLYPHS`: each symbol's width, path and text; `tagD`, a root tag's outline, the canvas's and the help page's |
-| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the drag with Shift's axis, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
+| `src/canvas/Canvas.svelte` | the drawn level: blocks, pins, ports, wires, regions, icons, the color mode's fills, badges, the events pill and legend with its buttons, the fit leaving the legend's box clear, the wire classes, the trunks' dots, the type labels, the text levels, the view and the layout the session holds, opening, the selection it is given, hover, the search hits, the legend's focus; the diagnostics overlay with its badges; a route's casings, origin, terminals and badges; the right-click menu; one dimming for the standing focus; the handle the shell's keys call |
 | `src/state/session.svelte.ts` | the per-tab state: the model, the open level and its hash, the history depth, the views and layouts per level, the selection, the expansion, the query, the legend's focus, the focused diagnostic, the standing route, the drawer, the detail pane's open `sections`, the focused region, the fallback note, the one-off `notice` (`say`), the help page and its hash `#help`; `load`'s rekeying, a route that no longer resolves cleared with a notice; a node's folders expanding with it; `escape`'s chain; `back` and `forward`; `openHelp`, `closeHelp`, `toggleHelp`, `isHelpHash` |
 | `src/state/live.svelte.ts` | the live connection's state, the raw descriptor text last received, the reconnect count; set only by the socket |
 | `src/live/socket.ts` | the one module touching `WebSocket`: `connect`, `sendOpenLocation` |
@@ -72,7 +71,7 @@ Every module under `src/lib/` but `fixtures.ts` is pure: data in, data out,
 no DOM, no stores, nothing measured. DOM-touching code lives under
 `src/canvas/` and `src/frame/`: `size.ts` measures text, `Canvas.svelte` draws
 the level, the frame's components draw the panes; `layout.ts` is DOM-free but
-async and bound to ELK, `router.ts` DOM-free and synchronous, `glyphs.ts` and
+async and bound to ELK, `glyphs.ts` and
 `palette.ts` data. `src/live/socket.ts`
 alone touches `WebSocket`. The stores live under `src/state/`, Svelte runes in
 `.svelte.ts` modules; `prefs.svelte.ts` alone touches local storage, and its
@@ -125,9 +124,8 @@ them to the stores. The code imports the generated types by name from
   keyed container's field: its path is `parent/field`, the field alone under the
   root, which no node has; its children are the field's keyed nodes in walk
   order, and it sits where its first member would.
-- A **level layout** (`LevelLayout`) is `{geometry, dragged, stale}`: a
-  level's boxes and routes, ELK's output plus drags; the dragged block ids in
-  drag order, the last drawn last; `stale` after a push until laid out again.
+- A **level layout** is a level's `Geometry`, ELK's output: its boxes,
+  routes, junctions, region boxes and labels.
 - A **hit** is a node or a face a query matches (`NodeHit`, `FaceHit`), with
   the matched ranges per field. A node is **marked** when it is a hit or owns a
   face hit; a closed assembly is **under** when it is not a hit and has marked
@@ -185,7 +183,7 @@ The three lifetimes of `workspace.md` answer 9.
 
 - **Per tab, in memory** (`session.svelte.ts`): the model; the open level by path,
   mirrored in the hash; `views` and `layouts`, each visited level's `View` and
-  `LevelLayout` by path; the selection `{level, target}`; the expansion set of node
+  `Geometry` by path; the selection `{level, target}`; the expansion set of node
   and folder paths; `query`; `legendFocus`, a line's key, set by a legend line or a
   chart swatch; `diagnosticFocus`, an index; `route`, the standing route's origin
   face; the drawer's open state and tab; `sections`, the pane's open ones, every
@@ -199,8 +197,8 @@ The three lifetimes of `workspace.md` answer 9.
     drawer opens on `diagnostics` only when the body carries a diagnostic
     (`opensDrawer`), a warning alone leaving it closed though counted.
     `load(undefined)`, a refusal, unloads.
-  - `load` of a replacement passes the state through `rekey` and marks every
-    kept layout `stale`; the legend's focus goes through `rekeyFocus` (an
+  - `load` of a replacement passes the state through `rekey` and drops every
+    layout; the legend's focus goes through `rekeyFocus` (an
     anchor followed by key and scope), the route through `rekeyRoute`, kept
     while the new model's node at its path declares the face and `routeOf`
     resolves it, else cleared with a notice, and the shell
@@ -271,18 +269,16 @@ are the reviewer's Python scripts.
 `view`, `layout`, `hits`, `lit`, `focus`, `focusKey`, `legendFocus`,
 `overlay`, `routeDrawn` and `focused`, and calls `onopen(path)`,
 `onselect(target)` (`undefined` for a background click), `onview(view)`,
-`onlayout(geometry, dragged)`, `onlegend(key)`, `onbadge(index)` and
+`onlayout(geometry)`, `onlegend(key)`, `onbadge(index)` and
 `ontrace(face)`. The caller decides what a click selects and passes back the
 target only when it was made on the drawn level. The shell keys the canvas on
 the model (`{#key model}`), so each model gets a fresh one.
 
 On each `path` it builds and sizes the level with its regions and type
-labels. A held layout not `stale` is drawn at once, `data-ready` never absent;
-otherwise `relayout` clears `data-ready`, runs ELK, puts the layout's dragged
-blocks back with their wires re-routed, reports `onlayout`, sets `data-ready`
-and restores the view or fits. `undrag(all)`, `x` and `X`, runs it on
-`dragged` less its last id, or none, in the current view; a newer run or path
-drops an older result (`run`). `view` and `layout` are read with `untrack`; a
+labels. A held layout is drawn at once, `data-ready` never absent;
+otherwise `relayout` clears `data-ready`, runs ELK, reports `onlayout`, sets
+`data-ready` and restores the view or fits; a newer run or path drops an older
+result (`run`). `view` and `layout` are read with `untrack`; a
 level change clears the hover and closes the menu. The draw order is answer 9's: regions, casings (the
 route's first), wires with struct cores, dots, blocks with ports and halos,
 type labels, `g.overlay`, `g.order-badges`, `g.route-pills`. `<defs>` holds one arrowhead per wire color, in
@@ -321,10 +317,10 @@ What the records do not fix, or where the page differs:
   double line, as answer 4 says. In rate mode a continuous
   producer's wires take `continuousWire`, a root input's the gray.
 - **Trunks.** ELK's `junctionPoints` become `Geometry.junctions`, a
-  `circle.junction` of radius 2.5 each; `rerouteTouching` drops them.
+  `circle.junction` of radius 2.5 each.
 - **Type labels.** ELK edge labels on each port's first wire, `TAIL`, on
   every layout; `Geometry.labels` keeps each box by port id as an offset
-  from the port's point, so a dragged block carries its labels. Baseline 8
+  from the port's point. Baseline 8
   below the box's top, over a 3 px stroke in the background color. A label
   ignores the pointer and has no title; the pane carries the whole type.
 - **Regions.** A compound node `region:<path>`, padding 28, 12, 12, 12,
@@ -340,25 +336,15 @@ What the records do not fix, or where the page differs:
 - **The view.** The fit leaves 24 px clear, stops at scale 2 and covers
   every box; with a legend it leaves the legend's box and inset clear
   (`fitBeside`), so a level's first fit waits a `tick()` for its legend; the wheel zooms by `exp(-deltaY * 0.0015)`, its listener
-  `{passive: false}`; a drag on the bare SVG pans, under 3 px a click. Every
+  `{passive: false}`; a drag on the bare SVG pans, under 3 px a click; a press
+  on a block pans nothing, and no block moves by hand. Every
   change goes out through `onview`.
 - **The handle** `canvasView`: `fit()`, `zoomBy(factor)` about the center,
   `panBy(dx, dy)`, `boxes()` (none while ELK runs), `follow(id)` with 24 px
   clear, held until the level is drawn, a box larger than the viewport along
   an axis aligned at its left or top edge, the corner holding the segment and
   the first ports, and `centre(target)` on a box, a
-  port square, a wire's bounding box or a folder's frame; `undrag(all)`.
-- **The drag.** Past 3 px the block joins the end of `dragged` and the
-  pointer is captured after `tick()`. Each move re-routes the touching wires:
-  from a gap of 24 between the ports four points, turning at the midpoint
-  moved toward the consumer past the producer's stub where the gap allows,
-  never nearer the consumer than 12; below it six, running 12 below the
-  lower box, leaving by the whole stub. The producer's stub runs 4 past its
-  drawn type label's far end, 12 at least and 12 with no label drawn; the
-  consumer's is 12. A toggle of the labels and a held layout drawn again
-  re-route every dragged block's wires (`rerouteDragged`). Shift keeps the travel since the press to its axis of
-  greater absolute travel; a window Shift `keydown` or `keyup` re-applies
-  the last place (`dragTo`). The release reports `onlayout` and selects.
+  port square, a wire's bounding box or a folder's frame.
 - **Dimming** to `--dim` (0.35). A focus dims every wire, core, dot and
   label not `lit`, and every child of a block not `lit` but its halos and lit
   ports; a search dims every wire and every child of a non-hit block but its
@@ -409,8 +395,8 @@ What the records do not fix, or where the page differs:
 | the svg | `.searching` | while `hits` stands |
 | the svg | `.legend-focus`, `.diagnostic-focus` or `.route-focus`, with `[data-focus]` | the standing focus; the line's key, the diagnostic's index or the origin's `faceText` |
 | the canvas region | `div.viewport[tabindex="0"]`, `.focused` | always; `focused` while it holds the keyboard |
-| the buttons | `.tools` holding `button.undo-drags`, then `button.fit` | the undo button while the drawn level holds a drag, titled "Put every dragged component and pin back in its computed place (X)" |
-| a block | `g.blocks > g.block[data-id]` with `.primitive`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin; the last child the most recently dragged |
+| the buttons | `.tools` holding `button.fit` | always |
+| a block | `g.blocks > g.block[data-id]` with `.primitive`, `.assembly` or `.pin`; a pin `.in` or `.out`, a root input `.root-input` | every block and pin, in the level's order |
 | a block's outline | `g.block .shape`, a `path` for a root tag, else a `rect`; `[data-step]` | `data-step` in rate mode, absent with the continuous color or the gray |
 | a block's states | `.selected`, `.hover`, `.search-hit`, `.search-under`, `.lit`, `.extra`, `.route-origin` | selection, hover, a hit or a closed assembly with marked nodes beneath, a focus, past the eighth step, a pin as a route's origin |
 | a keyed member | `g.block[data-region]`, its `text.segment` the key | inside a region |
@@ -630,11 +616,7 @@ Ctrl or Meta, a refusal and the help page opening or closing any prefix.
 | `o` | the execution-order badges on or off, kept per browser (`toggleOrder`) |
 | `?` | the help page shown or closed (`toggleHelp`), with or without a model; while it shows, see above |
 | Cmd-O, Ctrl-O | click `input.pick`, the file picker, in a text field and under the help page too, where the file loads beneath; with Shift or Alt the browser's |
-| `x`, `X` | the drawn level's last dragged block back in its computed place, the one dragged before it on the next press; `X` and the undo button every one (`undrag`); view and selection kept; nothing with no drag or mid-drag |
 | Escape | with the right-click menu open, the menu alone (`menuKey`); else a pending prefix, else the session's `escape()`: the route, then the focused diagnostic, then the legend's focus, then the query, then the selection |
-
-Dragging has no keyboard form; Shift during a drag is the canvas's own
-listener (see "The canvas").
 
 ## The live tab
 

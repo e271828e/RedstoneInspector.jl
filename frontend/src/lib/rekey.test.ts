@@ -11,10 +11,10 @@ const deployment = fixtureModel("closed_loop_deployment");
 const rates = fixtureModel("rates");
 const view = { x: 10, y: 20, scale: 1.5 };
 
-/** closed_loop's state at `sensing`, `sensing/noise` selected, `actuators` expanded, a view and a layout at `sensing`. */
-const atSensing = (selection: PerTab<string>["selection"]): PerTab<string> => ({
+/** closed_loop's state at `sensing`, `sensing/noise` selected, `actuators` expanded, a view at `sensing`. */
+const atSensing = (selection: PerTab["selection"]): PerTab => ({
   level: "sensing", selection, expanded: new Set(["", "sensing", "actuators"]),
-  views: new Map([["", view], ["sensing", view]]), layouts: new Map([["", "root"], ["sensing", "sensing"]]), query: "h",
+  views: new Map([["", view], ["sensing", view]]), query: "h",
 });
 const noise = { level: "sensing", target: { kind: "block" as const, id: "sensing/noise" } };
 
@@ -31,7 +31,6 @@ describe("rekey", () => {
     expect(r.selection).toBeUndefined();
     // the root survives but is the fallback, so it fits too
     expect([...r.views.keys()]).toEqual([]);
-    expect([...r.layouts.keys()]).toEqual([""]);
     expect([...r.expanded]).toEqual([""]);
     expect(r.query).toBe("h");
   });
@@ -73,7 +72,7 @@ describe("rekey", () => {
     const model = { tree, resolution: buildResolution(tree, structure) } as Model;
     const r = rekey({
       level: "a/b", selection: { level: "a/b", target: { kind: "block", id: "a/b/c" } },
-      expanded: new Set(["", "a", "a/b"]), views: new Map([["a/b", view]]), layouts: new Map(), query: "",
+      expanded: new Set(["", "a", "a/b"]), views: new Map([["a/b", view]]), query: "",
     }, model);
     expect(r.level).toBe("a");
     expect(r.note).toBe("`a/b` is not in this model; showing `a`");

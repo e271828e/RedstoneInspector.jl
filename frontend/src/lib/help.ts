@@ -13,7 +13,7 @@ export interface Term {
 }
 
 /** The paragraph above the legend: the level, the zoom's text order and the computed layout. */
-export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load. A dragged component keeps its place for the session only: `x` puts the last one dragged back in its computed place, and `X` or the Undo drags button every one.";
+export const LEAD = "The canvas shows one level at a time: an assembly's children as components, its own faces as pins, and its wires. Double-click a closed assembly to open its level. Zooming out drops text in a fixed order: face names first, then the display name and the icon, then the segment. The layout is computed on every load.";
 
 /** Component, face and wire, then the glossary's drawn terms in its order, each with its drawing. */
 export const TERMS: Term[] = [
@@ -152,7 +152,6 @@ export const KEYS: [string[], string][] = [
   [["o"], "execution-order badges on or off"],
   [["?"], "the help page, open or closed"],
   [["Cmd-O", "Ctrl-O"], "open a descriptor"],
-  [["x", "X"], "put the last dragged component or pin back in its computed place, or every one"],
   [["Escape"], "close the right-click menu, else cancel a pending `z` or `g`, else close the help page, else clear the route, then the focused diagnostic, then the legend's focus, then the search, then the selection"],
 ];
 

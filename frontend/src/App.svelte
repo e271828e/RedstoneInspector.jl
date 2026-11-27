@@ -529,7 +529,6 @@
     else if (e.key === "+" || e.key === "=") canvasView?.zoomBy(ZOOM_STEP);
     else if (e.key === "-") canvasView?.zoomBy(1 / ZOOM_STEP);
     else if (name === "n" || name === "N") stepSearch(name === "N" ? -1 : 1);
-    else if (name === "x" || name === "X") canvasView?.undrag(name === "X");
     else if (e.key === "/") focusFilter() || focusSearch();
     else if (name === "c") setMode(prefs.mode === "tier" ? "rate" : "tier");
     else if (name === "y") toggleLabels();
@@ -657,7 +656,7 @@
               focused={session.focus === "canvas"} onopen={open}
               onselect={(t) => select(t && { level: session.level, target: t })}
               onview={(v) => setView(session.level, v)}
-              onlayout={(g, d) => setLayout(session.level, g, d)}
+              onlayout={(g) => setLayout(session.level, g)}
               onlegend={toggleLegendFocus}
               onbadge={badge}
               ontrace={traceFrom}

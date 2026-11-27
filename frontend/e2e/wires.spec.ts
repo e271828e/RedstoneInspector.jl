@@ -52,11 +52,6 @@ const QUALIFIED = /[\p{L}_][\p{L}\p{N}_!]*\.[\p{L}_]/u;
 /** Every block's and pin's transform, by block id. */
 const transforms = (page: Page) => page.evaluate(() =>
   Object.fromEntries([...document.querySelectorAll("svg.canvas g.block")].map((g) => [g.getAttribute("data-id")!, g.getAttribute("transform")!])));
-/** Each type label's place, `x` and `y` as drawn, by port. */
-const labelPlaces = (page: Page) => page.locator("text.type-label").evaluateAll((ts) =>
-  Object.fromEntries(ts.map((t) => [t.getAttribute("data-port")!, [Number(t.getAttribute("x")), Number(t.getAttribute("y"))]])));
-/** A block's translation, read off its transform. */
-const translation = (t: string) => t.match(/-?[\d.]+/g)!.map(Number);
 
 /**
  * The root's type labels against the rule (visual_grammar.md answer 4 as amended): one label per producer port, its
@@ -184,7 +179,7 @@ test("kinds: one wire of every class, each drawn by its kind; the type labels by
   await expect(labelButton(page)).toHaveAttribute("aria-pressed", "false");
 });
 
-test("closed_loop: the labels by their ports; mode's trunk dots on its branches; a dragged block's wires lose theirs and its labels follow it", async ({ page }) => {
+test("closed_loop: the labels by their ports; mode's trunk dots on its branches", async ({ page }) => {
   await drop(page, "closed_loop");
   const placed = await transforms(page);
   await press(page, "y");
@@ -194,7 +189,6 @@ test("closed_loop: the labels by their ports; mode's trunk dots on its branches;
   expect(new Set(wires.map((w) => w.port)).size).toBe(19);
   const labels = await expectLabels(page, "closed_loop");
   expect(labels.get("⟨in⟩mode|out|mode")).toBe("Bool");
-  const was = await labelPlaces(page);
   await press(page, "y");
 
   // mode's three wires share one trunk: one or two dots, each on at least two of the three
@@ -206,30 +200,6 @@ test("closed_loop: the labels by their ports; mode's trunk dots on its branches;
   expect(modeDots.length).toBeGreaterThanOrEqual(1);
   expect(modeDots.length).toBeLessThanOrEqual(2);
   for (const d of modeDots) expect([...paths.values()].filter((p) => onPolyline([d.x, d.y], p)).length, `${d.wire} ${d.x},${d.y}`).toBeGreaterThanOrEqual(2);
-
-  // plant dragged 120 down: its wires' dots gone, every other dot where it was
-  const plant = new Set(wires.filter((w) => w.from.path === "plant" || w.to.path === "plant").map((w) => w.id));
-  const before = await dots(page);
-  expect(before.some((d) => plant.has(d.wire)), "a dot on a plant wire").toBe(true);
-  const r = (await page.locator('g.block[data-id="plant"] > .shape').boundingBox())!;
-  await page.mouse.move(r.x + r.width / 2, r.y + 10);
-  await page.mouse.down();
-  await page.mouse.move(r.x + r.width / 2, r.y + 130, { steps: 8 });
-  await page.mouse.up();
-  await expect(page.locator('g.block.selected[data-id="plant"]')).toHaveCount(1);
-  expect(await dots(page)).toEqual(before.filter((d) => !plant.has(d.wire)));
-
-  // plant's labels moved with it, by its port; every other label where it was
-  const moved = await transforms(page);
-  const [dx, dy] = translation(moved.plant).map((v, i) => v - translation(placed.plant)[i]);
-  expect(dy).toBeGreaterThan(0);
-  await press(page, "y");
-  await expectLabels(page, "closed_loop");
-  const now = await labelPlaces(page);
-  for (const [port, [x, y]] of Object.entries(was)) {
-    const [ex, ey] = port.startsWith("plant|") ? [x + dx, y + dy] : [x, y];
-    expect(Math.abs(now[port][0] - ex) + Math.abs(now[port][1] - ey), port).toBeLessThan(0.01);
-  }
 });
 
 test("kinds: a type label ignores the pointer, the element under it the same with the labels hidden", async ({ page }) => {
