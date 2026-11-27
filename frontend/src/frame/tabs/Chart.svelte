@@ -34,9 +34,9 @@
     if (fit.kind === "omitted" || !lines.drawn) return [];
     return Array.from({ length: Number(joint.frames) + 1 }, (_, k) => ({ k, x: frameTopX(BigInt(k), joint, fit) }));
   });
-  /** The base ticks as one path of short strokes, so the pitch reads where no row is due. */
+  /** The base ticks as one path of 6 px strokes in the lighter text color, so the pitch reads where no row is due (9.1). */
   const grid = $derived(
-    fit.kind === "omitted" ? "" : Array.from({ length: Number(joint.baseTicks) }, (_, n) => `M${tickX(BigInt(n), fit)} ${ROW / 2 - 2}v4`).join(""),
+    fit.kind === "omitted" ? "" : Array.from({ length: Number(joint.baseTicks) }, (_, n) => `M${tickX(BigInt(n), fit)} ${ROW / 2 - 3}v6`).join(""),
   );
 </script>
 
@@ -104,7 +104,7 @@
   .count, .frames { color: var(--text-light); }
   .lanes { display: flex; flex-direction: column; }
   svg.lane { display: block; }
-  .grid { stroke: var(--border); stroke-width: 1; }
+  .grid { stroke: var(--text-light); stroke-width: 1; }
   .frame-top { stroke: var(--highlight); stroke-width: 1; opacity: 0.6; }
   .due { fill: var(--text); }
 </style>

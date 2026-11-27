@@ -10,7 +10,7 @@ const drawer = (page: Page) => page.locator("section.drawer");
 const body = (page: Page) => page.locator("section.drawer .tab-body");
 const rows = (page: Page) => body(page).locator(".chart .chart-row");
 /** The chart's minimum pitch and margin, `CHART_PITCH` and `CHART_PAD` of `timing.ts`. */
-const PITCH = 6;
+const PITCH = 10;
 const PAD = 4;
 
 /** Drops a model and opens the timing tab, in a drawer tall enough to read. */
@@ -318,6 +318,32 @@ test("timing_deployment: the timeline at the minimum pitch scrolls the tab's bod
   expect((await place()).left).toBe(40);
   await body(page).evaluate((b) => (b.scrollLeft = 0));
   await shot(page, "timing_deployment", "", "timing-tab");
+});
+
+test("the look pass's chart (9.1 to 9.4): each lane's base ticks one stroke of 6 px per tick in the lighter text color; 360 ticks drawn at 10 px; an inline copy at half the base tick, 720 ticks, past the threshold of 500", async ({ page }) => {
+  await timingOf(page, "timing_deployment");
+  const grid = await body(page).locator(".chart svg.lane path.grid").first().evaluate((p: SVGPathElement) => {
+    const probe = document.createElement("span");
+    probe.style.color = "var(--text-light)";
+    p.closest(".chart")!.appendChild(probe);
+    const light = getComputedStyle(probe).color;
+    probe.remove();
+    const strokes = (p.getAttribute("d")!.match(/M/g) ?? []).length, b = p.getBBox();
+    return { stroke: getComputedStyle(p).stroke, light, strokes, height: b.height };
+  });
+  expect(grid.stroke).toBe(grid.light);
+  expect(grid.strokes).toBe(360);
+  expect(grid.height).toBeCloseTo(6, 6);
+  await expect(body(page).locator(".chart")).toHaveAttribute("data-fit", "scroll");
+  await shot(page, "timing_deployment", "", "chart-pitch");
+  await timingOf(page, "timing_deployment", edited("timing_deployment", (d) => {
+    const s = d.deployment.schedule;
+    d.deployment.dt_base = { num: 1, den: 600 };
+    for (const r of [...s.anchors, ...s.rows, ...s.scopes]) [r.D, r.phi] = [r.D * 2, r.phi * 2];
+  }));
+  await expect(body(page).locator("p.chart-omitted")).toHaveText("chart omitted: the joint period is 720 base ticks (6/5 s)");
+  await expect(body(page).locator(".chart")).toHaveAttribute("data-fit", "omitted");
+  await shot(page, "timing_deployment_base_600", "", "chart-omitted");
 });
 
 test("past the threshold (an inline copy of timing_deployment at a tenth of its base tick): the timeline omitted with one line of its length, the rows kept", async ({ page }) => {
