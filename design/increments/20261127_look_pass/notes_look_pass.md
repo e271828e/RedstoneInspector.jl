@@ -343,3 +343,31 @@ apart.
 | unit tests | 801 in 32 files | 804 in 32 files |
 | the checker | 413 files, clean | 414 files, clean |
 | browser checks, both projects | 770 passed, 4 skipped | 818 passed, 4 skipped |
+
+## The delta check
+
+The reviewer, resumed, checked `c9b8475..c4fa27e`. Its gate matched the
+fixer's: 804 unit tests in 32 files, 414 files clean, 818 browser checks
+passed and 4 skipped. F1 to F5 are fixed as ruled, in both browsers.
+Every fixer's mutant is red but F1-wholewire. It agreed with the five
+readings. It raised three points, and the coordinator ruled on each.
+
+- **N1, the coordinator's F1 ruling turned.** Bounding the move by half
+  the end segment refuses most moves, since ELK usually turns soon after
+  the label. The sweep finds 19 output-port pills, on `closed_loop`,
+  `approach_deployment`, `rates`, `timing` and `events_deployment`,
+  standing over the label of the port above. Before the bound, all but
+  F1's three moved clear without meeting anything. Ruling: the bound
+  goes. A pill moves past the labels it meets, as reading 4 had it, and
+  stands at its unmoved place only where the moved place would meet a
+  block, a port square or another pill. That is the rule `pills.spec`
+  already checks. A check pins that the 19 now clear the labels.
+  Reading 1 of the fix, `rates`' unmoved pill, goes with the bound.
+- **N2, left as observed.** Below a gap of 24 the backward route leaves
+  by the full stub, so with the labels on its vertical runs 17 to 40
+  units inside the consumer's box, where the base ran up to 12 inside.
+  The ruling said the full stub applies to the backward form, and the
+  router ignores other blocks.
+- **N3, a check added.** A live drag with the labels off takes the
+  12-unit stub. Nothing pinned it: a mutant passing the labels as drawn
+  during the drag survived.
