@@ -348,6 +348,8 @@
     .parameters, .parameters tbody, .parameters tr, .parameters td { display: block; }
     .parameters tr { padding: 2px 0; }
     .parameters td { padding: 0; }
+    /* stacked, the name in the lighter color reads apart from the value under it (the look pass, 3.2) */
+    .parameters .param-name { color: var(--text-light); }
     .faces, .faces tbody { display: block; }
     .faces thead { display: none; }
     .faces tbody tr {

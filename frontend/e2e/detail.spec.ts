@@ -12,7 +12,8 @@
 // face alone (3.4); a location's file name kept whole with its line number (3.5);
 // the pane's own keys, h j k l and the arrows scrolling it (increment 8b); a primitive
 // root's "open level" mark (answer 4 as amended by the polish batch); every header at
-// the narrowest pane, its path broken after a slash (the look pass of 2026-11-27, 1.1).
+// the narrowest pane, its path broken after a slash (the look pass of 2026-11-27, 1.1); a
+// stacked parameter's name in the lighter color (3.2 and 4.4).
 import { test, type Page } from "@playwright/test";
 import { clickWire, cursor, drop, dropOver, expect, expectScrollKeys, fixtureText, live, openPath, openSection, paneRing, press, pressAll, readyLevel, SCROLL_STEP, section, shot, viewBox, widen } from "./fixtures";
 
@@ -577,6 +578,45 @@ async function plantAt(page: Page, detail: number) {
   await drop(page, "closed_loop");
   await page.locator('g.block[data-id="plant"]').click();
   await expect(pane(page)).toHaveAttribute("data-id", "plant");
+}
+
+for (const [fixture, level, id] of [["kinds", "", "nt"], ["library", "", "ss"]] as const) {
+  test(`${fixture}'s ${id}: stacked at the default 360 px, each parameter's name takes the lighter text color and its value the text color; in two columns at 600 px both the text color (the look pass, 3.2 and 4.4)`, async ({ page }) => {
+    const colors = () => pane(page).locator("table.parameters").evaluate((t) => {
+      const probe = (v: string) => {
+        const s = document.createElement("span");
+        s.style.color = `var(${v})`;
+        t.appendChild(s);
+        const c = getComputedStyle(s).color;
+        s.remove();
+        return c;
+      };
+      const rows = [...t.querySelectorAll("tr")];
+      return {
+        light: probe("--text-light"), text: probe("--text"), rows: rows.length,
+        names: [...new Set(rows.map((r) => getComputedStyle(r.querySelector(".param-name code")!).color))],
+        values: [...new Set(rows.map((r) => getComputedStyle(r.querySelector(".param-value code")!).color))],
+        stacked: rows.every((r) => r.querySelector(".param-value")!.getBoundingClientRect().top >= r.querySelector(".param-name")!.getBoundingClientRect().bottom - 1),
+      };
+    });
+    for (const [detail, stacked] of [[360, true], [600, false]] as const) {
+      await page.goto("/");
+      await page.evaluate((detail) => localStorage.setItem("redstone-inspector/prefs",
+        JSON.stringify({ version: 1, sizes: { tree: 280, detail, drawer: 200 }, collapsed: { tree: false, detail: false } })), detail);
+      await drop(page, fixture);
+      if (level) await openPath(page, level);
+      await page.locator(`g.block[data-id="${id}"]`).click();
+      await expect(pane(page)).toHaveAttribute("data-id", id);
+      await openSection(page, "parameters");
+      const c = await colors();
+      expect(c.rows).toBeGreaterThan(0);
+      expect(c.light).not.toBe(c.text);
+      expect(c.stacked, `${detail} px`).toBe(stacked);
+      expect(c.names, `${detail} px`).toEqual([stacked ? c.light : c.text]);
+      expect(c.values, `${detail} px`).toEqual([c.text]);
+      if (stacked) await shot(page, fixture, level, `stacked-names-${id}`);
+    }
+  });
 }
 
 test("a narrow pane stacks each parameter's summary under its name and each face's facts; a wide one keeps the rows", async ({ page }) => {

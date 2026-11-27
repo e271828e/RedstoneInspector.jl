@@ -478,7 +478,7 @@ What the records do not fix, or where the page differs:
   `renderDocstring(facts.docstring, facts.type)` through `{@html}` (`build_release.md`
   answer 7), its styles `:global` under `div.docstring`, a `pre` scrolling sideways.
   `aside.detail` is a size container: under 420 px, the default 360 included,
-  parameters and faces stack. The trace button reads "Trace", or "Clear the route"
+  parameters and faces stack, a parameter's name in `--text-light`. The trace button reads "Trace", or "Clear the route"
   while that route stands, `aria-pressed`.
 - **The drawer.** A tab's click opens on it or closes it. The diagnostics
   filter, a case-insensitive substring over kind, raw path and message, is
