@@ -48,7 +48,7 @@ export const TERMS: Term[] = [
   },
   {
     key: "events", term: "events pill", sample: "events",
-    line: "A count of state events on a component's top edge at the right, in both color modes: the events a primitive declares, or on a closed assembly those of the primitives inside. Its tooltip lists a primitive's events in priority order. A localized event ends the integration step where its guard crosses zero and fires at that instant; one not localized, `no` in the events tab, fires at the first step boundary that sees its guard come to hold: the step's end, or an earlier localized event's instant in that step.",
+    line: "A count of state events on a component's top edge at the right, in both color modes: the events a primitive declares, or on a closed assembly those of the primitives inside. Its tooltip lists a primitive's events in priority order. A localized event cuts the integration step where its guard crosses zero and fires at that instant; one not localized, `no` in the events tab, fires at the first step boundary that sees its guard come to hold: the step's end, or an earlier localized event's instant in that step.",
   },
   { key: "halo", term: "halo", sample: "halo", line: "The highlight of a shape: a soft wide outline just outside a component, a pin or a port square." },
   { key: "hue", term: "reserved hue", sample: "hue", line: "Red for errors, amber for warnings, blue for highlight, all absent from the rate palette." },

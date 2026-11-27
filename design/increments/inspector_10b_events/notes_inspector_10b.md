@@ -378,10 +378,7 @@ merged or pushed, and `master` is untouched.
   - The tolerance's form, `1e-6 of Δt_frame` in one code span, where
     `show` prints `1.0e-6` (C3, R5).
   - The words: the pill's titles, `LOCALIZED_TITLE`, the two empty
-    sentences, and the help page's term. The term says a localized event
-    "ends the integration step" at its crossing. Under a fixed-step
-    method the step is cut there and then finished, so "cuts" may read
-    better.
+    sentences, and the help page's term.
   - The help page's "badge" term lists the clocks and the order position
     and not the events count, which has a term of its own.
   - The ring around a group, and the pane's EVENTS open by default.
@@ -398,6 +395,14 @@ merged or pushed, and `master` is untouched.
   `increment_10b_review_probes` and `increment_10b_fix_probes`, and the
   file `increment_10b_notes.md`. What the record rests on is in `tools/`,
   `probes/` and `review/` beside this file.
+
+## The user's review
+
+- **2026-11-27. "Cuts", not "ends".** The help page's term said a
+  localized event "ends the integration step" at its crossing. Under a
+  fixed-step method the step is cut there and then finished (the core's
+  §2.3, the remainder step), so the term says "cuts". The coordinator
+  raised it and the user ruled.
 
 ## Out of scope
 
