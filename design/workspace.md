@@ -115,10 +115,11 @@ Open items live in `pending.md`.
      the class and tier; and, when `key` is present, the membership with
      its container's kind written out, "transparent container `children`,
      key `plant`" or "keyed container `gains`, key `a`";
-   - six collapsible sections under capitalized headings, each shown only
-     when it has content: SIGNATURE, DOCSTRING, LOCATIONS and TIMING,
-     which start collapsed, then PARAMETERS and FACES, which start open.
-     A section keeps its state across selections and levels (answer 9);
+   - seven collapsible sections under capitalized headings, each shown
+     only when it has content: SIGNATURE, DOCSTRING, LOCATIONS and TIMING,
+     which start collapsed, then EVENTS, PARAMETERS and FACES, which start
+     open. A section keeps its state across selections and levels (answer
+     9);
    - the signature in monospace, wrapped;
    - the docstring, rendered from Markdown by a bundled renderer, a
      Documenter `@ref` link rendered as its code text, linking being axis
@@ -129,6 +130,10 @@ Open items live in `pending.md`.
    - the timing as a frames table, a row per frame with its period and
      its phase, and the chain of `sample_times` links on a line under it
      (`deployment_overlay.md` answer 10), and no section for a continuous primitive, which no rate gates;
+   - the state events of a primitive that declares some, a row per event
+     in declaration order with its priority number, its name and whether
+     it is localized, `yes` or `no`, and under the table the names of the
+     bundle's fields, as `show` prints them; no row is a stop;
    - the parameters as a name and summary table, each summary under its
      name when the pane is narrow;
    - the faces, inputs then outputs, each with name, type, the kind marker
@@ -139,8 +144,9 @@ Open items live in `pending.md`.
 
    A closed assembly shows the same without tier, with timing only when
    it is a rate scope and then no chain, with its
-   child and wire counts, its faces typed through the resolution with no
-   pinned mark, and an open button.
+   child and wire counts, the count of the state events its primitives
+   declare when there are some, no EVENTS section, its faces typed through
+   the resolution with no pinned mark, and an open button.
    A folder shows its field, count and keys as links. A wire shows its
    declared endpoints, the terminal primitive port behind an assembly face,
    the type and kind phrase from the terminal producer, and its level. A pin
@@ -179,7 +185,9 @@ Open items live in `pending.md`.
    collapsed, under lowercase titles, and collapsed again at each
    selection. The faces table's stage column was headed "st.". Amended
    2026-11-26 (the user's ruling): a root input's face showed no pinned
-   flag.*
+   flag. Amended 2026-11-27 (increment 10b's design session,
+   `increments/inspector_10b_events/notes_inspector_10b.md`): the pane
+   had six sections and showed no events.*
    *Why:* everything here is in the descriptor or in the resolution the
    client already does; an empty pane teaches nothing. *Rejected:*
    multi-selection, with no reader until stage 4's panels; a pane following
@@ -222,7 +230,7 @@ Open items live in `pending.md`.
    fuzzy matcher, which ranks guesses where the user typed a name they
    know; searching the open level only.
 
-6. **The drawer: four tabs, collapsed unless something is wrong.**
+6. **The drawer: five tabs, collapsed unless something is wrong.**
    Diagnostics: one row per diagnostic with kind, attributed path and
    message, the error hue and amber, a text filter, the count on the tab, a
    click selecting the element and navigating to it, a loop opening its
@@ -251,7 +259,19 @@ Open items live in `pending.md`.
    second lists every primitive with a stage 2 port in `outputs.order`'s
    order, numbered from 1 over that group, and under a row the feedthrough
    edges into it, labelled presumed. A primitive with both stages stands in
-   both groups, each time with that stage's ports. The drawer opens on load
+   both groups, each time with that stage's ports. Events, the last
+   tab, with the count of the model's state events on it: a row per
+   event, grouped by the primitive that declares it, in walk order and
+   then declaration order. The columns are the component's path, on its
+   first row alone, the event's priority number, which restarts at each
+   component, its name, and `localized`, `yes` or `no`. The bundle is the
+   pane's alone (answer 4). A component with all its rows is one stop
+   with the cursor's ring around the group, and a click on any of its
+   rows selects it. A deployment heads the tab with `firing_budget` when
+   the model declares an event, and with `localization_tol`, as a
+   fraction of `Δt_frame`, and `localization_budget` when it declares a
+   localized one. A model with no events says so, and a failure says that
+   the build did not reach them. The drawer opens on load
    only when a diagnostic exists, on that tab, and otherwise stays
    collapsed to its tab strip with the counts readable; a push or a
    replacement leaves it as it stands, opening it on the diagnostics when
@@ -285,7 +305,11 @@ Open items live in `pending.md`.
    factor stood in the anchors table. Amended 2026-11-24
    (`deployment_overlay.md` answer 3, the pin bump to the core's `fcd3660`,
    the user away): the timing columns read `k`, `m`, `c`, `D` and `Φ`, and
-   an anchor's `Δtₖ`, `τₖ`, `Dₖ` and `Φₖ`.*
+   an anchor's `Δtₖ`, `τₖ`, `Dₖ` and `Φₖ`. Amended 2026-11-27 (increment
+   10b's design session,
+   `increments/inspector_10b_events/notes_inspector_10b.md`): the drawer
+   had four tabs and listed no events, and the deployment's three event
+   parameters showed nowhere.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -447,7 +471,8 @@ Open items live in `pending.md`.
     - reading the diagram, a lead paragraph on the level, the order in
       which text drops when zooming out and the computed layout, then a
       legend of `visual_grammar.md`'s terms that name a drawn thing, each
-      with its drawing and one line;
+      with its drawing and one line, the events pill's saying once what
+      "localized" means and what the events tab's `no` stands for;
     - timing and root inputs, the notation of `deployment_overlay.md`
       answer 3 with its equations, and answer 14's type rule;
     - the keyboard, with the search's prefixes in a table under the keys;
@@ -473,9 +498,10 @@ Open items live in `pending.md`.
     browser's focus on a stop. A stop is a control the cursor can rest on:
     in the detail pane the header's buttons, each section's heading and,
     in an open section, its rows that act when pressed with their links,
-    and a docstring's links, so a parameter's row and a timing row are
-    none; in the drawer the current tab's rows and the further controls
-    on a row, a chart row's swatches among them.
+    and a docstring's links, so a parameter's row, a timing row and an
+    event's row are none; in the drawer the current tab's rows and the
+    further controls on a row, a chart row's swatches among them, and on
+    the events tab a component with all its event rows as one stop.
 
     | key | action |
     |---|---|
@@ -589,7 +615,10 @@ Open items live in `pending.md`.
     (the user's review of that increment): `r` and `R` took the drawer,
     Cmd-K and Ctrl-K did nothing in a text field, and Escape's chain did
     not name the menu. Amended 2026-11-26 (the user's ruling on
-    `pending.md`'s open item): the panes resized by drag alone.*
+    `pending.md`'s open item): the panes resized by drag alone. Amended
+    2026-11-27 (increment 10b's design session): the legend had no term
+    for the events pill, the page did not define "localized", and an
+    events group as one stop was unstated.*
     *Why:* the selection is the diagram's cursor, so `h j k l` move it and
     the view follows, as in Vim, with panning the secondary action; the
     arrows keep the view on familiar keys for everyone else. *Rejected:* a

@@ -48,7 +48,7 @@ answers by record and number.
   `Redstone.jl/src/descriptor.json`, the fixtures rule (answer 16).
 - `prototypes/render_spike/report.md`: hand-rolled SVG over ELK.js,
   the layout options exercised, what the spike did not test.
-- `visual_grammar.md`: how every concept is drawn, answers 1 to 10.
+- `visual_grammar.md`: how every concept is drawn, answers 1 to 11.
 - `workspace.md`: the frame, navigation, selection, the detail pane,
   search, the drawer, the analysis views, routes, view state, files and
   the hosted copy, the help page and the keyboard, answers 1 to 11.

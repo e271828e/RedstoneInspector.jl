@@ -392,6 +392,40 @@ Open items live in `pending.md`.
     type name is not. *Rejected:* a monospace face, which reads as code and
     widens every block; truncating user names for uniform blocks.
 
+11. **State events: a count on the top edge at the right.** A primitive
+    that declares state events carries a pill on its top edge at the
+    right, in the rate pill's shape, reading `1 event` or `4 events`. A
+    closed assembly carries the count of the events its primitives
+    declare beneath it. The pill shows in both color modes and is no
+    toggle. It has the background fill and the text color's stroke. Its
+    title lists a primitive's events in priority order, each with its
+    number and whether it is localized, and on an assembly gives the count
+    and the number of primitives that declare them. The pill takes no
+    click of its own, so a press selects the block. Like every badge it
+    never drops with the zoom. The rate pill keeps the left of the edge,
+    so each pill has one place in both modes. A block that carries the
+    events pill is at least as wide as its top edge's pills with their
+    insets and the gap between them, whatever the mode. A failure
+    descriptor carries no events and draws none. No legend line, tree
+    mark or search prefix names an event: the detail pane and the
+    drawer's events tab carry the rest (`workspace.md` answers 4 and 6).
+    *Added 2026-11-27 (increment 10b's design session,
+    `increments/inspector_10b_events/notes_inspector_10b.md`).*
+    *Why:* events are rare, and they answer which blocks can cut a step,
+    so the mark earns its place without a toggle, as the stage 1 square
+    does. Events are continuous-only, so a primitive never carries both
+    pills and only an assembly needs the two corners. The width is
+    reserved in every mode because a level's layout outlives a change of
+    mode. The stroke is neutral because the rate pill's stroke is its
+    clock's color, and events belong to no clock. *Rejected:* a glyph
+    beside the display name, which gives no count and has no place on an
+    icon block; no canvas mark; a legend line, the legend being rate
+    mode's and about colors; on a narrow assembly the right pill drawn
+    over the left, the bottom edge's rule, which hides the clock count;
+    both pills stacked from the left, where the events pill jumps on a
+    change of mode; one joined pill, which puts the events inside the
+    clock's stroke.
+
 ## Design axes
 
 This session closed axis 3; what it handed on has landed or stands in
