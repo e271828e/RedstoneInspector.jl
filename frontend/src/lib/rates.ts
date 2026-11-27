@@ -1,5 +1,5 @@
 // Rate mode's data (visual_grammar.md answer 6): each drawn block's timing
-// triple, the model's palette order, a level's legend lines and the clock badge.
+// triple, the model's palette order, a level's legend lines and the rate pill.
 import type { Node } from "./descriptor";
 import { levelOf, producerFace, type LevelWire } from "./level";
 import type { Model } from "./model";
@@ -129,6 +129,28 @@ export function clocksBeneath(model: Model, path: string): Triple[] {
 
 /** The clock badge's count: the distinct triples of the discrete primitives beneath an assembly, 0 with none. */
 export const clockCount = (model: Model, path: string): number => clocksBeneath(model, path).length;
+
+/**
+ * A child's rate pill as rate mode draws it: the legend number of an extra, past the palette's colors, and a closed
+ * assembly's clock count with a discrete primitive beneath, joined by ` · `; undefined with neither. The canvas draws
+ * it in rate mode alone, and `size.ts` reads its text in either mode.
+ */
+export function ratePill(model: Model, path: string, steps = stepsOf(model)): { text: string; title: string } | undefined {
+  const text: string[] = [], title: string[] = [];
+  const t = blockTriple(model, path);
+  const step = t && steps.get(tripleKey(t));
+  if (step !== undefined && step >= STEPS) {
+    text.push(`#${step + 1}`);
+    title.push(`Rate ${step + 1} of the legend, past the palette's ${STEPS} colors.`);
+  }
+  const k = model.tree!.byPath.get(path)?.class === "assembly" ? clockCount(model, path) : 0;
+  if (k > 0) {
+    const clocks = `${k} ${k === 1 ? "clock" : "clocks"}`;
+    text.push(clocks);
+    title.push(k === 1 ? "Every discrete primitive inside ticks on this one clock." : `Multi-rate: the discrete primitives inside tick on ${clocks}; open it to see which.`);
+  }
+  return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
+}
 
 /** Whether a level wire's terminal producer is a root input, whose wires stay neutral. */
 export function fromRootInput(model: Model, level: string, w: LevelWire): boolean {

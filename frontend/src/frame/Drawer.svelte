@@ -1,18 +1,20 @@
 <script lang="ts">
-  // The drawer (workspace.md answer 6): four tabs with their counts, open on load
+  // The drawer (workspace.md answer 6): five tabs with their counts, open on load
   // only when a diagnostic exists. The diagnostics tab lists every diagnostic and
   // warning with a text filter, a row's click focusing it and selecting what it
   // names, its location link under its message; a loop's row lists its wires,
   // each linked to the declaration of the assembly holding it, and its members,
-  // one traced structurally presumed. The other three tabs are components of
+  // one traced structurally presumed. The other four tabs are components of
   // their own, a row's click selecting what it names.
   import { tick } from "svelte";
   import { palette } from "../canvas/palette";
   import type { Selection } from "../lib/detail";
   import { loopFacts, type Indexed } from "../lib/diagnostics";
+  import { eventCount } from "../lib/events";
   import type { Face } from "../lib/resolve";
   import type { Model } from "../lib/model";
   import { diagnosticCount, type Tab } from "../state/session.svelte";
+  import Events from "./tabs/Events.svelte";
   import Order from "./tabs/Order.svelte";
   import RootInputs from "./tabs/RootInputs.svelte";
   import Timing from "./tabs/Timing.svelte";
@@ -36,7 +38,7 @@
     ondiagnostic: (index: number) => void;
     /** A location clicked: true when the shell sent it to the editor, false to copy it here. */
     onlocation: (file: string, line: number) => boolean;
-    /** A row of the root inputs, timing or order tab clicked, with the selection it makes. */
+    /** A row of the root inputs, timing, order or events tab clicked, with the selection it makes. */
     onrow: (s: Selection) => void;
     /** A timing chart's swatch pressed, with its legend line's key. */
     onlegend: (key: string) => void;
@@ -47,11 +49,14 @@
     { tab: "root-inputs", label: "Root inputs" },
     { tab: "timing", label: "Timing" },
     { tab: "order", label: "Execution order" },
+    { tab: "events", label: "Events" },
   ];
+  const events = $derived(eventCount(model));
   const counts = $derived<Partial<Record<Tab, number>>>({
     diagnostics: diagnosticCount(model),
     "root-inputs": model.structure?.root_inputs.length,
     order: model.outputs?.order.length,
+    events: events ? events : undefined,
   });
 
   let filter = $state("");
@@ -180,8 +185,10 @@
         <RootInputs {model} {onrow} />
       {:else if tab === "timing"}
         <Timing {model} {onrow} bind:byPeriod {legendFocus} {onlegend} />
-      {:else}
+      {:else if tab === "order"}
         <Order {model} {onrow} />
+      {:else}
+        <Events {model} {onrow} />
       {/if}
     </div>
   {/if}

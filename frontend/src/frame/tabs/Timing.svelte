@@ -13,6 +13,7 @@
     type TimingRow,
   } from "../../lib/timing";
   import Chart from "./Chart.svelte";
+  import HeadList from "./HeadList.svelte";
   import { rowClick } from "./rowClick";
 
   let { model, onrow, byPeriod = $bindable(false), legendFocus, onlegend }: {
@@ -61,15 +62,7 @@
 {#if !model.structure}
   <p class="empty">No timing: the descriptor carries no structure.</p>
 {:else}
-  {#if head}
-    {#each head as line, i (i)}
-      <dl class="head">
-        {#each line as h (h.label)}
-          <div class="item" data-item={h.label}><dt>{h.label}:</dt><dd>{#each h.values as v, j (v)}{#if j}{", "}{/if}{#if h.prose}{v}{:else}<code>{v}</code>{/if}{/each}</dd></div>
-        {/each}
-      </dl>
-    {/each}
-  {/if}
+  {#if head}<HeadList lines={head} />{/if}
   {#if joint}
     <h3>Hyperperiod</h3>
     <Chart {model} {joint} {legendFocus} {onlegend} />
@@ -176,11 +169,6 @@
     border-radius: 3px; padding: 1px 6px; margin-bottom: 4px; cursor: pointer;
   }
   .sort-period[aria-pressed="true"] { background: var(--strip); border-color: var(--text-light); font-weight: 600; }
-  /* The head list: a line of label and value pairs each, wrapping; a value wraps under itself. */
-  dl.head { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 0 0 2px; font-size: 12px; color: var(--text); }
-  dl.head .item { display: flex; gap: 6px; }
-  dl.head dt { color: var(--text-light); white-space: nowrap; }
-  dl.head dd { margin: 0; }
   .grid-report p { margin: 0 0 4px; color: var(--text); font-size: 12px; }
   .grid-report .primes { margin-top: 8px; }
   ul.powers { list-style: none; margin: 0; padding: 0 0 0 16px; font-size: 12px; color: var(--text); }

@@ -10,8 +10,12 @@ makes. `roadmap.md` holds the staging and each landed increment's facts.
 In working order, the first one next. Increments 1 to 10 and 8b and the
 keyboard by family have landed (`roadmap.md`).
 
-- **Increment 10b, the events** (`roadmap.md`), after a short design
-  session of its own.
+- **Increment 10b, the events** (`roadmap.md`). Designed on 2026-11-27,
+  the rulings in `increments/inspector_10b_events/notes_inspector_10b.md`.
+  Built, reviewed and fixed on 2026-11-27 with the user away, on the
+  branch `increment-10b`, unmerged and unpushed. What waits is in the
+  notes' "For the user's review": the user's check of the coordinator's
+  rulings, the look, the merge and the roadmap's landed entry.
 - **The look pass before the release**, by the user's rulings of
   2026-11-17 and 2026-11-20: the canvas's open look items, judged by eye
   in one session, after 10b draws the events and before 11 captures the
@@ -75,8 +79,9 @@ keyboard by family have landed (`roadmap.md`).
   - A `string` kind when a `String` port appears, and `min`/`max` on an
     integer marker if stage 4's widgets want bounds.
   - Locations of the stage functions `y_state`, `y_direct`, `x_deriv` and
-    `s_update` and of the event functions, the last weighed at 10b's
-    design session.
+    `s_update` and of each event's guard and handler, as one change. The
+    10b session of 2026-11-27 left the events' half out: the fields are
+    additions, which a minor bump can carry after the release.
   - The call that builds an assembly, without which a loop's row links no
     hop that a core `Group` holds
     (`increments/20261117_polish/notes_polish.md` ruling 3).

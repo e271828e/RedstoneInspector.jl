@@ -6,7 +6,7 @@ import { loadModel, type Model } from "./model";
 import type { PrimitiveFace, StructureSection } from "./descriptor";
 import { buildResolution } from "./resolve";
 import { buildTree } from "./tree";
-import { blockTriple, clockCount, clocksBeneath, CONTINUOUS, fromRootInput, legend, mixed, stepsOf, tripleKey, tripleOrder, wireTriple, type Triple } from "./rates";
+import { blockTriple, clockCount, clocksBeneath, CONTINUOUS, fromRootInput, legend, mixed, ratePill, stepsOf, tripleKey, tripleOrder, wireTriple, type Triple } from "./rates";
 import { legendText } from "./timing";
 
 const cl = fixtureModel("closed_loop");
@@ -198,5 +198,17 @@ describe("wireTriple", () => {
   it("gives a root input's wire no triple and marks it from a root input", () => {
     const w = wire(cl, "", "pid_controller|in|V_ref");
     expect([wireTriple(cl, "", w), fromRootInput(cl, "", w)]).toEqual([undefined, true]);
+  });
+});
+
+describe("ratePill", () => {
+  it("rates: an assembly's clock count, one clock or multi-rate; a continuous primitive none; approach_deployment: an extra's legend number past the eight colors", () => {
+    const r = fixtureModel("rates");
+    expect(ratePill(r, "fast")).toEqual({ text: "2 clocks", title: "Multi-rate: the discrete primitives inside tick on 2 clocks; open it to see which." });
+    expect(ratePill(r, "slow")).toEqual({ text: "1 clock", title: "Every discrete primitive inside ticks on this one clock." });
+    expect(ratePill(r, "src")).toBeUndefined();
+    const a = fixtureModel("approach_deployment");
+    expect(ratePill(a, "vehicle/cascade/h_ctl")).toEqual({ text: "#9", title: "Rate 9 of the legend, past the palette's 8 colors." });
+    expect(ratePill(a, "vehicle")?.text).toBe("11 clocks");
   });
 });

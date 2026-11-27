@@ -345,10 +345,17 @@ the user away): both stood open in the core's `pending.md`.*
    A primitive that declares no event has `"events": []` and `"bundle":
    []`. A row's events stand in declaration order, which is their priority
    order. A policy is `localized` or `non_localized`, the artifact's
-   symbols as `show` prints them. Increment 10 draws none of it. Increment
-   10b draws the events after a short design session of its own, and
-   decides there where `firing_budget`, `localization_tol` and
-   `localization_budget` show.
+   symbols as `show` prints them. Increment 10 drew none of it. Increment
+   10b draws the events in three places: a pill on the block
+   (`visual_grammar.md` answer 11), a section in the pane and a fifth
+   drawer tab, whose head holds `firing_budget`, `localization_tol` and
+   `localization_budget` (`workspace.md` answers 4 and 6). The drawing
+   asks nothing more of the format. The guard and handler locations wait
+   with the stage functions' (`pending.md`).
+   *Amended 2026-11-27 (increment 10b's design session,
+   `increments/inspector_10b_events/notes_inspector_10b.md`): increment
+   10b was to draw the events after a short design session of its own,
+   and to decide there where the three parameters show.*
    *Why:* one change to the format, one spec edit, one log entry and one
    pin bump serve what answer 1 treats as one gap, and a reader ignores
    fields it does not use. How an event is drawn is a question of the
@@ -401,7 +408,8 @@ the user away): both stood open in the core's `pending.md`.*
 
    `h_min` and `attempt_budget` follow `h_max` under an algorithm that
    proposes its steps, and no other, since a fixed-step method uses
-   neither. The three event parameters are not shown until 10b. The chart
+   neither. The three event parameters head the events tab
+   (`workspace.md` answer 6). The chart
    of answer 11 stands under the list. The equations of answer 3 are the
    help page's alone. A deployment adds columns to the tables a build has and
    no table of its own:
@@ -501,7 +509,9 @@ the user away): both stood open in the core's `pending.md`.*
    away): the heads were `k`, `Δtₖ`, `τₖ`, `Dₖ` and `Φₖ` on the anchors,
    and `k`, `m`, `c`, `D` and `Φ` on the other two tables. The grid report
    named its entries `Δt₂` and `τ₁`. The heads are now `show`'s, and the
-   seconds pair takes no subscript (the core's D-478).*
+   seconds pair takes no subscript (the core's D-478). Amended 2026-11-27
+   (increment 10b's design session): the three event parameters were not
+   shown until 10b.*
    *Why:* the build's `2·Δt_base` and the deployment's `1/50 s` are one
    cell before and after binding, which is the relation the notation
    exists to show. The list sits beside what depends on it: `Δt_base` is

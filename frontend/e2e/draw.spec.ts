@@ -59,6 +59,13 @@ const TABLE: Record<string, Record<string, Pins>> = {
     "vehicle/selection": row(15, 14, 5, 5, 0, 3, 0),
     "vehicle/sensing": row(4, 3, 1, 1, 0, 1, 0),
   },
+  events_deployment: {
+    "": row(11, 7, 1, 6, 3, 2, 0),
+    "pods/a": row(3, 2, 0, 1, 0, 1, 0),
+    "pods/b": row(3, 2, 0, 1, 0, 1, 0),
+    nest: row(4, 2, 0, 2, 1, 1, 1),
+    "nest/deep": row(2, 1, 0, 1, 0, 1, 0),
+  },
   failure_nested: { "": row(5, 5, 2, 1, 1, 0, 1), ctl: row(4, 3, 2, 1, 0, 0, 0) },
   failure_dead: { "": row(5, 5, 2, 0, 0, 0, 0) },
   failure_probe: { "": row(3, 1, 1, 0, 1, 0, 0), s: row(4, 3, 1, 1, 0, 0, 0) },

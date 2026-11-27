@@ -366,9 +366,15 @@
     const region = session.focus;
     return region === "detail" || region === "drawer" ? stopsOf(region).find((e) => e === document.activeElement) : undefined;
   }
+  /**
+   * The cursor put on a stop and scrolled into view: for an events group's button the whole `tbody`, or its top, which
+   * holds the button, when the group is taller than the tab's body.
+   */
   function focusStop(e: HTMLElement | undefined) {
     e?.focus({ preventScroll: true });
-    e?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const group = e?.closest("tbody.group");
+    const tall = !!group && group.getBoundingClientRect().height > group.closest(".tab-body")!.clientHeight;
+    (group ?? e)?.scrollIntoView({ block: tall ? "start" : "nearest", inline: "nearest" });
   }
 
   /** A pane's `h j k l`: the cursor to another stop, or a section opened or closed. */
@@ -535,15 +541,16 @@
 
   /**
    * A click on a stop, or on a row elsewhere than on its button, puts the cursor on it, before the click acts: WebKit
-   * focuses no button and no link, and no browser a row. A click that only left a text selection on the row moves
-   * nothing, since WebKit's `focus()` would clear it before the row reads it (answer 6).
+   * focuses no button and no link, and no browser a row. An events group is one row, its button on its first. A click
+   * that only left a text selection on the row moves nothing, since WebKit's `focus()` would clear it before the row
+   * reads it (answer 6).
    */
   function onclick(e: MouseEvent) {
     const t = e.target instanceof Element ? e.target : null;
     const region = regionOf(t);
     if (!t || (region !== "detail" && region !== "drawer")) return;
     const stop = t.closest("summary, button, a[href]");
-    const row = t.closest("tr, .line, li.edge");
+    const row = t.closest("tbody.group") ?? t.closest("tr, .line, li.edge");
     if (!stop && row && dragged(e, row)) return;
     const at = stop ?? row?.querySelector("button.row");
     stopsOf(region).find((s) => s === at)?.focus({ preventScroll: true });

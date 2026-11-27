@@ -1,0 +1,1049 @@
+{
+  "format_version": {
+    "major": 1,
+    "minor": 0
+  },
+  "redstone_version": "0.1.0",
+  "kind": "deployment",
+  "name": "events_deployment",
+  "deployment": {
+    "build": {
+      "structure": {
+        "nodes": [
+          {
+            "path": "",
+            "class": "assembly",
+            "type": "Main.Synthetic.Events",
+            "signature": "Main.Synthetic.Events{Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer, hold::Main.Synthetic.ZOH}, Tuple{Pair{String, String}}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{hold::Redstone.Absolute}}, Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer, hold::Main.Synthetic.ZOH}, Tuple{Pair{String, String}}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{hold::Redstone.Absolute}}, Redstone.Group{@NamedTuple{step::Redstone.Library.Step{Float64, false}, deep::Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer}, Tuple{}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{}}}, Tuple{}, Tuple{}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{}}}",
+            "inputs": [
+              {
+                "name": "ambient"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "a"
+              },
+              {
+                "name": "b"
+              },
+              {
+                "name": "step"
+              },
+              {
+                "name": "h"
+              },
+              {
+                "name": "T"
+              },
+              {
+                "name": "heating"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "",
+                  "port": "ambient"
+                },
+                "to": {
+                  "path": "heater",
+                  "port": "ambient"
+                }
+              },
+              {
+                "from": {
+                  "path": "pods/a",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "",
+                  "port": "a"
+                }
+              },
+              {
+                "from": {
+                  "path": "pods/b",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "",
+                  "port": "b"
+                }
+              },
+              {
+                "from": {
+                  "path": "nest",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "",
+                  "port": "step"
+                }
+              },
+              {
+                "from": {
+                  "path": "nest",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "",
+                  "port": "h"
+                }
+              },
+              {
+                "from": {
+                  "path": "heater",
+                  "port": "T"
+                },
+                "to": {
+                  "path": "",
+                  "port": "T"
+                }
+              },
+              {
+                "from": {
+                  "path": "heater",
+                  "port": "heating"
+                },
+                "to": {
+                  "path": "",
+                  "port": "heating"
+                }
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "pods/a",
+            "field": "pods",
+            "key": "a",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer, hold::Main.Synthetic.ZOH}, Tuple{Pair{String, String}}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{hold::Redstone.Absolute}}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "pods/a/ball",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "pods/a/hold",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "pods/a/hold",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "pods/a",
+                  "port": "h"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"ball/h\"=>\"hold/in\",)"
+              },
+              {
+                "name": "input_wires",
+                "value": "()"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"hold/out\"=>\"h\",)"
+              },
+              {
+                "name": "sample_times.hold",
+                "value": "Absolute(1//50, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "pods/a/ball",
+            "field": "children",
+            "key": "ball",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [],
+            "type": "Main.Synthetic.Bouncer",
+            "signature": "Main.Synthetic.Bouncer",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "restitution",
+                "value": "0.8"
+              }
+            ]
+          },
+          {
+            "path": "pods/a/hold",
+            "field": "children",
+            "key": "hold",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 1,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [
+              {
+                "scope": "pods/a",
+                "key": "hold",
+                "dt": {
+                  "num": 1,
+                  "den": 50
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "pods/b",
+            "field": "pods",
+            "key": "b",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer, hold::Main.Synthetic.ZOH}, Tuple{Pair{String, String}}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{hold::Redstone.Absolute}}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "pods/b/ball",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "pods/b/hold",
+                  "port": "in"
+                }
+              },
+              {
+                "from": {
+                  "path": "pods/b/hold",
+                  "port": "out"
+                },
+                "to": {
+                  "path": "pods/b",
+                  "port": "h"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "(\"ball/h\"=>\"hold/in\",)"
+              },
+              {
+                "name": "input_wires",
+                "value": "()"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"hold/out\"=>\"h\",)"
+              },
+              {
+                "name": "sample_times.hold",
+                "value": "Absolute(1//10, 0//1)"
+              }
+            ]
+          },
+          {
+            "path": "pods/b/ball",
+            "field": "children",
+            "key": "ball",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [],
+            "type": "Main.Synthetic.Bouncer",
+            "signature": "Main.Synthetic.Bouncer",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "restitution",
+                "value": "0.5"
+              }
+            ]
+          },
+          {
+            "path": "pods/b/hold",
+            "field": "children",
+            "key": "hold",
+            "class": "primitive",
+            "tier": "discrete",
+            "timing": {
+              "anchor": 2,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [
+              {
+                "scope": "pods/b",
+                "key": "hold",
+                "dt": {
+                  "num": 1,
+                  "den": 10
+                },
+                "tau": {
+                  "num": 0,
+                  "den": 1
+                }
+              }
+            ],
+            "type": "Main.Synthetic.ZOH",
+            "signature": "Main.Synthetic.ZOH",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": []
+          },
+          {
+            "path": "nest",
+            "field": "nest",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{step::Redstone.Library.Step{Float64, false}, deep::Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer}, Tuple{}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{}}}, Tuple{}, Tuple{}, Tuple{Pair{String, String}, Pair{String, String}}, @NamedTuple{}}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y"
+              },
+              {
+                "name": "h"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "nest/step",
+                  "port": "y"
+                },
+                "to": {
+                  "path": "nest",
+                  "port": "y"
+                }
+              },
+              {
+                "from": {
+                  "path": "nest/deep",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "nest",
+                  "port": "h"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "()"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"step/y\"=>\"y\", \"deep/h\"=>\"h\")"
+              },
+              {
+                "name": "sample_times",
+                "value": "NamedTuple()"
+              }
+            ]
+          },
+          {
+            "path": "nest/step",
+            "field": "children",
+            "key": "step",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [],
+            "type": "Redstone.Library.Step",
+            "signature": "Redstone.Library.Step{Float64, false}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "y",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "before",
+                "value": "0.0"
+              },
+              {
+                "name": "after",
+                "value": "1.0"
+              },
+              {
+                "name": "t_step",
+                "value": "1.0"
+              }
+            ]
+          },
+          {
+            "path": "nest/deep",
+            "field": "children",
+            "key": "deep",
+            "class": "assembly",
+            "type": "Redstone.Group",
+            "signature": "Redstone.Group{@NamedTuple{ball::Main.Synthetic.Bouncer}, Tuple{}, Tuple{}, Tuple{Pair{String, String}}, @NamedTuple{}}",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h"
+              }
+            ],
+            "wires": [
+              {
+                "from": {
+                  "path": "nest/deep/ball",
+                  "port": "h"
+                },
+                "to": {
+                  "path": "nest/deep",
+                  "port": "h"
+                }
+              }
+            ],
+            "parameters": [
+              {
+                "name": "local_wires",
+                "value": "()"
+              },
+              {
+                "name": "input_wires",
+                "value": "()"
+              },
+              {
+                "name": "output_wires",
+                "value": "(\"ball/h\"=>\"h\",)"
+              },
+              {
+                "name": "sample_times",
+                "value": "NamedTuple()"
+              }
+            ]
+          },
+          {
+            "path": "nest/deep/ball",
+            "field": "children",
+            "key": "ball",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [],
+            "type": "Main.Synthetic.Bouncer",
+            "signature": "Main.Synthetic.Bouncer",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "h",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "restitution",
+                "value": "0.6"
+              }
+            ]
+          },
+          {
+            "path": "heater",
+            "field": "heater",
+            "class": "primitive",
+            "tier": "continuous",
+            "timing": {
+              "anchor": 0,
+              "D": 1,
+              "phi": 0
+            },
+            "rates": [],
+            "type": "Main.Synthetic.Thermostat",
+            "signature": "Main.Synthetic.Thermostat",
+            "inputs": [
+              {
+                "name": "ambient",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              }
+            ],
+            "outputs": [
+              {
+                "name": "T",
+                "type": "Float64",
+                "kind": {
+                  "kind": "float"
+                },
+                "pinned": false
+              },
+              {
+                "name": "heating",
+                "type": "Bool",
+                "kind": {
+                  "kind": "boolean"
+                },
+                "pinned": false
+              }
+            ],
+            "parameters": [
+              {
+                "name": "low",
+                "value": "18.0"
+              },
+              {
+                "name": "high",
+                "value": "22.0"
+              },
+              {
+                "name": "limit",
+                "value": "30.0"
+              }
+            ]
+          }
+        ],
+        "root_inputs": [
+          {
+            "name": "ambient",
+            "type": "Float64",
+            "kind": {
+              "kind": "float"
+            },
+            "pinned": false,
+            "pinned_by": []
+          }
+        ],
+        "anchors": [
+          {
+            "dt": {
+              "num": 1,
+              "den": 50
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "pods/a",
+            "key": "hold"
+          },
+          {
+            "dt": {
+              "num": 1,
+              "den": 10
+            },
+            "tau": {
+              "num": 0,
+              "den": 1
+            },
+            "scope": "pods/b",
+            "key": "hold"
+          }
+        ],
+        "scopes": [],
+        "grid": {
+          "admissible": {
+            "num": 1,
+            "den": 50
+          },
+          "pool": [
+            {
+              "anchor": 1,
+              "kind": "period",
+              "factor": 5
+            },
+            {
+              "anchor": 2,
+              "kind": "period",
+              "factor": 1
+            }
+          ],
+          "primes": [
+            {
+              "prime": 2,
+              "power": 1,
+              "suppliers": [
+                1,
+                2
+              ]
+            },
+            {
+              "prime": 5,
+              "power": 2,
+              "suppliers": [
+                1
+              ]
+            }
+          ]
+        },
+        "types": [
+          {
+            "name": "Main.Synthetic.Events",
+            "docstring": "Two pods in the keyed container `pods`, a non-localized step beside a ball one level down, and the thermostat.",
+            "locations": [
+              {
+                "function": "local_wires",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 450
+              },
+              {
+                "function": "input_wires",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 451
+              },
+              {
+                "function": "output_wires",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 452
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Group",
+            "docstring": "    Group\n\nAn [assembly](@ref g-assembly) written as a value, the form an assembly takes\nunless domain code needs its type.\n\nA `Group` is an assembly that holds its children and its declarations as field\nvalues. The elements of its `children` field, a `NamedTuple` of\n[components](@ref g-component), are its children. Its [`local_wires`](@ref),\n[`input_wires`](@ref), [`output_wires`](@ref) and [`sample_times`](@ref) are\nordinary functions of the instance, which read its fields. A wire field holds\nthe [entries](@ref g-entry) or a function that computes them, as the\nconstructor states.\n\nThe one declaration it adds is [`transparent_container`](@ref). `children` is\n[name-transparent](@ref g-container-children), so its elements go by bare key\neverywhere a child name appears. That is `\"ctl/out\" => \"plant/u\"` for a wire,\n`(ctl = Relative(2),)` for a rate, `at(\"ctl\", …)` for a\n[condition](@ref g-condition) prefix and `\"plant\"` for a read path, as in\n`port(sim, \"plant\", :y)`. A `Group`'s declarations are then textually identical\nto a named assembly's. The rate declaration's field-name sugar, keying on the\nfield rather than on a path segment, keeps working as\n`(children = Relative(2),)` for the uniform case.\n",
+            "locations": [
+              {
+                "function": "sample_times",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
+                "line": 981
+              },
+              {
+                "function": "local_wires",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
+                "line": 978
+              },
+              {
+                "function": "input_wires",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
+                "line": 979
+              },
+              {
+                "function": "output_wires",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
+                "line": 980
+              },
+              {
+                "function": "transparent_container",
+                "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
+                "line": 982
+              }
+            ]
+          },
+          {
+            "name": "Main.Synthetic.Bouncer",
+            "docstring": "A ball's height under gravity, bounced off the floor by one localized event.",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 408
+              },
+              {
+                "function": "x_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 407
+              },
+              {
+                "function": "state_events",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 413
+              }
+            ]
+          },
+          {
+            "name": "Main.Synthetic.ZOH",
+            "docstring": "A sample-and-hold, discrete and stateless.",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 199
+              },
+              {
+                "function": "y_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 200
+              },
+              {
+                "function": "s_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 198
+              }
+            ]
+          },
+          {
+            "name": "Redstone.Library.Step",
+            "docstring": "    Step(; t_step, before = 0.0, after = 1.0, localized::Bool = true) -> Step\n\nA continuous [primitive](@ref g-primitive) that publishes one value before a\ngiven time and another from then on.\n\nIts one output, `y`, publishes `before` until `t_step` and `after` from then on.\nThe [library component](@ref g-library-component) has no inputs and no\ncontinuous state. Its one mode, the field `m`, picks the value. One\n[state event](@ref g-state-event), `fire`, sets it once `t` reaches `t_step`.\n\n`before` and `after` broadcast to one shape and type, the parameter `V`,\n`Float64` or an `SArray` of `Float64`, so a scalar pairs with a vector and\ninteger values qualify. The output is [pinned](@ref g-walked) at `V`. It carries\nzero partials under every [activation](@ref g-activation), as a\n[`Constant`](@ref)'s does.\n\n`localized` picks the detection policy.\n[Localized](@ref g-localized), the step ends at the crossing and the jump lands\nthere. [Non-localized](@ref g-non-localized), the event fires at the end of the\nstep in which it was first observed. The jump then lands on the first\n[boundary](@ref g-boundary) at or after `t_step`, never inside a step.\n\nA `t_step` at or before `t₀` fires at [boundary zero](@ref g-boundary-zero), and\nthe output publishes `after` from the start.\n\n# Keywords\n\n- `t_step`: the time of the step, any time.\n- `before`: the value before `t_step`.\n- `after`: the value from `t_step` on.\n- `localized`: `true` for a localized step, `false` for a non-localized one.\n",
+            "locations": [
+              {
+                "function": "y_types",
+                "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
+                "line": 1641
+              },
+              {
+                "function": "x_init",
+                "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
+                "line": 1639
+              },
+              {
+                "function": "m_init",
+                "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
+                "line": 1640
+              },
+              {
+                "function": "state_events",
+                "file": "<depot>/packages/Redstone/pUVJl/src/library.jl",
+                "line": 1646
+              }
+            ]
+          },
+          {
+            "name": "Main.Synthetic.Thermostat",
+            "docstring": "A room heated between two thresholds, two localized events, and a trip latched past a limit, a non-localized one.",
+            "locations": [
+              {
+                "function": "u_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 424
+              },
+              {
+                "function": "y_types",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 425
+              },
+              {
+                "function": "x_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 422
+              },
+              {
+                "function": "m_init",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 423
+              },
+              {
+                "function": "state_events",
+                "file": "<repo>/scripts/synthetic.jl",
+                "line": 434
+              }
+            ]
+          }
+        ]
+      },
+      "outputs": {
+        "order": [
+          "pods/a/ball",
+          "pods/a/hold",
+          "pods/b/ball",
+          "pods/b/hold",
+          "nest/step",
+          "nest/deep/ball",
+          "heater"
+        ],
+        "components": [
+          {
+            "path": "pods/a/ball",
+            "stage1": [
+              "h"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "pods/a/hold",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "pods/b/ball",
+            "stage1": [
+              "h"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "pods/b/hold",
+            "stage1": [],
+            "stage2": [
+              "out"
+            ]
+          },
+          {
+            "path": "nest/step",
+            "stage1": [
+              "y"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "nest/deep/ball",
+            "stage1": [
+              "h"
+            ],
+            "stage2": []
+          },
+          {
+            "path": "heater",
+            "stage1": [
+              "T",
+              "heating"
+            ],
+            "stage2": []
+          }
+        ]
+      },
+      "events": {
+        "components": [
+          {
+            "path": "pods/a/ball",
+            "events": [
+              {
+                "name": "bounce",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "pods/a/hold",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "pods/b/ball",
+            "events": [
+              {
+                "name": "bounce",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "pods/b/hold",
+            "events": [],
+            "bundle": []
+          },
+          {
+            "path": "nest/step",
+            "events": [
+              {
+                "name": "fire",
+                "policy": "non_localized"
+              }
+            ],
+            "bundle": [
+              "m",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "nest/deep/ball",
+            "events": [
+              {
+                "name": "bounce",
+                "policy": "localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "y",
+              "t"
+            ]
+          },
+          {
+            "path": "heater",
+            "events": [
+              {
+                "name": "heat_on",
+                "policy": "localized"
+              },
+              {
+                "name": "heat_off",
+                "policy": "localized"
+              },
+              {
+                "name": "trip",
+                "policy": "non_localized"
+              }
+            ],
+            "bundle": [
+              "x",
+              "m",
+              "u",
+              "y",
+              "t"
+            ]
+          }
+        ]
+      },
+      "warnings": []
+    },
+    "dt_frame": {
+      "num": 1,
+      "den": 100
+    },
+    "dt_base": {
+      "num": 1,
+      "den": 100
+    },
+    "h_max": {
+      "num": 1,
+      "den": 100
+    },
+    "algorithm": {
+      "text": "RK4()",
+      "proposes": false
+    },
+    "firing_budget": 2,
+    "localization_tol": 2.5e-5,
+    "localization_budget": 16,
+    "attempt_budget": 7,
+    "schedule": {
+      "anchors": [
+        {
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "D": 10,
+          "phi": 0
+        }
+      ],
+      "rows": [
+        {
+          "path": "pods/a/hold",
+          "D": 2,
+          "phi": 0
+        },
+        {
+          "path": "pods/b/hold",
+          "D": 10,
+          "phi": 0
+        }
+      ],
+      "scopes": []
+    },
+    "warnings": []
+  }
+}

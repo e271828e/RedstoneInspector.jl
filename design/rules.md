@@ -448,6 +448,14 @@ full text stays.
   field, which closes the help page, so `help.spec.ts`'s check of the keys
   under the help page fails there. Safari stopped doing so in version 13.
   Found 2026-11-25.
+- **A keyed level in `openPath`.** A keyed container's field, `pods` in
+  `pods/a`, is a folder with no block to open, so the harness's `openPath`
+  passes over it and opens `pods/a` from its parent's level. Found
+  2026-11-27.
+- **A stop that stands for a group.** Scrolling a whole group into view by
+  `block: "nearest"` aligns its bottom on the way up, which hides the
+  button in its first row when the group is taller than its scroller. A
+  group that does not fit is scrolled to its top. Found 2026-11-27.
 
 ## Amending a record
 

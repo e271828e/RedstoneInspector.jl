@@ -17,9 +17,9 @@ no entry here.
 - **Badge.** A small mark in a block's corner or at a pin's end carrying a
   fact: a diagnostic, a loop or route continuing inside a closed child or
   leaving through a pin, a closed assembly's clock count, an extra
-  triple's number, an execution-order position, and from stage 2 a root
-  input's claim (`visual_grammar.md` answers 3, 6 and 8, `workspace.md`
-  answers 7 and 8).
+  triple's number, an execution-order position, a count of state events,
+  and from stage 2 a root input's claim (`visual_grammar.md` answers 3,
+  6, 8 and 11, `workspace.md` answers 7 and 8).
 - **Base path.** The prefix a built page puts before its own files'
   addresses; `./` makes them relative to the page, so one build serves two
   addresses (`build_release.md` answer 7).
@@ -94,6 +94,11 @@ no entry here.
 - **Envelope.** The top-level object: `format_version`,
   `redstone_version`, `kind`, the optional `name` and the body
   (`descriptor_design.md` answer 1).
+- **Events pill.** The badge on a block's top edge at the right that
+  counts state events: those a primitive declares, or on a closed
+  assembly those of the primitives beneath it. An **events group** is a
+  declaring primitive with all its event rows in the drawer's events tab,
+  one stop (`visual_grammar.md` answer 11, `workspace.md` answer 6).
 - **Face object.** A face as the node carries it: a *primitive face* with
   `name`, `type`, `kind` and `pinned`, or an *assembly face* with `name`
   alone (`descriptor_design.md` answer 4).

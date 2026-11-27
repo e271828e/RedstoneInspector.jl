@@ -4,7 +4,7 @@ module Synthetic
 using Redstone
 import Redstone: AbstractComponent, x_init, s_init, m_init, u_types, y_types, y_state,
     y_direct, x_deriv, s_update, local_wires, input_wires, output_wires, sample_times,
-    transparent_container, input_passthrough, Absolute, Relative, Group, Pinned
+    transparent_container, input_passthrough, Absolute, Relative, Group, Pinned, state_events, StateEvent
 import Redstone.Library: Constant, Junction, SumJunction, Or, And, Pack, Unpack, Switch, StopRequest,
     Step, Source, GaussianWhiteNoise, Integrator, LimitedIntegrator, FirstOrderLag, StateSpace,
     TransferFunction, Relay, UnitDelay, DiscreteIntegrator, RateLimiter, DiscreteStateSpace,
@@ -396,5 +396,68 @@ timing() = Group((; staggered = ZOH(),
                  output_wires = ("staggered/out" => "staggered", "fast/inner" => "inner", "fast/hold" => "hold",
                                  "fast/same" => "same", "fast/deep" => "deep", "frozen/out" => "frozen"),
                  sample_times = (staggered = Absolute(1//10, 1//300), fast = Absolute(1//50)))
+
+# --- events: the state events' cases (increment 10b, the notes' C1) -------------------
+
+"A ball's height under gravity, bounced off the floor by one localized event."
+struct Bouncer <: AbstractComponent
+    restitution::Float64
+end
+
+x_init(::Bouncer) = (h = 1.0, v = 0.0)
+y_types(::Bouncer) = (h = Float64,)
+y_state(::Bouncer, (; x)) = (h = x.h,)
+x_deriv(::Bouncer, (; x)) = (h = x.v, v = -9.81)
+bounce_guard(::Bouncer, (; x)) = -x.h
+bounce_handler(b::Bouncer, (; x)) = (x = (h = 0.0, v = -b.restitution * x.v),)
+state_events(::Bouncer) = (bounce = StateEvent(bounce_guard, bounce_handler),)
+
+"A room heated between two thresholds, two localized events, and a trip latched past a limit, a non-localized one."
+struct Thermostat <: AbstractComponent
+    low::Float64
+    high::Float64
+    limit::Float64
+end
+
+x_init(::Thermostat) = (T = 20.0,)
+m_init(::Thermostat) = (heating = true, tripped = false)
+u_types(::Thermostat) = (ambient = Float64,)
+y_types(::Thermostat) = (T = Float64, heating = Bool)
+y_state(::Thermostat, (; x, m)) = (T = x.T, heating = m.heating && !m.tripped)
+x_deriv(::Thermostat, (; x, m, u)) = (T = (m.heating && !m.tripped ? 2.0 : 0.0) + 0.1 * (u.ambient - x.T),)
+heat_on_guard(c::Thermostat, (; x, m)) = m.heating ? -1.0 : c.low - x.T
+heat_off_guard(c::Thermostat, (; x, m)) = m.heating ? x.T - c.high : -1.0
+trip_guard(c::Thermostat, (; x, m)) = !m.tripped && x.T > c.limit
+heat_on_handler(::Thermostat, _) = (m = (heating = true,),)
+heat_off_handler(::Thermostat, _) = (m = (heating = false,),)
+trip_handler(::Thermostat, _) = (m = (tripped = true,),)
+state_events(::Thermostat) = (heat_on = StateEvent(heat_on_guard, heat_on_handler),
+                              heat_off = StateEvent(heat_off_guard, heat_off_handler),
+                              trip = StateEvent(trip_guard, trip_handler))
+
+"A ball sampled by a hold: a discrete primitive beside an event-declaring one."
+pod(restitution, Δt) = Group((; ball = Bouncer(restitution), hold = ZOH());
+                             local_wires = ("ball/h" => "hold/in",), output_wires = ("hold/out" => "h",),
+                             sample_times = (hold = Absolute(Δt),))
+
+"Two pods in the keyed container `pods`, a non-localized step beside a ball one level down, and the thermostat."
+struct Events{A, B, N} <: AbstractComponent
+    pods::NamedTuple{(:a, :b), Tuple{A, B}}
+    nest::N
+    heater::Thermostat
+end
+
+local_wires(::Events) = ()
+input_wires(::Events) = ("ambient" => "heater/ambient",)
+output_wires(::Events) = ("pods/a/h" => "a", "pods/b/h" => "b", "nest/y" => "step", "nest/h" => "h",
+                          "heater/T" => "T", "heater/heating" => "heating")
+
+# The keyed pods: a short name and one face each, narrower than their two pills; the nest's two levels each hold
+# an event; the heater a localized and a non-localized event in one component.
+events() = Events((a = pod(0.8, 1//50), b = pod(0.5, 1//10)),
+                  Group((; step = Step(t_step = 1.0, localized = false),
+                           deep = Group((; ball = Bouncer(0.6)); output_wires = ("ball/h" => "h",)));
+                        output_wires = ("step/y" => "y", "deep/h" => "h")),
+                  Thermostat(18.0, 22.0, 30.0))
 
 end # module Synthetic

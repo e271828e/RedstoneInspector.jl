@@ -1,6 +1,6 @@
 // The help page (workspace.md answers 11 and 10; initial_design.md answer 15;
 // build_release.md answers 7 and 8): reached from the landing's link, `?` and the
-// status bar's link; its five sections with the lead paragraph, the legend's fifteen
+// status bar's link; its five sections with the lead paragraph, the legend's sixteen
 // drawn terms, the timing notation and the root inputs' type rule (deployment_overlay.md
 // answers 3 and 14), the vocabulary of look_inspector_08.md's 7.2, the keyboard table as
 // long as the map's with the search's prefixes under it, both Vimium patterns, the privacy statement and the versions;
@@ -26,7 +26,7 @@ const help = (page: Page) => page.locator("article.help");
 const under = (page: Page) => page.locator("main > div.under");
 /** The legend's terms in their order, each with its drawing. */
 const TERM_KEYS = [
-  "component", "face", "wire", "badge", "casing", "chord", "dim", "display-name", "halo", "hue", "legend", "pin", "modes", "region", "tag",
+  "component", "face", "wire", "badge", "casing", "chord", "dim", "display-name", "events", "halo", "hue", "legend", "pin", "modes", "region", "tag",
 ];
 /** The root tag's outline at width 80, as the canvas's `tagD` draws it. */
 const TAG_D = "M20,0 L71,0 L80,11 L71,22 L20,22 A11,11 0 0 1 20,0 Z";
@@ -44,7 +44,7 @@ async function dropUnder(page: Page, name: string) {
   await expect(page).toHaveTitle(`${name} – Redstone inspector`);
 }
 
-test("before a drop: the landing's link opens five sections over the inert landing, the lead, fifteen drawn terms, nineteen Simulink rows and the map's keys; the close button the landing again", async ({ page }) => {
+test("before a drop: the landing's link opens five sections over the inert landing, the lead, sixteen drawn terms, nineteen Simulink rows and the map's keys; the close button the landing again", async ({ page }) => {
   await page.goto("/");
   await page.locator(".landing a.help").click();
   await expect(help(page)).toHaveCount(1);
@@ -64,9 +64,9 @@ test("before a drop: the landing's link opens five sections over the inert landi
   await expect(lead).toHaveCount(1);
   await expect(h.locator("p.lead")).toContainText("Double-click a closed assembly to open its level.");
   await expect(h.locator("p.lead")).toContainText("A dragged component keeps its place for the session only: x puts the last one dragged back in its computed place, and X or the Undo drags button every one.");
-  // fifteen terms in their order, each with its drawing
+  // sixteen terms in their order, each with its drawing
   expect(await h.locator("ul.terms li[data-term]").evaluateAll((l) => l.map((e) => (e as HTMLElement).dataset.term))).toEqual(TERM_KEYS);
-  await expect(h.locator("ul.terms li[data-term] > svg.sample")).toHaveCount(15);
+  await expect(h.locator("ul.terms li[data-term] > svg.sample")).toHaveCount(16);
   for (const t of ["level", "semantic-zoom", "triple", "block"]) await expect(h.locator(`li[data-term="${t}"]`)).toHaveCount(0);
   await expect(h.locator('li[data-term="component"] .term')).toHaveText("component");
   // the tag's outline is the canvas's own
@@ -404,7 +404,7 @@ test("closed_loop: no text a reader sees says block or leaf, over each drawer ta
   await press(page, "o");
   await press(page, "y");
   const seen: string[] = [];
-  for (const tab of ["diagnostics", "root-inputs", "timing", "order"]) {
+  for (const tab of ["diagnostics", "root-inputs", "timing", "order", "events"]) {
     await page.locator(`section.drawer button.tab[data-tab="${tab}"]`).click();
     await expect(page.locator("section.drawer")).toHaveAttribute("data-tab", tab);
     seen.push(...await readerTexts(page));

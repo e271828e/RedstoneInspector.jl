@@ -286,7 +286,7 @@ describe("other fixtures", () => {
       root_inputs: [{ ...f("x"), pinned_by: [] }], anchors: [], scopes: [], grid: { pool: [], primes: [] }, types: [],
     };
     const tree = buildTree(structure);
-    const one = { tree, structure, resolution: buildResolution(tree, structure) } as Model;
+    const one = { descriptor: { kind: "build", build: { events: { components: [] } } }, tree, structure, resolution: buildResolution(tree, structure) } as unknown as Model;
     expect([levelFacts(one, "").children, levelFacts(one, "").wires]).toEqual([1, 1]);
     const rates = fixtureModel("rates");
     expect([levelFacts(rates, "fast").children, levelFacts(rates, "fast").wires]).toEqual([2, 4]);
