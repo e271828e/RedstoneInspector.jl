@@ -223,6 +223,49 @@ review.
   `../RedstoneInspector.jl-worktrees/e2e.lock` for the run. The
   real-server check binds a free port and needs none.
 
+Made on the mechanics' report, 2026-11-28, the user away, for the
+user's review. Each is a reading of the builder's that the coordinator
+kept.
+
+- **C13. Pages deploys from a sixth job, `pages`.** `deploy-pages` runs
+  in a job that names the `github-pages` environment, and GitHub lets
+  that environment deploy from `master` alone. A `release` job naming it
+  would fail before its first step on a dispatch from another branch,
+  red where ruling 2 wants green, and every ordinary push would record a
+  deployment that deployed nothing. So `pages` names the environment and
+  runs only when `release` published something. It runs even when the
+  release job's last step failed, since the release is public by then.
+  C1's order holds, and ruling 3's fifth job is `live`.
+- **C14. The rule has a third branch, the resume.** When the tag exists
+  and its commit's parent is the run's commit, the job publishes the
+  draft if it is still one and runs its last step. It packs nothing and
+  pushes nothing. *Why:* a failure after the atomic push leaves the tag
+  on the generated commit and the Release a draft, and a rule of the
+  absent tag alone would stop a re-run there. An ordinary later push
+  never matches, since its commit is no parent of the tag's. A failure
+  before the push needs no branch: the re-run deletes the draft it finds
+  and packs again.
+- **C15. The driver is `frontend/live/driver.jl`**, beside its spec, run
+  under the root project. *Rejected:* `scripts/`, whose environment is
+  the fixture script's and pulls in the examples.
+- **C16. The test of a start with no bundle runs under an empty depot.**
+  A helper swaps `DEPOT_PATH` for one empty folder around those cases,
+  and `src/` is unchanged. *Rejected:* a test that branches on whether
+  `Artifacts.toml` has an entry; an argument on `_bundle_directory`, a
+  source change made for the test.
+- **C17. The small readings.** The notice is a workflow annotation
+  titled "Nothing released", which the run's summary shows; an ordinary
+  push writes one log line. The tag is lightweight, the Release is
+  titled by the tag and its notes are the ones GitHub generates. The
+  last step compares `index.html` alone. `release` runs on every event
+  but a pull request, so the dispatch runs the same rule. Permissions
+  are stated per job: `contents: write` on `release`, `pages: write` and
+  `id-token: write` on `pages`, and no other job gains any.
+- **C18. The mechanics get their cold review now**, one independent
+  agent over the branch, and the later steps a review of their delta.
+  *Why:* the workflow's first real run is the release, and the pictures
+  and the README touch none of its logic but the Pages upload.
+
 ## The order of the work
 
 1. The mechanics, now: the release script, the workflow, the `base` line,
@@ -242,17 +285,153 @@ review.
 If 1b stalls on its retuning, the fallback is a release with today's
 `autopilot` in tier colors. Each release redraws the pictures.
 
-## Open, for the prototype
+## The questions left to the prototype, answered
 
-- What a failure after the atomic push leaves, and how a re-run of the
-  job recovers.
-- Whether the root's `Pkg.instantiate` installs the package's own
-  artifact, which decides how `test_server.jl:141` changes.
-- Whether Pkg downloads an artifact from a `file://` address, for the
-  local rehearsal.
-- Whether a published draft attaches to the tag the job pushed.
-- Whether `Pkg.update()` follows the `release` branch.
-- The `live` job's duration.
+The probes are in the builder's scratch,
+`release_mechanics_scratch/probes/` and `logs/`, until the unit closes.
+
+- **What a failure after the atomic push leaves, and how a re-run
+  recovers.** It leaves master, `release` and the tag on the generated
+  commit and the Release a draft. The tarball's address answers 404, and
+  a user's `Pkg.update()` fails on it until the draft is public. "Re-run
+  failed jobs" recovers through C14's resume: it published the same
+  draft, whose SHA-256 is the tagged `Artifacts.toml`'s (the rehearsal's
+  case H).
+- **Whether the root's `Pkg.instantiate` installs the package's own
+  artifact.** It does, 507.9 KiB. After a release master's
+  `test/test_server.jl:141` fails in 3 tests, and with C16 the suite
+  passes 131 of 131.
+- **Whether Pkg downloads an artifact from a `file://` address.** It
+  does.
+- **Whether a published draft attaches to the tag the job pushed.** It
+  does. The tag stayed on the generated commit.
+- **Whether `Pkg.update()` follows the `release` branch.** It does, on
+  disk and on GitHub, from `v0.1.0` to `v0.1.1` and on to `v0.1.3`, each
+  with its own bundle.
+- **The `live` job's duration.** 218 s on a cold cache, of which the
+  instantiation is 144 s and the check 28 s. 66 to 109 s warm. The check
+  alone takes 10 to 12 s on the user's machine.
+
+## The mechanics as built
+
+Five commits on `release-mechanics`, from `3afd3ed`, hashes as of
+2026-11-28 and before any rebase. `Artifacts.toml` is as master has it.
+
+- **`98a6657`, the `base` line.** `base: "./"` in
+  `frontend/vite.config.ts`. A new check in `e2e/network.spec.ts` serves
+  the page under `/hosted/`, refuses every other path as Pages does,
+  drops `closed_loop` and requires the stylesheet applied and no request
+  outside the folder.
+- **`6a4744e`, the test** of C16, in `test/test_server.jl`.
+- **`ca0e57c`, `scripts/release.jl`.** `julia scripts/release.jl <dist>
+  <version> <owner/repo>` runs answer 6's three calls, writes the root's
+  `Artifacts.toml` and leaves `bundle.tar.gz` beside it.
+- **`6b9e6ca`, the real-server check.** `frontend/live/` holds
+  `driver.jl`, `server.spec.ts` and `playwright.config.ts`, run by
+  `npm run live`. The driver starts the server on a free port with
+  `bundle_dir` at `dist`, prints the port, reads `<model> [channel]`
+  lines on standard input, pushes and answers `pushed`. Each browser's
+  worker starts its own Julia. The one test checks ruling 3's five
+  things; for the fifth, a later push to `/` is the sync point, after
+  which `/` has received three frames and none of the channel's. No
+  server runs on port 4319.
+- **`5856562`, the workflow.** The jobs `live`, `release` and `pages`.
+  `release` reads the version with `sed` and master's tip with
+  `git ls-remote`, and takes one of four ways: release, the notice,
+  C14's resume, or a log line that the version is tagged. The pack runs
+  under a throwaway depot, so the last step downloads the public
+  tarball. `pages` uploads `dist` from a folder `site/`, where the
+  README's images will join as `site/img/`.
+
+## The rehearsals
+
+**On disk.** A bare repo stood in for GitHub and a folder for the
+Release. `Pkg.add` by the repo's `file://` address at `rev = "release"`,
+under a scratch depot, installed the package and the bundle in 2 min 1 s,
+103 s of it precompiling. The installed server served the four files of
+`dist` byte for byte. A bump to 0.1.1 and `Pkg.update()` followed. A
+changed `index.html` made the last step's comparison fail. `~/.julia`
+took nothing.
+
+**On GitHub**, in `e271828e/RedstoneInspector-rehearsal`. Every run used
+the branch's `CI.yml` byte for byte, but for the two that carry a
+deliberate break. Runs are at
+`https://github.com/e271828e/RedstoneInspector-rehearsal/actions/runs/`
+followed by the number.
+
+| case | run | what it showed |
+|---|---|---|
+| A, the first push | 46072362912 | Released `v0.1.0`: the tag on the generated commit, master and `release` at it, the Release public, the tarball's SHA-256 the tagged `Artifacts.toml`'s, Pages serving `dist`'s `index.html` with its files under the base path, the last step passing. |
+| B, an install by URL | none | In a scratch depot `Pkg.add` at `rev = "release"` installed `v0.1.0` and its bundle from the Release, and the server served `dist`'s four files. |
+| C, an ordinary push | 46074195636 | "v0.1.0 is tagged; nothing to release", in 6 s. Pages skipped. |
+| D, the moved tip | 46075389690, 46075400293 | The bump's run released nothing, ended green and wrote the notice. The later run released `v0.1.1` from its own commit. |
+| E, a dispatch from another branch | 46074595932 | Green, the notice, nothing released. |
+| F, the second bump | 46075400293 | Case D's release: a new tag, `release` moved, and `Pkg.update()` followed it. |
+| G, a failure before the push | 46078246268 | Attempt 1, broken on purpose after the draft, left a draft and no tag. Attempt 2 deleted the draft, packed again and released `v0.1.2`. |
+| H, a failure after the push | 46079694540 | Attempt 1, broken on purpose at the publish, left the refs moved and a draft. Attempt 2 took the resume and published the same draft as `v0.1.3`. |
+| the workflow restored | 46081018637 | Attempt 1 red on a flaky check of `e2e/landing.spec.ts`, attempt 2 green, nothing released. |
+
+**What the repo holds now, for the user to look at.** Four public
+releases, `v0.1.0` to `v0.1.3`, with their generated notes. Master's
+history, with the bot's "Bind the bundle" commits between the
+rehearsal's own. The page at
+`https://e271828e.github.io/RedstoneInspector-rehearsal/`, which is
+`v0.1.3`'s. The `github-pages` environment's deployments, one per
+release. A branch `dispatch-probe`. Nothing there is deleted, and the
+repo is the user's to delete.
+
+## The mechanics' measurements
+
+| | at `3afd3ed` | on the branch |
+|---|---|---|
+| the Julia gate | 131 passed | 131 passed |
+| `npm test` | 793 passed in 31 files | 793 passed in 31 files |
+| `npm run check` | 0 errors, 410 files | 0 errors, 412 files |
+| `npm run e2e`, both browsers | 752 passed, 4 skipped | 754 passed, 4 skipped |
+| `npm run live`, both browsers | none | 2 passed |
+
+The jobs of the first run: `julia` 4 min 26 s on Ubuntu and 6 min 31 s
+on Windows, `fixtures` 5 min 40 s, `frontend` 9 min 44 s, `live`
+3 min 38 s, `release` 2 min 4 s, of which the last step 1 min 40 s, and
+`pages` 13 s. `release` takes 5 or 6 s when it releases nothing. A
+release takes about 16 minutes from the push.
+
+## What the mechanics' tests pin
+
+Each mutant ran alone and was restored from a copy.
+
+- **The base-path check.** Without the `base` line it is red in both
+  browsers.
+- **The test under an empty depot.** With `_bundle_directory(nothing)`
+  returning the stub folder, 3 tests fail. Without the helper, in the
+  state a release leaves, the same 3 fail.
+- **The real-server check.** Red with the server's own origin refused,
+  with a push's send removed, with only a channel's first push sent,
+  with a push broadcast to every channel, and with the stylesheet
+  missing. A missing `icon.svg` is red in Firefox alone, an accepted
+  survivor: headless Chromium requests no icon.
+- **The last step.** A changed `index.html` fails it, on disk.
+- **The workflow's rule.** The rehearsal's cases C, D, E, G and H.
+
+## Traps the mechanics met
+
+For `rules.md` at the landing.
+
+- `JULIA_DEPOT_PATH="X:"` appends Julia's bundled depots and not
+  `~/.julia`, so a scratch depot set that way is clean.
+- `Pkg.add(url = …)` refuses the bare path of a bare repo and takes its
+  `file://` address.
+- Headless Chromium requests no favicon, so a check of failed requests
+  sees a missing icon in Firefox alone.
+- `inspect` is not exported; a script imports it by name.
+- The page shows "connected" when the socket opens, before the server
+  reads its `hello`. A first push can land before the server joins the
+  socket and reach the page as the answer to that `hello`, so the second
+  push is the one that pins a send to a joined socket.
+- The version is baked into the page, so each release's bundle has its
+  own tree hash.
+- `e2e/landing.spec.ts:106`, Meta+o from the search field, failed once
+  in nine runs on the runner in Chromium (`pending.md`).
 
 ## The state of the run
 
@@ -272,7 +451,9 @@ paths are on one machine.
 - **At that pin the facts above read differently in two places.** The
   core is 89 commits past `fcd3660`, 33 of them in `src/`, and the
   schema's top-level `description` changed with D-483.
-- **The mechanics are building** on `release-mechanics`.
+- **The mechanics are built and rehearsed** on `release-mechanics`, five
+  commits, unmerged and unpushed. Their cold review is running. The
+  rehearsal repo holds four releases and is left as it stands.
 - **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
   public, created empty that day with its Pages source set to "GitHub
   Actions".
