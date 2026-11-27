@@ -276,3 +276,70 @@ Not findings, ruled as follows:
   "…" where the room is narrower than an ellipsis pill; MAP's `size.ts`
   row does not list `CROSS`. The help page's chord sample at ±3
   survives a mutant, a minor gap the fixer may close.
+
+## The fix
+
+A fresh high-tier fixer landed the rulings: `b7f0161` amends answers 8
+and 9 and the trap "Pills sharing an edge", `ee9ef37` "Fix the look
+pass's review findings", and `c4fa27e` commits `tools/` beside this file.
+
+- **F1.** A pill moved past a label falls back to its unmoved place when
+  the move would take it past half of the end segment nearest its port.
+  For an input port that is the wire's last segment. For an output port
+  it is the shortest first segment among the port's wires.
+  `e2e/pills.spec.ts` sweeps every producer port on the root and on each
+  closed child of the root, on all 22 fixtures, with the labels off and
+  on. It asserts that no overlay pill meets a block (a diagnostic's own
+  excepted), a port square or another pill. It found the review's three
+  cases before the fix and none after. The suite's browser run went from
+  2.5 to 3.4 minutes.
+- **F2.** The route runs forward from a gap of 24 again, turning at
+  `min(max(midpoint, a.x + stub), b.x - 12)`. The backward form leaves by
+  the whole stub. `router.test.ts` pins `plant` 30 units right of
+  `actuators` on `closed_loop`'s root, four points with the label drawn
+  or not, and gaps of 50, 24 and 23.
+- **F3.** `rerouteTouching` takes the labels' state, and one helper,
+  `rerouteDragged`, re-routes the dragged blocks' wires in three places:
+  after a relayout, when a held layout is drawn again, and on a toggle
+  of the labels. `drag.spec.ts` drags `plant`, toggles `y` twice, then
+  toggles on another level and climbs back.
+- **F4.** Every pill in `routes.spec` and `overlay.spec` stands
+  `PILL_LIFT` above its wire, to 0.05 units. `overlay.spec` pins the
+  loop's pill between the port and the route's on `failure_nested`.
+  `help.spec` pins the help page's cross at 8 by 8.
+- **F5.** Answer 8 now places the chain's badges as answer 9 places a
+  route's. The help page's badge line follows.
+
+The fixer's readings, which the coordinator took:
+1. **F1 on `rates`' root.** `fast|out|outer`'s first segment is 50 units
+   and its pill 32, so even the unmoved pill passes the half and the
+   move is refused. The pill stands over `fast|out|inner`'s label, the
+   port above's, and clear of its own, as 1.4's words ask.
+   `routes.spec` pins it unmoved. This is the overlap reading 4 had
+   removed, and it is for the user's look.
+2. **The review's drag of `pid_controller`, 20 px right of
+   `lqr_controller`, is not F1.** The re-routed wire runs through
+   `lqr_controller` with the labels off too, since the router ignores
+   third blocks as 1.3 ruled, and the pill is wider than the gap. Open,
+   unpinned.
+3. **A legal move is pinned:** on `approach_deployment`'s `vehicle`,
+   `selection|out|engaged` traced, the pill moves 35 units within a
+   544-unit segment.
+4. **No record states the stub.** F2 and F3 live in MAP's drag paragraph
+   and router row.
+5. **Held layouts on other levels** are re-routed when drawn again, so a
+   toggle made elsewhere reaches them.
+
+Mutants, all red but one: the bound removed; no move at all; the
+threshold at the stub plus 12; the label counted with the toggle off;
+the toggle's effect removed; a held layout drawn without the re-route;
+`PILL_LIFT` 3; a pill 10 higher; the route nearer than the loop; the
+help page's cross at ±3. The survivor, the bound taken as half the
+wire's whole run, is acceptable: no fixture tells the two readings
+apart.
+
+| | before | after |
+|---|---|---|
+| unit tests | 801 in 32 files | 804 in 32 files |
+| the checker | 413 files, clean | 414 files, clean |
+| browser checks, both projects | 770 passed, 4 skipped | 818 passed, 4 skipped |
