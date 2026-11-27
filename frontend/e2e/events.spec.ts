@@ -3,7 +3,7 @@
 // modes, beside the rate pill on an assembly; the pane's EVENTS section and an assembly's fact; the drawer's fifth tab
 // with its head, groups and empty states, a group one stop; the help page's term.
 import { test, type Page } from "@playwright/test";
-import { cursor, drop, expect, fixtureText, openPath, openSection, press, readyLevel, section, shot } from "./fixtures";
+import { cursor, drop, effectiveOpacity, expect, fixtureText, openPath, openSection, press, readyLevel, section, shot } from "./fixtures";
 
 /** size.ts's `BADGE_INSET` and `BADGE_GAP`, copied: an e2e check imports no app module. */
 const INSET = 4, GAP = 2;
@@ -108,6 +108,9 @@ test("a primitive root that declares an event carries the pill on its block and 
   await drop(page, "primitive", text);
   expect((await pills(page, "")).events).toMatchObject({ text: "1 event", title: "1 kick, not localized" });
   await expect(section(page, "events").locator("tr.event")).toHaveText(["1kickno"]);
+  // the tab's group names the root `/`, as the rest of the page does
+  await openEvents(page);
+  expect(await tableRows(page)).toEqual(["/|1|kick|no"]);
 });
 
 test("failure_cycle: a failure draws no pill and no EVENTS section, and its tab says the build did not reach the events, no count", async ({ page }) => {
@@ -250,26 +253,124 @@ test("library_deployment: j and k walk one stop per component, the ring around i
   await shot(page, "library_deployment", "", "events-ring");
 });
 
-test("events_deployment: a click on a group's later row selects its component, on its parent's level", async ({ page }) => {
+test("events_deployment: a click on a group's later row selects its component, on its parent's level, and puts the cursor on the group", async ({ page }) => {
   await drop(page, "events_deployment");
   await openEvents(page);
   await drawer(page).locator('tbody.group[data-path="heater"] tr.event[data-position="3"] td.name').click();
   await expect(pane(page)).toHaveAttribute("data-id", "heater");
+  // the group's button holds the focus, the ring is on the group, and k walks on from there
+  expect(await cursor(page)).toBe("button.row heater");
+  const rings = await drawer(page).locator("tbody.group").evaluateAll((gs) => gs.map((g) => `${(g as HTMLElement).dataset.path}:${getComputedStyle(g).outlineStyle}`));
+  expect(rings.filter((r) => !r.endsWith(":none"))).toEqual(["heater:solid"]);
+  await press(page, "k");
+  expect(await cursor(page)).toBe("button.row nest/deep/ball");
   await drawer(page).locator('tbody.group[data-path="nest/deep/ball"] td.localized').click();
   await expect(page.locator(readyLevel("nest/deep"))).toHaveCount(1);
   await expect(pane(page)).toHaveAttribute("data-id", "nest/deep/ball");
 });
 
-test("the narrowest pane, 240 px: heater's EVENTS section fits without a sideways scroll", async ({ page }) => {
+test("the narrowest pane, 240 px: heater's EVENTS section fits without a sideways scroll, long event names wrapping with the localized cell inside the pane", async ({ page }) => {
   await drop(page, "events_deployment");
   await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
     JSON.stringify({ version: 1, sizes: { tree: 280, detail: 240, drawer: 200 }, collapsed: { tree: false, detail: false } })));
+  const long = ["heat_on_when_the_room_falls_cold", "trip_when_the_heater_has_run_past_its_limit_for_longer_than_its_budget_allows"];
+  const edited = fixtureText("events_deployment").replace('"name": "heat_on"', `"name": "${long[0]}"`).replace('"name": "trip"', `"name": "${long[1]}"`);
+  expect(edited).toContain(long[0]);
+  expect(edited).toContain(long[1]);
+  for (const [name, text] of [["", undefined], ["long_names", edited]] as const) {
+    await drop(page, "events_deployment", text);
+    await page.locator('g.block[data-id="heater"]').click();
+    expect(await pane(page).evaluate((e) => e.getBoundingClientRect().width)).toBe(240);
+    await openSection(page, "events");
+    expect(await page.locator('.pane[data-pane="detail"] .body').evaluate((e) => e.scrollWidth - e.clientWidth), name).toBeLessThanOrEqual(0);
+    const right = await pane(page).evaluate((e) => e.getBoundingClientRect().right);
+    for (const r of await section(page, "events").locator("td.localized").evaluateAll((ts) => ts.map((t) => t.getBoundingClientRect().right))) {
+      expect(r, name).toBeLessThanOrEqual(right);
+    }
+    await shot(page, name ? `events_deployment_${name}` : "events_deployment", "", "events-narrow");
+  }
+});
+
+test("library_deployment: j, k, gg and G scroll the whole group into the tab's body, not its button alone", async ({ page }) => {
+  await drop(page, "library_deployment");
+  await openEvents(page);
+  await drawer(page).focus();
+  /** The focused group's box against the tab body's visible box, borders and a sideways scrollbar left out. */
+  const inBody = () => drawer(page).evaluate((d) => {
+    const body = d.querySelector(".tab-body")!, b = body.getBoundingClientRect();
+    const top = b.top + body.clientTop, bottom = top + body.clientHeight;
+    const g = document.activeElement!.closest("tbody.group")!.getBoundingClientRect();
+    return { fits: g.height <= body.clientHeight, inside: g.top >= top - 1 && g.bottom <= bottom + 1, scrolled: body.scrollTop };
+  });
+  for (let i = 0; i < 6; i++) {
+    await press(page, "j");
+    const at = await inBody();
+    if (at.fits) expect(at.inside, await cursor(page)).toBe(true);
+  }
+  await press(page, "g");
+  await press(page, "g");
+  expect(await cursor(page)).toBe("button.row step");
+  expect((await inBody()).inside).toBe(true);
+  await press(page, "Shift+G");
+  expect(await cursor(page)).toBe("button.row comparator");
+  const end = await inBody();
+  expect(end.scrolled).toBeGreaterThan(0);
+  expect(end.inside).toBe(true);
+  for (let i = 0; i < 5; i++) {
+    await press(page, "k");
+    const at = await inBody();
+    if (at.fits) expect(at.inside, await cursor(page)).toBe(true);
+  }
+});
+
+/** events.ts's `LOCALIZED_TITLE`, copied: an e2e check imports no app module. */
+const LOCALIZED_TITLE = "yes: the event is located in time inside a step; no: its guard is checked at step boundaries only";
+
+test("events_deployment: the localized head carries one title in the tab and in the pane, saying what yes and no mean", async ({ page }) => {
   await drop(page, "events_deployment");
   await page.locator('g.block[data-id="heater"]').click();
-  expect(await pane(page).evaluate((e) => e.getBoundingClientRect().width)).toBe(240);
-  await openSection(page, "events");
-  expect(await page.locator('.pane[data-pane="detail"] .body').evaluate((e) => e.scrollWidth - e.clientWidth)).toBeLessThanOrEqual(0);
-  await shot(page, "events_deployment", "", "events-narrow");
+  await expect(section(page, "events").locator("thead th", { hasText: "localized" })).toHaveAttribute("title", LOCALIZED_TITLE);
+  await openEvents(page);
+  await expect(drawer(page).locator("table.events thead th", { hasText: "localized" })).toHaveAttribute("title", LOCALIZED_TITLE);
+});
+
+test("events_deployment: the pill takes no click of its own, a click at its center selecting its block and a double-click on an assembly's opening it", async ({ page }) => {
+  await drop(page, "events_deployment");
+  /** The pill's rect center in client coordinates, checked to be the pill's own point. */
+  const centre = (id: string) => page.locator(`g.block[data-id="${id}"] > g.events-pill > rect`).evaluate((r) => {
+    const b = r.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
+    return { x, y, own: !!document.elementFromPoint(x, y)?.closest("g.events-pill") };
+  });
+  const p = await centre("heater");
+  expect(p.own).toBe(true);
+  await page.mouse.click(p.x, p.y);
+  await expect(pane(page)).toHaveAttribute("data-id", "heater");
+  const q = await centre("nest");
+  expect(q.own).toBe(true);
+  await page.mouse.dblclick(q.x, q.y);
+  await expect(page.locator(readyLevel("nest"))).toHaveCount(1);
+});
+
+test("events_deployment: zoomed out to the frames text level, the pill still shows", async ({ page }) => {
+  await drop(page, "events_deployment");
+  const svg = page.locator("svg.canvas");
+  for (let i = 0; i < 30 && (await svg.getAttribute("data-detail")) !== "frames"; i++) await press(page, "-");
+  await expect(svg).toHaveAttribute("data-detail", "frames");
+  await expect(page.locator('g.block[data-id="heater"] > g.events-pill')).toBeVisible();
+  await expect(page.locator('g.block[data-id="nest"] > g.events-pill')).toBeVisible();
+});
+
+test("events_deployment: under a legend focus the pill dims with an unlit block and stays full on a lit one", async ({ page }) => {
+  await drop(page, "events_deployment");
+  await press(page, "c");
+  await page.locator(".viewport .legend li[data-step] button.line").first().click();
+  await expect(page.locator("svg.canvas")).toHaveClass(/\blegend-focus\b/);
+  await expect(page.locator('g.block.lit[data-id="pods/a"]')).toHaveCount(1);
+  await expect(page.locator('g.block.lit[data-id="heater"]')).toHaveCount(0);
+  const shape = await effectiveOpacity(page, 'g.block[data-id="heater"] > .shape');
+  expect(shape).toBeLessThan(1);
+  expect(await effectiveOpacity(page, 'g.block[data-id="heater"] > g.events-pill > rect')).toBeCloseTo(shape, 5);
+  expect(await effectiveOpacity(page, 'g.block[data-id="pods/a"] > g.events-pill > rect')).toBe(1);
 });
 
 test("the help page: the events pill is the sixteenth term, after the display name, with its drawing; it alone defines localized and says what no stands for", async ({ page }) => {

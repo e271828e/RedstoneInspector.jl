@@ -60,6 +60,9 @@ export const eventCount = (model: Model): number | undefined => (eventsSection(m
 /** An event's `localized` cell. */
 export const localizedWord = (localized: boolean): string => (localized ? "yes" : "no");
 
+/** The `localized` head's title, the tab's and the pane's (the notes' R6). */
+export const LOCALIZED_TITLE = "yes: the event is located in time inside a step; no: its guard is checked at step boundaries only";
+
 /**
  * The events pill of a block (visual_grammar.md answer 11, the notes' C4): on a primitive its count, titled with a
  * line per event in priority order; on a closed assembly the count beneath it, titled with the declaring primitives'

@@ -9,7 +9,7 @@
     type Section, type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
-  import { localizedWord } from "../lib/events";
+  import { LOCALIZED_TITLE, localizedWord } from "../lib/events";
   import type { Model } from "../lib/model";
   import type { Snippet } from "svelte";
   import { inPinId, outPinId, portId } from "../lib/level";
@@ -198,7 +198,7 @@
   <!-- The events in priority order, none a stop (workspace.md answer 4), and the bundle's fields as `show` prints them. -->
   {#snippet events()}
     <table class="events">
-      <thead><tr><th title="The priority within the component: the first eligible event fires">#</th><th>event</th><th>localized</th></tr></thead>
+      <thead><tr><th title="The priority within the component: the first eligible event fires">#</th><th>event</th><th title={LOCALIZED_TITLE}>localized</th></tr></thead>
       <tbody>
         {#each f.eventTable!.events as e (e.position)}
           <tr class="event" data-position={e.position}><td class="position">{e.position}</td><td class="name"><code>{e.name}</code></td><td class="localized">{localizedWord(e.localized)}</td></tr>
@@ -330,6 +330,8 @@
   .events { width: auto; }
   .events :is(th, td) { padding-right: 12px; }
   .events .position { color: var(--text-light); font-variant-numeric: tabular-nums; }
+  .events .name { overflow-wrap: anywhere; min-width: 8ch; }
+  .events :is(.position, .localized) { white-space: nowrap; }
   .bundle { margin: 4px 0 0; color: var(--text-light); }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }

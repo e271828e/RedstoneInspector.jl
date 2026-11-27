@@ -27,6 +27,7 @@ DR = "src/frame/Drawer.svelte"
 DE = "src/frame/Detail.svelte"
 SE = "src/state/session.svelte.ts"
 H = "src/lib/help.ts"
+A = "src/App.svelte"
 U = "unit"
 UNIT = "npx vitest run src/lib/events.test.ts src/canvas/size.test.ts src/lib/detail.test.ts src/lib/rates.test.ts src/state/session.test.ts"
 
@@ -86,6 +87,18 @@ M = [
     ("no head", T, "  {#if head?.length}<HeadList lines={[head]} />{/if}\n", "", "events"),
     # help
     ("no help term", H, '    key: "events", term: "events pill", sample: "events",', '    key: "events-gone", term: "events pill", sample: "events",', "help events"),
+    # the fixer's: the review's F1, F2, F3 to F6, R6 and the group's scroll
+    ("fix: long names unbroken", DE, "  .events .name { overflow-wrap: anywhere; min-width: 8ch; }\n", "", "events"),
+    ("fix: a later row's click focuses nothing", A, 'const row = t.closest("tbody.group") ?? t.closest("tr, .line, li.edge");',
+     'const row = t.closest("tr, .line, li.edge");', "events"),
+    ("fix: the button scrolled, not the group", A, '(e?.closest("tbody.group") ?? e)?.scrollIntoView(', "e?.scrollIntoView(", "events"),
+    ("fix: the pane's localized head untitled", DE, "<th title={LOCALIZED_TITLE}>localized</th>", "<th>localized</th>", "events"),
+    ("fix: the tab's localized head untitled", T, "<th title={LOCALIZED_TITLE}>localized</th>", "<th>localized</th>", "events"),
+    ("fix: the pill takes its own click", C, '<g class="events-pill">', '<g class="events-pill" role="none" onclick={(e) => e.stopPropagation()}>', "events"),
+    ("fix: the pill hidden at frames", C, ".events-pill rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }",
+     '.events-pill rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }\n  svg[data-detail="frames"] .events-pill { display: none; }', "events"),
+    ("fix: the pill never dims", C, '<g class="events-pill">', '<g class="events-pill" style="opacity: 1">', "events"),
+    ("fix: the root's path blank", T, '{g.path || "/"}', '{g.path || ""}', "events"),
 ]
 
 for name, f, a, b, route in M:

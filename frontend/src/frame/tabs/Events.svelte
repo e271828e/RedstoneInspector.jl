@@ -6,7 +6,7 @@
   // selects the primitive, as a timing component row's does.
   import { rowTarget } from "../../lib/analysis";
   import type { Selection } from "../../lib/detail";
-  import { eventGroups, eventHead, localizedWord } from "../../lib/events";
+  import { eventGroups, eventHead, LOCALIZED_TITLE, localizedWord } from "../../lib/events";
   import type { Model } from "../../lib/model";
   import HeadList from "./HeadList.svelte";
   import { rowClick } from "./rowClick";
@@ -23,7 +23,7 @@
   {#if head?.length}<HeadList lines={[head]} />{/if}
   {#if groups.length}
     <table class="events">
-      <thead><tr><th>path</th><th title="The priority within the component: the first eligible event fires">#</th><th>event</th><th>localized</th></tr></thead>
+      <thead><tr><th>path</th><th title="The priority within the component: the first eligible event fires">#</th><th>event</th><th title={LOCALIZED_TITLE}>localized</th></tr></thead>
       {#each groups as g (g.path)}
         {@const s = rowTarget(model, { kind: "component", path: g.path })}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
