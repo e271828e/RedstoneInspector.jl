@@ -83,6 +83,10 @@ increments run the pipeline unchanged.
   reads the effective opacity, the product up to the svg, wherever a
   record says something "never dims" or "always wins": an element's own
   value misses a dim set on an ancestor group.
+- A fixed mark, one drawn whenever its data exists, never covers another
+  mark. A mark the reader turns on takes a free place where one exists,
+  covers another only where none is left, and then draws on top (the look
+  pass's checklist, `increments/20261127_look_pass/look_pass.md` 11.3).
 
 ## Frontend traps
 
@@ -174,13 +178,8 @@ full text stays.
   run did, so the check also pins the narrowest pane.
 - **ELK's position hints.** Probed 2026-10-30: ELK ignores position hints
   while model order steers the layout, and with model order off it moves
-  blocks nobody dragged, so a push relays out without hints and puts dragged
-  blocks back (`workspace.md` answer 9).
-- **A block drag's pointer capture.** Capturing on the press retargets a port
-  square's click to the block; the canvas captures only past the 3 px slop,
-  after `tick()`, since moving a captured node drops the capture.
-- **The lost click.** Chrome fires no `click` after a release when the
-  pressed node moved in the DOM, so the canvas selects a dragged block itself.
+  other blocks too, so a push relays out without hints (`workspace.md`
+  answer 9).
 - **A pan only on the bare SVG.** The pan starts only when the press's target
   is the `svg` itself, so a press on a block is the block's.
 - **The canvas effect and `untrack`.** The path drawing a stored layout runs
@@ -211,8 +210,6 @@ full text stays.
   in text fields, so Tab cycles the regions from the field too.
 - **The search's hit rows and focus.** A row click would blur the field and
   hide the list first; the row's `mousedown` is prevented.
-- **`descent`'s straight wires.** `plant` dragged down stays left of `gear`, a
-  forward route; `drag.spec.ts` drags it past `gear` for the six-point form.
 - **Under from marks, not node hits.** `levelHits`' `under` counts marked
   nodes, face owners included, where the oracle's table counts node hits, so
   for `face:in1` the page shows 3 under and the table none.
@@ -272,9 +269,6 @@ full text stays.
   the greens.
 - **The default pane is narrow.** The detail pane's default 360 px is under the
   420 px container query, so a first load shows the stacked rows.
-- **Shift with no pointer move.** A Shift press while the pointer rests sends
-  no pointer event; the canvas's window `keydown` and `keyup` re-apply the
-  last place.
 - **A legend line in a button.** The button wrapped a line beside its `#9`
   number; it is `nowrap`.
 - **Firefox on macOS.** Firefox's profile service reads
@@ -307,7 +301,7 @@ full text stays.
 - **One `focusKey`.** `data-focus` needs a value for each focus, so it is its
   own prop, apart from `legendFocus`.
 - **A right-click fires no click.** A right press gives `contextmenu`, never
-  `click`; the pan and a drag start on the left button alone.
+  `click`; the pan starts on the left button alone.
 - **Escape with the menu open.** The shell's Escape listens in the bubbling
   phase; the canvas closes the menu from a capture-phase window listener and
   stops the event.
@@ -323,15 +317,11 @@ full text stays.
 - **Pills sharing an edge.** `sizeBlock` reserves nothing for a pill, so two
   on one edge can meet on a narrow block. The rate pill and the order badge
   take the top and the bottom edge at the left and share none (increment
-  8's second look); the diagnostic's pill takes the bottom edge's right
-  end, cut short of an order badge, and the route's and the loop's stand
-  beside their ports, off the edges (the look pass). A move past a type
-  label is refused where the moved place would meet a block, a port square
-  or another pill: an unchecked move put a pill on the far block or on the
-  pill at the wire's other end (the look pass's cold review), and a bound
-  of half the wire's end segment refused most moves (its delta check). A check on a pill's place
-  asserts the rule recomputed from the DOM, never a block's outcome that a
-  font's width decides.
+  8's second look). The overlay's pills stack from the bottom edge's right
+  end, the diagnostic's text cut so that it and the loop's end short of
+  the order badge, and the route's may run over it, drawn above it (the
+  look pass, 11.3). A check on a pill's place asserts the rule recomputed
+  from the DOM, never a block's outcome that a font's width decides.
 - **A selection through a click.** Chromium keeps a text selection through
   a click on the selected text and collapses it only after the `click`
   event, so a guard on a row's click compares the range at the press with
@@ -383,9 +373,8 @@ full text stays.
   canvas, and its `viewBox` follows a frame later; a check comparing views
   polls until the `viewBox`'s aspect matches `.viewport`'s, the svg's own
   client size being no sync point.
-- **The undo's sync point.** An undo clears `data-ready` while ELK runs, so
-  a check waits for it after `x`; a `MutationObserver` on the attribute
-  shows that no layout ran.
+- **A layout's sync point.** A layout clears `data-ready` while ELK runs;
+  a `MutationObserver` on the attribute shows that no layout ran.
 - **A focused node removed.** Chromium fires the same `focusout` for a
   focused node's removal and for a click on a non-focusable place: a null
   related target, the target still connected. A microtask later the removed
