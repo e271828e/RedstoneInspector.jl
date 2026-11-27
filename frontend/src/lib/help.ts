@@ -160,7 +160,7 @@ export const KEYS: [string[], string][] = [
 export const KEYS_NOTE = "Single keys or pairs, outside text fields, where Tab, Cmd-K, Ctrl-K, Cmd-O and Ctrl-O still act. `z` and `g` wait for a second key, shown in the status bar; while `z` is held, every `h`, `j`, `k`, `l`, `i` and `o` acts under it. The color mode, the type labels, the order badges and the panes' sizes and collapse are kept per browser.";
 
 /** The search's prefixes (workspace.md answer 5), each with the field it narrows a term to. */
-export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, and several terms must all match.";
+export const SEARCH_LEAD = "The search matches a term in paths, types and face names. A prefix narrows it to one of them, written against the term or before it, so `face: out` reads as `face:out`; several terms must all match.";
 export const SEARCH_PREFIXES: [string, string][] = [
   ["path:", "the path of a component"],
   ["type:", "its type or its type's alias"],

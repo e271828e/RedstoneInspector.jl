@@ -17,9 +17,27 @@ describe("parseQuery", () => {
   it("reads a prefix with no text after it as no term, so a query of bare prefixes is the empty query", () => {
     expect(parseQuery("face:")).toEqual([]);
     expect(parseQuery("path: type: face:")).toEqual([]);
-    expect(parseQuery("face: h")).toEqual([{ field: undefined, text: "h" }]);
     expect(find("closed_loop", "face:").total).toBe(0);
     expect(find("closed_loop", "type:").total).toBe(0);
+  });
+});
+
+describe("a prefix standing alone (workspace.md answer 5 as amended by the look pass, 2.1)", () => {
+  it("applies to the next word when that word is bare, so face: out reads as face:out", () => {
+    expect(parseQuery("face: out")).toEqual(parseQuery("face:out"));
+    expect(parseQuery("face:  H path:x")).toEqual([{ field: "face", text: "h" }, { field: "path", text: "x" }]);
+    expect(parseQuery("face: out in")).toEqual([{ field: "face", text: "out" }, { field: undefined, text: "in" }]);
+  });
+  it("is no term before a prefixed word or at the end, the nearer prefix taking the word", () => {
+    expect(parseQuery("face: path:x")).toEqual([{ field: "path", text: "x" }]);
+    expect(parseQuery("x face:")).toEqual([{ field: undefined, text: "x" }]);
+    expect(parseQuery("path: face: out")).toEqual([{ field: "face", text: "out" }]);
+  });
+  it("on rates, face: out lists the faces named out alone, where the bare out also matched fast/outer's path", () => {
+    const lone = find("rates", "face: out"), bare = find("rates", "out");
+    expect(lone).toEqual(find("rates", "face:out"));
+    expect(lone.nodes).toEqual([]);
+    expect(bare.nodes.map((n) => n.path)).toContain("fast/outer");
   });
 });
 

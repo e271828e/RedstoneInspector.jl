@@ -216,7 +216,7 @@
           {/each}
         </tbody>
       </table>
-      <p>{SEARCH_LEAD}</p>
+      <p>{@render text(SEARCH_LEAD)}</p>
       <table class="prefixes">
         <tbody>
           {#each SEARCH_PREFIXES as [prefix, field] (prefix)}

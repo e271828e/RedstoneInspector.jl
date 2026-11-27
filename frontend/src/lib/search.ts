@@ -48,14 +48,21 @@ const PREFIXES: Field[] = ["path", "type", "face"];
 
 /**
  * Space-separated terms, lower-cased; `path:`, `type:` and `face:` taken when spelled exactly, else the whole word
- * bare. A prefix with no text after it is no term.
+ * bare. A prefix standing alone applies to the next word when that word is bare, so `face: out` reads as `face:out`
+ * (workspace.md answer 5 as amended by the look pass, 2.1); a prefix with no such word after it is no term.
  */
 export function parseQuery(text: string): Term[] {
-  return text.split(/\s+/).filter((w) => w !== "").map((w): Term => {
+  const terms: Term[] = [];
+  let lone: Field | undefined;
+  for (const w of text.split(/\s+/)) {
+    if (w === "") continue;
     const i = w.indexOf(":");
     const prefix = w.slice(0, i) as Field;
-    return i > 0 && PREFIXES.includes(prefix) ? { field: prefix, text: w.slice(i + 1).toLowerCase() } : { field: undefined, text: w.toLowerCase() };
-  }).filter((t) => t.text !== "");
+    const t: Term = i > 0 && PREFIXES.includes(prefix) ? { field: prefix, text: w.slice(i + 1).toLowerCase() } : { field: lone, text: w.toLowerCase() };
+    lone = t.field !== undefined && t.text === "" ? t.field : undefined;
+    if (t.text !== "") terms.push(t);
+  }
+  return terms;
 }
 
 /** Every occurrence of every needle in the text, merged, case-insensitive. */
