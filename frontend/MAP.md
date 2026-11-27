@@ -458,7 +458,8 @@ What the records do not fix, or where the page differs:
 - **The breadcrumb's controls** are titled "Color by tier", "Color by rate",
   "Show the type of every wire" and "Number every primitive with a stage 2
   output by its position among the stage 2 calls".
-- **The detail pane.** Each `dt` is titled from `FACT_TITLES`, `member` `memberKind`
+- **The detail pane.** The header's path breaks after each slash (`slashed`), so the
+  copy button stays in the pane at 240 px. Each `dt` is titled from `FACT_TITLES`, `member` `memberKind`
   with `memberTitle`. A section's `toggle`, a key's or the browser's search's too,
   calls `onsection`. TIMING's heading is titled `TIMING_TITLE`; in
   its table each frame's head is titled from `FRAME_TITLES`, the anchor's name by

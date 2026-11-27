@@ -68,7 +68,7 @@
 {#snippet header(segment: string, name: string, path: string, opens = false, traces = false, mark = false)}
   <h2><span class="segment">{segment}</span> <span class="name">{name}</span></h2>
   <div class="path-line">
-    <code class="path" title={path || "/"}>{path || "/"}</code>
+    <code class="path" title={path || "/"}>{@render slashed(path || "/")}</code>
     <button class="copy" title="Copy the path" onclick={() => copy(path)}>{copied === path ? "Copied" : "Copy"}</button>
     {#if opens}<button class="open-level" title={`Open ${segment} as the level`} onclick={() => onopen(path)}>Open</button>{/if}
     {#if mark}<span class="level-mark">open level</span>{/if}

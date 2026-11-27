@@ -11,7 +11,8 @@
 // 3.2); pinning stated on a primitive's own
 // face alone (3.4); a location's file name kept whole with its line number (3.5);
 // the pane's own keys, h j k l and the arrows scrolling it (increment 8b); a primitive
-// root's "open level" mark (answer 4 as amended by the polish batch).
+// root's "open level" mark (answer 4 as amended by the polish batch); every header at
+// the narrowest pane, its path broken after a slash (the look pass of 2026-11-27, 1.1).
 import { test, type Page } from "@playwright/test";
 import { clickWire, cursor, drop, dropOver, expect, expectScrollKeys, fixtureText, live, openPath, openSection, paneRing, press, pressAll, readyLevel, SCROLL_STEP, section, shot, viewBox, widen } from "./fixtures";
 
@@ -324,6 +325,41 @@ test.describe("closed_loop", () => {
     expect(narrow.scroll).toBe(narrow.client);
   });
 });
+
+for (const [fixture, long] of [["closed_loop", "lqr_controller/command_pack"], ["approach_deployment", "vehicle/selection/command_δe"]] as const) {
+  test(`${fixture} at the narrowest pane, 240 px: every node's and every port's header breaks its path after a slash and the pane never scrolls sideways (the look pass, 1.1)`, async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto("/");
+    await page.evaluate(() => localStorage.setItem("redstone-inspector/prefs",
+      JSON.stringify({ version: 1, sizes: { tree: 280, detail: 240, drawer: 200 }, collapsed: { tree: false, detail: false } })));
+    await drop(page, fixture);
+    for (let c = page.locator("nav.tree .row:not(.expanded) button.chevron"); await c.count(); ) await c.first().click();
+    const paths = await page.locator("nav.tree .row.node").evaluateAll((rs) => rs.map((r) => r.getAttribute("data-path")!));
+    const body = page.locator('.pane[data-pane="detail"] .body');
+    const over = () => body.evaluate((e) => e.scrollWidth - e.clientWidth);
+    const node = (p: string) => page.locator(`nav.tree .row[data-path="${p}"] .segment`).first().click();
+    for (const p of paths) {
+      await node(p);
+      expect(await over(), p).toBeLessThanOrEqual(0);
+      const ports = pane(page).locator("table.faces tr[data-port]");
+      for (let i = 0, n = await ports.count(); i < n; i++) {
+        const id = await ports.nth(i).getAttribute("data-port");
+        await ports.nth(i).locator(".face-name").click();
+        await expect(pane(page)).toHaveAttribute("data-kind", /^(port|pin)$/);
+        expect(await over(), id!).toBeLessThanOrEqual(0);
+        await node(p);
+      }
+    }
+    // the fixture shows the case: this path is wider than its line, so it takes two lines
+    await node(long);
+    const lines = await pane(page).locator(".path-line .path").evaluate((e) => {
+      const r = document.createRange();
+      r.selectNodeContents(e);
+      return new Set([...r.getClientRects()].map((q) => Math.round(q.top))).size;
+    });
+    expect(lines).toBeGreaterThan(1);
+  });
+}
 
 test("rates: level fast's TIMING after the locations and before the parameters, with no scope row on its own anchor; hold's against its scope", async ({ page }) => {
   await drop(page, "rates");
