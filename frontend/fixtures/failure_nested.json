@@ -374,28 +374,28 @@
           "locations": [
             {
               "function": "sample_times",
-              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
-              "line": 981
+              "file": "<depot>/packages/Redstone/A3bhF/src/assembly.jl",
+              "line": 990
             },
             {
               "function": "local_wires",
-              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
-              "line": 978
+              "file": "<depot>/packages/Redstone/A3bhF/src/assembly.jl",
+              "line": 987
             },
             {
               "function": "input_wires",
-              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
-              "line": 979
+              "file": "<depot>/packages/Redstone/A3bhF/src/assembly.jl",
+              "line": 988
             },
             {
               "function": "output_wires",
-              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
-              "line": 980
+              "file": "<depot>/packages/Redstone/A3bhF/src/assembly.jl",
+              "line": 989
             },
             {
               "function": "transparent_container",
-              "file": "<depot>/packages/Redstone/pUVJl/src/assembly.jl",
-              "line": 982
+              "file": "<depot>/packages/Redstone/A3bhF/src/assembly.jl",
+              "line": 991
             }
           ]
         },

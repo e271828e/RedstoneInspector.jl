@@ -30,7 +30,9 @@ deployments = Dict{String,Any}(
     "timing_deployment" => Deployment(builds["timing"]; Δt_frame = 1//100, Δt_base = :derive),
     "library_deployment" => Deployment(builds["library"]; Δt_frame = 1//100),
     "rates_deployment" => Deployment(builds["rates"]; Δt_frame = 1//100, Δt_base = 1//200),
-    "approach_deployment" => Deployment(build(approach(report.solution)); Δt_frame = 1//200))
+    "approach_deployment" => Deployment(build(approach(report.solution)); Δt_frame = 1//200),
+    "events_deployment" => Deployment(build(Synthetic.events()); Δt_frame = 1//100, firing_budget = 2,
+                                      localization_tol = 2.5e-5, localization_budget = 16))
 
 text(x) = sprint(show, MIME("text/plain"), x)
 for (name, b) in builds

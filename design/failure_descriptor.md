@@ -46,8 +46,9 @@ Open items live in `pending.md`.
    `UserCodeFraming`'s cause included as its second line. Three optional
    fields are written by the kinds whose payload holds the fact: `function`,
    the user method at fault, for `UserCodeFraming`, `ConformanceFailure`,
-   `DeadStage` and `UndeclaredReturnField`, `GuardForm`'s payload naming no
-   method; `marks`, an object of two arrays, `ports` as endpoints `{"path",
+   `DeadStage`, `UndeclaredReturnField` and `BundleFieldError`, the last
+   writing its family, a stage's name or `guard` or `handler`, `GuardForm`'s
+   payload naming no method; `marks`, an object of two arrays, `ports` as endpoints `{"path",
    "port"}` and `wires` as `{"from", "to"}`, the kind names beyond its path,
    `UnconnectedInput`'s input, `TwoProducers`' destination, whose producers
    the payload spells as text and not as endpoints, `WireTypeMismatch`'s and
@@ -57,6 +58,8 @@ Open items live in `pending.md`.
    `classification` when present, `dead` as `{"path", "input", "output"}`
    and `traced` as `{"path", "mode"}`. `UnknownPort` names a port that does
    not exist and marks its node alone.
+   *Amended 2026-11-27 (the pin bump to the core's `318859d`, its
+   `dc884b9`): `BundleFieldError` wrote no `function`.*
    *Why:* the overlay of `visual_grammar.md`'s answer 8 draws a node, a
    port, a wire or a loop's chain, none of which message text gives back,
    and nothing beyond them; Appendix C's payloads stay the test contract,
