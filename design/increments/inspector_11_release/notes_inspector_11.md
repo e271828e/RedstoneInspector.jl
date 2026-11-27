@@ -80,9 +80,10 @@ point by point.
    keychain credential cannot push a workflow file, that one push goes
    through `gh`'s login, as
    `git -c credential.helper='!gh auth git-credential' push`, which
-   changes no configuration. The login holds no `delete_repo` scope. *Why:* a workflow cannot run locally,
-   its first real run is v0.1.0, and only a throwaway allows failing a
-   step on purpose and a second bump. *Rejected:* a trial version in this
+   changes no configuration. The login holds no `delete_repo` scope.
+   *Why:* a workflow cannot run locally, its first real run is v0.1.0,
+   and only a throwaway allows failing a step on purpose and a second
+   bump. *Rejected:* a trial version in this
    repo, which leaves a trial tag in public history; no rehearsal, with
    repairs by hand.
 2. **The rule has two conditions.** The job releases when the tag
