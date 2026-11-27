@@ -624,8 +624,9 @@ the user away): both stood open in the core's `pending.md`.*
     sideways at that pitch otherwise. The tab's own body scrolls then,
     the rows' labels staying in view, so the drawer's keys reach it. Past the threshold it is omitted,
     one line gives the length in base ticks and in seconds, and the rows
-    stay. The two constants are the look pass's, starting at 1000 base
-    ticks and 6 px.
+    stay. The threshold is 500 base ticks and the minimum pitch 10 px, so
+    the longest timeline drawn is a 5000 px scroll. Each base tick is a
+    6 px stroke on the lane in the lighter text color, under the marks.
 
     A mark sits at its tick's instant. One line gives the hyperperiod,
     and a second the joint period where the span outlasts the
@@ -661,7 +662,10 @@ the user away): both stood open in the core's `pending.md`.*
     amendment of the record at the new pin gave its reason for a frame
     that does not divide the tick, and its words reached further.
     Amended 2026-11-24 (the pin bump to the core's `fcd3660`, the user
-    away): the counts were written `D` and `Φ` (the core's D-478).*
+    away): the counts were written `D` and `Φ` (the core's D-478).
+    Amended 2026-11-27 (the look pass, 9.1 to 9.4): the two constants
+    were left to the look pass, at 1000 base ticks and 6 px, and the base
+    ticks' strokes were 4 px in the border color.*
     *Why:* §9.2 has the schedule answer "what coincides with what", and
     `visual_grammar.md` answer 6 keys color on the triple because where
     an anchored clock lands is the deployment's fact, which a row per

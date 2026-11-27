@@ -323,8 +323,9 @@ full text stays.
 - **Pills sharing an edge.** `sizeBlock` reserves nothing for a pill, so two
   on one edge can meet on a narrow block. The rate pill and the order badge
   take the top and the bottom edge at the left and share none (increment
-  8's second look); the overlay's pills stack from the bottom edge's right
-  end and draw over an order badge they meet. A check on a pill's place
+  8's second look); the diagnostic's pill takes the bottom edge's right
+  end, cut short of an order badge, and the route's and the loop's stand
+  beside their ports, off the edges (the look pass). A check on a pill's place
   asserts the rule recomputed from the DOM, never a block's outcome that a
   font's width decides.
 - **A selection through a click.** Chromium keeps a text selection through

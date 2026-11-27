@@ -207,8 +207,10 @@ Open items live in `pending.md`.
    click does and returns focus to the canvas, Escape clears; while a query
    stands, `n` and `N` on the canvas select the next and the previous hit
    in the list's order, opening its level and the view following; a prefix
-   with no text after it is no term, so `face:` alone lists nothing until a
-   character follows; the query survives a push. Hits take the dashed halo
+   standing alone applies to the next word, so `face: out` reads as
+   `face:out`, and a prefix with no word after it is no term, so `face:`
+   alone lists nothing until a character follows; the query survives a
+   push. Hits take the dashed halo
    on the open level, blocks for nodes and port squares for faces, the rest
    of the level dimming; tree rows take the dashed marker with the count
    propagating up collapsed subtrees; the tree never filters. Docstrings
@@ -224,7 +226,8 @@ Open items live in `pending.md`.
    2026-11-25 (the keyboard session,
    `increments/20261125_keyboard_legend/notes_keyboard_legend.md`): `/`
    went to the model's search from the drawer too, and the filter had no
-   key.*
+   key. Amended 2026-11-27 (the look pass, 2.1): a prefix followed by a
+   space was no term, so the word after it matched as a bare term.*
    *Why:* a face named `q` matches half a model without a prefix; the block
    searched for is usually on a level the user cannot see. *Rejected:* a
    fuzzy matcher, which ranks guesses where the user typed a name they
@@ -269,7 +272,8 @@ Open items live in `pending.md`.
    with the cursor's ring around the group, and a click on any of its
    rows selects it. A deployment heads the tab with `firing_budget` when
    the model declares an event, and with `localization_tol`, as a
-   fraction of `Δt_frame`, and `localization_budget` when it declares a
+   fraction of `Δt_frame` written `2.5e-5 × Δt_frame` in one code span,
+   and `localization_budget` when it declares a
    localized one. A model with no events says so, and a failure says that
    the build did not reach them. The drawer opens on load
    only when a diagnostic exists, on that tab, and otherwise stays
@@ -309,7 +313,8 @@ Open items live in `pending.md`.
    10b's design session,
    `increments/inspector_10b_events/notes_inspector_10b.md`): the drawer
    had four tabs and listed no events, and the deployment's three event
-   parameters showed nowhere.*
+   parameters showed nowhere. Amended 2026-11-27 (the look pass, 8.2): the
+   tolerance read `2.5e-5 of Δt_frame`, the form 10b's notes ruled.*
    *Why:* the tables are a second navigator, not a listing, and a quarter
    of the canvas's height is too much to spend on tables most sessions
    never open. *Rejected:* one mixed log instead of tabs; the drawer open
@@ -325,8 +330,9 @@ Open items live in `pending.md`.
    `outputs.order`'s order, on its bottom edge at the left, numbered over
    the whole model, and a closed assembly the range or ranges of those
    positions beneath it, "3–5, 8"; a primitive with stage 1 outputs alone
-   carries none; the badges use the text color, and the overlay's pills on
-   that edge draw over a badge they meet. A
+   carries none; the badges use the text color, and the diagnostic's badge
+   on that edge is cut short of the order badge (`visual_grammar.md`
+   answer 8). A
    deployment descriptor turns the legend's lines to the base grid's
    pair, in its order, and adds the hyperperiod chart to the drawer's
    timing tab: a
@@ -346,7 +352,9 @@ Open items live in `pending.md`.
    the core's `fcd3660`, the user away): the pair was written `(D, Φ)`. Amended 2026-11-25
    (`deployment_overlay.md` answer 13, the keyboard session): a
    deployment made the `Δt` of the legend's `A₀` lines concrete and
-   changed nothing else of a line.*
+   changed nothing else of a line. Amended 2026-11-27 (the look pass, 1.4
+   and 6.1): the overlay's pills on the bottom edge, the route's and the
+   loop's among them, drew over an order badge they met.*
    *Why:* the order is global and the badge's question, whether this block
    runs before that one, crosses levels. *Rejected:* badges numbered per
    level; a toolbar carrying every toggle the page has.

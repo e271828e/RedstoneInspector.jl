@@ -306,15 +306,20 @@ Open items live in `pending.md`.
    corner badge on the block, one naming a port marks the port square, one
    naming a consumer endpoint draws that wire heavier in the error hue on
    top; the badge opens the text and the drawer lists every diagnostic with
-   the type's source location. A probe failure is the node case, the badge
+   the type's source location. The badge sits on the bottom edge at the
+   right. A text too long for the block is cut with an ellipsis, so the
+   badge ends at the block's left inset, or short of the order badge while
+   those show. The badge's hover title opens with its whole text, the
+   message's first line on the next line. A probe failure is the node case, the badge
    carrying the function name from the probe chain. An `AlgebraicCycle`
    halos its members; its wires are terminal pairs, which the client maps
    onto the chain of declared wires between the two primitives by answer
-   18's resolution in reverse, drawn on every level the chain touches, a
-   badge on a closed child where the chain continues inside and, off the
-   root, on a pin where the chain leaves the level, as a route's, its click
-   climbing to the parent with the chain lit, a red dot on each such level
-   in the tree. The verdict is text, not a second color. A
+   18's resolution in reverse, drawn on every level the chain touches. A
+   badge stands beside each input port by which the chain enters a closed
+   child, and, off the root, beside a pin where the chain leaves the level,
+   placed as answer 9 places a route's. A child's badge opens it, a pin's
+   climbs to the parent with the chain lit, and each such level takes a
+   red dot in the tree. The verdict is text, not a second color. A
    dead hop is a dashed chord across its member from the input square to the
    output square with a cross at its middle, shown under either verdict. No
    dimming by default; a dimmed state exists for axis 5's focus. Warnings
@@ -325,7 +330,12 @@ Open items live in `pending.md`.
    *Amended 2026-11-02 (increment 6's look pass, both rounds): the whole
    palette kept off the reserved hues, then its strokes alone. Amended
    2026-11-17 (the polish batch): a pin the chain leaves through took no
-   badge, the reader climbing by the breadcrumb.*
+   badge, the reader climbing by the breadcrumb. Amended 2026-11-27 (the
+   look pass, 1.4, 2.1 and 6.1): the badges stacked from the bottom edge's
+   right end, the chain's after the diagnostic's, and a pin's straddled
+   its top edge from its outer end; a long diagnostic badge ran past the
+   block's left corner, and its title was the message's first line
+   alone.*
    *Why:* the two questions a loop raises, where it closes and which hop is
    false, become things seen rather than reconstructed from slash paths:
    the chord names the member whose contract to question and the wire into
@@ -345,8 +355,15 @@ Open items live in `pending.md`.
    casing. Hover is the same at half strength. A face route, from a root
    pin or any face, is the chain of answer 18's resolution drawn as the loop
    chain of answer 8 in the highlight hue: casings on the open level, the
-   origin's halo, a badge on each closed child entered, the terminal port
-   marked, a dot per level in the tree. Search hits take a dashed halo, the
+   origin's halo, a badge at each port where the route crosses into a
+   closed child or through a pin, the terminal port marked, a dot per level
+   in the tree. A badge stands outside its block or pin, above the wire and
+   clear of the wire's type label below it: left of each input port by
+   which the route enters a closed child, right of the output port by which
+   it leaves the closed child holding its producer, and, off the root, past
+   the point where the wire leaves an input pin or short of the point where
+   it reaches an output pin. Each port takes one route badge; where a loop's
+   badge stands at the same port, the loop's is nearer. Search hits take a dashed halo, the
    selected hit the solid one. Focus on a diagnostic, a route, a legend line or a search
    dims everything uninvolved by opacity, never by color; a level on which
    the focus lights nothing does not dim, the status bar saying why.
@@ -356,7 +373,11 @@ Open items live in `pending.md`.
    with its halo on; the keyboard focus ring is the halo.
    *Amended 2026-11-02 (increment 6's look pass): a legend line's focus
    joined the dimming foci. Amended 2026-11-17 (the polish batch): a focus
-   with nothing on the open level dimmed the whole level.*
+   with nothing on the open level dimmed the whole level. Amended
+   2026-11-27 (the look pass, 1.4 and 2.1): a closed child entered took
+   one badge at its bottom edge's right end, which read as a mark on the
+   block and covered the order badge, and a pin's straddled its top edge
+   from its outer end.*
    *Why:* a halo composes with a tier fill, a filled root tag and an
    outlined pin alike, which a fill or stroke change does not; a route and
    a selection differ in shape, a chain with an origin against one element,
