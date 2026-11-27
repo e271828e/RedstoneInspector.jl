@@ -11,8 +11,10 @@ In working order, the first one next. Increments 1 to 10, 8b and 10b, the
 keyboard by family and the look pass have landed (`roadmap.md`).
 
 - **Increment 11, the release** (`roadmap.md`). Stage reached: designed
-  on 2026-11-27, nothing built. The rulings, the order of the work and
-  what the prototype must still probe are
+  on 2026-11-27, and step 1's two units launched that day, the first pin
+  bump and the mechanics, each in a worktree, nothing merged. The
+  rulings, the order of the work, what the prototype must still probe and
+  the state of the run are
   `increments/inspector_11_release/notes_inspector_11.md`. The mechanics
   come first and need nothing, and so does a first pin bump to the
   core's tip. The README's pictures wait for a second pin bump

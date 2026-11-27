@@ -194,6 +194,35 @@ session.
   for the run, so the coordinator rules on the prototype's readings and
   records each one here for the user's review.
 
+Made at the launch of step 1 on 2026-11-27, the user away, for the user's
+review.
+
+- **C8. The first bump's target is the core's `318859d4`**, the tip of
+  its GitHub master that day, 89 commits past `fcd3660`. Its folder is
+  `increments/20261127_pin_318859d/`.
+- **C9. Two builders, one per unit**, each a high-tier agent in a
+  worktree of its own: `pin_318859d` on the branch `pin-318859d`, and
+  `release_mechanics` on `release-mechanics`, both cut from `3afd3ed`.
+  The mechanics are committed on their branch, one commit per concern.
+  *Why:* the branch waits for the second bump and rebases onto it, which
+  an uncommitted patch would not survive.
+- **C10. The rehearsal's pushes run from a clone of their own**, whose
+  one remote is the rehearsal repo. The builder never runs `git push` in
+  a worktree of this repo. *Why:* no command in that clone can reach
+  `RedstoneInspector.jl`.
+- **C11. Nothing published in the rehearsal repo is deleted.** A second
+  or third release there takes a new version, in a commit that lives
+  only in the clone. A draft that a failed run left may be deleted, which
+  is C1's recovery. A deliberate break is a commit of the clone alone,
+  and every run reported as the rehearsal's uses the branch's workflow
+  file byte for byte. *Why:* ruling 1 lists pushing and breaking, not
+  deleting.
+- **C12. A lock around the browser checks.** `npm run e2e` reuses a
+  server already on port 4319, so two worktrees running it at once would
+  test one another's build. Each builder holds the directory
+  `../RedstoneInspector.jl-worktrees/e2e.lock` for the run. The
+  real-server check binds a free port and needs none.
+
 ## The order of the work
 
 1. The mechanics, now: the release script, the workflow, the `base` line,
@@ -224,6 +253,23 @@ If 1b stalls on its retuning, the fallback is a release with today's
 - Whether a published draft attaches to the tag the job pushed.
 - Whether `Pkg.update()` follows the `release` branch.
 - The `live` job's duration.
+
+## The state of the run
+
+Kept current by the coordinator, for the user and for a successor. All
+paths are on one machine.
+
+- **Launched 2026-11-27 from `3afd3ed`.** Step 1's two units are
+  building. Nothing is merged and nothing is pushed.
+- **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
+  public, created empty that day with its Pages source set to "GitHub
+  Actions".
+- **The worktrees**, under `~/.julia/dev/RedstoneInspector.jl-worktrees/`:
+  `pin_318859d` and `release_mechanics`. Beside them, each builder's
+  scratch with its `notes.txt`, `pin_318859d_scratch/` and
+  `release_mechanics_scratch/`, the second holding the rehearsal's clone;
+  and `context_watch.py`, the coordinator's watch on the builders'
+  context.
 
 ## The records this increment amends when it lands
 
