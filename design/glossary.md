@@ -94,6 +94,11 @@ no entry here.
 - **Envelope.** The top-level object: `format_version`,
   `redstone_version`, `kind`, the optional `name` and the body
   (`descriptor_design.md` answer 1).
+- **Events pill.** The badge on a block's top edge at the right that
+  counts state events: those a primitive declares, or on a closed
+  assembly those of the primitives beneath it. An **events group** is a
+  declaring primitive with all its event rows in the drawer's events tab,
+  one stop (`visual_grammar.md` answer 11, `workspace.md` answer 6).
 - **Face object.** A face as the node carries it: a *primitive face* with
   `name`, `type`, `kind` and `pinned`, or an *assembly face* with `name`
   alone (`descriptor_design.md` answer 4).

@@ -12,8 +12,10 @@ keyboard by family have landed (`roadmap.md`).
 
 - **Increment 10b, the events** (`roadmap.md`). Designed on 2026-11-27,
   the rulings in `increments/inspector_10b_events/notes_inspector_10b.md`.
-  Being built on the branch `increment-10b` with the user away, unmerged
-  and unpushed; the notes' "For the user's review" says what waits.
+  Built, reviewed and fixed on 2026-11-27 with the user away, on the
+  branch `increment-10b`, unmerged and unpushed. What waits is in the
+  notes' "For the user's review": the user's check of the coordinator's
+  rulings, the look, the merge and the roadmap's landed entry.
 - **The look pass before the release**, by the user's rulings of
   2026-11-17 and 2026-11-20: the canvas's open look items, judged by eye
   in one session, after 10b draws the events and before 11 captures the

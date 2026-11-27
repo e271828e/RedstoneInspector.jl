@@ -295,3 +295,114 @@ pill under a search, a legend focus, a route and a diagnostic, a dragged
 pod in both modes, the narrow pane and a narrow drawer, and long event
 names. It reads the screenshots against the answers. It reverts each
 rule alone to show a check goes red.
+
+## The review's record
+
+The cold review of 2026-11-27 ran on `3d5bc26` in its own worktree. Its
+gate matched the prototype's counts. Its own oracle, written from the
+records and the schema, agreed with `events.ts` and with the prototype's
+oracle on all 22 fixtures, and the core's `show` printed the same events
+and the same three parameters for the new model. Its own comparison of a
+baseline bundle against the increment's found no committed layout moved:
+59 assembly levels in each mode and each browser. The prototype's 42
+mutants were red for it too, and 13 of its own 18. The coordinator ruled
+on each finding with the user away.
+
+- **F1, fixed.** An event name of 20 characters or more overflowed the
+  240 px pane and pushed the `localized` column out of it. The name cell
+  had no word breaking, where the faces' and the parameters' cells have.
+  The name wraps now, and the check loads names of 32 and 77 characters.
+- **F2, fixed.** A click on a group's second or later row selected the
+  component and left the cursor on the drawer's root with no ring. The
+  click looked for the row's button in the clicked `tr`. It finds the
+  stop through the group now, and the text-selection guard reads the
+  group.
+- **F3 to F6, checks added.** Four rules held with no check: the pill
+  takes no click of its own, it stays at the lowest text level, it dims
+  with its block under a focus, and the tab prints the root's path as
+  `/`. Each survived a mutant of the reviewer's and is red now.
+- **F7 and F8, fixed here.** `pending.md` and C10 cited a "For the
+  user's review" section that did not exist. It follows.
+- **F9, fixed.** The help term said a non-localized event fires at the
+  end of the step in which its guard first holds. The core's §2.3 has it
+  fire at the first boundary that observes the edge, the step's end or
+  an earlier localized event's instant. The term says so now.
+- **R6 and the group's scroll, fixed** with the findings. Both heads
+  carry one title, `LOCALIZED_TITLE`. `j`, `k`, `gg` and `G` scroll the
+  whole group into view.
+- **Accepted survivor.** The pill's stroke turned to the wire color
+  passes every check. No check pins a color (`frontend/MAP.md`, "The
+  canvas").
+- **The delta check** of `d9e5d0b` found every ruled finding fixed, the
+  fixer's nine mutants red, and 20 clicks across the other tabs and the
+  pane unchanged from `3d5bc26` in both browsers. The gate there: 792
+  unit tests, the checker clean, 750 browser checks passed and 4
+  skipped.
+- **N1, fixed in `6a28206`.** The delta check found one fault that the
+  scroll fix brought in. In the drawer at its 80 px minimum, `k` onto a
+  group taller than the tab's body aligned the group's bottom and hid its
+  button. A group that does not fit is scrolled to its top now. The
+  reviewer verified it in both browsers and ran the `events` and `cursor`
+  specs, 92 passed. The fixer's full gate there: 792 unit tests, the
+  checker clean, 752 browser checks passed and 4 skipped.
+- **Not checked by anyone:** WebKit, and a push of a model with events
+  over the live socket. The Julia suite and the drift check last ran at
+  `3d5bc26`, and no later commit touches what they read.
+
+`tools/mutants_events.py` holds 52 mutants now, the fixer's ten named
+"fix:". `review/` holds the reviewer's oracle, its mutants, its probe
+specs and the script that prints the core's `show`. Their paths read
+`<probes>`, `<worktree>` and `<dev>`, to be replaced before a run.
+
+## For the user's review
+
+The run of 2026-11-27 stopped before the merge. The branch
+`increment-10b` holds, from `a07df11`: the session's record (`8e4c2c2`),
+the readings and the tools (`bd1f1a1`), the code (`3d5bc26`), the review's
+fixes (`d9e5d0b` and `6a28206`) and the closing docs commit. Nothing is
+merged or pushed, and `master` is untouched.
+
+- **To check, the coordinator's calls:** rulings C1 to C11, readings R1
+  to R9 with R6 turned, and the adjudication of F1 to F9 and N1 above.
+- **To rule:**
+  - The Simulink table could gain a row, zero-crossing detection against
+    a localized event (C10). The session did not ask for it.
+  - `zz` centres a group's button and not the group. Its scroll is apart
+    from `focusStop`'s, and extending it is one line.
+- **To look at,** with `npm run dev` in the worktree's `frontend/` on
+  `events_deployment`, `approach_deployment` and `library_deployment`:
+  - The two pills on a narrow assembly. On `pods/a` and `pods/b` the
+    reserved width is exact, so the pills stand 2 px apart and fill the
+    top edge.
+  - The pill's stroke, the text color as the order badge's (C4).
+  - The tolerance's form, `1e-6 of Δt_frame` in one code span, where
+    `show` prints `1.0e-6` (C3, R5).
+  - The words: the pill's titles, `LOCALIZED_TITLE`, the two empty
+    sentences, and the help page's term. The term says a localized event
+    "ends the integration step" at its crossing. Under a fixed-step
+    method the step is cut there and then finished, so "cuts" may read
+    better.
+  - The help page's "badge" term lists the clocks and the order position
+    and not the events count, which has a term of its own.
+  - The ring around a group, and the pane's EVENTS open by default.
+  - The screenshots of the last e2e run are in the worktree's
+    `frontend/e2e/screenshots/`, Firefox's under `firefox/`.
+- **Noticed, not touched:** the `#` head's title is a literal written
+  twice, in `Detail.svelte` and `Events.svelte`. `Canvas.svelte`'s
+  `overlayBadges` keeps a local width with the formula of `size.ts`'s
+  `pillWidth`, older than this increment.
+- **Then:** the merge, the roadmap's entry with the landed facts, and
+  the removal of what is local to this machine under
+  `RedstoneInspector.jl-worktrees/`: the worktrees `increment_10b` and
+  `increment_10b_review`, the folders `increment_10b_probes`,
+  `increment_10b_review_probes` and `increment_10b_fix_probes`, and the
+  file `increment_10b_notes.md`. What the record rests on is in `tools/`,
+  `probes/` and `review/` beside this file.
+
+## Out of scope
+
+- The guard and handler locations, with the stage functions'
+  (`pending.md`, "Format changes still open").
+- A tree mark, a search prefix and a legend line for events (rulings 4
+  and 14).
+- The look pass's items on the canvas, the pills' place among them.
