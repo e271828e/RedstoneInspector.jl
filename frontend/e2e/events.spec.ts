@@ -180,7 +180,9 @@ test("events_deployment: the events tab, last, counts 7; its head shows the thre
   expect(await drawer(page).locator("button.tab").evaluateAll((bs) => bs.map((b) => (b as HTMLElement).dataset.tab))).toEqual(["diagnostics", "root-inputs", "timing", "order", "events"]);
   await expect(tab(page).locator(".count")).toHaveText("7");
   await openEvents(page);
-  expect(await items(page)).toEqual(["firing_budget=2", "localization_tol=2.5e-5 of Δt_frame", "localization_budget=16"]);
+  expect(await items(page)).toEqual(["firing_budget=2", "localization_tol=2.5e-5 × Δt_frame", "localization_budget=16"]);
+  // the tolerance in one code span (the look pass, 8.2)
+  await expect(drawer(page).locator('.item[data-item="localization_tol"] dd code')).toHaveText(["2.5e-5 × Δt_frame"]);
   await expect(drawer(page).locator("table.events thead th")).toHaveText(["path", "#", "event", "localized"]);
   expect(await drawer(page).locator("tbody.group").evaluateAll((gs) => gs.map((g) => (g as HTMLElement).dataset.path))).toEqual(
     ["pods/a/ball", "pods/b/ball", "nest/step", "nest/deep/ball", "heater"]);
@@ -194,7 +196,7 @@ test("approach_deployment and library_deployment: the tab's head and rows; the l
   await drop(page, "approach_deployment");
   await expect(tab(page).locator(".count")).toHaveText("1");
   await openEvents(page);
-  expect(await items(page)).toEqual(["firing_budget=4", "localization_tol=1e-6 of Δt_frame", "localization_budget=8"]);
+  expect(await items(page)).toEqual(["firing_budget=4", "localization_tol=1e-6 × Δt_frame", "localization_budget=8"]);
   expect(await tableRows(page)).toEqual(["gear|1|touchdown|yes"]);
   await shot(page, "approach_deployment", "", "events-tab");
   await drop(page, "library_deployment");

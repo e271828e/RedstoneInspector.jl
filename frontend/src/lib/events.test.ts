@@ -158,10 +158,10 @@ describe("eventHead", () => {
     ]);
   });
 
-  it("the values: approach_deployment's defaults and events_deployment's own, the tolerance in the shortest exponent form, a fraction of Δt_frame", () => {
+  it("the values: approach_deployment's defaults and events_deployment's own, the tolerance in the shortest exponent form times Δt_frame, 2.5e-5 × Δt_frame (the look pass, 8.2)", () => {
     const values = (n: string) => eventHead(models.get(n)!)!.map((h) => `${h.label}=${h.values.join()}`);
-    expect(values("approach_deployment")).toEqual(["firing_budget=4", "localization_tol=1e-6 of Δt_frame", "localization_budget=8"]);
-    expect(values("events_deployment")).toEqual(["firing_budget=2", "localization_tol=2.5e-5 of Δt_frame", "localization_budget=16"]);
+    expect(values("approach_deployment")).toEqual(["firing_budget=4", "localization_tol=1e-6 × Δt_frame", "localization_budget=8"]);
+    expect(values("events_deployment")).toEqual(["firing_budget=2", "localization_tol=2.5e-5 × Δt_frame", "localization_budget=16"]);
     expect(eventHead(models.get("closed_loop_deployment")!)).toEqual([]);
   });
 
