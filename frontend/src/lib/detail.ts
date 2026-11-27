@@ -2,6 +2,7 @@
 // selectable element, each a function of the model and the element's key.
 import type { KindMarker, Location, Parameter, PrimitiveFace } from "./descriptor";
 import { inPinId, levelOf, outPinId, portId } from "./level";
+import { eventsBeneath, eventsOf, type EventGroup } from "./events";
 import type { Model } from "./model";
 import { folderOf } from "./outline";
 import { chainLine, framesTable, scopeFramesTable, type FramesTable } from "./timing";
@@ -55,11 +56,12 @@ export const FACT_TITLES = {
   class: "Whether the node is a primitive or an assembly and, for a primitive, its tier: continuous or discrete.",
   children: "How many child nodes the assembly holds directly.",
   wires: "How many wires the assembly declares on its own level.",
+  events: "State events declared by the primitives inside",
   member: "Where the node sits in its parent: the field holding it and its key in that field's container.",
 } as const;
 
 /** The pane's collapsible sections, in order (workspace.md answer 4). */
-export type Section = "signature" | "docstring" | "locations" | "timing" | "parameters" | "faces";
+export type Section = "signature" | "docstring" | "locations" | "timing" | "events" | "parameters" | "faces";
 /** Whether the signature says more than the type: not when it is the type, or the type less its module prefix as a session importing the name prints it. */
 export const signatureAdds = (type: string, signature: string): boolean =>
   signature !== type && !type.endsWith("." + signature);
@@ -109,6 +111,10 @@ export interface NodeFacts {
   children?: number;
   /** An assembly's own level's wires. */
   wires?: number;
+  /** The state events the primitives inside an assembly declare, when there are some (the notes' C6). */
+  events?: number;
+  /** A primitive's state events, its EVENTS section, when it declares some. */
+  eventTable?: EventGroup;
   inputs: FaceFacts[];
   outputs: FaceFacts[];
 }
@@ -179,11 +185,15 @@ export function nodeFacts(model: Model, path: string): NodeFacts {
   if (n.class === "primitive") {
     facts.tier = n.tier;
     if (n.tier === "discrete") facts.timing = { table: framesTable(model, path)!, chain: chainLine(model, path) };
+    const events = eventsOf(model, path);
+    if (events) facts.eventTable = events;
   } else {
     const table = scopeFramesTable(model, path);
     if (table) facts.timing = { table };
     facts.children = tree.children.get(path)!.length;
     facts.wires = n.wires.length;
+    const beneath = eventsBeneath(model, path).events;
+    if (beneath) facts.events = beneath;
   }
   return facts;
 }

@@ -22,7 +22,8 @@
   import { levelOf, parsePortId, portId, REGION_PADDING } from "../lib/level";
   import type { Model } from "../lib/model";
   import { orderBadge } from "../lib/analysis";
-  import { blockTriple, clockCount, CONTINUOUS_TITLE, fromRootInput, legend, mixed, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
+  import { blockTriple, CONTINUOUS_TITLE, fromRootInput, legend, mixed, ratePill, STEPS, stepsOf, tripleKey, wireTriple } from "../lib/rates";
+  import { eventsPill } from "../lib/events";
   import { labelledPorts, levelWireClasses, shortType } from "../lib/wires";
   import { iconOf } from "../lib/icons";
   import { label, regionsOf } from "../lib/regions";
@@ -41,7 +42,7 @@
   import { rerouteTouching } from "./router";
   import {
     BADGE_FONT, BADGE_GAP, BADGE_HEIGHT, BADGE_INSET, BADGE_PAD, BADGE_TOP, cutConstant, detailAt, FONT_STACK, cutName, FACE_FONT, ICON_HEIGHT, ICON_WIDTH, LABEL_FONT, isPinned, MARK, NAME_FONT, PAD, PIN_FONT, PIN_HEIGHT, POINT, PORT, SEGMENT_FONT, SLOT,
-    sizeLabels, sizeLevel, textWidth,
+    pillWidth, sizeLabels, sizeLevel, textWidth,
   } from "./size";
 
   let {
@@ -137,8 +138,6 @@
     }
     return out;
   });
-  /** A pill's width around its text: the order badge's and the rate pill's. */
-  const pillWidth = (text: string) => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
   const deployed = $derived(model.descriptor.kind === "deployment");
   const lines = $derived(mode === "rate" && shown ? legend(model, shown.level.path, steps) : []);
   /** Each wire's class by wire id, the drawn level's. */
@@ -258,7 +257,7 @@
 
   $effect(() => {
     const level = levelOf(tree, model.resolution!, path);
-    const sizes = sizeLevel(level, tree, model.label);
+    const sizes = sizeLevel(level, model);
     const [saved, v] = untrack(() => [savedLayout, savedView] as const);
     run++;
     hovered = undefined;
@@ -498,22 +497,6 @@
     const step = t && steps.get(tripleKey(t));
     if (step === undefined) return { c: palette.continuous };
     return { c: stepPair(step), step };
-  }
-  /** Rate mode's badge: the legend number of an extra, the clock count of an assembly with a discrete primitive beneath, joined when both. */
-  function badgeOf(b: ChildBlock, step: number | undefined): { text: string; title: string } | undefined {
-    if (mode !== "rate") return undefined;
-    const text: string[] = [], title: string[] = [];
-    if (step !== undefined && step >= STEPS) {
-      text.push(`#${step + 1}`);
-      title.push(`Rate ${step + 1} of the legend, past the palette's ${STEPS} colors.`);
-    }
-    const k = b.role === "assembly" ? clockCount(model, b.path) : 0;
-    if (k > 0) {
-      const clocks = `${k} ${k === 1 ? "clock" : "clocks"}`;
-      text.push(clocks);
-      title.push(k === 1 ? "Every discrete primitive inside ticks on this one clock." : `Multi-rate: the discrete primitives inside tick on ${clocks}; open it to see which.`);
-    }
-    return text.length ? { text: text.join(" · "), title: title.join(" ") } : undefined;
   }
   /** A pinned face's mark, a small diamond centered at (x, y). */
   const markD = (x: number, y: number) => `M${x},${y - 3} L${x + 3},${y} L${x},${y + 3} L${x - 3},${y} Z`;
@@ -800,7 +783,8 @@
             </g>
           {:else}
             {@const { c, step } = colorsOf(b)}
-            {@const badge = badgeOf(b, step)}
+            {@const badge = mode === "rate" ? ratePill(model, b.path, steps) : undefined}
+            {@const events = eventsPill(model, b.path)}
             {@const icon = iconOf(tree.byPath.get(b.path)!)}
             <g
               class={["block", b.role, { extra: step !== undefined && step >= STEPS }, blockClass(b)]} data-id={b.id} data-region={regionOf.get(b.id)}
@@ -840,6 +824,15 @@
                   <title>{badge.title}</title>
                   <rect x={BADGE_INSET} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={c.stroke} />
                   <text class="badge" x={BADGE_INSET + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{badge.text}</text>
+                </g>
+              {/if}
+              {#if events}
+                {@const w = pillWidth(events.text)}
+                {@const x = box.width - BADGE_INSET - w}
+                <g class="events-pill">
+                  <title>{events.title}</title>
+                  <rect x={x} y={BADGE_TOP} width={w} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+                  <text class="events" x={x + BADGE_PAD} y={BADGE_TOP + 9} style="font:{BADGE_FONT}">{events.text}</text>
                 </g>
               {/if}
               {#if orders.has(b.id)}
@@ -1023,6 +1016,8 @@
   /* The order badge (workspace.md answer 7): the text color on the background; it carries its title, a click on it
      selecting the block. */
   .order-badge rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
+  /* The events pill (visual_grammar.md answer 11): the text color on the background in both modes, no click of its own. */
+  .events-pill rect { fill: var(--bg); stroke: var(--text); stroke-width: 1; }
 
   .wire { fill: none; stroke: var(--wire); stroke-width: 1; pointer-events: none; }
   /* The kind as line weight and pattern (visual_grammar.md answer 4); the struct's double line is a wide stroke under a core in the background color. */

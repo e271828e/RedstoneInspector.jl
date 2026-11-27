@@ -81,6 +81,9 @@ write_fixture("timing_deployment", Deployment(build(Synthetic.timing()); Δt_fra
 write_fixture("library_deployment", Deployment(build(Synthetic.library()); Δt_frame = 1//100))
 write_fixture("rates_deployment", Deployment(build(Synthetic.rates()); Δt_frame = 1//100, Δt_base = 1//200))
 write_fixture("approach_deployment", Deployment(build(approach(report.solution)); Δt_frame = 1//200))
+# Increment 10b's notes, C1: the events' cases, the event parameters set off their defaults.
+write_fixture("events_deployment", Deployment(build(Synthetic.events()); Δt_frame = 1//100, firing_budget = 2,
+                                              localization_tol = 2.5e-5, localization_budget = 16))
 for base_name in ("failure_cycle", "failure_structure", "failure_nested", "failure_dead", "failure_probe")
     write_failure_fixture(base_name, getfield(Synthetic, Symbol(base_name))())
 end

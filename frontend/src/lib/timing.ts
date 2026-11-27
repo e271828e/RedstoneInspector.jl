@@ -283,7 +283,8 @@ export interface HeadItem {
 
 /**
  * The head list of a deployment's tab, three lines: the grids, the algorithm with its parameters, the steps. `h_min`
- * and `attempt_budget` show for a proposing algorithm alone; the three event parameters wait for 10b. Undefined for a build.
+ * and `attempt_budget` show for a proposing algorithm alone; the three event parameters head the events tab (`events.ts`).
+ * Undefined for a build.
  */
 export function headList(model: Model): HeadItem[][] | undefined {
   const bound = boundOf(model), d = model.descriptor, steps = stepsPerFrame(model);

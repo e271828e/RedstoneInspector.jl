@@ -445,7 +445,7 @@ test("gg and G scroll the tree's first and last row into view when it is already
 test("gt and gT step the drawer's tabs, wrapping, from any region, the focus staying; a closed drawer opens on its current tab; a stop the switch removes gives the focus to the drawer", async ({ page }) => {
   await drop(page, "closed_loop");
   await press(page, "q");
-  const tabs = ["diagnostics", "root-inputs", "timing", "order"];
+  const tabs = ["diagnostics", "root-inputs", "timing", "order", "events"];
   await expect(drawer(page)).toHaveAttribute("data-open", "false");
   await pressAll(page, "g", "t");
   await expect(drawer(page)).toHaveAttribute("data-open", "true");

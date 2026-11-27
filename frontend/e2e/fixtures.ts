@@ -43,11 +43,12 @@ export async function dropOver(page: Page, name: string, text = fixtureText(name
   });
 }
 
-/** Opens the level at `path` by double-clicking down from the root along it. */
+/** Opens the level at `path` by double-clicking down from the root along it; a keyed container's field, no block, is passed. */
 export async function openPath(page: Page, path: string): Promise<void> {
   const segments = path.split("/");
   for (let i = 1; i <= segments.length; i++) {
     const p = segments.slice(0, i).join("/");
+    if (i < segments.length && !(await page.locator(`g.block[data-id="${p}"]`).count())) continue;
     await page.locator(`g.block[data-id="${p}"]`).dblclick();
     await page.locator(readyLevel(p)).waitFor();
   }

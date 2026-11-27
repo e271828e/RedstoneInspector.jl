@@ -1,8 +1,10 @@
 // Block sizes and port positions from measured text (visual_grammar.md answers
 // 1 to 3 and 10). DOM: text is measured with a 2D canvas context, nothing else.
 import type { Block, BlockSize, ChildBlock, EdgeLabel, Level, PortPosition } from "../lib/level";
+import { eventsPill } from "../lib/events";
 import { iconOf, type Icon } from "../lib/icons";
 import type { Model } from "../lib/model";
+import { ratePill } from "../lib/rates";
 import { label } from "../lib/regions";
 import type { Tree } from "../lib/tree";
 import { labelledPorts, shortType } from "../lib/wires";
@@ -20,12 +22,27 @@ export const LABEL_HEIGHT = 11;
 export const BADGE_FONT = `9px ${FONT_STACK}`;
 /**
  * The badge pill: its inset from the block's edge, its height and its text's side padding. The rate pill straddles
- * the top edge at the left, so it never covers the segment, which answer 10 never truncates. The order badge
- * straddles the bottom edge at the left, as far below as the rate pill rises above, and the overlay's pills the
- * same row, stacked leftward from the right end `BADGE_GAP` apart. Nothing yields: an overlay pill draws over an
- * order badge it meets (the second look's 2.3 and 2.4). No block's size depends on the pills.
+ * the top edge at the left, so it never covers the segment, which answer 10 never truncates, and the events pill
+ * the top edge at the right (answer 11). The order badge straddles the bottom edge at the left, as far below as the
+ * rate pill rises above, and the overlay's pills the same row, stacked leftward from the right end `BADGE_GAP`
+ * apart. Nothing yields: an overlay pill draws over an order badge it meets (the second look's 2.3 and 2.4). A
+ * block's size depends on the top edge's pills alone, and only where the events pill stands (`topPillsWidth`).
  */
 export const BADGE_INSET = 4, BADGE_HEIGHT = 12, BADGE_PAD = 4, BADGE_TOP = -7, BADGE_GAP = 2;
+/** A pill's width around its text: the rate pill's, the events pill's and the order badge's. */
+export const pillWidth = (text: string): number => Math.ceil(textWidth(text, BADGE_FONT)) + 2 * BADGE_PAD;
+/** The texts a child's top edge can carry: the rate pill's as rate mode draws it, and the events pill's. */
+export interface TopPills {
+  rate?: string;
+  events?: string;
+}
+/**
+ * The width the top edge's pills need with their insets and the gap between them (answer 11, the notes' C2): only a
+ * block with the events pill reserves it, the rate pill counted whatever the mode, so the layout outlives a change of
+ * mode; 0 for a block without the events pill, whose size the pills never set.
+ */
+export const topPillsWidth = (top: TopPills): number =>
+  top.events === undefined ? 0 : 2 * BADGE_INSET + pillWidth(top.events) + (top.rate === undefined ? 0 : pillWidth(top.rate) + BADGE_GAP);
 
 /** The display name's fixed width, past which it is cut with an ellipsis. */
 export const DISPLAY_NAME_WIDTH = 120;
@@ -100,7 +117,7 @@ export function isPinned(tree: Tree, b: ChildBlock, side: "in" | "out", name: st
   return n?.class === "primitive" && !!(side === "in" ? n.inputs : n.outputs).find((f) => f.name === name)?.pinned;
 }
 
-export function sizeBlock(b: Block, tree: Tree, rootLabel: string): BlockSize {
+export function sizeBlock(b: Block, tree: Tree, rootLabel: string, top: TopPills = {}): BlockSize {
   if (b.role === "in" || b.role === "out") {
     const tag = b.role === "in" && b.rootInput;
     const width = Math.ceil(textWidth(b.name, PIN_FONT)) + 2 * PAD + (tag ? POINT + SLOT : 0) + (tag && b.pinned ? MARK : 0);
@@ -115,7 +132,7 @@ export function sizeBlock(b: Block, tree: Tree, rootLabel: string): BlockSize {
   const icon = iconOf(tree.byPath.get(b.path)!);
   const second = icon ? iconWidth(icon) : textWidth(cutName(b.displayName), NAME_FONT);
   const head = Math.max(textWidth(label(tree, b.path, rootLabel), SEGMENT_FONT), second);
-  const width = Math.ceil(Math.max(MIN_WIDTH, head + 2 * PAD, body + 2 * PAD + GUTTER));
+  const width = Math.ceil(Math.max(MIN_WIDTH, head + 2 * PAD, body + 2 * PAD + GUTTER, topPillsWidth(top)));
   const row = (i: number) => HEADER + i * ROW + ROW / 2;
   return {
     width, height: HEADER + rows * ROW + FOOT,
@@ -126,9 +143,12 @@ export function sizeBlock(b: Block, tree: Tree, rootLabel: string): BlockSize {
   };
 }
 
+/** A child's top edge pills' texts, whatever the mode. */
+export const topPills = (model: Model, path: string): TopPills => ({ rate: ratePill(model, path)?.text, events: eventsPill(model, path)?.text });
+
 /** Every block's size on a level, by block id. */
-export const sizeLevel = (level: Level, tree: Tree, rootLabel: string): Map<string, BlockSize> =>
-  new Map(level.blocks.map((b) => [b.id, sizeBlock(b, tree, rootLabel)]));
+export const sizeLevel = (level: Level, model: Model): Map<string, BlockSize> =>
+  new Map(level.blocks.map((b) => [b.id, sizeBlock(b, model.tree!, model.label, b.role === "in" || b.role === "out" ? {} : topPills(model, b.path))]));
 
 /** Every type label on a level, by producer port id: its unqualified type whole, one line high; none for an unknown type. */
 export function sizeLabels(model: Model, level: Level): Map<string, EdgeLabel> {

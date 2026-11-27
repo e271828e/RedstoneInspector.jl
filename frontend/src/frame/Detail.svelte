@@ -2,13 +2,14 @@
   // The detail pane (workspace.md answer 4): one layout per element kind over
   // detail.ts's facts, the open level's when nothing is selected. Links select
   // through the session; nothing here is truncated, the pane scrolls. A node's
-  // pane has six collapsible sections, their state the session's. A pin, a port
+  // pane has seven collapsible sections, their state the session's. A pin, a port
   // and a wire carry the trace button.
   import {
     classPhrase, count, detailOf, FACT_TITLES, faceSelection, memberKind, memberTitle, signatureAdds, TIMING_TITLE, type FaceFacts, type Facts, type LevelFacts, type NodeFacts,
     type Section, type Selection,
   } from "../lib/detail";
   import { renderDocstring } from "../lib/docstring";
+  import { localizedWord } from "../lib/events";
   import type { Model } from "../lib/model";
   import type { Snippet } from "svelte";
   import { inPinId, outPinId, portId } from "../lib/level";
@@ -161,6 +162,10 @@
       <dt title={FACT_TITLES.wires}>wires</dt>
       <dd data-fact="wires">{f.wires}</dd>
     {/if}
+    {#if f.events !== undefined}
+      <dt title={FACT_TITLES.events}>events</dt>
+      <dd data-fact="events">{f.events}</dd>
+    {/if}
     {#if f.membership}
       <dt title={FACT_TITLES.member}>member</dt>
       <dd data-fact="member" title={memberTitle(f.membership)}>
@@ -190,6 +195,18 @@
     {@render frames(f.timing!.table)}
     {#if f.timing!.chain}<p class="chain"><code>{f.timing!.chain}</code></p>{/if}
   {/snippet}
+  <!-- The events in priority order, none a stop (workspace.md answer 4), and the bundle's fields as `show` prints them. -->
+  {#snippet events()}
+    <table class="events">
+      <thead><tr><th title="The priority within the component: the first eligible event fires">#</th><th>event</th><th>localized</th></tr></thead>
+      <tbody>
+        {#each f.eventTable!.events as e (e.position)}
+          <tr class="event" data-position={e.position}><td class="position">{e.position}</td><td class="name"><code>{e.name}</code></td><td class="localized">{localizedWord(e.localized)}</td></tr>
+        {/each}
+      </tbody>
+    </table>
+    <p class="bundle" title="The fields the guards and the handlers receive">bundle <code>({f.eventTable!.bundle.join(", ")})</code></p>
+  {/snippet}
   {#snippet parameters()}
     <table class="parameters"><tbody>{#each f.parameters as p (p.name)}<tr><td class="param-name"><code>{p.name}</code></td><td class="param-value"><code>{p.value}</code></td></tr>{/each}</tbody></table>
   {/snippet}
@@ -199,6 +216,7 @@
   {#if f.docstring}{@render section("docstring", docstring)}{/if}
   {#if f.locations.length}{@render section("locations", locations)}{/if}
   {#if f.timing}{@render section("timing", timing, TIMING_TITLE)}{/if}
+  {#if f.eventTable}{@render section("events", events)}{/if}
   {#if f.parameters.length}{@render section("parameters", parameters)}{/if}
   {#if f.inputs.length + f.outputs.length}{@render section("faces", faceTable)}{/if}
 {/snippet}
@@ -308,6 +326,11 @@
   .frames .period { padding-right: 8px; }
   .frames .unit { color: var(--text-light); }
   .chain { margin: 4px 0 0; color: var(--text-light); }
+  /* The events table: the priority number light, the bundle under it. */
+  .events { width: auto; }
+  .events :is(th, td) { padding-right: 12px; }
+  .events .position { color: var(--text-light); font-variant-numeric: tabular-nums; }
+  .bundle { margin: 4px 0 0; color: var(--text-light); }
   .faces tbody tr { cursor: pointer; }
   .faces tbody tr:hover { background: var(--strip); }
   .faces .side, .faces .pinned, .faces .stage { white-space: nowrap; }

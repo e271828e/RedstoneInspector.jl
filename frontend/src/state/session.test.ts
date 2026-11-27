@@ -56,25 +56,25 @@ describe("load: a replacement rekeys, a refusal unloads", () => {
     expect(session.level).toBe("");
   });
 
-  it("the detail pane's sections: parameters and faces open at first, each state kept across selections, levels, a push and a refusal (workspace.md answer 9)", () => {
-    expect([...session.sections]).toEqual(["parameters", "faces"]);
+  it("the detail pane's sections: events, parameters and faces open at first, each state kept across selections, levels, a push and a refusal (workspace.md answer 9)", () => {
+    expect([...session.sections]).toEqual(["events", "parameters", "faces"]);
     load(fixtureModel("closed_loop"));
     setSection("timing", true);
     setSection("faces", false);
     const open_ = () => [...session.sections].sort();
-    expect(open_()).toEqual(["parameters", "timing"]);
+    expect(open_()).toEqual(["events", "parameters", "timing"]);
     setSection("timing", true);
     select({ level: "", target: { kind: "block", id: "plant" } });
     open("sensing");
-    expect(open_()).toEqual(["parameters", "timing"]);
+    expect(open_()).toEqual(["events", "parameters", "timing"]);
     load(fixtureModel("closed_loop_deployment"));
-    expect(open_()).toEqual(["parameters", "timing"]);
+    expect(open_()).toEqual(["events", "parameters", "timing"]);
     load(undefined);
     load(fixtureModel("rates"));
-    expect(open_()).toEqual(["parameters", "timing"]);
+    expect(open_()).toEqual(["events", "parameters", "timing"]);
     setSection("timing", false);
     setSection("faces", true);
-    expect(open_()).toEqual(["faces", "parameters"]);
+    expect(open_()).toEqual(["events", "faces", "parameters"]);
   });
 
   it("Escape clears a standing query first, then the selection", () => {

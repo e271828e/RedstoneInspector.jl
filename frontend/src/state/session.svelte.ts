@@ -18,8 +18,8 @@ import { faceText, rekeyRoute, routeOf, sameFace } from "../lib/routes";
 import type { Tree } from "../lib/tree";
 import type { View } from "../lib/view";
 
-export type Tab = "diagnostics" | "root-inputs" | "timing" | "order";
-export const TABS: Tab[] = ["diagnostics", "root-inputs", "timing", "order"];
+export type Tab = "diagnostics" | "root-inputs" | "timing" | "order" | "events";
+export const TABS: Tab[] = ["diagnostics", "root-inputs", "timing", "order", "events"];
 /** The four regions Tab moves between, in order. */
 export type Region = "tree" | "canvas" | "detail" | "drawer";
 
@@ -29,7 +29,7 @@ let selection = $state.raw<Selection | undefined>();
 let expanded = $state.raw<ReadonlySet<string>>(new Set());
 let drawer = $state.raw<{ open: boolean; tab: Tab }>({ open: false, tab: "diagnostics" });
 /** Every node shares one state per section, which a load of any model keeps: only a page load resets it. */
-let sections = $state.raw<ReadonlySet<Section>>(new Set(["parameters", "faces"]));
+let sections = $state.raw<ReadonlySet<Section>>(new Set(["events", "parameters", "faces"]));
 let views = $state.raw<ReadonlyMap<string, View>>(new Map());
 let layouts = $state.raw<ReadonlyMap<string, LevelLayout>>(new Map());
 let query = $state("");

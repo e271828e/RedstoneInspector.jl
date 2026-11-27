@@ -36,6 +36,9 @@
   /** The badge sample's assembly, the clock pill straddling its top edge at the left as the canvas draws it. */
   const BADGE_BOX = { x: 8, y: 12, width: 104, height: 32 };
   const pillTop = BADGE_BOX.y + BADGE_TOP;
+  /** The events sample's primitive, the events pill straddling its top edge at the right as the canvas draws it. */
+  const eventsText = "3 events";
+  const eventsWidth = Math.ceil(textWidth(eventsText, BADGE_FONT)) + 2 * BADGE_PAD;
   /** The legend sample's two lines, a deployment's, their pair alone, its box in the legend's CSS sizes, scaled to the frame. */
   const LEGEND_FONT = "11px system-ui, sans-serif";
   const legendLines = ["D₀ 1 · Φ₀ 0", "D₀ 2 · Φ₀ 1"];
@@ -92,6 +95,13 @@
       <text x={b.x + PAD} y={b.y + 19} style="font:{SEGMENT_FONT}">selection</text>
       <rect class="pill" x={b.x + BADGE_INSET} y={pillTop} width={pillWidth} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} stroke={palette.assembly.stroke} />
       <text x={b.x + BADGE_INSET + BADGE_PAD} y={pillTop + 9} style="font:{BADGE_FONT}">{pillText}</text>
+    {:else if key === "events"}
+      {@const b = BADGE_BOX}
+      {@const x = b.x + b.width - BADGE_INSET - eventsWidth}
+      <rect x={b.x} y={b.y} width={b.width} height={b.height} rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
+      <text x={b.x + PAD} y={b.y + 19} style="font:{SEGMENT_FONT}">heater</text>
+      <rect class="pill events" x={x} y={pillTop} width={eventsWidth} height={BADGE_HEIGHT} rx={BADGE_HEIGHT / 2} />
+      <text x={x + BADGE_PAD} y={pillTop + 9} style="font:{BADGE_FONT}">{eventsText}</text>
     {:else if key === "display-name"}
       <rect x="4" y="4" width="58" height="40" rx="4" fill={palette.continuous.fill} stroke={palette.continuous.stroke} />
       <text x={4 + PAD} y="19" style="font:{SEGMENT_FONT}">plant</text>
@@ -295,6 +305,7 @@
   .sample .head { fill: var(--wire); }
   .sample .region { fill: none; stroke: var(--wire); stroke-dasharray: 3 3; }
   .sample .pill { fill: var(--bg); }
+  .sample .pill.events { stroke: var(--text); }
   .sample .icon { color: var(--text); }
   .sample .legend { fill: var(--bg); stroke: var(--wire); }
   .sample .halo { fill: none; stroke: var(--highlight); stroke-width: 5; opacity: 0.5; }
