@@ -534,7 +534,11 @@ lines, past its 700 by ruling 8; the `events` section and the three event
 parameters are read and not shown. The pin then moved to the core's
 `fcd3660` for its timing notation (D-478 and D-479), built on 2026-11-24
 with the user away and merged on 2026-11-25 after their review; its notes
-are `increments/20261124_pin_fcd3660/notes_pin_fcd3660.md`. A timing is
+are `increments/20261124_pin_fcd3660/notes_pin_fcd3660.md`. It moved
+again to the core's `318859d` on 2026-11-27, the first of increment 11's
+two bumps, built and reviewed with the user away and merged on the local
+master that day; the page needed no change, and its notes are
+`increments/20261127_pin_318859d/notes_pin_318859d.md`. A timing is
 `{anchor, D, phi}` and a `Relative` link `{D, phi}`, the page prints `Dₛ`,
 `Dₐ`, `D₀` and their phases, a chart row is a `(D₀, Φ₀)`, its base ticks
 are indexed by `n` and its frame tops by `k`, and the loader also refuses a

@@ -259,17 +259,28 @@ If 1b stalls on its retuning, the fallback is a release with today's
 Kept current by the coordinator, for the user and for a successor. All
 paths are on one machine.
 
-- **Launched 2026-11-27 from `3afd3ed`.** Step 1's two units are
-  building. Nothing is merged and nothing is pushed.
+- **Launched 2026-11-27 from `3afd3ed`.** Nothing is pushed.
+- **The first pin bump is merged on the local master**, as `209f642`,
+  its record `d67a540` and its review's fixes `f2a835d`, the launch's
+  commit placed after them. The Julia gate and the drift check are green
+  on the merged tree, with the manifest of the new pin. Its record is
+  `../20261127_pin_318859d/notes_pin_318859d.md`: the page needed no
+  change, and the review found nothing to fix outside the records. It
+  waits for the user's review and push. Until that push its worktrees
+  stay, `pin_318859d` and `pin_318859d_review`, with their scratch
+  folders.
+- **At that pin the facts above read differently in two places.** The
+  core is 89 commits past `fcd3660`, 33 of them in `src/`, and the
+  schema's top-level `description` changed with D-483.
+- **The mechanics are building** on `release-mechanics`.
 - **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
   public, created empty that day with its Pages source set to "GitHub
   Actions".
 - **The worktrees**, under `~/.julia/dev/RedstoneInspector.jl-worktrees/`:
-  `pin_318859d` and `release_mechanics`. Beside them, each builder's
-  scratch with its `notes.txt`, `pin_318859d_scratch/` and
-  `release_mechanics_scratch/`, the second holding the rehearsal's clone;
-  and `context_watch.py`, the coordinator's watch on the builders'
-  context.
+  `pin_318859d`, `pin_318859d_review` and `release_mechanics`. Beside
+  them, each agent's scratch with its `notes.txt`, the folder's name
+  ending in `_scratch`, the mechanics' holding the rehearsal's clone; and
+  `context_watch.py`, the coordinator's watch on the agents' context.
 
 ## The records this increment amends when it lands
 

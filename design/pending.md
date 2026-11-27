@@ -11,16 +11,21 @@ In working order, the first one next. Increments 1 to 10, 8b and 10b, the
 keyboard by family and the look pass have landed (`roadmap.md`).
 
 - **Increment 11, the release** (`roadmap.md`). Stage reached: designed
-  on 2026-11-27, and step 1's two units launched that day, the first pin
-  bump and the mechanics, each in a worktree, nothing merged. The
-  rulings, the order of the work, what the prototype must still probe and
-  the state of the run are
-  `increments/inspector_11_release/notes_inspector_11.md`. The mechanics
-  come first and need nothing, and so does a first pin bump to the
-  core's tip. The README's pictures wait for a second pin bump
-  to the core once the tutorial's increment 1b has landed there
-  (`Redstone.jl/design/pending.md`), since they show its reworked
-  `autopilot`. No image of `closed_loop`'s root: its tangle is the
+  on 2026-11-27, and step 1's two units launched that day with the user
+  away. The first pin bump, to the core's `318859d`, is reviewed and
+  merged on the local master, and waits for the user's review and push
+  (`increments/20261127_pin_318859d/notes_pin_318859d.md`). The
+  mechanics are building on the branch `release-mechanics` and stay off
+  master. The rulings, the order of the work, what the prototype must
+  still probe and the state of the run are
+  `increments/inspector_11_release/notes_inspector_11.md`. The README's
+  pictures wait for a second pin bump to the core once the tutorial's
+  increment 1b has landed there (`Redstone.jl/design/pending.md`), since
+  they show its reworked `autopilot`. To relay to the core, by the user:
+  its schema's text on `Diagnostic` lists four kinds that write
+  `function`, and its writer serves a fifth, `BundleFieldError`, since
+  its `dc884b9`. If the core corrects the text before the second bump,
+  that bump brings the one schema line beside the example's changes. No image of `closed_loop`'s root: its tangle is the
   model's feedback loops (`rules.md`, ELK's pass), and with the drag gone
   it cannot be tidied by hand.
 - **After the core's first release.** The bundle's docs constant flips
