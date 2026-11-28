@@ -550,6 +550,19 @@ The rehearsal repo now holds eight public releases, `v0.1.0` to
 branch's `CI.yml` byte for byte, Pages on `v0.1.7`'s page, and two
 probe branches, `dispatch-probe` and `tip-probe`.
 
+**The delta's check.** The reviewer, resumed, found `adcc116` clean. It
+ran the three steps under the runner's `bash -e` with a fake `git` and
+`gh`, each read failing in turn: a failed read stops the step with no
+output written. It walked its table again, and the three rows it had
+marked wrong are right. The first release ever, with no tag and no
+`release` branch, takes the release and never reads `release`. A resume
+whose Release was deleted stops red at the publish and deploys nothing;
+its tarball is gone, so the repair is a new version. It confirmed R1 to
+R4 against GitHub, each tag's parent and each asset's SHA-256 included.
+The `pages` failure of R4 was GitHub's: `deploy-pages` listed the run's
+artifacts 0.3 s after the upload finished, before the listing held it.
+The job's two steps are GitHub's own pattern and cannot cause it.
+
 **What a person does by hand**, for the README and `AGENTS.md` at the
 landing:
 
@@ -560,6 +573,7 @@ landing:
   an ancestor and every atomic push fails. Put the bot's commit back.
 - A `pages` job that fails on fetching its artifact: re-run that job
   alone.
+- A Release deleted by hand after its tag was pushed: a new version.
 - Before the landing push, the repo must hold no `release` branch and no
   `v0.1.0` tag. It held neither on 2026-11-28.
 
@@ -582,9 +596,20 @@ paths are on one machine.
   core is 89 commits past `fcd3660`, 33 of them in `src/`, and the
   schema's top-level `description` changed with D-483.
 - **The mechanics are built, rehearsed and reviewed** on
-  `release-mechanics`, six commits, unmerged and unpushed, the sixth the
-  review's fixes, rehearsed in their turn. The reviewer is checking that
-  delta.
+  `release-mechanics`, six commits at `adcc116`, the sixth the review's
+  fixes, rehearsed in their turn and their delta checked clean. The
+  branch is unmerged and exists on this machine alone, since nothing of
+  it may reach `RedstoneInspector.jl` before the landing push. Step 1 of
+  the order of the work is done. Steps 2 to 6 wait for the core's
+  increment 1b and for the user.
+- **Owed at the close**, before the scratch is cleared: the builder's
+  and the reviewer's probes, the local rehearsal's script and the
+  mutant runners go to `probes/` beside this file with their paths as
+  arguments; the traps go to `rules.md`; and the records listed below
+  take their amendments, six jobs where they say four or five.
+- **For the user**: the push of the pin bump; C8 to C23 to review, C23
+  to rule; the relay to the core on `pending.md`'s bullet; and the
+  rehearsal repo to look at and delete.
 - **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
   public, created empty that day with its Pages source set to "GitHub
   Actions".

@@ -17,8 +17,10 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   (`increments/20261127_pin_318859d/notes_pin_318859d.md`). The
   mechanics are built on the branch `release-mechanics`, rehearsed on
   disk and in `e271828e/RedstoneInspector-rehearsal`, and reviewed, the
-  review's fixes landed on the branch and their delta under check; they
-  stay off master until the landing push. The rulings,
+  review's fixes landed on the branch and their delta checked; they
+  stay off master, on one machine, until the landing push. Step 1 of
+  the notes' order is done, and what follows waits for the core's
+  increment 1b and for the user. The rulings,
   the order of the work, the prototype's answers and the state of the
   run are `increments/inspector_11_release/notes_inspector_11.md`. The
   README's pictures wait for a second pin bump to the core once the
