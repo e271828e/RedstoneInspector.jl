@@ -16,8 +16,9 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   merged on the local master, and waits for the user's review and push
   (`increments/20261127_pin_318859d/notes_pin_318859d.md`). The
   mechanics are built on the branch `release-mechanics`, rehearsed on
-  disk and in `e271828e/RedstoneInspector-rehearsal`, and under their
-  cold review; they stay off master until the landing push. The rulings,
+  disk and in `e271828e/RedstoneInspector-rehearsal`, and reviewed, the
+  review's fixes in progress; they stay off master until the landing
+  push. The rulings,
   the order of the work, the prototype's answers and the state of the
   run are `increments/inspector_11_release/notes_inspector_11.md`. The
   README's pictures wait for a second pin bump to the core once the

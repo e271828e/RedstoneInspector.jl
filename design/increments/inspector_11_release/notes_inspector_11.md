@@ -266,6 +266,39 @@ kept.
   *Why:* the workflow's first real run is the release, and the pictures
   and the README touch none of its logic but the Pages upload.
 
+Made on the mechanics' cold review, 2026-11-28, the user away, for the
+user's review.
+
+- **C19. The rule's two release branches also require the run's ref to
+  be master.** A run from another ref releases nothing, ends green and
+  writes a notice. *Why:* a dispatch from a branch or a tag whose tip is
+  master's tip passes ruling 2's tip condition. It runs in another
+  concurrency group, beside master's own run, and the two can cross
+  their drafts: one deletes the other's and its tarball is then the one
+  published, which master's `Artifacts.toml` does not name. Only a new
+  version repairs that. Ruling 2 means a dispatch from another branch to
+  release nothing, and the tip condition alone does not hold it when the
+  two tips are one commit. *Rejected:* a concurrency group on the job,
+  where a later run can cancel a waiting release.
+- **C20. The resume deploys Pages only for the latest release.** It
+  writes the output that starts `pages` only when the remote `release`
+  branch is at the tag's commit. *Why:* C14's test stays true for the
+  run that released a tag, so a re-run of an old release's run would put
+  its page back on Pages over a newer one.
+- **C21. A failed command stops the step.** The rule, the draft's step
+  and the publish run under `pipefail`, with each `git ls-remote` and
+  `gh` result assigned on a line of its own, and an empty version stops
+  the rule. *Why:* the runner's shell is `bash -e` without `pipefail`,
+  so a failed lookup read as "no tag", "no tip" or "no draft".
+- **C22. The job owns the tag's Release.** It deletes every draft it
+  finds at the tag before it creates its own, a draft written by hand
+  included. The README's release lines say so at the landing.
+  *Rejected:* sparing a draft the bot did not write, which leaves two
+  drafts at one tag and a publish that may take the wrong one.
+- **C23. A lowered version is not guarded.** A version lowered to one
+  that has no tag is released as any other, and `release` moves to it.
+  A guard would be a condition the user has not ruled. Left to the user.
+
 ## The order of the work
 
 1. The mechanics, now: the release script, the workflow, the `base` line,
@@ -309,8 +342,9 @@ The probes are in the builder's scratch,
   disk and on GitHub, from `v0.1.0` to `v0.1.1` and on to `v0.1.3`, each
   with its own bundle.
 - **The `live` job's duration.** 218 s on a cold cache, of which the
-  instantiation is 144 s and the check 28 s. 66 to 109 s warm. The check
-  alone takes 10 to 12 s on the user's machine.
+  instantiation is 144 s and the check 28 s. 66 to 187 s with a cache,
+  the instantiation still taking up to 98 s. The check alone takes 10 to
+  12 s on the user's machine.
 
 ## The mechanics as built
 
@@ -393,7 +427,7 @@ repo is the user's to delete.
 The jobs of the first run: `julia` 4 min 26 s on Ubuntu and 6 min 31 s
 on Windows, `fixtures` 5 min 40 s, `frontend` 9 min 44 s, `live`
 3 min 38 s, `release` 2 min 4 s, of which the last step 1 min 40 s, and
-`pages` 13 s. `release` takes 5 or 6 s when it releases nothing. A
+`pages` 13 s. `release` takes 5 to 7 s when it releases nothing. A
 release takes about 16 minutes from the push.
 
 ## What the mechanics' tests pin
@@ -433,6 +467,69 @@ For `rules.md` at the landing.
 - `e2e/landing.spec.ts:106`, Meta+o from the search field, failed once
   in nine runs on the runner in Chromium (`pending.md`).
 
+## The mechanics' cold review
+
+One independent high-tier agent, over the five commits at `5856562`, in
+a worktree of its own, with GitHub read-only. Its charter: the whole
+gate with `npm run live`; the workflow's rule walked as an adversary,
+every way a run can reach the `release` job; the rehearsal's claims
+against GitHub; the real-server check, the release script, the test
+under an empty depot and the base path, each with mutants; the map and
+this record.
+
+Its gate was green at this file's counts. `npm run live` passed 20 runs
+of 20. Its own `dist` equals `v0.1.0`'s published tarball byte for byte,
+so the build is the same on a Mac and on the runner. It confirmed every
+case of the rehearsal's table against GitHub: each tag on the bot's
+commit whose parent is the run's commit, each asset's SHA-256 and tree
+hash the tagged `Artifacts.toml`'s, no draft left, and the workflow file
+of every run but G's and H's the branch's byte for byte. It disputed no
+ruling, and C13 holds against GitHub's documentation and the rehearsal
+repo's environment, whose branch policy allows `master` alone. Nothing
+was a must-fix before the release. The findings, as the coordinator
+adjudicated them, all taken:
+
+- **1, a transient failure is read as a fact.** C21.
+- **2, the resume matches a re-run of any old release run**, and Pages
+  goes back to that run's page. C20.
+- **3, two release runs on one commit in two concurrency groups** can
+  publish a tarball that master does not name. C19.
+- **4, the real-server check hangs 5.5 minutes and leaves two Julia
+  processes** when the driver stops answering. The teardown now waits
+  10 s for the exit and then kills the driver.
+- **5, the version was expanded inside a `run` line.** It goes through
+  the step's environment.
+- **6, an empty version would release a tag named `v`.** C21. A lowered
+  version: C23.
+- **7, the draft's loop deletes a draft written by hand.** C22.
+- **8, `bundle.tar.gz` was not ignored.** Added to `.gitignore`.
+- **9, two figures of this file.** Fixed above.
+
+What it could not confirm on GitHub, since no run showed it: the atomic
+push's guard, `pages` after a failed last step, and a re-run of all
+jobs. The first two go to the rehearsal of the fixes.
+
+Its mutants of the real-server check: eleven red, on the server, the
+driver and the page. Six survive and are acceptable, each pinned
+elsewhere or outside what the check is for: a re-greeting that leaves
+the old channel, which the page never sends; `pushed` printed before
+`inspect`; the socket's path, since the server upgrades on any; a
+`hello` with major 2, which the server only warns about; a missing
+stylesheet link and an absolute base, both the base-path check's. Of the
+test under an empty depot: the release's state passes 131 of 131, and
+with the helper made inert 3 tests fail.
+
+**What a person does by hand**, for the README and `AGENTS.md` at the
+landing:
+
+- A publish that failed, then a new push before any re-run: the new
+  run's Julia jobs fail on the bundle's 404. Re-run the old run's failed
+  job, or publish with `gh release edit vX.Y.Z --draft=false`.
+- Master force-pushed without the bot's commit: `release` is no longer
+  an ancestor and every atomic push fails. Put the bot's commit back.
+- Before the landing push, the repo must hold no `release` branch and no
+  `v0.1.0` tag. It held neither on 2026-11-28.
+
 ## The state of the run
 
 Kept current by the coordinator, for the user and for a successor. All
@@ -451,14 +548,17 @@ paths are on one machine.
 - **At that pin the facts above read differently in two places.** The
   core is 89 commits past `fcd3660`, 33 of them in `src/`, and the
   schema's top-level `description` changed with D-483.
-- **The mechanics are built and rehearsed** on `release-mechanics`, five
-  commits, unmerged and unpushed. Their cold review is running. The
-  rehearsal repo holds four releases and is left as it stands.
+- **The mechanics are built, rehearsed and reviewed** on
+  `release-mechanics`, five commits, unmerged and unpushed. The builder
+  is landing the review's fixes as a sixth commit and rehearsing them in
+  the rehearsal repo, with new versions from 0.1.4. The reviewer checks
+  the delta after.
 - **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
   public, created empty that day with its Pages source set to "GitHub
   Actions".
 - **The worktrees**, under `~/.julia/dev/RedstoneInspector.jl-worktrees/`:
-  `pin_318859d`, `pin_318859d_review` and `release_mechanics`. Beside
+  `pin_318859d`, `pin_318859d_review`, `release_mechanics` and
+  `release_mechanics_review`. Beside
   them, each agent's scratch with its `notes.txt`, the folder's name
   ending in `_scratch`, the mechanics' holding the rehearsal's clone; and
   `context_watch.py`, the coordinator's watch on the agents' context.
