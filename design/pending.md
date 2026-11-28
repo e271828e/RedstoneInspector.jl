@@ -17,8 +17,8 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   (`increments/20261127_pin_318859d/notes_pin_318859d.md`). The
   mechanics are built on the branch `release-mechanics`, rehearsed on
   disk and in `e271828e/RedstoneInspector-rehearsal`, and reviewed, the
-  review's fixes in progress; they stay off master until the landing
-  push. The rulings,
+  review's fixes landed on the branch and their delta under check; they
+  stay off master until the landing push. The rulings,
   the order of the work, the prototype's answers and the state of the
   run are `increments/inspector_11_release/notes_inspector_11.md`. The
   README's pictures wait for a second pin bump to the core once the
@@ -92,9 +92,9 @@ keyboard by family and the look pass have landed (`roadmap.md`).
   declaration-order steering is unprobed. Hand arrangement saved beside
   the code stays refused (`initial_design.md` answer 12).
 - **A flaky browser check.** `e2e/landing.spec.ts:106`, Meta+o from the
-  search field, failed once in nine runs on the runner in Chromium,
-  during the release's rehearsal on 2026-11-27. A red `frontend` job
-  holds a release back until a re-run.
+  search field, failed twice in about fourteen runs on the runner in
+  Chromium, during the release's rehearsal on 2026-11-27 and 28. A red
+  `frontend` job holds a release back until a re-run.
 - **Hints** (the keyboard session of 2026-11-25). Vimium's `f`, kept
   free: a label on every clickable thing, typed to press it. Wires, port
   squares and the legend's lines have no keyboard path, and on a build no

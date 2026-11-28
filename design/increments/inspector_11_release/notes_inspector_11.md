@@ -349,7 +349,9 @@ The probes are in the builder's scratch,
 ## The mechanics as built
 
 Five commits on `release-mechanics`, from `3afd3ed`, hashes as of
-2026-11-28 and before any rebase. `Artifacts.toml` is as master has it.
+2026-11-28 and before any rebase. A sixth holds the review's fixes
+("The mechanics' cold review" below), and the workflow described here
+is the one before them. `Artifacts.toml` is as master has it.
 
 - **`98a6657`, the `base` line.** `base: "./"` in
   `frontend/vite.config.ts`. A new check in `e2e/network.spec.ts` serves
@@ -519,6 +521,35 @@ stylesheet link and an absolute base, both the base-path check's. Of the
 test under an empty depot: the release's state passes 131 of 131, and
 with the helper made inert 3 tests fail.
 
+**The fixes** are one commit on the branch, `adcc116`. The rule reads
+each remote fact on a line of its own under `pipefail`, refuses an empty
+version, and writes two outputs, the step to take and whether Pages
+deploy. The draft's step lists the drafts at the tag through the API and
+deletes each by its id. The publish fails when the tag has no Release.
+On it `npm run check` is clean and `npm run live` passes in both
+browsers. With a driver that sleeps on its second push the check is red
+in 42 s and leaves no Julia process. Run by hand under `bash -e` against
+a missing repo, the rule stops with no output written.
+
+**The fixes rehearsed**, from the fixed file, with versions from 0.1.4:
+
+| case | run | what it showed |
+|---|---|---|
+| R1, a dispatch at master's tip | 46085719383, 46085719657 | Master's run released `v0.1.4`. A dispatch on a branch at the same commit released nothing, green, with "only a run on master releases". C19. |
+| R2, an old release's run re-run | 46087380514, 46085719383 | `v0.1.5` released. The second attempt of `v0.1.4`'s `release` job took the resume, wrote "Pages left as they are" and deployed nothing; Pages stayed on `v0.1.5`'s page. C20. |
+| R3, the last step failing | 46088649478 | Broken on purpose at the end of the last step. `release` red after the publish, `v0.1.6` public, Pages deployed all the same. The run stays red. C13. |
+| R4, a push before the atomic push | 46089710872, 46090728330 | A pause of 240 s on purpose before the push, and a commit pushed to master meanwhile. The push was refused whole: no tag, `release` unmoved, a draft left, the run red. The tip's own run deleted that draft and released `v0.1.7`. Ruling 2's guard. |
+
+The tip's run of R4 needed three attempts, neither failure the
+workflow's own: `e2e/landing.spec.ts:106` failed again in `frontend`,
+and then `pages` failed with "No artifacts named github-pages" and
+deployed when re-run alone.
+
+The rehearsal repo now holds eight public releases, `v0.1.0` to
+`v0.1.7`, no draft, master and `release` at `v0.1.7`'s commit with the
+branch's `CI.yml` byte for byte, Pages on `v0.1.7`'s page, and two
+probe branches, `dispatch-probe` and `tip-probe`.
+
 **What a person does by hand**, for the README and `AGENTS.md` at the
 landing:
 
@@ -527,6 +558,8 @@ landing:
   job, or publish with `gh release edit vX.Y.Z --draft=false`.
 - Master force-pushed without the bot's commit: `release` is no longer
   an ancestor and every atomic push fails. Put the bot's commit back.
+- A `pages` job that fails on fetching its artifact: re-run that job
+  alone.
 - Before the landing push, the repo must hold no `release` branch and no
   `v0.1.0` tag. It held neither on 2026-11-28.
 
@@ -549,10 +582,9 @@ paths are on one machine.
   core is 89 commits past `fcd3660`, 33 of them in `src/`, and the
   schema's top-level `description` changed with D-483.
 - **The mechanics are built, rehearsed and reviewed** on
-  `release-mechanics`, five commits, unmerged and unpushed. The builder
-  is landing the review's fixes as a sixth commit and rehearsing them in
-  the rehearsal repo, with new versions from 0.1.4. The reviewer checks
-  the delta after.
+  `release-mechanics`, six commits, unmerged and unpushed, the sixth the
+  review's fixes, rehearsed in their turn. The reviewer is checking that
+  delta.
 - **The rehearsal repo** exists, `e271828e/RedstoneInspector-rehearsal`,
   public, created empty that day with its Pages source set to "GitHub
   Actions".
